@@ -11,25 +11,10 @@
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon.png">
 <title>Bay City</title>
-<link rel="stylesheet" href="css/style.css?v=2">
+<link rel="stylesheet" href="css/style.css?v=3">
 </head>
 <body>
 <canvas id="c"></canvas>
-
-<!-- Main menu -->
-<div id="menu" class="screen">
-  <h1>BAY<span>CITY</span></h1>
-  <div class="menu-col">
-    <button class="big" id="playBtn">▶ Play</button>
-    <div class="menu-row">
-      <button class="mid" id="charBtn">Character</button>
-      <button class="mid" id="gunBtn">Gunsmith</button>
-      <button class="mid" id="carBtn">Garage</button>
-    </div>
-    <div class="tip" id="tipTxt"></div>
-    <div class="tip ver">v2</div>
-  </div>
-</div>
 
 <!-- Customiser (character / gunsmith / garage) -->
 <div id="custom" class="screen hidden">
@@ -64,30 +49,31 @@
   <div id="stickZone">
     <div id="stickBase"><div id="stickKnob"></div></div>
   </div>
-  <div class="mid-btns">
-    <button class="sbtn" id="btnMap">MAP</button>
-    <button class="sbtn" id="btnPause">☰</button>
-  </div>
   <div class="face">
-    <button class="fbtn y" id="btnY"><b>Y</b><span id="lblY">Reload</span></button>
-    <button class="fbtn x" id="btnX"><b>X</b><span id="lblX">Fire</span></button>
-    <button class="fbtn b" id="btnB"><b>B</b><span id="lblB">Jump</span></button>
-    <button class="fbtn a" id="btnA"><b>A</b><span id="lblA">—</span></button>
+    <button class="fbtn y" id="btnY"></button>
+    <button class="fbtn x" id="btnX"></button>
+    <button class="fbtn b" id="btnB"></button>
+    <button class="fbtn a" id="btnA"></button>
   </div>
 </div>
 
-<div id="mapView" class="screen hidden"><canvas id="bigmap"></canvas><div class="map-hint">tap to close</div></div>
+<div id="mapView" class="screen hidden">
+  <canvas id="bigmap"></canvas>
+  <div class="map-actions">
+    <button class="mbtn" id="mCharBtn"><i>👤</i>Character</button>
+    <button class="mbtn" id="mGunBtn"><i>🔫</i>Gunsmith</button>
+    <button class="mbtn" id="mCarBtn"><i>🚗</i>Garage</button>
+    <button class="mbtn" id="mBringBtn"><i>📍</i>Bring car</button>
+  </div>
+  <button class="big" id="mapClose">Back to the city</button>
+  <div class="map-hint" id="mapHint"></div>
+</div>
 
-<div id="pause" class="screen hidden"><div class="card">
-  <h2>Paused</h2>
-  <button class="big" id="resumeBtn">Resume</button>
-  <button class="mid" id="callCarBtn">🚗 Bring my car here</button>
-  <button class="mid" id="quitBtn">Main menu</button>
-  <div class="tip">Progress saves automatically.</div>
-</div></div>
+<div id="hurt"></div>
+<div id="deathScreen"><div><b>You blacked out</b><span>Waking up at Downtown Clinic…</span></div></div>
 
 <div id="rotate"><div>↻<br>Turn your phone upright<br><small>Bay City is played in portrait</small></div></div>
 
-<script type="module" src="js/main.js?v=2"></script>
+<script type="module" src="js/main.js?v=3"></script>
 </body>
 </html>

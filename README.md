@@ -11,18 +11,22 @@ A portrait, free-roam 3D city game for iPhone, built with three.js in plain HTML
 - **Day/night cycle:** a 12-minute day. Windows and street lamps light up at night, and your car has working headlights.
 
 ## Controls
-Hold your phone upright. Drag the stick on the left to move.
+Hold your phone upright. The game opens straight into the city wherever you left off.
 
 | Button | On foot | Driving |
 |---|---|---|
-| A | Enter car (when close) | Exit |
-| B | Jump | Brake / handbrake drift |
-| X | Fire | Horn |
-| Y | Reload | Headlights |
+| Bottom | Get in (when close to your car) | Exit |
+| Right | Jump | Gas |
+| Left | Fire | Brake / reverse |
+| Top | Reload | Horn |
 
-Tap **MAP** or the minimap for the full map. ☰ pauses the game, and also has *Bring my car here*.
+On foot, the stick moves you. In the car, it steers left and right. Braking hard while turning at speed drifts.
 
-Keyboard: WASD to move, E for A, Space for B, J for X, R for Y, M for the map, Esc to pause.
+Tap the minimap to open the full map, where you'll also find **Character**, **Gunsmith**, **Garage** and **Bring car**.
+
+**Health** is the ring around the minimap, and it regenerates when you stay out of trouble. When it's low the screen pulses red. Getting hit by traffic or crashing hard hurts, and if it runs out you wake up outside the Downtown Clinic.
+
+Keyboard: WASD to move or steer, Space to jump, J to fire, R to reload or use the horn, E to get in or out, W/S for gas and brake in the car, M or Esc for the map.
 
 ## Customisation
 - **Character:** body, face, hair, outfit and gear, all recolourable.

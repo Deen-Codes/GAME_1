@@ -72,8 +72,7 @@ input[type=text] { width: 100%; padding: 10px 12px; border-radius: 10px; border:
 .clock { background: rgba(10,10,24,.45); border: 1px solid rgba(255,255,255,.15); border-radius: 999px; padding: 6px 12px; font-weight: 900; font-size: 15px; font-variant-numeric: tabular-nums; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
 .zone { font-weight: 800; font-size: 13px; color: var(--hot2); padding-left: 4px; }
 .ammo { font-weight: 800; font-size: 12px; color: var(--dim); padding-left: 4px; }
-#minimap { position: absolute; top: calc(10px + var(--sat)); right: calc(12px + var(--sar)); width: 112px; height: 112px; border-radius: 50%;
-  border: 2px solid rgba(255,255,255,.55); box-shadow: 0 4px 16px rgba(0,0,0,.35); pointer-events: auto; background: #3d8fd0; }
+#minimap { position: absolute; top: calc(6px + var(--sat)); right: calc(6px + var(--sar)); width: 132px; height: 132px; border-radius: 50%; pointer-events: auto; filter: drop-shadow(0 4px 10px rgba(0,0,0,.35)); }
 .speedo { position: absolute; left: 50%; transform: translateX(-50%); bottom: calc(var(--pad) + 6px); background: rgba(10,10,24,.45); border-radius: 14px; padding: 4px 14px; text-align: center; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
 .speedo b { font-size: 26px; font-weight: 900; font-variant-numeric: tabular-nums; } .speedo span { font-size: 11px; color: var(--dim); margin-left: 4px; font-weight: 800; }
 .toast { position: absolute; left: 50%; top: calc(132px + var(--sat)); transform: translateX(-50%); background: rgba(10,10,24,.6); padding: 8px 16px; border-radius: 999px; font-weight: 800; font-size: 14px; opacity: 0; transition: opacity .3s; white-space: nowrap; }
@@ -94,18 +93,20 @@ input[type=text] { width: 100%; padding: 10px 12px; border-radius: 10px; border:
 .fbtn { position: absolute; width: 70px; height: 70px; border-radius: 50%; border: 2px solid rgba(255,255,255,.4); background: rgba(255,255,255,.12);
   display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1; touch-action: none;
   backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); box-shadow: 0 3px 12px rgba(0,0,0,.25); }
-.fbtn b { font-size: 20px; font-weight: 900; } .fbtn span { font-size: 9.5px; font-weight: 800; margin-top: 3px; opacity: .9; text-transform: uppercase; letter-spacing: .03em; }
-.fbtn.y { left: 65px; top: 0; border-color: rgba(255,210,63,.75); } .fbtn.y b { color: #ffd23f; }
-.fbtn.x { left: 0; top: 65px; border-color: rgba(80,160,255,.75); } .fbtn.x b { color: #6fb2ff; }
-.fbtn.b { left: 130px; top: 65px; border-color: rgba(255,80,90,.75); } .fbtn.b b { color: #ff6a74; }
-.fbtn.a { left: 65px; top: 130px; border-color: rgba(76,217,100,.75); } .fbtn.a b { color: #5ee07a; }
+.fbtn svg { width: 28px; height: 28px; fill: none; stroke: #fff; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; filter: drop-shadow(0 1px 2px rgba(0,0,0,.4)); }
+.fbtn span { font-size: 9.5px; font-weight: 800; margin-top: 3px; opacity: .9; text-transform: uppercase; letter-spacing: .03em; }
+.fbtn.y { left: 65px; top: 0; } .fbtn.x { left: 0; top: 65px; } .fbtn.b { left: 130px; top: 65px; } .fbtn.a { left: 65px; top: 130px; }
+.fbtn.idle { opacity: .35; }
+#pad .fbtn.x { border-color: rgba(255,110,90,.8); }
+#pad.driving .fbtn.b { border-color: rgba(76,217,100,.85); background: rgba(76,217,100,.22); width: 80px; height: 80px; margin: -5px; }
+#pad.driving .fbtn.x { border-color: rgba(255,80,90,.85); background: rgba(255,80,90,.18); width: 80px; height: 80px; margin: -5px; }
 .fbtn.ready { background: rgba(76,217,100,.35); animation: pulse 1s infinite alternate; }
 @keyframes pulse { to { box-shadow: 0 0 0 6px rgba(76,217,100,.25); } }
 .fbtn.down { transform: scale(.9); background: rgba(255,255,255,.32); }
 
 /* ---------- overlays ---------- */
 #mapView { background: rgba(10, 12, 26, .92); display: grid; place-items: center; }
-#bigmap { width: min(96vw, 96dvh * .97); border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,.5); }
+#bigmap { width: min(94vw, 60dvh); border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,.5); }
 .map-hint { position: absolute; bottom: calc(18px + var(--sab)); left: 0; right: 0; text-align: center; color: var(--dim); font-size: 13px; }
 #pause { display: grid; place-items: center; background: rgba(10, 8, 24, .55); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); }
 .card { width: min(320px, 86vw); display: flex; flex-direction: column; gap: 10px; padding: 20px; border-radius: 20px; background: var(--panel); border: 1px solid var(--line); }
@@ -113,3 +114,19 @@ input[type=text] { width: 100%; padding: 10px 12px; border-radius: 10px; border:
 #rotate { position: fixed; inset: 0; z-index: 50; background: #141a30; display: none; place-items: center; text-align: center; font-size: 22px; font-weight: 800; line-height: 1.5; }
 #rotate small { font-size: 14px; color: var(--dim); font-weight: 600; }
 @media (orientation: landscape) and (pointer: coarse) { #rotate { display: grid; } }
+
+/* ---------- map actions, hurt, death ---------- */
+#mapView { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: calc(14px + var(--sat)) 14px calc(14px + var(--sab)); }
+#mapView .big { width: min(420px, 100%); text-align: center; }
+.map-actions { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; width: min(420px, 100%); }
+.mbtn { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 10px 4px; font-size: 12px; font-weight: 800; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.mbtn i { font-style: normal; font-size: 22px; }
+.mbtn:active { background: rgba(255,138,42,.3); }
+.map-hint { position: static; }
+#hurt { position: fixed; inset: 0; z-index: 4; pointer-events: none; opacity: 0;
+  background: radial-gradient(ellipse at center, rgba(180,0,20,0) 42%, rgba(190,0,25,.55) 75%, rgba(150,0,15,.9) 100%); }
+#deathScreen { position: fixed; inset: 0; z-index: 20; display: grid; place-items: center; pointer-events: none; opacity: 0; transition: opacity .8s;
+  background: radial-gradient(ellipse at center, rgba(40,0,6,.55), rgba(10,0,2,.92)); text-align: center; }
+#deathScreen.on { opacity: 1; pointer-events: auto; }
+#deathScreen b { display: block; font-size: 30px; font-weight: 900; color: #ff4d5a; letter-spacing: .02em; }
+#deathScreen span { display: block; margin-top: 8px; color: var(--dim); font-size: 14px; font-weight: 700; }

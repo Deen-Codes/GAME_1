@@ -295,7 +295,7 @@ function engineSound(on, speed) {
 }
 
 // ---------------- player & car
-const P = { x: SPAWN.x, z: SPAWN.z, y: 0, vy: 0, face: Math.PI, inCar: false, phase: 0, recoil: 0, fireCd: 0, burst: 0, burstT: 0, ammo: 0, reload: 0, flash: 0 };
+const P = { hp: 100, dead: false, deadT: 0, hurtT: 99, hitCd: 0, kx: 0, kz: 0, x: SPAWN.x, z: SPAWN.z, y: 0, vy: 0, face: Math.PI, inCar: false, phase: 0, recoil: 0, fireCd: 0, burst: 0, burstT: 0, ammo: 0, reload: 0, flash: 0 };
 let hero = null, heroGun = null, gunStats = null, heroRoot = null, muzzleFlash = null;
 const carState = { x: SPAWN.carX, z: SPAWN.carZ, h: SPAWN.carH, v: 0, vx: 0, vz: 0, steer: 0, lights: true };
 let car = null, carStats = null, headSpot = null, headTarget = null;
@@ -386,7 +386,10 @@ function updateTraffic(dt) {
       }
     } else {
       const dx = P.x - t.rx, dz = P.z - t.rz, d = Math.hypot(dx, dz);
-      if (d < 2.0 && d > 0.01) { P.x = t.rx + dx / d * 2.0; P.z = t.rz + dz / d * 2.0; }
+      if (d < 2.0 && d > 0.01 && !P.dead) {
+        P.x = t.rx + dx / d * 2.0; P.z = t.rz + dz / d * 2.0;
+        if (t.speed > 4 && P.hitCd <= 0) { hurt(t.speed * 2.6); P.hitCd = 1; P.kx = dx / d * t.speed * 0.9; P.kz = dz / d * t.speed * 0.9; P.vy = 5; t.stun = 2.5; t.speed = 0; }
+      }
     }
   }
 }
@@ -441,7 +444,8 @@ function baseY(x, z) {
 }
 function nearCar() { return Math.hypot(P.x - carState.x, P.z - carState.z) < 4.2; }
 function updateFoot(dt) {
-  const st = input.stick, s = gunStats;
+  const st = P.dead ? { x: 0, y: 0, m: 0 } : input.stick, s = gunStats;
+  P.x += P.kx * dt; P.z += P.kz * dt; P.kx = damp(P.kx, 0, 4, dt); P.kz = damp(P.kz, 0, 4, dt);
   const run = st.m > 0.85, sp = (run ? 7.2 : 4.6) * st.m * s.mob;
   const ox = P.x, oz = P.z;
   if (st.m > 0.1) {
@@ -458,7 +462,7 @@ function updateFoot(dt) {
   P.fireCd -= dt; P.burstT -= dt; P.recoil = Math.max(0, P.recoil - dt * 4);
   if (P.reload > 0) { P.reload -= dt; if (P.reload <= 0) P.ammo = s.mag; }
   if (input.consume('y') && P.reload <= 0 && P.ammo < s.mag) P.reload = s.reload;
-  const firing = input.held('x');
+  const firing = !P.dead && input.held('x');
   if (P.burst > 0) { if (P.burstT <= 0 && P.ammo > 0) { shoot(); P.burst--; P.burstT = 0.07; if (!P.burst) P.fireCd = 1.6 / s.rof; } if (P.ammo <= 0) P.burst = 0; }
   else if (firing && P.fireCd <= 0 && P.reload <= 0) {
     if (P.ammo <= 0) P.reload = s.reload;
@@ -467,11 +471,12 @@ function updateFoot(dt) {
   }
   if (P.ammo <= 0 && P.reload <= 0 && !P.burst) P.reload = s.reload;
   input.consume('x');
-  if (input.consume('a') && nearCar()) enterCar();
+  if (input.consume('a') && nearCar() && !P.dead) enterCar();
   // pose
   const moved = Math.hypot(P.x - ox, P.z - oz) / Math.max(dt, 1e-4);
   P.phase += dt * moved * 1.8;
   heroRoot.position.set(P.x, P.y, P.z); hero.root.rotation.y = P.face;
+  hero.root.rotation.x = P.dead ? damp(hero.root.rotation.x, -Math.PI / 2, 8, dt) : 0;
   const aimHold = firing || P.fireCd > -0.6;
   poseCharacter(hero, { phase: P.phase, speed: Math.min(1, moved / 7), air: P.y > gy + 0.05, aim: aimHold ? 0 : -0.55, recoil: P.recoil, t: time });
   if (P.reload > 0) { const k = Math.sin(Math.min(1, 1 - P.reload / s.reload) * Math.PI); hero.armR.pivot.rotation.x += k * 0.9; hero.armL.pivot.rotation.x += k * 1.2; }
@@ -494,35 +499,69 @@ function exitCar() {
   carState.v = 0; carState.vx = carState.vz = 0;
 }
 
+// ---------------- health
+let hurtFlash = 0;
+function hurt(d) {
+  if (P.dead || d <= 0) return;
+  P.hp = Math.max(0, P.hp - d); P.hurtT = 0; hurtFlash = 0.35; shake = Math.max(shake, 0.3);
+  if (navigator.vibrate) navigator.vibrate(30);
+  if (P.hp <= 0) die();
+}
+function die() {
+  P.dead = true; P.deadT = 3.2;
+  if (P.inCar) exitCar();
+  carState.v = 0; carState.vx = carState.vz = 0;
+  $('deathScreen').classList.add('on');
+}
+function respawn() {
+  P.dead = false; P.hp = 100; P.hurtT = 99; P.kx = P.kz = 0;
+  Object.assign(P, { x: SPAWN.x, z: SPAWN.z, face: Math.PI }); P.y = baseY(P.x, P.z);
+  heroRoot.visible = true;
+  $('deathScreen').classList.remove('on');
+  updateCamera(0, true);
+  toast('You woke up outside Downtown Clinic');
+}
+function updateHealth(dt) {
+  P.hurtT += dt; P.hitCd -= dt;
+  if (!P.dead && P.hurtT > 6 && P.hp < 100) P.hp = Math.min(100, P.hp + 4 * dt);
+  if (P.dead) { P.deadT -= dt; if (P.deadT <= 0) respawn(); }
+  hurtFlash = Math.max(0, hurtFlash - dt);
+  const low = P.hp < 40 ? (1 - P.hp / 40) : 0;
+  const rate = 1.2 + low * 1.6, ph = (time * rate) % 1;
+  const beat = Math.max(Math.exp(-ph * 9), 0.7 * Math.exp(-Math.abs(ph - 0.22) * 14));
+  $('hurt').style.opacity = Math.min(1, low * (0.35 + 0.65 * beat) + hurtFlash * 2.2).toFixed(3);
+}
+
 // ---------------- driving
 const carPos = { x: 0, z: 0 };
 function updateCar(dt) {
   const c = carState, s = carStats;
-  if (P.inCar) {
-    const st = input.stick, brake = input.held('b');
-    let target = 0, steer = 0;
-    if (st.m > 0.18) {
-      const want = Math.atan2(st.x, -st.y);
-      const diff = wrapA(want - c.h);
-      if (Math.abs(diff) > 2.3 && c.v < 4) { target = -s.top * 0.3 * st.m; steer = clamp(-wrapA(want + Math.PI - c.h) * 2, -1, 1); }
-      else { target = s.top * st.m * (Math.abs(diff) > 1.4 ? 0.35 : 1); steer = clamp(diff * 2.2, -1, 1); }
-    }
+  c.braking = false;
+  if (P.inCar && !P.dead) {
+    const st = input.stick;
+    const gas = input.held('b') || input.keys.has('KeyW') || input.keys.has('ArrowUp');
+    const brk = input.held('x') || input.keys.has('KeyS') || input.keys.has('ArrowDown');
     const onRoad = !!roadAt(c.x, c.z), sand = c.z > sandLine(c.x);
-    target *= onRoad ? 1 : Math.min(1, (sand ? 0.45 : 0.65) * s.off);
-    if (brake) c.v = damp(c.v, 0, 3.5, dt);
-    else if (target > c.v) c.v = Math.min(target, c.v + s.acc * dt * (1 - Math.max(0, c.v) / (s.top * 1.15)));
-    else if (target < c.v) c.v = Math.max(target, c.v - (target < 0 ? s.acc * 0.6 : (target === 0 ? 5 : 9)) * dt);
-    c.steer = damp(c.steer, steer, 10, dt);
-    if (input.consume('x')) sfxHorn();
-    if (input.consume('y')) { c.lights = !c.lights; toast(c.lights ? 'Headlights on' : 'Headlights off'); }
-    input.consume('b');
+    const top = s.top * (onRoad ? 1 : Math.min(1, (sand ? 0.45 : 0.65) * s.off));
+    if (gas && !brk) {
+      if (c.v < -0.3) c.v = Math.min(0, c.v + 16 * dt);
+      else if (c.v < top) c.v = Math.min(top, c.v + s.acc * dt * (1 - Math.max(0, c.v) / (s.top * 1.15)));
+      else c.v = damp(c.v, top, 2, dt);
+    } else if (brk) {
+      if (c.v > 0.3) { c.v = Math.max(0, c.v - 18 * dt); c.braking = true; }
+      else c.v = Math.max(-s.top * 0.32, c.v - s.acc * 0.6 * dt);
+    } else c.v = damp(c.v, 0, 0.8, dt);
+    if (c.v > top + 0.5) c.v = damp(c.v, top, 1.5, dt);
+    c.steer = damp(c.steer, clamp(-st.x, -1, 1), 9, dt);
+    if (input.consume('y')) sfxHorn();
+    input.consume('b'); input.consume('x');
     if (input.consume('a')) exitCar();
   } else { c.v = damp(c.v, 0, 3, dt); c.steer = damp(c.steer, 0, 6, dt); }
   const spd = Math.abs(c.v);
   const turn = c.steer * s.turn * clamp(spd / 6, 0, 1) * (1 - Math.min(0.45, spd / s.top * 0.45)) * Math.sign(c.v || 1);
   c.h = wrapA(c.h + turn * dt);
   const fx = Math.sin(c.h), fz = Math.cos(c.h);
-  const grip = (P.inCar && input.held('b') ? 1.6 : 7) * s.grip;
+  const grip = (c.braking && spd > 12 && Math.abs(c.steer) > 0.3 ? 1.8 : 7) * s.grip;
   c.vx = damp(c.vx, fx * c.v, grip, dt); c.vz = damp(c.vz, fz * c.v, grip, dt);
   const ox = c.x, oz = c.z;
   c.x += c.vx * dt; c.z += c.vz * dt;
@@ -535,16 +574,17 @@ function updateCar(dt) {
   if (!walkable(c.x, c.z, false)) { c.x = ox; c.z = oz; hit = true; }
   if (hit) {
     if (spd > 9) { spawnParticles(c.x + fx * 2, 0.7, c.z + fz * 2, ['#ffd23f', '#ffffff', '#888'], 10, 5, 0.4, 0.1); shake = Math.max(shake, Math.min(0.6, spd / 40)); }
+    if (P.inCar && spd > 15) hurt((spd - 15) * 1.6);
     c.v *= -0.25; c.vx *= 0.2; c.vz *= 0.2;
   }
-  if (P.inCar && spd > 14 && input.held('b')) spawnParticles(c.x - fx * 1.8, 0.2, c.z - fz * 1.8, '#d8d8d8', 1, 1, 0.6, 0.35, -1);
+  if (c.braking && spd > 12) spawnParticles(c.x - fx * 1.8, 0.2, c.z - fz * 1.8, '#d8d8d8', 1, 1, 0.6, 0.35, -1);
   const g = car.group;
   g.position.set(c.x, roadAt(c.x, c.z) ? 0.04 : Math.max(groundH(c.x, c.z), 0), c.z); g.rotation.y = c.h;
   g.rotation.z = clamp((-c.vx * fz + c.vz * fx) * 0.012, -0.08, 0.08);
   for (const w of car.wheels) { w.spin.rotation.x += c.v * dt / car.wr; if (w.front) w.pivot.rotation.y = c.steer * 0.45; }
-  const on = c.lights && night > 0.25;
+  const on = night > 0.25;
   car.headM.emissiveIntensity = on ? 2.2 : 0.4;
-  car.tailM.emissiveIntensity = (P.inCar && (input.held('b') || c.v < -0.5)) ? 2.5 : on ? 1.2 : 0.4;
+  car.tailM.emissiveIntensity = (c.braking || c.v < -0.5) ? 2.5 : on ? 1.2 : 0.4;
   headSpot.intensity = on ? 60 : 0;
   headSpot.position.set(c.x + fx * car.length * 0.5, 1.0, c.z + fz * car.length * 0.5);
   headTarget.position.set(c.x + fx * 18, 0, c.z + fz * 18);
@@ -587,13 +627,13 @@ function ensureMap() { if (!MAP) MAP = drawMap(512); }
 function drawMinimap() {
   ensureMap();
   const px = P.inCar ? carState.x : P.x, pz = P.inCar ? carState.z : P.z;
-  const S = mm.width, span = P.inCar ? 260 : 170;
+  const S = mm.width, R = S / 2 - 18, span = P.inCar ? 260 : 170;
   const mx = MAP.tx(px), mz = MAP.tz(pz), ms = span / MAP.sx;
   mctx.save(); mctx.clearRect(0, 0, S, S);
-  mctx.beginPath(); mctx.arc(S / 2, S / 2, S / 2, 0, Math.PI * 2); mctx.clip();
+  mctx.beginPath(); mctx.arc(S / 2, S / 2, R, 0, Math.PI * 2); mctx.clip();
   mctx.fillStyle = '#3d8fd0'; mctx.fillRect(0, 0, S, S);
-  mctx.drawImage(MAP.canvas, mx - ms / 2, mz - ms / 2, ms, ms, 0, 0, S, S);
-  const toS = (wx, wz) => [S / 2 + (wx - px) / span * S, S / 2 + (wz - pz) / span * S];
+  mctx.drawImage(MAP.canvas, mx - ms / 2, mz - ms / 2, ms, ms, S / 2 - R, S / 2 - R, R * 2, R * 2);
+  const toS = (wx, wz) => [S / 2 + (wx - px) / span * R * 2, S / 2 + (wz - pz) / span * R * 2];
   mctx.fillStyle = '#ffffff';
   for (const t of traffic) { const [a, b] = toS(t.rx, t.rz); mctx.fillRect(a - 3, b - 3, 6, 6); }
   if (!P.inCar) { const [a, b] = toS(carState.x, carState.z); mctx.fillStyle = '#ff8a2a'; mctx.strokeStyle = '#fff'; mctx.lineWidth = 3; mctx.beginPath(); mctx.arc(a, b, 9, 0, 7); mctx.fill(); mctx.stroke(); }
@@ -601,6 +641,15 @@ function drawMinimap() {
   mctx.fillStyle = '#ffd23f'; mctx.strokeStyle = '#1a1a2a'; mctx.lineWidth = 4;
   mctx.beginPath(); mctx.moveTo(0, -16); mctx.lineTo(11, 11); mctx.lineTo(0, 5); mctx.lineTo(-11, 11); mctx.closePath(); mctx.stroke(); mctx.fill();
   mctx.restore();
+  // health ring
+  const hp = P.hp / 100, ringR = R + 10;
+  mctx.lineCap = 'round';
+  mctx.lineWidth = 11; mctx.strokeStyle = 'rgba(10,10,24,.55)'; mctx.beginPath(); mctx.arc(S / 2, S / 2, ringR, 0, Math.PI * 2); mctx.stroke();
+  if (hp > 0) {
+    mctx.lineWidth = 8; mctx.strokeStyle = hp > 0.6 ? '#4cd964' : hp > 0.3 ? '#ffd23f' : '#ff3b4a';
+    mctx.beginPath(); mctx.arc(S / 2, S / 2, ringR, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * hp); mctx.stroke();
+  }
+  mctx.lineWidth = 2; mctx.strokeStyle = 'rgba(255,255,255,.7)'; mctx.beginPath(); mctx.arc(S / 2, S / 2, R, 0, Math.PI * 2); mctx.stroke();
 }
 function drawBigMap() {
   ensureMap();
@@ -615,25 +664,43 @@ function drawBigMap() {
 }
 const hudCache = {};
 function setText(id, v) { if (hudCache[id] !== v) { hudCache[id] = v; $(id).textContent = v; } }
+const ICONS = {
+  car: '<path d="M5 13l1.6-4.6A2 2 0 0 1 8.5 7h7a2 2 0 0 1 1.9 1.4L19 13"/><path d="M4 13h16v4H4z"/><path d="M6.5 17v2M17.5 17v2"/>',
+  exit: '<path d="M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4"/><path d="M10 16l-4-4 4-4M6 12h10"/>',
+  jump: '<path d="M12 20V6"/><path d="M6 12l6-6 6 6"/><path d="M5 3h14"/>',
+  fire: '<circle cx="12" cy="12" r="7"/><path d="M12 2v5M12 17v5M2 12h5M17 12h5"/><circle cx="12" cy="12" r="1" fill="currentColor"/>',
+  reload: '<path d="M20 12a8 8 0 1 1-2.4-5.7"/><path d="M20 4v5h-5"/>',
+  gas: '<path d="M6 13l6-6 6 6"/><path d="M6 19l6-6 6 6"/>',
+  brake: '<path d="M6 5l6 6 6-6"/><path d="M6 11l6 6 6-6"/>',
+  horn: '<path d="M4 10v4h4l5 4V6L8 10z"/><path d="M16 9a4 4 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11"/>',
+  none: '',
+};
+const btnCache = {};
+function setBtn(id, icon, label) {
+  const k = icon + '|' + label; if (btnCache[id] === k) return; btnCache[id] = k;
+  $(id).innerHTML = `<svg viewBox="0 0 24 24">${ICONS[icon]}</svg><span>${label}</span>`;
+}
 const heroGunName = () => gunCfg.name || RECEIVERS[gunCfg.receiver].label;
 function updateHUD(dt) {
   const hh = Math.floor(clockH), m10 = Math.floor((clockH - hh) * 6) * 10;
-  setText('clockTxt', `${clockH >= 6 && clockH < 19 ? '☀' : '☾'} ${String(hh).padStart(2, '0')}:${String(m10).padStart(2, '0')} · Day ${dayN}`);
+  setText('clockTxt', `${clockH >= 6 && clockH < 19 ? '☀' : '☾'} ${String(hh).padStart(2, '0')}:${String(m10).padStart(2, '0')}`);
   setText('zoneTxt', zoneName(P.inCar ? carState.x : P.x, P.inCar ? carState.z : P.z));
   setText('ammoTxt', P.inCar ? '' : P.reload > 0 ? 'Reloading…' : `${heroGunName()} · ${P.ammo}/${gunStats.mag}`);
   $('speedo').classList.toggle('hidden', !P.inCar);
   if (P.inCar) setText('speedTxt', String(Math.round(Math.abs(carState.v) * 3.6)));
-  const near = !P.inCar && nearCar();
-  const lbl = P.inCar ? { a: 'Exit', b: 'Brake', x: 'Horn', y: 'Lights' } : { a: near ? 'Enter' : '—', b: 'Jump', x: 'Fire', y: 'Reload' };
-  for (const k of ['a', 'b', 'x', 'y']) setText('lbl' + k.toUpperCase(), lbl[k]);
+  const near = !P.inCar && !P.dead && nearCar();
+  if (P.inCar) { setBtn('btnA', 'exit', 'Exit'); setBtn('btnB', 'gas', 'Gas'); setBtn('btnX', 'brake', carState.v > 0.5 ? 'Brake' : 'Reverse'); setBtn('btnY', 'horn', 'Horn'); }
+  else { setBtn('btnA', near ? 'car' : 'none', near ? 'Get in' : ''); setBtn('btnB', 'jump', 'Jump'); setBtn('btnX', 'fire', 'Fire'); setBtn('btnY', 'reload', 'Reload'); }
   $('btnA').classList.toggle('ready', near);
+  $('btnA').classList.toggle('idle', !P.inCar && !near);
+  $('pad').classList.toggle('driving', P.inCar);
   if (toastT > 0) { toastT -= dt; if (toastT <= 0) $('toast').classList.remove('on'); }
   drawMinimap();
 }
 
 // ---------------- save / load
 function saveGame() {
-  save = { x: P.x, z: P.z, face: P.face, inCar: P.inCar, cx: carState.x, cz: carState.z, ch: carState.h, h: clockH, day: dayN };
+  save = { hp: P.hp, x: P.x, z: P.z, face: P.face, inCar: P.inCar, cx: carState.x, cz: carState.z, ch: carState.h, h: clockH, day: dayN };
   store.set('bc_save', save);
 }
 function startGame() {
@@ -641,7 +708,7 @@ function startGame() {
   if (save) {
     Object.assign(P, { x: save.x, z: save.z, face: save.face || 0 });
     Object.assign(carState, { x: save.cx, z: save.cz, h: save.ch, v: 0, vx: 0, vz: 0 });
-    clockH = save.h ?? 8; dayN = save.day ?? 1;
+    clockH = save.h ?? 8; dayN = save.day ?? 1; P.hp = save.hp ?? 100;
     P.inCar = false; if (save.inCar) { P.x = carState.x; P.z = carState.z; enterCar(); }
   } else {
     Object.assign(P, { x: SPAWN.x, z: SPAWN.z, face: Math.PI, inCar: false });
@@ -655,8 +722,9 @@ function startGame() {
   updateCar(0);
   if (!P.inCar) updateFoot(0.001);
   updateCamera(0, true);
+  if (P.hp <= 0) P.hp = 100;
   setState('play');
-  if (!save) toast('Your car is just ahead — walk up and press A');
+  if (!save) toast('Your car is just ahead — walk up to get in');
 }
 function bringCar() {
   let best = null;
@@ -674,38 +742,41 @@ function step(dt) {
   time += dt;
   clockH += dt / 30; // 30 real seconds per game hour = 12-minute day
   if (clockH >= 24) { clockH -= 24; dayN++; }
+  updateHealth(dt);
   if (P.inCar) { updateCar(dt); P.x = carState.x; P.z = carState.z; }
   else { updateFoot(dt); updateCar(dt); }
   updateTraffic(dt);
   updateBullets(dt);
   updateParticles(dt);
   if (input.consume('map')) openMap();
-  if (input.consume('pause')) { saveGame(); setState('pause'); }
+  if (input.consume('pause')) openMap();
   saveT -= dt; if (saveT <= 0) { saveT = 4; saveGame(); }
 }
 
 // ================================================================ state machine / UI
 let state = 'menu';
 const input = new Input();
-input.bindTouch({ zone: $('stickZone'), base: $('stickBase'), knob: $('stickKnob'), canvas, buttons: { a: $('btnA'), b: $('btnB'), x: $('btnX'), y: $('btnY'), map: $('btnMap'), pause: $('btnPause') } });
+input.bindTouch({ zone: $('stickZone'), base: $('stickBase'), knob: $('stickKnob'), canvas, buttons: { a: $('btnA'), b: $('btnB'), x: $('btnX'), y: $('btnY') } });
 const isTouch = matchMedia('(pointer: coarse)').matches || 'ontouchstart' in window;
 function show(id, on) { $(id).classList.toggle('hidden', !on); }
 function setState(s) {
   state = s;
-  show('menu', s === 'menu'); show('custom', ['char', 'gun', 'car'].includes(s));
-  show('hud', s === 'play'); show('pad', s === 'play'); show('pause', s === 'pause'); show('mapView', s === 'map');
-  if (['menu', 'char', 'gun', 'car'].includes(s)) { previewMode = s; previewLayout(); engineSound(false, 0); }
-  if (s === 'pause' || s === 'map') engineSound(false, 0);
+  show('custom', ['char', 'gun', 'car'].includes(s));
+  show('hud', s === 'play'); show('pad', s === 'play'); show('mapView', s === 'map');
+  if (['char', 'gun', 'car'].includes(s)) { previewMode = s; previewLayout(); }
+  if (s !== 'play') engineSound(false, 0);
   if (s === 'play') gameLayout();
-  if (s === 'menu') {
-    $('playBtn').textContent = save ? '▶ Continue' : '▶ Play';
-    $('tipTxt').textContent = isTouch ? 'Tip: Share → Add to Home Screen for full-screen' : 'WASD move · Space jump/brake · J fire/horn · R reload · E enter/exit · M map';
-  }
   input.clear();
 }
-function openMap() { drawBigMap(); setState('map'); }
-$('mapView').addEventListener('pointerdown', () => setState('play'));
+function openMap() { saveGame(); drawBigMap(); setState('map'); }
+$('bigmap').addEventListener('pointerdown', () => setState('play'));
+$('mapClose').onclick = () => setState('play');
 mm.addEventListener('pointerdown', e => { e.stopPropagation(); if (state === 'play') openMap(); });
+$('mCharBtn').onclick = () => openCustom('char');
+$('mGunBtn').onclick = () => openCustom('gun');
+$('mCarBtn').onclick = () => openCustom('car');
+$('mBringBtn').onclick = () => { if (P.inCar) exitCar(); bringCar(); setState('play'); };
+$('mapHint').textContent = 'v3 · ' + (isTouch ? 'Tip: Share → Add to Home Screen for full-screen play' : 'Keys: WASD move · Space jump · J fire · R reload · E get in/out · in car W gas, S brake, R horn');
 
 let panel = null;
 function openCustom(kind) {
@@ -739,21 +810,20 @@ function changed() {
     renderStats($('stats'), carStatBars(s), `Engine <b>${CAR_PARTS.engine[carCfg.engine].label}</b> · Tyres <b>${CAR_PARTS.tyres[carCfg.tyres].label}</b>`);
   } else $('stats').innerHTML = `<div class="statx">Your look saves automatically and carries into the city.</div>`;
 }
-$('charBtn').onclick = () => openCustom('char');
-$('gunBtn').onclick = () => openCustom('gun');
-$('carBtn').onclick = () => openCustom('car');
-$('backBtn').onclick = () => setState('menu');
+$('backBtn').onclick = () => {
+  const wasIn = P.inCar;
+  buildHero(); buildPlayerCar(); heroRoot.visible = !wasIn && !P.dead;
+  updateCar(0); setState('play');
+};
 $('randBtn').onclick = () => {
   if (state === 'gun') gunCfg = { ...DEFAULT_GUN, ...randomGun() };
   else if (state === 'car') carCfg = { ...DEFAULT_CAR, ...randomCar(), name: carCfg.name };
   else charCfg = { ...DEFAULT_CHAR, ...randomChar() };
   changed(); panel.refresh();
 };
-$('playBtn').onclick = () => { audio(); startGame(); };
-$('resumeBtn').onclick = () => setState('play');
-$('quitBtn').onclick = () => { saveGame(); setState('menu'); };
-$('callCarBtn').onclick = () => { if (P.inCar) exitCar(); bringCar(); setState('play'); };
-document.addEventListener('visibilitychange', () => { if (document.hidden && state === 'play') { saveGame(); setState('pause'); } });
+document.addEventListener('visibilitychange', () => { if (document.hidden) saveGame(); });
+addEventListener('pagehide', saveGame);
+addEventListener('pointerdown', () => audio(), { once: true });
 document.addEventListener('touchmove', e => { if (!e.target.closest('.scroll')) e.preventDefault(); }, { passive: false });
 document.addEventListener('gesturestart', e => e.preventDefault());
 document.addEventListener('dblclick', e => e.preventDefault());
@@ -774,12 +844,12 @@ function frame(now) {
     updateCamera(dt);
     updateHUD(dt);
     renderer.render(G.scene, G.cam);
-  } else if (state === 'pause' || state === 'map') {
+  } else if (state === 'map') {
     renderer.render(G.scene, G.cam);
   } else {
     ptime += dt; updatePreview(dt, ptime); renderer.render(pv.scene, pv.cam);
   }
 }
-setState('menu');
+startGame();
 requestAnimationFrame(frame);
 window.__game = { get state() { return state; }, P, carState, input, startGame, get traffic() { return traffic; }, setTime: h => { clockH = h; }, openCustom, enterCar, exitCar };
