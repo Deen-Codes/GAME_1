@@ -11,7 +11,7 @@
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon.png">
 <title>Bay City</title>
-<link rel="stylesheet" href="css/style.css?v=3">
+<link rel="stylesheet" href="css/style.css?v=4">
 </head>
 <body>
 <canvas id="c"></canvas>
@@ -35,13 +35,15 @@
 <!-- In-game HUD -->
 <div id="hud" class="hidden">
   <div class="hud-l">
-    <div class="clock" id="clockTxt">☀ 08:00</div>
+    <div class="hud-row"><div class="clock" id="clockTxt">☀ 08:00</div><div class="money" id="moneyTxt">$0</div></div>
+    <div class="money-float" id="moneyFloat"></div>
     <div class="zone" id="zoneTxt">Downtown</div>
     <div class="ammo" id="ammoTxt"></div>
   </div>
   <canvas id="minimap" width="240" height="240"></canvas>
   <div class="speedo hidden" id="speedo"><b id="speedTxt">0</b><span>km/h</span></div>
   <div class="toast" id="toast"></div>
+  <div class="race-txt hidden" id="raceTxt"></div>
 </div>
 
 <!-- Translucent controller -->
@@ -60,13 +62,25 @@
 <div id="mapView" class="screen hidden">
   <canvas id="bigmap"></canvas>
   <div class="map-actions">
-    <button class="mbtn" id="mCharBtn"><i>👤</i>Character</button>
+    <button class="mbtn" id="mCharBtn"><i>🧍</i>Body &amp; face</button>
     <button class="mbtn" id="mGunBtn"><i>🔫</i>Gunsmith</button>
     <button class="mbtn" id="mCarBtn"><i>🚗</i>Garage</button>
     <button class="mbtn" id="mBringBtn"><i>📍</i>Bring car</button>
   </div>
+  <div class="map-info" id="mapInfo"></div>
   <button class="big" id="mapClose">Back to the city</button>
   <div class="map-hint" id="mapHint"></div>
+</div>
+
+<div id="modal" class="screen hidden"><div class="card modal-card"><div id="modalBody"></div><div class="modal-btns" id="modalBtns"></div></div></div>
+
+<div id="dealUI" class="screen hidden"><div class="deal-card scroll"><button class="pill deal-close" id="dealClose">✕</button><div id="dealBody"></div></div></div>
+
+<div id="mg" class="screen hidden">
+  <div class="mg-head"><b id="mgTitle">Minigame</b><button class="pill" id="mgQuit">✕</button></div>
+  <div class="mg-timer"><i id="mgTimer"></i></div>
+  <canvas id="mgCanvas"></canvas>
+  <div class="card mg-card hidden" id="mgCard"></div>
 </div>
 
 <div id="hurt"></div>
@@ -74,6 +88,6 @@
 
 <div id="rotate"><div>↻<br>Turn your phone upright<br><small>Bay City is played in portrait</small></div></div>
 
-<script type="module" src="js/main.js?v=3"></script>
+<script type="module" src="js/main.js?v=4"></script>
 </body>
 </html>

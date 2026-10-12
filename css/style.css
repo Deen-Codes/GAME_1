@@ -75,7 +75,7 @@ input[type=text] { width: 100%; padding: 10px 12px; border-radius: 10px; border:
 #minimap { position: absolute; top: calc(6px + var(--sat)); right: calc(6px + var(--sar)); width: 132px; height: 132px; border-radius: 50%; pointer-events: auto; filter: drop-shadow(0 4px 10px rgba(0,0,0,.35)); }
 .speedo { position: absolute; left: 50%; transform: translateX(-50%); bottom: calc(var(--pad) + 6px); background: rgba(10,10,24,.45); border-radius: 14px; padding: 4px 14px; text-align: center; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
 .speedo b { font-size: 26px; font-weight: 900; font-variant-numeric: tabular-nums; } .speedo span { font-size: 11px; color: var(--dim); margin-left: 4px; font-weight: 800; }
-.toast { position: absolute; left: 50%; top: calc(132px + var(--sat)); transform: translateX(-50%); background: rgba(10,10,24,.6); padding: 8px 16px; border-radius: 999px; font-weight: 800; font-size: 14px; opacity: 0; transition: opacity .3s; white-space: nowrap; }
+.toast { position: absolute; left: 50%; top: calc(132px + var(--sat)); transform: translateX(-50%); background: rgba(10,10,24,.6); padding: 8px 16px; border-radius: 999px; font-weight: 800; font-size: 14px; opacity: 0; transition: opacity .3s; max-width: 88vw; text-align: center; }
 .toast.on { opacity: 1; }
 
 /* ---------- controller ---------- */
@@ -130,3 +130,50 @@ input[type=text] { width: 100%; padding: 10px 12px; border-radius: 10px; border:
 #deathScreen.on { opacity: 1; pointer-events: auto; }
 #deathScreen b { display: block; font-size: 30px; font-weight: 900; color: #ff4d5a; letter-spacing: .02em; }
 #deathScreen span { display: block; margin-top: 8px; color: var(--dim); font-size: 14px; font-weight: 700; }
+
+/* ---------- v4: money, modals, dealer, minigames ---------- */
+.hud-row { display: flex; gap: 6px; align-items: center; }
+.money { background: rgba(10,30,16,.55); border: 1px solid rgba(94,224,122,.5); color: #7dff9a; border-radius: 999px; padding: 6px 12px; font-weight: 900; font-size: 15px; font-variant-numeric: tabular-nums; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+.money-float { position: absolute; top: 40px; left: 110px; font-weight: 900; color: #7dff9a; font-size: 18px; opacity: 0; pointer-events: none; }
+.money-float.go { animation: floatUp 1.4s ease-out; }
+@keyframes floatUp { 0% { opacity: 0; transform: translateY(8px); } 15% { opacity: 1; } 100% { opacity: 0; transform: translateY(-26px); } }
+.race-txt { position: absolute; left: 50%; transform: translateX(-50%); top: calc(96px + var(--sat)); background: rgba(160,20,30,.7); padding: 8px 16px; border-radius: 999px; font-weight: 900; font-size: 16px; }
+#speedo { pointer-events: auto; }
+.map-info { color: var(--dim); font-size: 13px; font-weight: 700; text-align: center; }
+.map-info b { color: #7dff9a; }
+#modal { display: grid; place-items: center; background: rgba(8,8,20,.5); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); }
+.modal-card { text-align: center; }
+.modal-card h3 { margin: 4px 0; font-size: 22px; font-weight: 900; }
+.modal-card p { color: var(--dim); font-size: 14px; line-height: 1.45; margin: 6px 0; }
+.modal-card p b { color: #fff; }
+.big-ico { font-size: 54px; line-height: 1; }
+.price { font-size: 26px; font-weight: 900; color: #7dff9a; margin: 6px 0; }
+.modal-btns { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+.modal-btns button:disabled { opacity: .45; }
+#randBtn.buy { background: linear-gradient(180deg, #7dff9a, #2fbf55); color: #06290f; border: 0; font-weight: 900; }
+#randBtn:disabled { opacity: .5; }
+.presets button b { color: #7dff9a; margin-left: 4px; }
+.presets button.on { background: var(--hot); color: #2a1406; }
+.presets button.on b { color: #2a1406; }
+#dealUI { display: flex; align-items: flex-end; background: rgba(8,8,20,.45); }
+.deal-card { position: relative; width: 100%; max-height: 82dvh; overflow-y: auto; background: var(--panel); border-top: 1px solid var(--line); border-radius: 22px 22px 0 0; padding: 16px calc(14px + var(--sar)) calc(18px + var(--sab)) calc(14px + var(--sal)); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); touch-action: pan-y; }
+.deal-close { position: absolute; right: 14px; top: 12px; }
+.deal-top b { font-size: 20px; font-weight: 900; display: block; } .deal-top span { color: var(--dim); font-size: 12px; font-weight: 700; }
+.deal-stats { display: flex; gap: 14px; margin: 10px 0; font-weight: 900; font-size: 16px; }
+.good { display: grid; grid-template-columns: 40px 1fr auto; gap: 10px; align-items: center; padding: 9px 0; border-bottom: 1px solid var(--line); }
+.gi { font-size: 28px; text-align: center; }
+.gn b { display: block; font-size: 15px; } .gn small { color: var(--dim); font-size: 12px; font-weight: 600; }
+.hot { display: inline-block; font-style: normal; font-size: 10px; font-weight: 900; padding: 2px 6px; border-radius: 6px; margin: 2px 0; }
+.hot.cheap { background: #2fbf55; color: #06290f; } .hot.high { background: #ff8a2a; color: #2a1406; }
+.gb { display: flex; gap: 6px; }
+.gb button { padding: 9px 12px; border-radius: 10px; font-weight: 900; font-size: 13px; background: rgba(76,217,100,.25); border: 1px solid rgba(76,217,100,.6); }
+.gb button[data-a=sell] { background: rgba(255,138,42,.22); border-color: rgba(255,138,42,.6); }
+.gb button:disabled { opacity: .3; }
+#mg { background: radial-gradient(ellipse at top, #2a2252, #120f24); display: flex; flex-direction: column; padding: calc(10px + var(--sat)) 12px calc(12px + var(--sab)); z-index: 30; }
+.mg-head { display: flex; justify-content: space-between; align-items: center; font-size: 20px; font-weight: 900; }
+.mg-timer { height: 8px; background: rgba(255,255,255,.12); border-radius: 4px; overflow: hidden; margin: 10px 0; }
+.mg-timer i { display: block; height: 100%; width: 100%; background: linear-gradient(90deg, var(--hot), var(--hot2)); }
+#mgCanvas { flex: 1; width: 100%; touch-action: none; border-radius: 16px; }
+.mg-card { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); text-align: center; }
+.mg-card h3 { margin: 0; font-size: 26px; font-weight: 900; } .mg-card p { color: var(--dim); }
+.mg-money { font-size: 34px; font-weight: 900; color: #7dff9a; }
