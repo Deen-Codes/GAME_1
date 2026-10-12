@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Rooftop Run">
+<meta name="theme-color" content="#1c1430">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon.png">
+<title>Rooftop Run</title>
+<link rel="stylesheet" href="css/style.css?v=1">
+</head>
+<body>
+<canvas id="c"></canvas>
+
+<!-- Main menu -->
+<div id="menu" class="screen">
+  <div class="menu-col">
+    <h1>ROOFTOP<br><span>RUN</span></h1>
+    <button class="big" id="playBtn">▶ Play</button>
+    <button class="mid" id="charBtn">Character</button>
+    <button class="mid" id="gunBtn">Gunsmith</button>
+    <div class="best" id="bestTxt"></div>
+    <div class="tip" id="tipTxt"></div>
+    <div class="tip">v1</div>
+  </div>
+</div>
+
+<!-- Customiser (shared by character + gunsmith) -->
+<div id="custom" class="screen hidden">
+  <div class="topbar">
+    <button class="pill" id="backBtn">‹ Back</button>
+    <h2 id="customTitle">Character</h2>
+    <button class="pill" id="randBtn" title="Randomise">🎲 Random</button>
+  </div>
+  <div class="panel scroll">
+    <div class="presets" id="presets"></div>
+    <div class="tabs" id="tabs"></div>
+    <div class="content" id="content"></div>
+    <div class="stats" id="stats"></div>
+  </div>
+  <div class="drag-hint">drag to rotate</div>
+</div>
+
+<!-- HUD -->
+<div id="hud" class="hidden">
+  <div class="hud-l">
+    <div class="hp"><i id="hpFill"></i><span id="hpTxt">100</span></div>
+    <div class="gunname" id="gunName"></div>
+  </div>
+  <div class="hud-c"><div id="scoreTxt">0</div><div class="sub" id="distTxt">0 m</div></div>
+  <div class="hud-r">
+    <div class="ammo"><b id="ammoTxt">30</b><span id="magTxt">/30</span></div>
+    <div class="reload hidden" id="reloadTxt">RELOADING</div>
+    <button class="pill" id="pauseBtn">❚❚</button>
+  </div>
+</div>
+
+<!-- Touch controls -->
+<div id="touch" class="hidden">
+  <div id="stickZone"><div id="stickBase"><div id="stickKnob"></div></div><div class="zone-hint">move</div></div>
+  <div class="btns">
+    <button class="tbtn small" id="btnReload">⟳</button>
+    <button class="tbtn small hidden" id="btnNade">💣</button>
+    <button class="tbtn" id="btnJump">JUMP</button>
+    <button class="tbtn fire" id="btnFire">FIRE</button>
+  </div>
+</div>
+
+<div id="pause" class="screen hidden"><div class="card">
+  <h2>Paused</h2>
+  <button class="big" id="resumeBtn">Resume</button>
+  <button class="mid" id="quitBtn">Main menu</button>
+</div></div>
+
+<div id="over" class="screen hidden"><div class="card">
+  <h2>Down!</h2>
+  <div class="final" id="finalTxt"></div>
+  <button class="big" id="retryBtn">Run again</button>
+  <button class="mid" id="menuBtn">Main menu</button>
+</div></div>
+
+<div id="dmg"></div>
+<div id="rotateHint">↻ Turn your phone sideways for the best view</div>
+
+<script type="module" src="js/main.js?v=1"></script>
+</body>
+</html>

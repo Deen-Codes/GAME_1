@@ -1,0 +1,10 @@
+{
+  "name": "Rooftop Run",
+  "short_name": "Rooftop Run",
+  "start_url": "./",
+  "display": "fullscreen",
+  "orientation": "landscape",
+  "background_color": "#1c1430",
+  "theme_color": "#1c1430",
+  "icons": [{ "src": "icon.png", "sizes": "512x512", "type": "image/png" }]
+}
