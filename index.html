@@ -6,35 +6,37 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Rooftop Run">
-<meta name="theme-color" content="#1c1430">
+<meta name="apple-mobile-web-app-title" content="Bay City">
+<meta name="theme-color" content="#141a30">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon.png">
-<title>Rooftop Run</title>
-<link rel="stylesheet" href="css/style.css?v=1">
+<title>Bay City</title>
+<link rel="stylesheet" href="css/style.css?v=2">
 </head>
 <body>
 <canvas id="c"></canvas>
 
 <!-- Main menu -->
 <div id="menu" class="screen">
+  <h1>BAY<span>CITY</span></h1>
   <div class="menu-col">
-    <h1>ROOFTOP<br><span>RUN</span></h1>
     <button class="big" id="playBtn">▶ Play</button>
-    <button class="mid" id="charBtn">Character</button>
-    <button class="mid" id="gunBtn">Gunsmith</button>
-    <div class="best" id="bestTxt"></div>
+    <div class="menu-row">
+      <button class="mid" id="charBtn">Character</button>
+      <button class="mid" id="gunBtn">Gunsmith</button>
+      <button class="mid" id="carBtn">Garage</button>
+    </div>
     <div class="tip" id="tipTxt"></div>
-    <div class="tip">v1</div>
+    <div class="tip ver">v2</div>
   </div>
 </div>
 
-<!-- Customiser (shared by character + gunsmith) -->
+<!-- Customiser (character / gunsmith / garage) -->
 <div id="custom" class="screen hidden">
   <div class="topbar">
     <button class="pill" id="backBtn">‹ Back</button>
     <h2 id="customTitle">Character</h2>
-    <button class="pill" id="randBtn" title="Randomise">🎲 Random</button>
+    <button class="pill" id="randBtn">🎲 Random</button>
   </div>
   <div class="panel scroll">
     <div class="presets" id="presets"></div>
@@ -45,47 +47,47 @@
   <div class="drag-hint">drag to rotate</div>
 </div>
 
-<!-- HUD -->
+<!-- In-game HUD -->
 <div id="hud" class="hidden">
   <div class="hud-l">
-    <div class="hp"><i id="hpFill"></i><span id="hpTxt">100</span></div>
-    <div class="gunname" id="gunName"></div>
+    <div class="clock" id="clockTxt">☀ 08:00</div>
+    <div class="zone" id="zoneTxt">Downtown</div>
+    <div class="ammo" id="ammoTxt"></div>
   </div>
-  <div class="hud-c"><div id="scoreTxt">0</div><div class="sub" id="distTxt">0 m</div></div>
-  <div class="hud-r">
-    <div class="ammo"><b id="ammoTxt">30</b><span id="magTxt">/30</span></div>
-    <div class="reload hidden" id="reloadTxt">RELOADING</div>
-    <button class="pill" id="pauseBtn">❚❚</button>
+  <canvas id="minimap" width="240" height="240"></canvas>
+  <div class="speedo hidden" id="speedo"><b id="speedTxt">0</b><span>km/h</span></div>
+  <div class="toast" id="toast"></div>
+</div>
+
+<!-- Translucent controller -->
+<div id="pad" class="hidden">
+  <div id="stickZone">
+    <div id="stickBase"><div id="stickKnob"></div></div>
+  </div>
+  <div class="mid-btns">
+    <button class="sbtn" id="btnMap">MAP</button>
+    <button class="sbtn" id="btnPause">☰</button>
+  </div>
+  <div class="face">
+    <button class="fbtn y" id="btnY"><b>Y</b><span id="lblY">Reload</span></button>
+    <button class="fbtn x" id="btnX"><b>X</b><span id="lblX">Fire</span></button>
+    <button class="fbtn b" id="btnB"><b>B</b><span id="lblB">Jump</span></button>
+    <button class="fbtn a" id="btnA"><b>A</b><span id="lblA">—</span></button>
   </div>
 </div>
 
-<!-- Touch controls -->
-<div id="touch" class="hidden">
-  <div id="stickZone"><div id="stickBase"><div id="stickKnob"></div></div><div class="zone-hint">move</div></div>
-  <div class="btns">
-    <button class="tbtn small" id="btnReload">⟳</button>
-    <button class="tbtn small hidden" id="btnNade">💣</button>
-    <button class="tbtn" id="btnJump">JUMP</button>
-    <button class="tbtn fire" id="btnFire">FIRE</button>
-  </div>
-</div>
+<div id="mapView" class="screen hidden"><canvas id="bigmap"></canvas><div class="map-hint">tap to close</div></div>
 
 <div id="pause" class="screen hidden"><div class="card">
   <h2>Paused</h2>
   <button class="big" id="resumeBtn">Resume</button>
+  <button class="mid" id="callCarBtn">🚗 Bring my car here</button>
   <button class="mid" id="quitBtn">Main menu</button>
+  <div class="tip">Progress saves automatically.</div>
 </div></div>
 
-<div id="over" class="screen hidden"><div class="card">
-  <h2>Down!</h2>
-  <div class="final" id="finalTxt"></div>
-  <button class="big" id="retryBtn">Run again</button>
-  <button class="mid" id="menuBtn">Main menu</button>
-</div></div>
+<div id="rotate"><div>↻<br>Turn your phone upright<br><small>Bay City is played in portrait</small></div></div>
 
-<div id="dmg"></div>
-<div id="rotateHint">↻ Turn your phone sideways for the best view</div>
-
-<script type="module" src="js/main.js?v=1"></script>
+<script type="module" src="js/main.js?v=2"></script>
 </body>
 </html>

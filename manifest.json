@@ -1,10 +1,10 @@
 {
-  "name": "Rooftop Run",
-  "short_name": "Rooftop Run",
+  "name": "Bay City",
+  "short_name": "Bay City",
   "start_url": "./",
   "display": "fullscreen",
-  "orientation": "landscape",
-  "background_color": "#1c1430",
-  "theme_color": "#1c1430",
+  "orientation": "portrait",
+  "background_color": "#141a30",
+  "theme_color": "#141a30",
   "icons": [{ "src": "icon.png", "sizes": "512x512", "type": "image/png" }]
 }

@@ -1,23 +1,32 @@
-# Rooftop Run
+# Bay City
 
-A 2.5D side-scrolling shooter built with three.js, with a full character creator and a modular gunsmith. Plain HTML/CSS/JS, so no build step is needed. It runs straight from GitHub Pages.
+A portrait, free-roam 3D city game for iPhone, built with three.js in plain HTML/CSS/JS (no build step). It runs straight from GitHub Pages.
+
+## The world
+- **Downtown:** a large grid city with towers, shops, parks, parking lots and traffic.
+- **Bay Beach & pier:** along the whole south coast, with the ocean beyond.
+- **Whispering Forest:** to the west, ending in cliffs at the edge of the map.
+- **Eastport:** a seaside suburb to the east, linked by highway and the coast road.
+- **Northfield & Bay City Airport:** to the north, with a runway, terminals, a control tower, hangars and planes.
+- **Day/night cycle:** a 12-minute day. Windows and street lamps light up at night, and your car has working headlights.
 
 ## Controls
+Hold your phone upright. Drag the stick on the left to move.
 
-**iPhone / touch:** drag anywhere on the left side to move, and pull down on a platform to drop through it. Use JUMP, FIRE and ⟳ (reload). 💣 appears if your gun has a grenade launcher. Aim assist targets the nearest enemy. Push the stick up or down to aim manually.
+| Button | On foot | Driving |
+|---|---|---|
+| A | Enter car (when close) | Exit |
+| B | Jump | Brake / handbrake drift |
+| X | Fire | Horn |
+| Y | Reload | Headlights |
 
-**Keyboard:** A/D to move, W or Space to jump, S to drop, mouse to aim and shoot, R to reload, G for a grenade, Esc to pause.
+Tap **MAP** or the minimap for the full map. ☰ pauses the game, and also has *Bring my car here*.
+
+Keyboard: WASD to move, E for A, Space for B, J for X, R for Y, M for the map, Esc to pause.
 
 ## Customisation
+- **Character:** body, face, hair, outfit and gear, all recolourable.
+- **Gunsmith:** frame, barrel, muzzle, optics, magazine, ammo, paint and camo. Stats update live.
+- **Garage:** 9 body types, bumpers, spoilers, bonnet, roof items, exhaust, rims, wheel size, suspension, tyres, engine, paint finish, decals, window tint, headlight colour and underglow. Stats affect how the car drives.
 
-- **Character:** height, build, head size, leg and arm length, skin; head shape, eyes, mouth, facial hair, eyewear, masks; 11 hairstyles; tops, legs, shoes, gloves; headwear; back items. Every part can be recoloured, with a custom colour picker. A jetpack gives a double jump, and wings let you glide.
-- **Gunsmith:** 8 frames, fire mode, stock, grip, barrel, muzzle, underbarrel, sight, magazine, ammo type (AP, hollow point, incendiary, frost, explosive), tracer colour, and paint finishes including camo, carbon and gold. Stats update live from your parts.
-
-Everything saves to the device automatically.
-
-## Run locally
-
-```
-python3 -m http.server 8000
-```
-Then open http://localhost:8000.
+Your progress, position and time of day save automatically on the device.

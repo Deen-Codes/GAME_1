@@ -182,7 +182,7 @@ export function statBars(s) {
 }
 
 // ---------- materials ----------
-function patternTexture(kind, a, b) {
+export function patternTexture(kind, a, b) {
   const cv = document.createElement('canvas'); cv.width = cv.height = 128;
   const x = cv.getContext('2d');
   const ca = new THREE.Color(a), cb = new THREE.Color(b);
