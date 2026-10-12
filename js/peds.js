@@ -32,13 +32,23 @@ function makeLook(beach) {
   cfg.hat = Math.random() < 0.3 ? pick(['cap', 'beanie', 'cowboy', 'headband']) : 'none';
   if (beach) Object.assign(cfg, { top: pick(['tank', 'tshirt', 'tank']), pants: 'shorts', shoes: 'bare', eyewear: Math.random() < 0.5 ? 'shades' : 'none', hat: Math.random() < 0.3 ? 'cap' : 'none' });
   else if (cfg.top === 'armor') cfg.top = 'tshirt';
+  return { ...bakeCfg(cfg), beach };
+}
+// Bake any character config into 5 meshes (body + 4 limbs) so lots of people are cheap to draw.
+export function bakeCfg(cfg) {
   const ch = buildCharacter(cfg); ch.root.updateMatrixWorld(true);
   const limbs = [ch.legL.pivot, ch.legR.pivot, ch.armL.pivot, ch.armR.pivot];
   const all = []; ch.root.traverse(o => { if (o.isMesh) all.push(o); });
   const body = bake(all.filter(m => !underAny(m, limbs)), new THREE.Matrix4());
   const parts = limbs.map(l => { const meshes = all.filter(m => underAny(m, [l])); return { geo: bake(meshes, l.matrixWorld.clone().invert()), pos: new THREE.Vector3().setFromMatrixPosition(l.matrixWorld) }; });
   disposeObject(ch.root);
-  return { body, parts, h: ch.height, beach };
+  return { body, parts, h: ch.height, cfg };
+}
+export function figure(look) {
+  const root = new THREE.Group(), inner = new THREE.Group(); root.add(inner);
+  const body = new THREE.Mesh(look.body, MAT); body.castShadow = true; inner.add(body);
+  const limbs = look.parts.map(p => { const g = new THREE.Group(); g.position.copy(p.pos); const m = new THREE.Mesh(p.geo, MAT); m.castShadow = true; g.add(m); inner.add(g); return g; });
+  return { root, inner, limbs };
 }
 function ensureLooks() { if (LOOKS.length) return; for (let i = 0; i < 10; i++) LOOKS.push(makeLook(false)); for (let i = 0; i < 6; i++) LOOKS.push(makeLook(true)); }
 
@@ -59,7 +69,7 @@ export class Peds {
     const body = new THREE.Mesh(look.body, MAT); body.castShadow = true; inner.add(body);
     const limbs = look.parts.map(p => { const g = new THREE.Group(); g.position.copy(p.pos); const m = new THREE.Mesh(p.geo, MAT); m.castShadow = true; g.add(m); inner.add(g); return g; });
     this.parent.add(root);
-    return { root, inner, limbs, phase: Math.random() * 6, face: 0, speed: rand(1.1, 1.7), state: 'walk', t: 0, h: look.h };
+    return { root, inner, limbs, phase: Math.random() * 6, face: 0, speed: rand(1.1, 1.7), state: 'walk', t: 0, h: look.h, look };
   }
   spawnCity(c, px, pz) {
     for (let k = 0; k < 10; k++) {
@@ -87,6 +97,8 @@ export class Peds {
     Object.assign(p, { kind: 'loose', x, z, hx: x, hz: z });
     this.list.push(p); this.flee(p, fromX, fromZ); return p;
   }
+  talk(p, x, z) { p.state = 'talk'; p.lookX = x; p.lookZ = z; }
+  release(p) { if (p.state === 'talk') this.settle(p); }
   scare(x, z, r = 18) { for (const p of this.list) if (p.state !== 'down' && Math.hypot(p.x - x, p.z - z) < r) this.flee(p, x, z); }
   flee(p, x, z) { p.state = 'flee'; p.t = rand(3.5, 6); const a = Math.atan2(p.x - x, p.z - z) + rand(-0.5, 0.5); p.fx = Math.sin(a); p.fz = Math.cos(a); }
   knock(p, fx, fz, power = 6) { if (p.state === 'down') return false; p.state = 'down'; p.t = rand(3.5, 5); p.kx = fx * power; p.kz = fz * power; return true; }
@@ -100,6 +112,7 @@ export class Peds {
       const p = this.list[i];
       if (Math.hypot(p.x - px, p.z - pz) > 125) { this.parent.remove(p.root); this.list.splice(i, 1); continue; }
       let mv = 0;
+      if (p.state === 'talk') { p.face += Math.atan2(Math.sin(Math.atan2(p.lookX - p.x, p.lookZ - p.z) - p.face), Math.cos(Math.atan2(p.lookX - p.x, p.lookZ - p.z) - p.face)) * Math.min(1, dt * 8); }
       if (p.state === 'walk') {
         const before = p.s; p.s += p.dir * p.speed * dt;
         const L = 2 * R, seg0 = Math.floor(before / L), seg1 = Math.floor(p.s / L);

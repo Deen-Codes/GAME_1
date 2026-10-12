@@ -37,6 +37,11 @@ export const sfx = {
   spark() { if (!audio()) return; burst(0.12, 6000, 'highpass', 0.1); },
   engineStart() { if (!audio()) return; tone(60, 0.5, 'sawtooth', 0.08, 0, 140); },
   thud() { if (!audio()) return; tone(90, 0.2, 'sine', 0.2, 0, 40); burst(0.1, 400, 'lowpass', 0.15); },
+  boom() { if (!audio()) return; burst(1.1, 500, 'lowpass', 0.6); tone(70, 0.8, 'sine', 0.35, 0, 30); burst(0.3, 3000, 'highpass', 0.12); },
+  whoosh() { if (!audio()) return; burst(0.18, 900, 'bandpass', 0.12, 1.5); },
+  punch() { if (!audio()) return; tone(120, 0.12, 'sine', 0.25, 0, 50); burst(0.06, 1500, 'lowpass', 0.2); },
+  launch() { if (!audio()) return; burst(0.6, 1200, 'bandpass', 0.25, 0.6); tone(200, 0.4, 'sawtooth', 0.04, 0, 80); },
+  equip() { if (!audio()) return; tone(1800, 0.03, 'square', 0.025); tone(900, 0.05, 'square', 0.025, 0.04); },
   splash() { if (!audio()) return; burst(0.5, 1200, 'bandpass', 0.15, 0.7); },
   kick(t, g = 0.5) { const o = A.createOscillator(), gg = A.createGain(); o.frequency.setValueAtTime(150, t); o.frequency.exponentialRampToValueAtTime(45, t + 0.12); gg.gain.setValueAtTime(g, t); gg.gain.exponentialRampToValueAtTime(0.001, t + 0.3); o.connect(gg); gg.connect(out()); o.start(t); o.stop(t + 0.32); },
   hat(t, g = 0.05) { const s = A.createBufferSource(); s.buffer = NB || (NB = noiseBuf()); const f = A.createBiquadFilter(); f.type = 'highpass'; f.frequency.value = 7000; const gg = A.createGain(); gg.gain.setValueAtTime(g, t); gg.gain.exponentialRampToValueAtTime(0.001, t + 0.05); s.connect(f); f.connect(gg); gg.connect(out()); s.start(t, Math.random()); s.stop(t + 0.06); },
@@ -73,6 +78,7 @@ export function ambience(mix) { // mix: { city, waves, birds, crickets } 0..1
 export const STATIONS = [
   { name: 'Bay FM 101.1 — Sunset Chill', bpm: 88, style: 'chill' },
   { name: 'Westside 96.3 — Bounce', bpm: 98, style: 'bounce' },
+  { name: 'Neon 88 — Synthwave', bpm: 118, style: 'synth' },
   { name: 'Radio off', style: 'off' },
 ];
 let radio = { on: false, station: 0, next: 0, step: 0 };
@@ -80,6 +86,9 @@ const CHORDS = [[57, 60, 64, 67], [53, 57, 60, 64], [48, 52, 55, 59], [55, 59, 6
 const mtof = m => 440 * Math.pow(2, (m - 69) / 12);
 export function radioStation() { return STATIONS[radio.station]; }
 export function radioNext() { radio.station = (radio.station + 1) % STATIONS.length; radio.step = 0; return STATIONS[radio.station]; }
+export function radioSet(i) { radio.station = i; radio.step = 0; return STATIONS[i]; }
+export function radioIndex() { return radio.station; }
+export function setMuted(m) { audio(); if (master) master.gain.value = m ? 0 : 0.9; }
 export function radioOn(on) { radio.on = on; if (on && A) radio.next = Math.max(radio.next, A.currentTime + 0.1); }
 export function radioTick() {
   if (!A || !radio.on) return;
@@ -94,6 +103,13 @@ export function radioTick() {
       if (pos === 0) ch.forEach(m => sfx.note(mtof(m), t, spb * 14, 'sawtooth', 0.012, 900));
       if (pos % 4 === 0) sfx.note(mtof(ch[0] - 24), t, spb * 3, 'triangle', 0.06, 600);
       if ([2, 7, 11, 14].includes(pos) && Math.random() < 0.7) sfx.note(mtof(ch[Math.floor(Math.random() * 4)] + 12), t, spb * 2, 'sine', 0.02, 3000);
+    } else if (st.style === 'synth') {
+      if (pos % 2 === 0) sfx.kick(t, 0.4);
+      if (pos === 4 || pos === 12) sfx.snare(t, 0.1);
+      sfx.hat(t + spb / 2, 0.02);
+      sfx.note(mtof(ch[pos % 4] + 12), t, spb * 0.9, 'square', 0.018, 2600);
+      sfx.note(mtof(ch[0] - 24), t, spb * 0.8, 'sawtooth', 0.04, 600);
+      if (pos === 0) sfx.note(mtof(ch[1]), t, spb * 15, 'sawtooth', 0.012, 1400);
     } else {
       if (pos === 0 || pos === 3 || pos === 8 || pos === 11) sfx.kick(t, 0.45);
       if (pos === 4 || pos === 12) sfx.snare(t, 0.12);

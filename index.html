@@ -11,7 +11,7 @@
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon.png">
 <title>Bay City</title>
-<link rel="stylesheet" href="css/style.css?v=4">
+<link rel="stylesheet" href="css/style.css?v=5">
 </head>
 <body>
 <canvas id="c"></canvas>
@@ -38,9 +38,11 @@
     <div class="hud-row"><div class="clock" id="clockTxt">☀ 08:00</div><div class="money" id="moneyTxt">$0</div></div>
     <div class="money-float" id="moneyFloat"></div>
     <div class="zone" id="zoneTxt">Downtown</div>
-    <div class="ammo" id="ammoTxt"></div>
+    <div class="wp" id="wpTxt"></div>
+    <button class="wpn" id="wpnBtn"></button>
   </div>
   <canvas id="minimap" width="240" height="240"></canvas>
+  <div class="side-btns"><button class="sidebtn" id="phoneBtn" aria-label="Phone">📱</button><button class="sidebtn hidden" id="radioBtn" aria-label="Radio">📻</button></div>
   <div class="speedo hidden" id="speedo"><b id="speedTxt">0</b><span>km/h</span></div>
   <div class="toast" id="toast"></div>
   <div class="race-txt hidden" id="raceTxt"></div>
@@ -59,22 +61,32 @@
   </div>
 </div>
 
-<div id="mapView" class="screen hidden">
-  <canvas id="bigmap"></canvas>
-  <div class="map-actions">
-    <button class="mbtn" id="mCharBtn"><i>🧍</i>Body &amp; face</button>
-    <button class="mbtn" id="mGunBtn"><i>🔫</i>Gunsmith</button>
-    <button class="mbtn" id="mCarBtn"><i>🚗</i>Garage</button>
-    <button class="mbtn" id="mBringBtn"><i>📍</i>Bring car</button>
+<div id="phone" class="hidden">
+  <div class="phone-stage"><div class="iphone">
+    <div class="btn-side l1"></div><div class="btn-side l2"></div><div class="btn-side r1"></div>
+    <div class="ph-screen">
+      <div class="island"></div>
+      <div class="ph-status"><span id="phTime">08:00</span><span>5G ▮▮▮ 🔋</span></div>
+      <div id="phApp" class="scroll"></div>
+      <button class="homebar" id="phHome" aria-label="Close phone"></button>
+    </div>
+  </div></div>
+</div>
+
+<div id="talkUI" class="hidden">
+  <div id="talkFlash"></div>
+  <div class="talk-tag"><b id="talkName"></b><span id="talkTag"></span></div>
+  <div class="talk-box" id="talkBox">
+    <div class="talk-who" id="talkWho"></div>
+    <div class="talk-text" id="talkText"></div>
+    <div class="talk-more hidden" id="talkMore">▼</div>
+    <div class="talk-opts hidden" id="talkOpts"></div>
   </div>
-  <div class="map-info" id="mapInfo"></div>
-  <button class="big" id="mapClose">Back to the city</button>
-  <div class="map-hint" id="mapHint"></div>
 </div>
 
 <div id="modal" class="screen hidden"><div class="card modal-card"><div id="modalBody"></div><div class="modal-btns" id="modalBtns"></div></div></div>
 
-<div id="dealUI" class="screen hidden"><div class="deal-card scroll"><button class="pill deal-close" id="dealClose">✕</button><div id="dealBody"></div></div></div>
+<div id="dealUI" class="screen hidden"><div class="deal-card scroll"><div class="deal-head"><b id="dealTitle">Trade</b><button class="pill" id="dealClose">Done</button></div><div id="dealBody"></div></div></div>
 
 <div id="mg" class="screen hidden">
   <div class="mg-head"><b id="mgTitle">Minigame</b><button class="pill" id="mgQuit">✕</button></div>
@@ -88,6 +100,6 @@
 
 <div id="rotate"><div>↻<br>Turn your phone upright<br><small>Bay City is played in portrait</small></div></div>
 
-<script type="module" src="js/main.js?v=4"></script>
+<script type="module" src="js/main.js?v=5"></script>
 </body>
 </html>

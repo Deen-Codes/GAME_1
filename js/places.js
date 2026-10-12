@@ -5,14 +5,14 @@ const S = (city, i, j, side) => blockSide(city, i, j, side);
 
 export const PLACES = [
   // ---- dealers (the money loop)
-  { id: 'd_dt', kind: 'dealer', name: 'Downtown Dealer', icon: '💊', ...S('main', 1, -1, 's'), area: 'downtown' },
-  { id: 'd_beach', kind: 'dealer', name: 'Boardwalk Dealer', icon: '💊', x: -40, z: 368, area: 'beach' },
-  { id: 'd_east', kind: 'dealer', name: 'Eastport Dealer', icon: '💊', ...S('east', 1, 1, 'w'), area: 'east' },
-  { id: 'd_north', kind: 'dealer', name: 'Northfield Dealer', icon: '💊', ...S('north', -2, 0, 's'), area: 'north' },
-  { id: 'd_hills', kind: 'dealer', name: 'Canyon Dealer', icon: '💊', x: -360, z: -10, area: 'hills' },
-  { id: 'd_air', kind: 'dealer', name: 'Hangar Dealer', icon: '💊', x: 228, z: -622, area: 'airport' },
-  { id: 'd_farm', kind: 'dealer', name: 'Farm Road Dealer', icon: '💊', x: 372, z: -10, area: 'farm' },
-  { id: 'd_ghetto', kind: 'dealer', name: 'Southside Dealer', icon: '💊', ...S('main', -5, 4, 'e'), area: 'downtown' },
+  { id: 'd_dt', kind: 'dealer', npc: 'Slim', name: 'Downtown Dealer', icon: '💊', ...S('main', 1, -1, 's'), area: 'downtown' },
+  { id: 'd_beach', kind: 'dealer', npc: 'Nina Blue', name: 'Boardwalk Dealer', icon: '💊', x: -40, z: 368, area: 'beach' },
+  { id: 'd_east', kind: 'dealer', npc: 'Big Tony', name: 'Eastport Dealer', icon: '💊', ...S('east', 1, 1, 'w'), area: 'east' },
+  { id: 'd_north', kind: 'dealer', npc: 'Rico', name: 'Northfield Dealer', icon: '💊', ...S('north', -2, 0, 's'), area: 'north' },
+  { id: 'd_hills', kind: 'dealer', npc: 'Ghost', name: 'Canyon Dealer', icon: '💊', x: -360, z: -10, area: 'hills' },
+  { id: 'd_air', kind: 'dealer', npc: 'Captain', name: 'Hangar Dealer', icon: '💊', x: 228, z: -622, area: 'airport' },
+  { id: 'd_farm', kind: 'dealer', npc: 'Mama Lu', name: 'Farm Road Dealer', icon: '💊', x: 372, z: -10, area: 'farm' },
+  { id: 'd_ghetto', kind: 'dealer', npc: 'Two-Tone', name: 'Southside Dealer', icon: '💊', ...S('main', -5, 4, 'e'), area: 'downtown' },
 
   // ---- clothes shops
   { id: 'c_street', kind: 'clothes', name: 'Street Kings', icon: '👕', style: 'street', ...S('main', 0, 0, 's') },
@@ -33,6 +33,11 @@ export const PLACES = [
   { id: 'g_gym', kind: 'game', game: 'gym', name: 'Muscle Beach', icon: '🏋️', desc: 'Pump iron. Tap fast. Get swole.', x: 230, z: 378 },
   { id: 'g_club', kind: 'game', game: 'beat', name: 'Neon Room', icon: '🎧', desc: 'DJ the club. Hit the beats.', ...S('main', -2, -1, 's') },
   { id: 'g_hoops', kind: 'game', game: 'hoops', name: 'Venice Courts', icon: '🏀', desc: 'Flick to shoot. Sink as many as you can.', x: -96, z: 366 },
+
+  // ---- gun shops
+  { id: 'a_dt', kind: 'guns', name: 'Bay Arms Downtown', icon: '🔫', ...S('main', 3, 1, 's') },
+  { id: 'a_east', kind: 'guns', name: 'Bay Arms Eastport', icon: '🔫', ...S('east', -2, 1, 's') },
+  { id: 'a_north', kind: 'guns', name: 'Bay Arms Northfield', icon: '🔫', ...S('north', 2, -1, 's') },
 
   // ---- car activities
   { id: 'chop', kind: 'chop', name: "Lucky's Chop Shop", icon: '🔧', x: 744, z: 70, car: true },

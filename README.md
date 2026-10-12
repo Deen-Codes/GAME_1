@@ -15,23 +15,28 @@ Hold your phone upright. The game opens straight into the city wherever you left
 
 | Button | On foot | Driving |
 |---|---|---|
-| Bottom | Get in (when close to your car) | Exit |
+| Bottom | Context action: Talk / Get in / Jack car / Break in / Play | Exit (or Race / Sell car) |
 | Right | Jump | Gas |
-| Left | Fire | Brake / reverse |
+| Left | Fire / Punch / Swing / Throw | Brake / reverse |
 | Top | Reload | Horn |
 
-On foot, the stick moves you. In the car, it steers left and right. Braking hard while turning at speed drifts.
+- **Weapon button** (top left): tap to holster or unholster. Hold and slide for the **weapon wheel**: fists, bat, pistol, SMG, shotgun, assault rifle, sniper, RPG and grenades, with ammo counts.
+- **📻 Radio** (in the car): tap for the next station. Hold and slide for the **radio wheel**.
+- **📱 Phone**, usable on foot or in a stopped car:
+  - **Maps:** tap to set a waypoint and get a GPS route.
+  - **Messages:** daily dealer tips.
+  - **Places:** waypoint to any shop or activity.
+  - **Wallet**, **Garage**, **Style**, **Radio** and **Settings** (sound, shadows, reset).
+- **Tap the minimap** to jump straight into Maps.
+- **Conversations** play out like a Pokémon battle screen: they face you, you see the back of your head, subtitles type out, and you pick what to say. Talk to dealers, shop staff, gun clerks and random people on the street. You can chat, offer them product, or rob them.
 
-Tap the minimap to open the full map, where you'll also find **Character**, **Gunsmith**, **Garage** and **Bring car**.
-
-**Health** is the ring around the minimap, and it regenerates when you stay out of trouble. When it's low the screen pulses red. Getting hit by traffic or crashing hard hurts, and if it runs out you wake up outside the Downtown Clinic.
-
-Keyboard: WASD to move or steer, Space to jump, J to fire, R to reload or use the horn, E to get in or out, W/S for gas and brake in the car, M or Esc for the map.
+Keyboard: WASD move/steer · Space jump · J fire · R reload/horn · E action · 1–9 weapons · H holster · P phone · M map.
 
 ## Making money & things to do
 - **💊 Dealers** (8 around the map): buy low, sell high. Prices change every morning, differ by area, and some dealers have hot deals. Your stash holds 40, plus 20 for each property you own.
 - **🏠 Real estate** (10 properties, from a $8k pier shack to the $250k Baywood Hills Mansion): each pays income every morning, adds stash space, and becomes a place to wake up.
 - **🚗 Car crime:** jack cars out of traffic, or break into parked cars by smashing the window and hotwiring them (touch minigames). Sell stolen cars at **Lucky's Chop Shop** in Eastport.
+- **🔫 Bay Arms** (3 stores): buy weapons and ammo, and pay the gunsmith to swap frames, parts, ammo types and paint on every gun.
 - **🏁 Street race:** checkpoint race around Downtown.
 - **Minigames:** 🌮 Taco Rush truck, 🎯 pier shooting gallery, 🏄 surf school, 🏋️ Muscle Beach (it makes you bulkier), 🎧 Neon Room DJ rhythm game, 🏀 Venice Courts hoops.
 - **👕 Clothes shops** (Streetwear, Luxury, Surf, Workwear, Vintage) and **💈 barbers**.
@@ -39,7 +44,7 @@ Keyboard: WASD to move or steer, Space to jump, J to fire, R to reload or use th
 
 ## Customisation
 - **Body & face:** free from the map screen. Hair comes from barbers and clothes from shops.
-- **Gunsmith:** frame, barrel, muzzle, optics, magazine, ammo, paint and camo. Stats update live.
+- **Guns:** modded at Bay Arms. Change the frame, barrel, muzzle, optics, magazine, ammo, paint and camo; each change has a price.
 - **Garage:** 9 body types, bumpers, spoilers, bonnet, roof items, exhaust, rims, wheel size, suspension, tyres, engine, paint finish, decals, window tint, headlight colour and underglow. Stats affect how the car drives.
 
 Your progress, position and time of day save automatically on the device.
