@@ -21,30 +21,62 @@ Hold your phone upright. The game opens straight into the city wherever you left
 | Top | Reload | Horn |
 
 - **Weapon button** (top left): tap to holster or unholster. Hold and slide for the **weapon wheel**: fists, bat, pistol, SMG, shotgun, assault rifle, sniper, RPG and grenades, with ammo counts.
-- **📻 Radio** (in the car): tap for the next station. Hold and slide for the **radio wheel**.
-- **📱 Phone**, usable on foot or in a stopped car:
-  - **Maps:** tap to set a waypoint and get a GPS route.
-  - **Messages:** daily dealer tips.
-  - **Places:** waypoint to any shop or activity.
-  - **Wallet**, **Garage**, **Style**, **Radio** and **Settings** (sound, shadows, reset).
+- **Radio** (in the car): tap for the next station. Hold and slide for the **radio wheel**.
+- **Phone**, usable on foot or in a stopped car: Maps (waypoints and GPS), Messages (customer orders and tips), Contacts (relationships), Me (needs and skills), Places, Wallet, Garage (all your cars), Homes, Style, Radio and Settings.
 - **Tap the minimap** to jump straight into Maps.
-- **Conversations** play out like a Pokémon battle screen: they face you, you see the back of your head, subtitles type out, and you pick what to say. Talk to dealers, shop staff, gun clerks and random people on the street. You can chat, offer them product, or rob them.
+- **Conversations** play out like a Pokemon battle screen: they face you, you see the back of your head, subtitles type out, and you pick what to say.
 
-Keyboard: WASD move/steer · Space jump · J fire · R reload/horn · E action · 1–9 weapons · H holster · P phone · M map.
+Keyboard: WASD move/steer, Space jump, J fire, R reload/horn, E action, 1-9 weapons, H holster, P phone, M map.
 
-## Making money & things to do
-- **💊 Dealers** (8 around the map): buy low, sell high. Prices change every morning, differ by area, and some dealers have hot deals. Your stash holds 40, plus 20 for each property you own.
-- **🏠 Real estate** (10 properties, from a $8k pier shack to the $250k Baywood Hills Mansion): each pays income every morning, adds stash space, and becomes a place to wake up.
-- **🚗 Car crime:** jack cars out of traffic, or break into parked cars by smashing the window and hotwiring them (touch minigames). Sell stolen cars at **Lucky's Chop Shop** in Eastport.
-- **🔫 Bay Arms** (3 stores): buy weapons and ammo, and pay the gunsmith to swap frames, parts, ammo types and paint on every gun.
-- **🏁 Street race:** checkpoint race around Downtown.
-- **Minigames:** 🌮 Taco Rush truck, 🎯 pier shooting gallery, 🏄 surf school, 🏋️ Muscle Beach (it makes you bulkier), 🎧 Neon Room DJ rhythm game, 🏀 Venice Courts hoops.
-- **👕 Clothes shops** (Streetwear, Luxury, Surf, Workwear, Vintage) and **💈 barbers**.
-- **Life:** pedestrians on sidewalks and the beach, traffic, planes taking off, ambient city/waves/birds/crickets, and car radio (tap the speedometer to change station).
+## Life sim
+- **Needs:** hunger, energy and mood (the three bars under the clock) drain over time. Eat at diners, bars and QuickMart, or buy groceries and eat from your own fridge. Sleep in your bed. Mood rises with TV, music, dancing, good food and winning.
+- **Skills** level up from 1 to 10 by doing things:
+  - Strength (gym, heavy bag) gives harder hits.
+  - Stamina (treadmill, running, deliveries) lets you run faster.
+  - Health raises max HP.
+  - Charm (reading, chatting, DJing, dancing) unlocks better dialogue, haggling and faster friendships.
+  - Driving makes cars faster and grippier.
+  - Dealing gets better prices and bigger orders.
+  - Every gun has its own skill, trained at the Bay Arms shooting range. It means tighter aim and faster reloads.
+- **Relationships:** every dealer, shopkeeper, bartender and trainer remembers you, from Stranger to Known, Friendly, Trusted and Family. Friends give discounts, tips about hot prices and better haggles.
 
-## Customisation
-- **Body & face:** free from the map screen. Hair comes from barbers and clothes from shops.
-- **Guns:** modded at Bay Arms. Change the frame, barrel, muzzle, optics, magazine, ammo, paint and camo; each change has a price.
-- **Garage:** 9 body types, bumpers, spoilers, bonnet, roof items, exhaust, rims, wheel size, suspension, tyres, engine, paint finish, decals, window tint, headlight colour and underglow. Stats affect how the car drives.
+## Interiors
+Walk into shops, venues and homes:
+- Bay Arms (counter and shooting range)
+- clothes stores with changing mirrors
+- barbers
+- Sunny Side Diner and Eastport Grill
+- QuickMart
+- Iron Temple Gym (bench, heavy bag, treadmill and a personal trainer)
+- Lucky 7 Casino (blackjack and slots)
+- the Anchor bar
+- the Neon Room club (DJ booth and dance floor)
+- Bay Motors car dealership
+- Casa Bay Furniture
 
-Your progress, position and time of day save automatically on the device.
+## Homes and furniture
+You start with a free studio downtown. Bigger apartments, houses and the Baywood mansion can be bought. Buy furniture at Casa Bay; it's delivered to your storage. Inside any home, tap the pencil button to edit: pick up, move, rotate, store or add furniture. Furniture is usable:
+- bed: sleep
+- fridge and stove: eat and cook
+- TV: watch
+- bookshelf: read for Charm
+- desk: laptop market prices
+- weights and treadmill: train
+- stereo: music
+- aquarium: relax
+- arcade: play
+- safe: extra stash space
+
+## Making money
+- **Dealers:** buy low, sell high. Prices change daily and by area.
+- **Customers** text you orders. Bring the goods to them before they give up.
+- **Jobs:** Bay Cabs taxi shifts and courier deliveries.
+- **Casino:** blackjack and slots.
+- **Real estate:** pays daily income.
+- **Car crime:** jack or break into cars and sell them at Lucky's Chop Shop.
+- **Activities:** street races, Taco Rush, surf school, Muscle Beach, hoops and DJ sets.
+
+## Cars
+Buy new cars at Bay Motors. There are 16 bodies from a $6k hatchback to the $160k hypercar, including the new SUV, convertible, wagon, lowrider, classic, box truck and hypercar. All your cars live in the phone's Garage, and every one can be customised (bumpers, spoilers, rims, suspension, engine, paint, decals, tint, underglow and more).
+
+Your progress saves automatically on this device. Each player has their own save.

@@ -4,68 +4,77 @@ import { blockSide } from './world.js';
 const S = (city, i, j, side) => blockSide(city, i, j, side);
 
 export const PLACES = [
-  // ---- dealers (the money loop)
-  { id: 'd_dt', kind: 'dealer', npc: 'Slim', name: 'Downtown Dealer', icon: '💊', ...S('main', 1, -1, 's'), area: 'downtown' },
-  { id: 'd_beach', kind: 'dealer', npc: 'Nina Blue', name: 'Boardwalk Dealer', icon: '💊', x: -40, z: 368, area: 'beach' },
-  { id: 'd_east', kind: 'dealer', npc: 'Big Tony', name: 'Eastport Dealer', icon: '💊', ...S('east', 1, 1, 'w'), area: 'east' },
-  { id: 'd_north', kind: 'dealer', npc: 'Rico', name: 'Northfield Dealer', icon: '💊', ...S('north', -2, 0, 's'), area: 'north' },
-  { id: 'd_hills', kind: 'dealer', npc: 'Ghost', name: 'Canyon Dealer', icon: '💊', x: -360, z: -10, area: 'hills' },
-  { id: 'd_air', kind: 'dealer', npc: 'Captain', name: 'Hangar Dealer', icon: '💊', x: 228, z: -622, area: 'airport' },
-  { id: 'd_farm', kind: 'dealer', npc: 'Mama Lu', name: 'Farm Road Dealer', icon: '💊', x: 372, z: -10, area: 'farm' },
-  { id: 'd_ghetto', kind: 'dealer', npc: 'Two-Tone', name: 'Southside Dealer', icon: '💊', ...S('main', -5, 4, 'e'), area: 'downtown' },
+  // ---- dealers (the money loop) — out on the street
+  { id: 'd_dt', kind: 'dealer', npc: 'Slim', name: 'Downtown Dealer', icon: 'deal', ...S('main', 1, -1, 's'), area: 'downtown' },
+  { id: 'd_beach', kind: 'dealer', npc: 'Nina Blue', name: 'Boardwalk Dealer', icon: 'deal', x: -40, z: 368, area: 'beach' },
+  { id: 'd_east', kind: 'dealer', npc: 'Big Tony', name: 'Eastport Dealer', icon: 'deal', ...S('east', 1, 1, 'w'), area: 'east' },
+  { id: 'd_north', kind: 'dealer', npc: 'Rico', name: 'Northfield Dealer', icon: 'deal', ...S('north', -2, 0, 's'), area: 'north' },
+  { id: 'd_hills', kind: 'dealer', npc: 'Ghost', name: 'Canyon Dealer', icon: 'deal', x: -360, z: -10, area: 'hills' },
+  { id: 'd_air', kind: 'dealer', npc: 'Captain', name: 'Hangar Dealer', icon: 'deal', x: 228, z: -622, area: 'airport' },
+  { id: 'd_farm', kind: 'dealer', npc: 'Mama Lu', name: 'Farm Road Dealer', icon: 'deal', x: 372, z: -10, area: 'farm' },
+  { id: 'd_ghetto', kind: 'dealer', npc: 'Two-Tone', name: 'Southside Dealer', icon: 'deal', ...S('main', -5, 4, 'e'), area: 'downtown' },
 
-  // ---- clothes shops
-  { id: 'c_street', kind: 'clothes', name: 'Street Kings', icon: '👕', style: 'street', ...S('main', 0, 0, 's') },
-  { id: 'c_luxe', kind: 'clothes', name: 'Rodeo Luxe', icon: '👔', style: 'luxe', ...S('main', 2, -3, 's') },
-  { id: 'c_surf', kind: 'clothes', name: 'Venice Surf Co.', icon: '🩳', style: 'surf', ...S('main', 1, 6, 's') },
-  { id: 'c_work', kind: 'clothes', name: 'Northfield Workwear', icon: '🦺', style: 'work', ...S('north', 1, -1, 's') },
-  { id: 'c_vintage', kind: 'clothes', name: 'Eastport Thrift', icon: '🧥', style: 'vintage', ...S('east', -1, -1, 's') },
+  // ---- shops & venues with interiors
+  { id: 'c_street', kind: 'clothes', interior: 'clothes', name: 'Street Kings', icon: 'shirt', style: 'street', ...S('main', 0, 0, 's') },
+  { id: 'c_luxe', kind: 'clothes', interior: 'clothes', name: 'Rodeo Luxe', icon: 'shirt', style: 'luxe', ...S('main', 2, -3, 's') },
+  { id: 'c_surf', kind: 'clothes', interior: 'clothes', name: 'Venice Surf Co.', icon: 'shirt', style: 'surf', ...S('main', 1, 6, 's') },
+  { id: 'c_work', kind: 'clothes', interior: 'clothes', name: 'Northfield Workwear', icon: 'shirt', style: 'work', ...S('north', 1, -1, 's') },
+  { id: 'c_vintage', kind: 'clothes', interior: 'clothes', name: 'Eastport Thrift', icon: 'shirt', style: 'vintage', ...S('east', -1, -1, 's') },
+  { id: 'b_fade', kind: 'barber', interior: 'barber', name: 'Fade Factory', icon: 'scissors', ...S('main', -1, 0, 'e') },
+  { id: 'b_shore', kind: 'barber', interior: 'barber', name: 'Shore Cuts', icon: 'scissors', ...S('main', -2, 6, 's') },
+  { id: 'b_east', kind: 'barber', interior: 'barber', name: 'Eastport Clippers', icon: 'scissors', ...S('east', 0, 0, 's') },
+  { id: 'a_dt', kind: 'guns', interior: 'guns', name: 'Bay Arms Downtown', icon: 'gun', ...S('main', 3, 1, 's') },
+  { id: 'a_east', kind: 'guns', interior: 'guns', name: 'Bay Arms Eastport', icon: 'gun', ...S('east', -2, 1, 's') },
+  { id: 'a_north', kind: 'guns', interior: 'guns', name: 'Bay Arms Northfield', icon: 'gun', ...S('north', 2, -1, 's') },
+  { id: 'f_diner', kind: 'venue', interior: 'diner', name: 'Sunny Side Diner', icon: 'food', ...S('main', -1, 2, 's') },
+  { id: 'f_diner2', kind: 'venue', interior: 'diner', name: 'Eastport Grill', icon: 'food', ...S('east', 1, -1, 's') },
+  { id: 'm_mart1', kind: 'venue', interior: 'mart', name: 'QuickMart Downtown', icon: 'cart', ...S('main', 0, 3, 's') },
+  { id: 'm_mart2', kind: 'venue', interior: 'mart', name: 'QuickMart Northfield', icon: 'cart', ...S('north', -1, -1, 's') },
+  { id: 'm_mart3', kind: 'venue', interior: 'mart', name: 'QuickMart Eastport', icon: 'cart', ...S('east', -3, 0, 's') },
+  { id: 'v_gym', kind: 'venue', interior: 'gym', name: 'Iron Temple Gym', icon: 'dumbbell', ...S('main', -3, 1, 's') },
+  { id: 'v_casino', kind: 'venue', interior: 'casino', name: 'Lucky 7 Casino', icon: 'cards', ...S('main', 1, 1, 's') },
+  { id: 'v_motors', kind: 'venue', interior: 'motors', name: 'Bay Motors', icon: 'car', ...S('main', 4, -2, 's') },
+  { id: 'v_casa', kind: 'venue', interior: 'casa', name: 'Casa Bay Furniture', icon: 'sofa', ...S('main', -2, 2, 's') },
+  { id: 'v_anchor', kind: 'venue', interior: 'bar', name: 'The Anchor Bar', icon: 'drink', x: 160, z: 368 },
+  { id: 'g_club', kind: 'venue', interior: 'club', name: 'Neon Room Club', icon: 'music', ...S('main', -2, -1, 's') },
 
-  // ---- barbers
-  { id: 'b_fade', kind: 'barber', name: 'Fade Factory', icon: '💈', ...S('main', -1, 0, 'e') },
-  { id: 'b_shore', kind: 'barber', name: 'Shore Cuts', icon: '💈', ...S('main', -2, 6, 's') },
-  { id: 'b_east', kind: 'barber', name: 'Eastport Clippers', icon: '💈', ...S('east', 0, 0, 's') },
-
-  // ---- minigames
-  { id: 'g_taco', kind: 'game', game: 'taco', name: 'Taco Rush', icon: '🌮', desc: 'Work the taco truck. Fill orders fast.', x: 70, z: 364 },
-  { id: 'g_gallery', kind: 'game', game: 'gallery', name: 'Pier Shooting Gallery', icon: '🎯', desc: 'Pop the ducks, dodge the bombs.', x: 94, z: 486 },
-  { id: 'g_surf', kind: 'game', game: 'surf', name: 'Bay Surf School', icon: '🏄', desc: 'Ride the wave. Stay in the sweet spot.', x: -160, z: 392 },
-  { id: 'g_gym', kind: 'game', game: 'gym', name: 'Muscle Beach', icon: '🏋️', desc: 'Pump iron. Tap fast. Get swole.', x: 230, z: 378 },
-  { id: 'g_club', kind: 'game', game: 'beat', name: 'Neon Room', icon: '🎧', desc: 'DJ the club. Hit the beats.', ...S('main', -2, -1, 's') },
-  { id: 'g_hoops', kind: 'game', game: 'hoops', name: 'Venice Courts', icon: '🏀', desc: 'Flick to shoot. Sink as many as you can.', x: -96, z: 366 },
-
-  // ---- gun shops
-  { id: 'a_dt', kind: 'guns', name: 'Bay Arms Downtown', icon: '🔫', ...S('main', 3, 1, 's') },
-  { id: 'a_east', kind: 'guns', name: 'Bay Arms Eastport', icon: '🔫', ...S('east', -2, 1, 's') },
-  { id: 'a_north', kind: 'guns', name: 'Bay Arms Northfield', icon: '🔫', ...S('north', 2, -1, 's') },
+  // ---- outdoor activities & jobs
+  { id: 'g_taco', kind: 'game', game: 'taco', name: 'Taco Truck (job)', icon: 'taco', desc: 'Work a shift on the taco truck. Fill orders fast for cash.', x: 70, z: 364 },
+  { id: 'g_gallery', kind: 'game', game: 'gallery', name: 'Pier Shooting Gallery', icon: 'target', desc: 'Hit the targets, miss the civilians.', x: 94, z: 486 },
+  { id: 'g_surf', kind: 'game', game: 'surf', name: 'Bay Surf School', icon: 'wave', desc: 'Ride the wave. Stay in the sweet spot.', x: -160, z: 392 },
+  { id: 'g_gym', kind: 'game', game: 'gym', name: 'Muscle Beach', icon: 'dumbbell', desc: 'Pump iron in the sun. Builds Strength.', x: 230, z: 378 },
+  { id: 'g_hoops', kind: 'game', game: 'hoops', name: 'Venice Courts', icon: 'ball', desc: 'Flick to shoot. Sink as many as you can.', x: -96, z: 366 },
+  { id: 'j_taxi', kind: 'job', job: 'taxi', name: 'Bay Cabs', icon: 'taxi', desc: 'Drive a cab. Pick up fares and get them there fast.', ...S('main', 0, -2, 's') },
+  { id: 'j_courier', kind: 'job', job: 'courier', name: 'Speedy Couriers', icon: 'box', desc: 'Deliver parcels across town before the timer runs out.', ...S('main', 2, 2, 's') },
 
   // ---- car activities
-  { id: 'chop', kind: 'chop', name: "Lucky's Chop Shop", icon: '🔧', x: 744, z: 70, car: true },
-  { id: 'race', kind: 'race', name: 'Street Race', icon: '🏁', x: 0, z: -122, car: true },
+  { id: 'chop', kind: 'chop', name: "Lucky's Chop Shop", icon: 'wrench', x: 744, z: 70, car: true },
+  { id: 'race', kind: 'race', name: 'Street Race', icon: 'flag', x: 0, z: -122, car: true },
 ];
 
-// ---- real estate (pays out every morning at 6am)
+// ---- real estate (pays out every morning at 6am; each one is a home you can furnish)
 export const PROPERTIES = [
-  { id: 'p_shack', name: 'Pier Shack', icon: '🏚️', price: 8000, income: 70, x: 106, z: 372 },
-  { id: 'p_loft', name: 'Northfield Loft', icon: '🏢', price: 18000, income: 150, ...S('north', 0, 0, 's') },
-  { id: 'p_bung', name: 'Eastport Bungalow', icon: '🏡', price: 26000, income: 220, ...S('east', 0, 1, 's') },
-  { id: 'p_hangar', name: 'Airport Hangar', icon: '🛩️', price: 45000, income: 380, x: 245, z: -626 },
-  { id: 'p_pent', name: 'Downtown Penthouse', icon: '🌆', price: 60000, income: 500, ...S('main', 1, 0, 'e') },
-  { id: 'p_beach', name: 'Malibay Beach House', icon: '🏖️', price: 85000, income: 700, x: 430, z: 372 },
-  { id: 'p_villa', name: 'Canyon Villa', icon: '🏛️', price: 120000, income: 950, x: -470, z: -141 },
-  { id: 'p_ridge', name: 'Ridge House', icon: '🏔️', price: 95000, income: 780, x: -392, z: -567 },
-  { id: 'p_lake', name: 'Trailside Retreat', icon: '🌲', price: 70000, income: 560, x: -410, z: 137 },
-  { id: 'p_mansion', name: 'Baywood Hills Mansion', icon: '🏰', price: 250000, income: 2200, x: -432, z: -370 },
+  { id: 'p_studio', name: 'Starter Studio', icon: 'house', home: 'studio', price: 0, income: 0, ...S('main', -1, 1, 's'), starter: true },
+  { id: 'p_shack', name: 'Pier Shack', icon: 'house', home: 'studio', price: 8000, income: 70, x: 106, z: 372 },
+  { id: 'p_loft', name: 'Northfield Loft', icon: 'house', home: 'apartment', price: 18000, income: 150, ...S('north', 0, 0, 's') },
+  { id: 'p_bung', name: 'Eastport Bungalow', icon: 'house', home: 'house', price: 26000, income: 220, ...S('east', 0, 1, 's') },
+  { id: 'p_hangar', name: 'Airport Hangar', icon: 'house', home: 'apartment', price: 45000, income: 380, x: 245, z: -626 },
+  { id: 'p_pent', name: 'Downtown Penthouse', icon: 'house', home: 'apartment', price: 60000, income: 500, ...S('main', 1, 0, 'e') },
+  { id: 'p_beach', name: 'Malibay Beach House', icon: 'house', home: 'house', price: 85000, income: 700, x: 430, z: 372 },
+  { id: 'p_villa', name: 'Canyon Villa', icon: 'house', home: 'house', price: 120000, income: 950, x: -470, z: -141 },
+  { id: 'p_ridge', name: 'Ridge House', icon: 'house', home: 'house', price: 95000, income: 780, x: -392, z: -567 },
+  { id: 'p_lake', name: 'Trailside Retreat', icon: 'house', home: 'house', price: 70000, income: 560, x: -410, z: 137 },
+  { id: 'p_mansion', name: 'Baywood Hills Mansion', icon: 'house', home: 'mansion', price: 250000, income: 2200, x: -432, z: -370 },
 ];
 
 // ---- trading goods (fictional)
 export const GOODS = [
-  { id: 'haze', name: 'Blue Haze', icon: '🌿', base: 40 },
-  { id: 'pills', name: 'Red Pills', icon: '💊', base: 90 },
-  { id: 'dust', name: 'Pixie Dust', icon: '✨', base: 220 },
-  { id: 'moon', name: 'Moon Rocks', icon: '🌙', base: 480 },
-  { id: 'glow', name: 'Glowstix', icon: '🧪', base: 900 },
-  { id: 'gold', name: 'Gold Leaf', icon: '🪙', base: 1600 },
+  { id: 'haze', name: 'Blue Haze', icon: 'leaf', col: '#4cd964', base: 40 },
+  { id: 'pills', name: 'Red Pills', icon: 'pill', col: '#ff3b4a', base: 90 },
+  { id: 'dust', name: 'Pixie Dust', icon: 'sparkle', col: '#ff6fb5', base: 220 },
+  { id: 'moon', name: 'Moon Rocks', icon: 'moon', col: '#b26bff', base: 480 },
+  { id: 'glow', name: 'Glowstix', icon: 'vial', col: '#38e8ff', base: 900 },
+  { id: 'gold', name: 'Gold Leaf', icon: 'coin', col: '#ffd23f', base: 1600 },
 ];
 // How much each area marks a good up (>1) or down (<1).
 const AREA_BIAS = {
@@ -141,4 +150,4 @@ export const RACE = {
   points: [[0, -288], [192, -288], [192, -96], [96, -96], [96, 96], [-96, 96], [-96, -96], [0, -96]],
 };
 
-export const CHOP_VALUE = { hatch: 350, sedan: 500, coupe: 700, sports: 1400, muscle: 950, pickup: 650, van: 450, buggy: 400, limo: 1600 };
+export const CHOP_VALUE = { hatch: 350, sedan: 500, coupe: 700, sports: 1400, muscle: 950, pickup: 650, van: 450, buggy: 400, limo: 1600, suv: 800, convertible: 1100, wagon: 450, lowrider: 900, classic: 1000, boxtruck: 600, hyper: 2600 };

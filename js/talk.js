@@ -35,7 +35,13 @@ export class Talk {
     this.youPos = new THREE.Vector3(-0.62 * spread, 0, 1.75);
     this.cam.position.set(0, 2.3, 5.6); this.cam.lookAt(0.1, 1.05, -1.2);
   }
-  background(kind, night) {
+  background(kind, night, wall, floor) {
+    if (kind === 'interior' && wall) {
+      const W = new THREE.Color(wall), F = new THREE.Color(floor || '#555');
+      const s = c => '#' + c.getHexString();
+      BG.interior = { sky: [s(W.clone().multiplyScalar(0.7)), s(W)], ground: [s(F.clone().multiplyScalar(1.15)), s(F.clone().multiplyScalar(0.8))], plat: s(F.clone().lerp(new THREE.Color('#ffffff'), 0.25)), rim: s(F.clone().multiplyScalar(0.6)) };
+      night = 0;
+    }
     const b = BG[kind] || BG.city, sky = night > 0.5 ? NIGHT.sky : b.sky;
     const c = document.createElement('canvas'); c.width = 8; c.height = 512; const x = c.getContext('2d');
     const g = x.createLinearGradient(0, 0, 0, 512);
@@ -48,11 +54,11 @@ export class Talk {
     for (const p of [this.pNpc, this.pYou]) { p.top.material.color.set(b.plat); p.rim.material.color.set(b.rim); }
     this.hemi.intensity = night > 0.5 ? 0.8 : 1.3; this.sun.intensity = night > 0.5 ? 1 : 2; this.sun.color.set(night > 0.5 ? '#b0b8ff' : '#fff3e0');
   }
-  begin({ npcCfg, youCfg, name, tag, pitch = 300, bg = 'city', night = 0 }) {
+  begin({ npcCfg, youCfg, name, tag, pitch = 300, bg = 'city', night = 0, wall = null, floor = null }) {
     audio();
     this.clear();
     this.active = true; this.t = 0; this.intro = 0; this.t0 = performance.now(); this.blipPitch = pitch;
-    this.background(bg, night);
+    this.background(wall ? 'interior' : bg, night, wall, floor);
     this.npc = buildCharacter(npcCfg); this.scene.add(this.npc.root);
     this.you = buildCharacter(youCfg); this.scene.add(this.you.root);
     for (const c of [this.npc, this.you]) c.root.traverse(o => { if (o.isMesh) o.castShadow = true; });

@@ -11,7 +11,7 @@
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon.png">
 <title>Bay City</title>
-<link rel="stylesheet" href="css/style.css?v=5">
+<link rel="stylesheet" href="css/style.css?v=6">
 </head>
 <body>
 <canvas id="c"></canvas>
@@ -21,7 +21,7 @@
   <div class="topbar">
     <button class="pill" id="backBtn">‹ Back</button>
     <h2 id="customTitle">Character</h2>
-    <button class="pill" id="randBtn">🎲 Random</button>
+    <button class="pill" id="randBtn">Random</button>
   </div>
   <div class="panel scroll">
     <div class="presets" id="presets"></div>
@@ -35,14 +35,16 @@
 <!-- In-game HUD -->
 <div id="hud" class="hidden">
   <div class="hud-l">
-    <div class="hud-row"><div class="clock" id="clockTxt">☀ 08:00</div><div class="money" id="moneyTxt">$0</div></div>
+    <div class="hud-row"><div class="clock"><span id="clockIco"></span><span id="clockTxt">08:00</span></div><div class="money" id="moneyTxt">$0</div></div>
+    <div class="needs"><div class="need" id="nHunger"><svg viewBox="0 0 24 24" class="ic sm"><path d="M7 3v8M5 3v5a2 2 0 0 0 4 0V3M7 11v10M16 3c-2 2-2 7 0 9v9"/></svg><i></i></div><div class="need" id="nEnergy"><svg viewBox="0 0 24 24" class="ic sm"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg><i></i></div><div class="need" id="nMood"><svg viewBox="0 0 24 24" class="ic sm"><circle cx="12" cy="12" r="9"/><path d="M8 14s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01"/></svg><i></i></div></div>
     <div class="money-float" id="moneyFloat"></div>
     <div class="zone" id="zoneTxt">Downtown</div>
     <div class="wp" id="wpTxt"></div>
     <button class="wpn" id="wpnBtn"></button>
   </div>
   <canvas id="minimap" width="240" height="240"></canvas>
-  <div class="side-btns"><button class="sidebtn" id="phoneBtn" aria-label="Phone">📱</button><button class="sidebtn hidden" id="radioBtn" aria-label="Radio">📻</button></div>
+  <div class="side-btns"><button class="sidebtn" id="phoneBtn" aria-label="Phone"><svg viewBox="0 0 24 24" class="ic"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/></svg></button><button class="sidebtn hidden" id="radioBtn" aria-label="Radio"><svg viewBox="0 0 24 24" class="ic"><rect x="3" y="8" width="18" height="12" rx="2"/><path d="M7 8 17 3"/><circle cx="15" cy="14" r="3"/><path d="M6 12h3M6 16h3"/></svg></button><button class="sidebtn hidden" id="editBtn" aria-label="Edit home"><svg viewBox="0 0 24 24" class="ic"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="m13 7 4 4"/></svg></button></div>
+  <div id="editBar" class="hidden"><button class="pill" id="editAdd">Add from storage</button><button class="pill go" id="editDone">Done</button></div>
   <div class="speedo hidden" id="speedo"><b id="speedTxt">0</b><span>km/h</span></div>
   <div class="toast" id="toast"></div>
   <div class="race-txt hidden" id="raceTxt"></div>
@@ -66,7 +68,7 @@
     <div class="btn-side l1"></div><div class="btn-side l2"></div><div class="btn-side r1"></div>
     <div class="ph-screen">
       <div class="island"></div>
-      <div class="ph-status"><span id="phTime">08:00</span><span>5G ▮▮▮ 🔋</span></div>
+      <div class="ph-status"><span id="phTime">08:00</span><span class="ph-sig">5G <i class="bars"></i><i class="batt"></i></span></div>
       <div id="phApp" class="scroll"></div>
       <button class="homebar" id="phHome" aria-label="Close phone"></button>
     </div>
@@ -75,11 +77,11 @@
 
 <div id="talkUI" class="hidden">
   <div id="talkFlash"></div>
-  <div class="talk-tag"><b id="talkName"></b><span id="talkTag"></span></div>
+  <div class="talk-tag"><b id="talkName"></b><span id="talkTag"></span><div id="talkRel" class="talk-rel hidden"></div></div>
   <div class="talk-box" id="talkBox">
     <div class="talk-who" id="talkWho"></div>
     <div class="talk-text" id="talkText"></div>
-    <div class="talk-more hidden" id="talkMore">▼</div>
+    <div class="talk-more hidden" id="talkMore"></div>
     <div class="talk-opts hidden" id="talkOpts"></div>
   </div>
 </div>
@@ -89,17 +91,18 @@
 <div id="dealUI" class="screen hidden"><div class="deal-card scroll"><div class="deal-head"><b id="dealTitle">Trade</b><button class="pill" id="dealClose">Done</button></div><div id="dealBody"></div></div></div>
 
 <div id="mg" class="screen hidden">
-  <div class="mg-head"><b id="mgTitle">Minigame</b><button class="pill" id="mgQuit">✕</button></div>
+  <div class="mg-head"><b id="mgTitle">Minigame</b><button class="pill" id="mgQuit">Quit</button></div>
   <div class="mg-timer"><i id="mgTimer"></i></div>
   <canvas id="mgCanvas"></canvas>
   <div class="card mg-card hidden" id="mgCard"></div>
 </div>
 
 <div id="hurt"></div>
+<div id="fade"></div>
 <div id="deathScreen"><div><b>You blacked out</b><span>Waking up at Downtown Clinic…</span></div></div>
 
-<div id="rotate"><div>↻<br>Turn your phone upright<br><small>Bay City is played in portrait</small></div></div>
+<div id="rotate"><div>Turn your phone upright<br><small>Bay City is played in portrait</small></div></div>
 
-<script type="module" src="js/main.js?v=5"></script>
+<script type="module" src="js/main.js?v=6"></script>
 </body>
 </html>
