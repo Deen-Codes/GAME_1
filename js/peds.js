@@ -1,7 +1,7 @@
 // Pedestrians: baked low-poly people who stroll sidewalks, wander the beach, flee from trouble.
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, randomChar, disposeObject } from './character.js?v=81';
-import { CITIES, sandLine, shoreLine, groundH, walkable as worldWalkable, resolve } from './world.js?v=81';
+import { buildCharacter, randomChar, disposeObject } from './character.js?v=82';
+import { CITIES, sandLine, shoreLine, groundH, walkable as worldWalkable, resolve } from './world.js?v=82';
 // interiors swap in their own floor test so brawlers can move around inside
 let walkable = worldWalkable; export function setWalk(fn) { walkable = fn || worldWalkable; }
 
@@ -241,6 +241,7 @@ export class Peds {
       if (p.state === 'return') { const dx = p.hx - p.x, dz = p.hz - p.z, d = Math.hypot(dx, dz); if (d < 0.3) { p.x = p.hx; p.z = p.hz; p.face = p.hface; p.state = p.rest; } else { const s = Math.min(d, 1.2 * dt); p.x += dx / d * s; p.z += dz / d * s; p.face = Math.atan2(dx, dz); mv = 1.2; } }
       if (p.state === 'chase') { const dx = p.tx - p.x, dz = p.tz - p.z, d = Math.hypot(dx, dz); if (d > 0.4) { const s = Math.min(d, 5.4 * dt), ox = p.x, oz = p.z; p.x += dx / d * s; p.z += dz / d * s; resolve(p, 0.35, 0); if (!walkable(p.x, p.z)) { p.x = ox; p.z = oz; } mv = 5.4; } p.face = Math.atan2(dx, dz); }
       if (p.state === 'punch') { p.face = Math.atan2(p.tx - p.x, p.tz - p.z); }
+      if (p.state === 'march') { const dx = p.tx - p.x, dz = p.tz - p.z, d = Math.hypot(dx, dz), sp = p.mspd || 1.2; if (d > 0.3) { const s = Math.min(d, sp * dt); p.x += dx / d * s; p.z += dz / d * s; p.face = Math.atan2(dx, dz); mv = sp; } else if (p.lookX != null) p.face = Math.atan2(p.lookX - p.x, p.lookZ - p.z); }
       if (p.state === 'flee') {
         p.t -= dt; const ox = p.x, oz = p.z; p.x += p.fx * 4.6 * dt; p.z += p.fz * 4.6 * dt; resolve(p, 0.35, 0);
         if (!walkable(p.x, p.z)) { p.x = ox; p.z = oz; p.fx = -p.fx; p.fz = -p.fz; }
@@ -261,8 +262,9 @@ export class Peds {
       p.limbs[0].rotation.x = -Math.sin(p.phase) * sw; p.limbs[1].rotation.x = Math.sin(p.phase) * sw;
       p.limbs[2].rotation.x = Math.sin(p.phase) * sw * 0.8 * G.arm; p.limbs[3].rotation.x = -Math.sin(p.phase) * sw * 0.8 * G.arm;
       p.limbs[2].rotation.z = G.armOut; p.limbs[3].rotation.z = -G.armOut;
-      if ((p.state === 'walk' || p.state === 'cross' || p.state === 'wander') && mv > 0.2) { p.inner.rotation.z = Math.sin(p.phase) * G.sway; p.inner.rotation.y = Math.sin(p.phase) * G.twist; p.inner.position.y = Math.abs(Math.cos(p.phase)) * G.bounce; p.inner.rotation.x = G.lean; }
+      if ((p.state === 'walk' || p.state === 'cross' || p.state === 'wander' || p.state === 'march') && mv > 0.2) { p.inner.rotation.z = Math.sin(p.phase) * G.sway; p.inner.rotation.y = Math.sin(p.phase) * G.twist; p.inner.position.y = Math.abs(Math.cos(p.phase)) * G.bounce; p.inner.rotation.x = G.lean; }
       else if (p.state !== 'down' && p.state !== 'lie' && p.state !== 'sit') { p.inner.rotation.z = 0; p.inner.rotation.y = 0; }
+      if (p.placard && !p.angry && p.state !== 'down' && p.state !== 'flee') { p.pt = (p.pt || 0) + dt * (p.state === 'march' ? 3 : 5); p.limbs[3].rotation.set(-2.7 + Math.sin(p.pt) * 0.15, 0, 0); p.limbs[2].rotation.set(-2.5 + Math.sin(p.pt) * 0.15, 0, 0); }
       if (p.state === 'punch') { p.pt = (p.pt || 0) + dt * 9; p.limbs[3].rotation.x = -1.5 + Math.sin(p.pt) * 0.6; p.limbs[2].rotation.x = -1.2 - Math.sin(p.pt) * 0.5; }
       let yo = 0;
       if (p.props) p.props.visible = p.state === 'lie' || p.state === 'sit';
