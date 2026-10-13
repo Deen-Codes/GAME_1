@@ -1,7 +1,7 @@
 // Pedestrians: baked low-poly people who stroll sidewalks, wander the beach, flee from trouble.
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, randomChar, disposeObject } from './character.js?v=11';
-import { CITIES, sandLine, shoreLine, groundH, walkable, resolve } from './world.js?v=11';
+import { buildCharacter, randomChar, disposeObject } from './character.js?v=12';
+import { CITIES, sandLine, shoreLine, groundH, walkable, resolve } from './world.js?v=12';
 
 const MAT = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.7, metalness: 0.05, flatShading: true });
 const SKINS = ['#ffe0cc', '#f6c9a4', '#e8b088', '#d39a6a', '#b77a4b', '#8d5524', '#6b3f22', '#452a1a'];
@@ -32,10 +32,20 @@ function makeLook(beach, fem = Math.random() < 0.5) {
   const cfg = { ...randomChar(), mask: 'none', skin: pick(SKINS), hairColor: pick(HAIRS), eyewear: Math.random() < 0.25 ? 'shades' : 'none', back: Math.random() < 0.15 ? 'backpack' : 'none', eyes: 'normal', headSize: rand(0.95, 1.1), height: rand(0.88, 1.12) };
   cfg.hat = Math.random() < 0.3 ? pick(['cap', 'beanie', 'cowboy', 'headband']) : 'none';
   cfg.hair = pick(fem ? FEM_HAIR : MASC_HAIR);
-  if (fem) { cfg.fem = true; cfg.facialHair = 'none'; cfg.headShape = 'box'; cfg.height = rand(0.88, 1.02); cfg.build = rand(0.85, 1.0); cfg.mouth = 'smile'; }
+  if (fem) {
+    const fig = pick(['slim', 'slim', 'athletic', 'athletic', 'curvy', 'curvy', 'curvy', 'plus']);
+    const glam = beach ? rand(0.3, 1) : rand(0, 1);
+    Object.assign(cfg, { fem: true, figure: fig, glam, facialHair: 'none', headShape: 'box', mouth: 'smile', legs: rand(1.0, 1.08), headSize: rand(0.92, 1.0),
+      height: rand(0.9, 1.0), build: { slim: 0.82, athletic: 0.92, curvy: 0.92, plus: 1.18 }[fig],
+      hairColor: pick(['#141414', '#3b2416', '#6b4423', '#a0402d', '#d8b26e', '#f3e7c4', '#e8c76a', '#7a2a2a']), lips: pick(['#c0395a', '#d6455d', '#b05a6a', '#e07a8a', '#8b1e3f']) });
+    if (glam > 0.6) cfg.hair = pick(['long', 'long', 'ponytail', 'bob']);
+    if (!beach) Object.assign(cfg, { top: pick(glam > 0.5 ? ['crop', 'tank', 'tshirt', 'crop', 'jacket'] : ['tshirt', 'long', 'hoodie', 'jacket']), pants: pick(glam > 0.5 ? ['skirt', 'jeans', 'skirt', 'shorts'] : ['jeans', 'skirt', 'cargo']), topColor: pick(['#ff6fb5', '#ffffff', '#16161b', '#e23b3b', '#9b51e0', '#ffd23f', '#1fb5a8', '#f2d0c4']), pantsColor: pick(['#16161b', '#2f80ed', '#ffffff', '#8b1e3f', '#c2b280', '#3a3d45']), shoes: pick(['sneakers', 'boots']) });
+    if (glam < 0.2) Object.assign(cfg, { hat: pick(['beanie', 'cap', 'none']), eyewear: pick(['glasses', 'none']) });
+  }
   else if (cfg.facialHair === undefined) cfg.facialHair = 'none';
   if (beach) Object.assign(cfg, { top: fem ? pick(['swimtop', 'swimtop', 'tank']) : pick(['shirtless', 'shirtless', 'tank', 'tshirt']), pants: fem ? pick(['swim', 'swim', 'shorts']) : pick(['swim', 'shorts']), shoes: 'bare', eyewear: Math.random() < 0.5 ? 'shades' : 'none', hat: Math.random() < 0.3 ? (fem ? 'none' : 'cap') : 'none' });
   else { if (['armor', 'shirtless', 'swimtop'].includes(cfg.top)) cfg.top = 'tshirt'; if (cfg.pants === 'swim') cfg.pants = 'jeans'; }
+  if (!fem) { if (cfg.top === 'crop') cfg.top = 'tshirt'; if (cfg.pants === 'skirt') cfg.pants = 'jeans'; }
   return { ...bakeCfg(cfg), beach, fem };
 }
 // Bake any character config into 5 meshes (body + 4 limbs) so lots of people are cheap to draw.

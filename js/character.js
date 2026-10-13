@@ -33,9 +33,9 @@ export const CHAR_SCHEMA = [
     color('hairColor', 'Hair colour', HAIR_COLORS),
   ] },
   { tab: 'Outfit', items: [
-    choice('top', 'Top', [['tshirt', 'T-shirt'], ['tank', 'Tank top'], ['long', 'Long sleeve'], ['hoodie', 'Hoodie'], ['jacket', 'Jacket'], ['suit', 'Suit'], ['armor', 'Armour'], ['shirtless', 'Shirtless'], ['swimtop', 'Swim top']]),
+    choice('top', 'Top', [['tshirt', 'T-shirt'], ['tank', 'Tank top'], ['long', 'Long sleeve'], ['hoodie', 'Hoodie'], ['jacket', 'Jacket'], ['suit', 'Suit'], ['armor', 'Armour'], ['shirtless', 'Shirtless'], ['swimtop', 'Swim top'], ['crop', 'Crop top']]),
     color('topColor', 'Top colour', BASIC),
-    choice('pants', 'Legs', [['jeans', 'Trousers'], ['shorts', 'Shorts'], ['cargo', 'Cargo'], ['armored', 'Armoured'], ['swim', 'Swimwear']]),
+    choice('pants', 'Legs', [['jeans', 'Trousers'], ['shorts', 'Shorts'], ['cargo', 'Cargo'], ['armored', 'Armoured'], ['swim', 'Swimwear'], ['skirt', 'Skirt']]),
     color('pantsColor', 'Legs colour', BASIC),
     choice('shoes', 'Shoes', [['sneakers', 'Trainers'], ['boots', 'Boots'], ['bare', 'Barefoot']]),
     color('shoeColor', 'Shoe colour', BASIC),
@@ -107,22 +107,31 @@ export function buildCharacter(cfg) {
   const armLen = 0.66 * h * c.arms;
   const limbW = 0.13 * sb, legW = 0.16 * sb;
 
+  // women: figure sets bust and hips (slim / athletic / curvy / plus), only for grown-ups
+  const adultF = c.fem && h >= 0.8;
+  const FIG = { slim: [0.45, 0.35], athletic: [0.5, 0.5], curvy: [0.9, 0.95], plus: [0.95, 1.05] }[c.figure || 'athletic'];
+  const bust = adultF ? FIG[0] : 0, hipF = adultF ? FIG[1] : 0;
   const root = new THREE.Group();
   const hips = new THREE.Group(); hips.position.y = legLen; root.add(hips);
-  hips.add(box(torsoW * (c.fem ? 1.04 : 0.95), 0.18, torsoD * (c.fem ? 1.0 : 0.95), pantsM, 0, 0.02, 0));
+  hips.add(box(torsoW * (adultF ? 1.0 + 0.22 * hipF : 0.95), 0.2, torsoD * (adultF ? 1 + 0.12 * hipF : 0.95), pantsM, 0, 0.0, 0));
+  if (c.pants === 'skirt') hips.add(box(torsoW * (1.12 + 0.22 * hipF), thighL * 0.62, torsoD * (1.25 + 0.12 * hipF), pantsM, 0, -thighL * 0.25, 0));
+  if (adultF) { const bd = 0.05 + 0.08 * hipF; hips.add(box(torsoW * (0.82 + 0.16 * hipF), 0.22, bd, pantsM, 0, -0.03, -torsoD * (1 + 0.12 * hipF) / 2 - bd / 2 + 0.02)); } // seat
   const torso = new THREE.Group(); torso.position.y = 0.08; hips.add(torso);
 
   // ---- torso / top ----
   const longSleeve = ['long', 'hoodie', 'jacket', 'suit'].includes(c.top);
   const chestW = c.top === 'tank' ? torsoW * 0.92 : torsoW;
   const swim = c.top === 'shirtless' || c.top === 'swimtop';
-  torso.add(box(chestW, torsoH, torsoD, swim ? skin : topM, 0, torsoH / 2, 0));
-  if (c.fem && (c.height ?? 1) >= 0.8) { // feminine silhouette: shaped top, narrower waist
-    const chestM = c.top === 'swimtop' ? topM : swim ? skin : topM;
-    torso.add(box(torsoW * 0.78, torsoH * 0.2, 0.07, chestM, 0, torsoH * 0.62, torsoD / 2 + 0.02));
-  }
+  if (adultF) { // waist then shoulders, with a bust
+    const bodyM = swim ? skin : topM;
+    torso.add(box(torsoW * 0.8, torsoH * 0.46, torsoD * 0.92, c.top === 'crop' ? skin : bodyM, 0, torsoH * 0.23, 0));
+    if (c.top === 'crop') torso.add(box(torsoW * 0.82, 0.05, torsoD * 0.94, bodyM, 0, torsoH * 0.44, 0));
+    torso.add(box(chestW * 0.92, torsoH * 0.56, torsoD * 0.96, bodyM, 0, torsoH * 0.72, 0));
+    const chestM = c.top === 'swimtop' ? topM : swim ? skin : topM, bd = 0.05 + 0.08 * bust;
+    for (const sx of [-1, 1]) { const bm = box(torsoW * 0.36, torsoH * (0.17 + 0.06 * bust), bd, chestM, sx * torsoW * 0.19, torsoH * 0.58, torsoD * 0.48 + bd / 2 - 0.02); bm.rotation.x = 0.12; torso.add(bm); }
+  } else torso.add(box(chestW, torsoH, torsoD, swim ? skin : topM, 0, torsoH / 2, 0));
   if (c.belly > 0) { const bd = 0.06 + 0.22 * c.belly; torso.add(box(chestW * (0.7 + 0.15 * c.belly), torsoH * (0.35 + 0.2 * c.belly), bd, swim ? skin : topM, 0, torsoH * 0.18, torsoD / 2 + bd / 2 - 0.01)); }
-  if (c.top === 'swimtop') torso.add(box(chestW * 1.02, torsoH * 0.16, torsoD * 1.04, topM, 0, torsoH * 0.72, 0)); // swim top band
+  if (c.top === 'swimtop') torso.add(box(chestW * (adultF ? 0.94 : 1.02), torsoH * (adultF ? 0.06 : 0.16), torsoD * 1.0, topM, 0, torsoH * (adultF ? 0.68 : 0.72), 0)); // swim top strap
   if (c.pants !== 'swim') { torso.add(box(torsoW * 1.01, 0.06, torsoD * 1.01, dark, 0, 0.02, 0)); // belt
   torso.add(box(0.08, 0.05, 0.02, metal, 0, 0.02, torsoD / 2 + 0.01)); } // buckle
   const fz = torsoD / 2;
@@ -169,16 +178,21 @@ export function buildCharacter(cfg) {
   if (c.eyes === 'robot') {
     head.add(box(headW * 0.8, 0.07, 0.02, eyeM, 0, eyeY, faceZ));
   } else {
-    const ew = c.eyes === 'wide' ? 0.095 : 0.08, eh = c.eyes === 'wide' ? 0.095 : c.eyes === 'sleepy' ? 0.035 : 0.075;
+    const ew = c.eyes === 'wide' || c.fem ? 0.092 : 0.08, eh = c.eyes === 'wide' || c.fem ? 0.088 : c.eyes === 'sleepy' ? 0.035 : 0.075;
     for (const sx of [-1, 1]) {
       head.add(box(ew, eh, 0.01, white, sx * eyeX, eyeY, faceZ));
       head.add(box(ew * 0.5, Math.min(eh, 0.05), 0.012, eyeM, sx * eyeX + sx * 0.008, eyeY - 0.004, faceZ + 0.004));
-      if (c.fem) { head.add(box(ew * 1.15, 0.018, 0.014, dark, sx * eyeX, eyeY + eh / 2 + 0.008, faceZ + 0.006)); head.add(box(0.018, 0.03, 0.014, dark, sx * (eyeX + ew * 0.62), eyeY + eh / 2, faceZ + 0.006)); }
+      if (c.fem) {
+        const g = c.glam ?? 0.5;
+        head.add(box(ew * 1.18, 0.02, 0.014, dark, sx * eyeX, eyeY + eh / 2 + 0.008, faceZ + 0.006)); // lashes
+        if (g > 0.35) { const wing = box(0.035, 0.016, 0.014, dark, sx * (eyeX + ew * 0.62), eyeY + eh / 2 + 0.004, faceZ + 0.006); wing.rotation.z = sx * 0.5; head.add(wing); }
+        if (g > 0.55) head.add(box(0.06, 0.035, 0.008, M('#ff8fa8', { transparent: true, opacity: 0.45 }), sx * eyeX * 1.25, eyeY - 0.075, faceZ + 0.001)); // blush
+      }
     }
   }
   if (c.hair !== 'none' || c.eyes === 'angry') {
     for (const sx of [-1, 1]) {
-      const br = box(0.1, 0.022, 0.016, hairM, sx * eyeX, eyeY + 0.07, faceZ + 0.004);
+      const br = box(c.fem ? 0.09 : 0.1, c.fem ? 0.014 : 0.022, 0.016, hairM, sx * eyeX, eyeY + 0.075, faceZ + 0.004); if (c.fem) br.rotation.z = -sx * 0.12;
       br.rotation.z = c.eyes === 'angry' ? sx * 0.4 : 0;
       head.add(br);
     }
@@ -192,7 +206,7 @@ export function buildCharacter(cfg) {
     if (c.mouth === 'open') head.add(box(0.08, 0.065, 0.01, dark, 0, mouthY, faceZ));
     if (c.mouth === 'smile' || c.mouth === 'frown') {
       const s = c.mouth === 'smile' ? 1 : -1;
-      head.add(box(0.07, 0.022, 0.01, c.fem ? M('#b8325a') : dark, 0, mouthY - 0.01 * s, faceZ));
+      head.add(box(c.fem ? 0.075 : 0.07, c.fem ? 0.028 : 0.022, 0.01, c.fem ? M(c.lips || '#b8325a', { roughness: 0.25 }) : dark, 0, mouthY - 0.01 * s, faceZ));
       head.add(box(0.025, 0.022, 0.01, dark, -0.045, mouthY + 0.008 * s, faceZ));
       head.add(box(0.025, 0.022, 0.01, dark, 0.045, mouthY + 0.008 * s, faceZ));
     }
@@ -343,9 +357,11 @@ export function buildCharacter(cfg) {
   // ---- legs ----
   const shinM = c.pants === 'shorts' || c.pants === 'swim' ? skin : pantsM;
   const makeLeg = (side) => {
-    const pivot = new THREE.Group(); pivot.position.set(side * torsoW * 0.24, 0, 0); hips.add(pivot);
-    if (c.pants === 'swim') { pivot.add(box(legW, thighL * 0.3, legW, pantsM, 0, -thighL * 0.15, 0)); pivot.add(box(legW * 0.98, thighL * 0.7, legW * 0.98, skin, 0, -thighL * 0.65, 0)); }
-    else pivot.add(box(legW, thighL, legW, pantsM, 0, -thighL / 2, 0));
+    const pivot = new THREE.Group(); pivot.position.set(side * torsoW * (0.24 + 0.035 * hipF), 0, 0); hips.add(pivot);
+    const tw = legW * (1 + 0.18 * hipF);
+    if (c.pants === 'skirt') pivot.add(box(tw * 0.96, thighL, tw * 0.96, skin, 0, -thighL / 2, 0));
+    else if (c.pants === 'swim') { pivot.add(box(tw, thighL * 0.22, tw, pantsM, 0, -thighL * 0.11, 0)); pivot.add(box(tw * 0.98, thighL * 0.78, tw * 0.98, skin, 0, -thighL * 0.61, 0)); }
+    else pivot.add(box(tw, thighL, tw, pantsM, 0, -thighL / 2, 0));
     if (c.pants === 'cargo') pivot.add(box(0.03, thighL * 0.35, legW * 0.6, M(shade(c.pantsColor, 0.8)), side * (legW / 2 + 0.01), -thighL * 0.55, 0));
     if (c.pants === 'shorts') pivot.add(box(legW * 1.08, 0.05, legW * 1.08, M(shade(c.pantsColor, 0.8)), 0, -thighL + 0.03, 0));
     const knee = new THREE.Group(); knee.position.y = -thighL; pivot.add(knee);

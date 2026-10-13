@@ -1,5 +1,5 @@
 // Everything you can walk or drive up to: shops, barbers, property, dealers, minigames, chop shop, race.
-import { blockSide, attachDoor } from './world.js?v=11';
+import { blockSide, attachDoor } from './world.js?v=12';
 
 const S = (city, i, j, side) => blockSide(city, i, j, side);
 
