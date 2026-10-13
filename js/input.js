@@ -33,14 +33,16 @@ export class Input {
     return this.btn[b];
   }
   consume(n) { const v = this.pressed[n]; this.pressed[n] = false; return v; }
-  clear() { for (const k in this.pressed) this.pressed[k] = false; for (const k in this.btn) this.btn[k] = false; this.sx = this.sy = 0; this.keys.clear(); this.mouseDown = false; }
+  clear() { this.resetStick?.(); for (const k in this.pressed) this.pressed[k] = false; for (const k in this.btn) this.btn[k] = false; this.sx = this.sy = 0; this.keys.clear(); this.mouseDown = false; }
 
   bindTouch({ zone, base, knob, buttons, canvas }) {
     let id = null, ox = 0, oy = 0;
     const R = 52;
     const home = () => { base.style.left = ''; base.style.top = ''; base.classList.remove('live'); knob.style.transform = 'translate(-50%,-50%)'; };
+    this.resetStick = () => { id = null; this.sx = this.sy = 0; home(); };
     zone.addEventListener('pointerdown', e => {
-      if (id !== null) return;
+      // a new touch always takes the stick: if the old finger's 'up' got lost (pad hidden mid-drag, iOS gesture), don't stay jammed
+      if (id !== null) { try { zone.releasePointerCapture(id); } catch (_) {} id = null; }
       this.touch = true; id = e.pointerId; zone.setPointerCapture(id);
       const zr = zone.getBoundingClientRect();
       ox = Math.max(zr.left + 70, e.clientX); oy = Math.min(zr.bottom - 66, Math.max(zr.top + 66, e.clientY)); // keep the whole stick on screen
@@ -55,7 +57,9 @@ export class Input {
       knob.style.transform = `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px))`;
     });
     const end = e => { if (e.pointerId !== id) return; id = null; this.sx = this.sy = 0; home(); };
-    zone.addEventListener('pointerup', end); zone.addEventListener('pointercancel', end);
+    zone.addEventListener('pointerup', end); zone.addEventListener('pointercancel', end); zone.addEventListener('lostpointercapture', end);
+    addEventListener('pointerup', end); addEventListener('pointercancel', end);
+    addEventListener('blur', () => this.resetStick()); document.addEventListener('visibilitychange', () => this.resetStick());
     for (const [name, el] of Object.entries(buttons)) {
       el.addEventListener('pointerdown', e => {
         e.preventDefault(); e.stopPropagation(); this.touch = true; el.setPointerCapture(e.pointerId);

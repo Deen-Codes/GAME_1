@@ -2,7 +2,7 @@
 // stray cats, dogs out on walks with their owners, squirrels, deer in the hills by day, and raccoons,
 // possums, coyotes and owls at night. All low-poly, baked into a few meshes each so they're cheap to draw.
 import * as THREE from '../lib/three.module.min.js';
-import { CITIES, LAMPS, sandLine, shoreLine, walkable, groundH, cityAt, roadAt } from './world.js?v=23';
+import { CITIES, LAMPS, FIELDS, sandLine, shoreLine, walkable, groundH, cityAt, roadAt } from './world.js?v=25';
 
 const rand = (a, b) => a + Math.random() * (b - a), pick = a => a[Math.floor(Math.random() * a.length)];
 const MAT = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.85, flatShading: true });
@@ -43,6 +43,13 @@ const SPECIES = {
   coyote: () => quad({ L: 0.85, W: 0.3, H: 0.34, leg: 0.48, head: 0.26, col: '#a88a62', belly: '#d8c6a4', tail: [[0.12, 0.12, 0.38, 0, 0.6, -0.55, '#8a6e4a', -0.6]], extra: [[0.12, 0.1, 0.22, 0, 0.82, 0.64, '#a88a62'], [0.06, 0.14, 0.05, -0.08, 1.08, 0.48, '#8a6e4a'], [0.06, 0.14, 0.05, 0.08, 1.08, 0.48, '#8a6e4a']] }),
   deer: () => quad({ L: 1.1, W: 0.42, H: 0.48, leg: 0.8, head: 0.26, neck: 0.42, col: '#9a6a3e', belly: '#d8c0a0', tail: [[0.1, 0.14, 0.06, 0, 1.12, -0.56, '#ffffff']], extra: [[0.12, 0.1, 0.2, 0, 1.62, 0.78, '#9a6a3e'], [0.07, 0.16, 0.04, -0.12, 1.84, 0.62, '#9a6a3e'], [0.07, 0.16, 0.04, 0.12, 1.84, 0.62, '#9a6a3e']] }),
   squirrel: () => quad({ L: 0.24, W: 0.12, H: 0.13, leg: 0.08, head: 0.11, col: '#8a6a4a', belly: '#d8c8b0', tail: [[0.1, 0.26, 0.1, 0, 0.3, -0.16, '#8a6a4a', -0.3]] }),
+  // farm animals
+  cow: () => { const holstein = Math.random() < 0.6, c = holstein ? '#f2f0ea' : pick(['#6b4a33', '#3a2a1e', '#a0703a']); return quad({ L: 1.9, W: 0.75, H: 0.8, leg: 0.7, head: 0.42, col: c, belly: c, headCol: holstein ? '#f2f0ea' : c, neck: 0.1, tail: [[0.06, 0.6, 0.06, 0, 1.0, -0.98, c]], extra: [...(holstein ? [[0.77, 0.4, 0.5, 0, 1.25, 0.3, '#16161b'], [0.77, 0.3, 0.4, 0, 1.1, -0.5, '#16161b']] : []), [0.3, 0.2, 0.12, 0, 1.36, 1.28, '#e8b4b0'], [0.08, 0.08, 0.2, -0.24, 1.72, 1.02, '#e8e2c8'], [0.08, 0.08, 0.2, 0.24, 1.72, 1.02, '#e8e2c8'], [0.2, 0.14, 0.18, 0, 0.66, -0.3, '#e8b4b0']] }); },
+  horse: () => { const c = pick(['#6b4a2a', '#3a2a1e', '#d8d2c4', '#a0703a', '#16161b']), m = pick(['#16161b', '#2a1a10', '#e8e2c8']); return quad({ L: 1.8, W: 0.55, H: 0.7, leg: 1.0, head: 0.34, col: c, neck: 0.55, tail: [[0.12, 0.7, 0.12, 0, 1.2, -0.95, m, 0.3]], extra: [[0.32, 0.26, 0.46, 0, 2.12, 1.18, c], [0.1, 0.55, 0.3, 0, 2.0, 0.85, m, -0.4]] }); },
+  sheep: () => quad({ L: 1.0, W: 0.6, H: 0.55, leg: 0.42, head: 0.26, col: '#f4f2ea', belly: '#e8e4d8', headCol: '#2a2a2a', extra: [[0.66, 0.6, 1.06, 0, 0.72, 0, '#f8f6ee'], [0.12, 0.06, 0.16, -0.16, 0.92, 0.6, '#2a2a2a'], [0.12, 0.06, 0.16, 0.16, 0.92, 0.6, '#2a2a2a']] }),
+  pig: () => quad({ L: 1.1, W: 0.55, H: 0.5, leg: 0.28, head: 0.36, col: '#f2b8b0', extra: [[0.2, 0.16, 0.08, 0, 0.6, 0.76, '#e89a92'], [0.1, 0.1, 0.06, -0.12, 0.84, 0.66, '#e89a92'], [0.1, 0.1, 0.06, 0.12, 0.84, 0.66, '#e89a92']], tail: [[0.05, 0.05, 0.14, 0, 0.62, -0.6, '#e89a92', -0.6]] }),
+  goat: () => quad({ L: 0.9, W: 0.38, H: 0.42, leg: 0.5, head: 0.24, neck: 0.18, col: pick(['#e8e2d6', '#8a6a4a', '#3a3a3a']), extra: [[0.05, 0.22, 0.05, -0.08, 1.24, 0.42, '#5a5a50', -0.6], [0.05, 0.22, 0.05, 0.08, 1.24, 0.42, '#5a5a50', -0.6], [0.06, 0.16, 0.06, 0, 0.86, 0.66, '#e8e2d6']] }),
+  chicken: () => bird({ L: 0.34, col: pick(['#f4f0e6', '#a0602a', '#e8c890']), head: '#f4f0e6', wing: '#e0d8c8', beak: '#f0a020', extra: [[0.05, 0.08, 0.1, 0, 0.82, 0.46, '#e23b3b'], [0.02, 0.16, 0.02, -0.05, 0.08, 0, '#f0a020'], [0.02, 0.16, 0.02, 0.05, 0.08, 0, '#f0a020']] }),
   pigeon: () => bird({ L: 0.32, col: '#8f97a8', head: '#5f6678', wing: '#7a8294', beak: '#c98a7a', extra: [[0.17, 0.08, 0.06, 0, 0.56, 0.3, '#4a9a7a']] }),
   crow: () => bird({ L: 0.36, col: '#1a1a20', head: '#16161b', wing: '#222230', beak: '#2a2a2a' }),
   seagull: () => bird({ L: 0.42, col: '#f4f4f0', head: '#ffffff', wing: '#a8b0b8', beak: '#f0c030' }),
@@ -62,9 +69,9 @@ function makeMesh(kind) {
   else for (const [x, y, z] of t.legs) { const g = new THREE.Group(); g.position.set(x, y, z); g.add(new THREE.Mesh(t.legG, MAT)); inner.add(g); limbs.push(g); }
   return { root, inner, limbs, bird: !!t.bird };
 }
-const SPEED = { dog: 1.4, cat: 0.9, raccoon: 0.8, possum: 0.6, coyote: 1.6, deer: 1.2, squirrel: 1.2 };
-const RUN = { dog: 6, cat: 6.5, raccoon: 4, possum: 2.5, coyote: 8, deer: 9, squirrel: 5 };
-const FEAR = { dog: 0, cat: 6, raccoon: 6, possum: 5, coyote: 12, deer: 18, squirrel: 5, pigeon: 4.5, crow: 6, seagull: 5, owl: 5 };
+const SPEED = { cow: 0.6, horse: 1.2, sheep: 0.7, pig: 0.6, goat: 0.9, dog: 1.4, cat: 0.9, raccoon: 0.8, possum: 0.6, coyote: 1.6, deer: 1.2, squirrel: 1.2 };
+const RUN = { cow: 3, horse: 9, sheep: 4.5, pig: 3.5, goat: 5, dog: 6, cat: 6.5, raccoon: 4, possum: 2.5, coyote: 8, deer: 9, squirrel: 5 };
+const FEAR = { cow: 2.5, horse: 4, sheep: 5, pig: 3, goat: 3, chicken: 3, dog: 0, cat: 6, raccoon: 6, possum: 5, coyote: 12, deer: 18, squirrel: 5, pigeon: 4.5, crow: 6, seagull: 5, owl: 5 };
 
 export class Animals {
   constructor(parent, peds, ground) { this.parent = parent; this.peds = peds; this.ground = ground; this.list = []; this.t = 0; this.leash = []; }
@@ -80,6 +87,7 @@ export class Animals {
   scare(x, z, r) { for (const a of this.list) if (Math.hypot(a.x - x, a.z - z) < r) this.spook(a, x, z); }
   spook(a, x, z) {
     if (a.kind === 'dog') { a.bark = 1.5; return; }
+    if (a.hen) { a.face = Math.atan2(a.x - x, a.z - z) + rand(-0.5, 0.5); a.hop = 1.4; a.fast = 1.4; a.t = 1.5; return; } // chickens scatter, they don't fly off
     if (a.bird) { if (a.state !== 'fly') this.takeOff(a, x, z); return; }
     a.state = 'flee'; a.t = rand(2.5, 4.5); const ang = Math.atan2(a.x - x, a.z - z) + rand(-0.6, 0.6); a.fx = Math.sin(ang); a.fz = Math.cos(ang);
   }
@@ -100,6 +108,9 @@ export class Animals {
     if (c) Object.assign(want, night ? { cat: 3, raccoon: 2, possum: 1, owl: 2, coyote: Math.random() < 0.5 ? 1 : 0, pigeonPerch: 2 } : { pigeonFlock: 3, pigeonPerch: 3, crow: dusk ? 3 : 1, cat: 2, dog: 3, squirrel: 1 });
     if (beach) Object.assign(want, night ? { seagull: 1, raccoon: 1 } : { seagullFlock: 3, dog: 2 });
     if (hills) Object.assign(want, night ? { coyote: 3, owl: 2, raccoon: 1, possum: 1 } : { deer: 3, squirrel: 3, crow: 2 });
+    // farms: livestock in the fields, chickens pecking near the barns
+    let farm = null, fd = 1e9; for (const f of FIELDS) { const dx = Math.max(f.x0 - px, 0, px - f.x1), dz = Math.max(f.z0 - pz, 0, pz - f.z1), d = Math.hypot(dx, dz); if (d < fd) { fd = d; farm = f; } }
+    if (farm && fd < 90) { this.farm = farm; Object.assign(want, { cow: night ? 3 : 5, horse: 2, sheep: 4, pig: 2, goat: 1, chicken: night ? 0 : 6 }); } else this.farm = null;
     const has = k => this.list.filter(a => a.tag === k).length;
     for (const [k, n] of Object.entries(want)) if (has(k) < n) { this.spawnOne(k, px, pz, c, night); break; }
   }
@@ -136,6 +147,16 @@ export class Animals {
       a.leash = new THREE.Line(lg, new THREE.LineBasicMaterial({ color: '#e23b3b' })); a.leash.frustumCulled = false; this.parent.add(a.leash);
       return;
     }
+    if (['cow', 'horse', 'sheep', 'pig', 'goat', 'chicken'].includes(tag) && this.farm) {
+      const f = this.farm, herd = tag === 'chicken' ? 3 : tag === 'sheep' ? 2 : 1;
+      for (let k = 0; k < 10; k++) {
+        const x = rand(f.x0 + 6, f.x1 - 6), z = tag === 'chicken' ? rand(f.z0 + 4, f.z0 + 16) : rand(f.z0 + 6, f.z1 - 6), d = Math.hypot(x - px, z - pz);
+        if (d < 26 || d > 110) continue;
+        for (let i = 0; i < herd; i++) { const a = this.add(tag, x + rand(-2, 2), z + rand(-2, 2), { tag }); if (tag === 'chicken') a.hen = true; }
+        return;
+      }
+      return;
+    }
     const where = tag === 'deer' || (tag === 'coyote' && !c) || (tag === 'squirrel' && !c) || (tag === 'crow' && !c) ? 'wild' : tag === 'seagull' ? 'beach' : 'sidewalk';
     const s = this.spot(px, pz, where, c); if (!s) return;
     const kind = tag, n = tag === 'deer' && Math.random() < 0.5 ? 2 : 1;
@@ -167,7 +188,7 @@ export class Animals {
     if (a.state === 'ground') {
       a.t -= dt; a.inner.rotation.x = Math.max(0, Math.sin(a.phase2 = (a.phase2 || 0) + dt * 9)) * 0.5; // pecking
       if (a.t <= 0) { a.t = rand(0.6, 2.5); a.face += rand(-1.5, 1.5); a.hop = 0.25; }
-      if (a.hop > 0) { a.hop -= dt; const nx = a.x + Math.sin(a.face) * 1.2 * dt, nz = a.z + Math.cos(a.face) * 1.2 * dt; if (walkable(nx, nz)) { a.x = nx; a.z = nz; } }
+      if (a.hop > 0) { a.hop -= dt; a.fast = (a.fast || 0) - dt; const hs = a.fast > 0 ? 4.5 : 1.2, nx = a.x + Math.sin(a.face) * hs * dt, nz = a.z + Math.cos(a.face) * hs * dt; if (walkable(nx, nz)) { a.x = nx; a.z = nz; } }
       a.y = this.ground(a.x, a.z);
     } else if (a.state === 'perch') { a.inner.rotation.x = 0; a.t -= dt; if (a.t <= 0) { a.t = rand(1, 4); a.face += rand(-1.2, 1.2); } }
     else if (a.state === 'fly') {

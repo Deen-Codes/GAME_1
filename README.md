@@ -130,6 +130,31 @@ Walk into shops, venues and homes:
 ## Emergency services
 - Explosions start fires. Fire engines come to put them out, and ambulances come to collect the injured.
 
+## Police (reworked)
+- A crime someone calls in puts a red search circle on the minimap. Get out of it and stay unseen for about 3 seconds and you're clear. Hiding inside the circle works too, just slowly.
+- If a cop sees you, the chase is on. Every cop and police car has a vision cone, always shown on the minimap. Buildings block their view, and it's shorter at night.
+- Stars climb one at a time. Five stars needs a real rampage. Reinforcements come from behind you.
+- After you escape, units patrol the area (blue dashed circle). If a patrol spots you, the chase is back on.
+- Drug deals in view of a cop get called in. Passers-by sometimes snitch.
+- A fuel station, car wash or Bay Customs clears your stars once the cops have lost sight of you.
+
+## Prison: Bay County Correctional
+- Busted at 2+ stars means prison (12h to 3 days), in an orange jumpsuit. Your phone and weapons are taken. Free roam: cell block, canteen (3 free meals a day), yard (weights, hoops), visiting room, infirmary.
+- Lights out at 22:00 fast-forwards to morning. Your bunk lets you nap or do your time.
+- Inmates: Big Tony (shot caller: shivs, work, riots), Dre and Moose (fights), Pops (lifer, knows a way out), Rico (talks too much), Lil Mikey (new fish). Guards Grimes and Pike. Mama Joy runs the canteen. Agent Walsh (FBI) offers a deal.
+- Ways out: serve the time, post bail, bribe, community service (an unpaid bin round), a lawyer or bail bondsman on the pay phone, Pops' spoon tunnel, or a riot.
+- Escaping gives you 4 stars. Change clothes at home or a clothes store.
+- Starving in prison sends you to the prison infirmary, not out the door.
+
+## Farms
+- Barns, silos and hay. Tractors plough the fields (hop in and drive one, or buy one). Cows, horses, sheep, pigs, goats and chickens.
+
+## Driving extras
+- Indicators: traffic signals before it turns. Your car signals the next GPS turn.
+- Hold Brake + Drive for wheelspin. Let go of the brake to launch. Steer while holding both for donuts.
+- Tow trucks haul away burnt-out wrecks. Emergency services and police follow the roads.
+- Mood rises when you're well fed, rested and healthy.
+
 ## Homes and furniture
 You start with a free studio downtown. Bigger apartments, houses and the Baywood mansion can be bought. Buy furniture at Casa Bay; it's delivered to your storage. Inside any home, tap the pencil button to edit: pick up, move, rotate, store or add furniture. Furniture is usable:
 - bed: sleep

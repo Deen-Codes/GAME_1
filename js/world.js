@@ -47,7 +47,7 @@ export function groundH(x, z) {
   }
   return h;
 }
-const FIELDS = [
+export const FIELDS = [
   { x0: 312, x1: 432, z0: 30, z1: 300 }, { x0: 312, x1: 432, z0: -300, z1: -30 },
   { x0: 30, x1: 270, z0: -450, z1: -312 }, { x0: -270, x1: -30, z0: -450, z1: -312 },
   { x0: 460, x1: 740, z0: -420, z1: -190 },

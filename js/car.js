@@ -1,7 +1,7 @@
 // Modular car builder. Car faces +Z, sits on y=0, origin at the centre of the wheelbase.
 import * as THREE from '../lib/three.module.min.js';
-import { BASIC } from './character.js?v=23';
-import { patternTexture } from './gun.js?v=23';
+import { BASIC } from './character.js?v=25';
+import { patternTexture } from './gun.js?v=25';
 
 export const BODIES = {
   hatch:  { label: 'Hatchback', L: 3.8, W: 1.75, bh: 0.55, cl: 2.0, ch: 0.62, co: -0.4,  wr: 0.34, mass: 1.0 },
@@ -20,6 +20,7 @@ export const BODIES = {
   classic: { label: 'Classic',  L: 5.1, W: 1.95, bh: 0.6,  cl: 2.0, ch: 0.52, co: -0.25, wr: 0.38, mass: 1.1, fins: true },
   boxtruck: { label: 'Box Truck', L: 6.3, W: 2.2, bh: 0.8, cl: 1.4, ch: 0.95, co: 2.0, wr: 0.45, mass: 1.6, box: true },
   hyper:  { label: 'Hypercar',  L: 4.7, W: 2.05, bh: 0.38, cl: 1.5, ch: 0.38, co: -0.05, wr: 0.38, mass: 0.85 },
+  tractor: { label: 'Tractor', L: 3.8, W: 2.1, bh: 0.9, cl: 1.2, ch: 1.1, co: -0.6, wr: 0.75, mass: 1.6, tractor: true },
   moto:   { label: 'Motorbike', L: 2.1, W: 0.7, bh: 0.5, cl: 0, ch: 0, co: 0, wr: 0.33, mass: 0.45, two: 'moto' },
   bike:   { label: 'Bicycle',   L: 1.75, W: 0.55, bh: 0.4, cl: 0, ch: 0, co: 0, wr: 0.34, mass: 0.3, two: 'bike' },
   scooter: { label: 'E-scooter', L: 1.2, W: 0.5, bh: 0.2, cl: 0, ch: 0, co: 0, wr: 0.12, mass: 0.3, two: 'scooter' },
@@ -128,6 +129,7 @@ export function computeCarStats(cfg) {
   const b = BODIES[c.body] || BODIES.coupe;
   const e = CAR_PARTS.engine[c.engine]?.m || CAR_PARTS.engine.stock.m;
   const s = { top: e.top, acc: e.acc / b.mass, grip: 1, off: c.body === 'buggy' ? 1.4 : 1 };
+  if (b.tractor) return { top: 13, acc: 5, grip: 1.4, off: 1.6, turn: 2.2 };
   if (b.two === 'bike') return { top: 11, acc: 6, grip: 1.3, off: 1.1, turn: 3.2, two: 'bike' };
   if (b.two === 'scooter') return { top: 8.5, acc: 5, grip: 1.2, off: 0.6, turn: 3.4, two: 'scooter' };
   if (b.two === 'moto') { s.top *= 1.12; s.acc = e.acc * 1.25; s.grip = 1.05; }
@@ -159,6 +161,40 @@ function taper(w, h, l, topL, topW, shift) {
 }
 
 // two-wheelers: bicycle, e-scooter, motorbike. Same interface as cars (wheels spin, lights work)
+
+// farm tractor: big rear wheels, small fronts, cab with a roll cage, exhaust stack
+function buildTractor(c, B) {
+  const grp = new THREE.Group(), M = (col, o = {}) => new THREE.MeshStandardMaterial({ color: col, roughness: 0.55, flatShading: true, ...o });
+  const body = M(c.bodyColor || '#2f8a3a'), dark = M('#1a1a1c', { roughness: 0.9 }), rim = M(c.accentColor || '#ffd23f'), steel = M('#9aa0aa', { metalness: 0.6, roughness: 0.4 });
+  const headM = new THREE.MeshStandardMaterial({ color: '#ffffff', emissive: '#fff2b0', emissiveIntensity: 0.6 });
+  const tailM = new THREE.MeshStandardMaterial({ color: '#7a0a10', emissive: '#ff1a2a', emissiveIntensity: 0.5 });
+  const revM = new THREE.MeshStandardMaterial({ color: '#d8dce0', emissive: '#ffffff', emissiveIntensity: 0 });
+  const bx = (w, h, d, m, x, y, z) => { const o = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), m); o.position.set(x, y, z); o.castShadow = true; grp.add(o); return o; };
+  const L = B.L, W = B.W, wheels = [];
+  bx(0.9, 0.8, 2.0, body, 0, 1.0, 0.75);                  // bonnet / engine
+  bx(0.95, 0.12, 0.3, steel, 0, 0.75, 1.8);               // front weight bar
+  bx(1.3, 0.35, 1.3, body, 0, 0.95, -0.7);                // body under the cab
+  bx(0.7, 0.12, 0.6, dark, 0, 1.25, -0.8);                // seat base
+  bx(0.6, 0.5, 0.1, dark, 0, 1.5, -1.1);                  // seat back
+  for (const x of [-0.65, 0.65]) for (const z of [-0.2, -1.3]) bx(0.08, 1.6, 0.08, dark, x, 2.0, z); // cab posts
+  bx(1.5, 0.08, 1.4, body, 0, 2.82, -0.75);               // roof
+  bx(1.3, 0.9, 0.04, new THREE.MeshStandardMaterial({ color: '#bfe8ff', transparent: true, opacity: 0.35 }), 0, 2.2, -0.18); // windscreen
+  bx(0.1, 0.9, 0.1, dark, 0.32, 1.85, 1.25); bx(0.14, 0.08, 0.14, dark, 0.32, 2.32, 1.25); // exhaust stack
+  bx(0.22, 0.14, 0.06, headM, -0.3, 1.25, 1.77); bx(0.22, 0.14, 0.06, headM, 0.3, 1.25, 1.77);
+  bx(0.14, 0.1, 0.05, tailM, -0.6, 1.05, -1.4); bx(0.14, 0.1, 0.05, tailM, 0.6, 1.05, -1.4); bx(0.1, 0.08, 0.05, revM, 0, 1.05, -1.4);
+  bx(1.1, 0.1, 0.3, steel, 0, 0.6, -1.6);                 // hitch
+  for (const [fz, r, w] of [[1, 0.42, 0.3], [-1, 0.78, 0.5]]) for (const sx of [-1, 1]) {
+    const pivot = new THREE.Group(); pivot.position.set(sx * (fz > 0 ? 0.72 : 0.92), r, fz > 0 ? 1.15 : -0.85); grp.add(pivot);
+    const spin = new THREE.Group(); pivot.add(spin);
+    const tyre = new THREE.Mesh(new THREE.CylinderGeometry(r, r, w, 14).rotateZ(Math.PI / 2), dark); spin.add(tyre);
+    for (let i = 0; i < 10; i++) { const lug = new THREE.Mesh(new THREE.BoxGeometry(w + 0.04, 0.08, 0.14), dark); const a = i / 10 * Math.PI * 2; lug.position.set(0, Math.cos(a) * r, Math.sin(a) * r); lug.rotation.x = -a; spin.add(lug); }
+    const hub = new THREE.Mesh(new THREE.CylinderGeometry(r * 0.55, r * 0.55, w + 0.02, 10).rotateZ(Math.PI / 2), rim); spin.add(hub);
+    wheels.push({ pivot, spin, front: fz > 0 });
+    if (fz < 0) bx(0.6, 0.06, 1.0, body, sx * 0.92, r * 2 + 0.05, -0.85); // mudguards
+  }
+  grp.traverse(m => { if (m.isMesh) m.castShadow = true; });
+  return { group: grp, wheels, headM, tailM, revM, glow: null, length: L, width: W, height: 2.9, wr: 0.6 };
+}
 function buildTwo(c, B) {
   const grp = new THREE.Group(), M = (col, o = {}) => new THREE.MeshStandardMaterial({ color: col, roughness: 0.5, ...o });
   const bodyM = M(c.bodyColor, { metalness: 0.4, roughness: 0.35 }), dark = M('#16161a', { roughness: 0.8 }), chrome = M('#d0d4da', { metalness: 0.9, roughness: 0.2 });
@@ -211,6 +247,7 @@ export function buildCar(cfg) {
   const c = { ...DEFAULT_CAR, ...cfg };
   const B = BODIES[c.body] || BODIES.coupe;
   if (B.two) return buildTwo(c, B);
+  if (B.tractor) return buildTractor(c, B);
   const grp = new THREE.Group();
   const fin = c.finish;
   const look = { gloss: [0.25, 0.2], matte: [0.85, 0], metallic: [0.3, 0.75], chrome: [0.06, 1], camo: [0.8, 0], carbon: [0.35, 0.3] }[fin] || [0.3, 0.3];
@@ -415,4 +452,4 @@ export function buildCar(cfg) {
   return { group: grp, wheels, headM, tailM, revM, glow, length: L, width: W, height: top + B.ch, wr };
 }
 
-export const CAR_PRICES = { scooter: 800, bike: 400, moto: 9000, hatch: 6000, sedan: 9000, wagon: 11000, coupe: 16000, van: 14000, pickup: 18000, suv: 26000, classic: 30000, lowrider: 24000, convertible: 38000, muscle: 42000, buggy: 15000, boxtruck: 22000, sports: 85000, limo: 70000, hyper: 160000 };
+export const CAR_PRICES = { tractor: 12000, scooter: 800, bike: 400, moto: 9000, hatch: 6000, sedan: 9000, wagon: 11000, coupe: 16000, van: 14000, pickup: 18000, suv: 26000, classic: 30000, lowrider: 24000, convertible: 38000, muscle: 42000, buggy: 15000, boxtruck: 22000, sports: 85000, limo: 70000, hyper: 160000 };

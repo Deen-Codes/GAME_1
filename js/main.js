@@ -1,23 +1,23 @@
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA } from './character.js?v=23';
-import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=23';
-import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=23';
-import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, blockSide } from './world.js?v=23';
-import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=23';
-import { buildPanel, renderStats } from './ui.js?v=23';
-import { Input } from './input.js?v=23';
-import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted } from './audio.js?v=23';
-import { runMinigame } from './minigames.js?v=23';
-import { Peds, bakeCfg, figure } from './peds.js?v=23';
-import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=23';
-import { findRoute } from './nav.js?v=23';
-import { attachWheel } from './wheel.js?v=23';
-import { Animals } from './animals.js?v=23';
-import { Talk } from './talk.js?v=23';
-import { svg, drawIcon } from './icons.js?v=23';
-import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=23';
-import { FURN, CATALOG } from './furniture.js?v=23';
-import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE } from './interiors.js?v=23';
+import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA } from './character.js?v=25';
+import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=25';
+import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=25';
+import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide } from './world.js?v=25';
+import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=25';
+import { buildPanel, renderStats } from './ui.js?v=25';
+import { Input } from './input.js?v=25';
+import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted } from './audio.js?v=25';
+import { runMinigame } from './minigames.js?v=25';
+import { Peds, bakeCfg, figure } from './peds.js?v=25';
+import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=25';
+import { findRoute } from './nav.js?v=25';
+import { attachWheel } from './wheel.js?v=25';
+import { Animals } from './animals.js?v=25';
+import { Talk } from './talk.js?v=25';
+import { svg, drawIcon } from './icons.js?v=25';
+import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=25';
+import { FURN, CATALOG } from './furniture.js?v=25';
+import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE } from './interiors.js?v=25';
 
 const $ = id => document.getElementById(id);
 let inside = null, editMode = false, held = null, pendingCar = false, homeMusic = false, phoneBadge = 0;
@@ -344,7 +344,8 @@ function updateNeeds(dtHours, dt) {
   stats.hunger = Math.max(0, stats.hunger - dtHours * 4);
   const running = !ride && input.stick.m > 0.85;
   stats.energy = Math.max(0, stats.energy - dtHours * (2.6 + (running ? 2 / (1 + lvl('stamina') * 0.15) : 0)));
-  stats.mood = clamp(stats.mood + (55 - stats.mood) * dtHours * 0.05 - (stats.hunger < 20 ? dtHours * 3 : 0) - (stats.energy < 15 ? dtHours * 2 : 0), 0, 100);
+  const moodGoal = 50 + (stats.hunger > 60 ? 10 : 0) + (stats.energy > 60 ? 10 : 0) + (stats.hunger > 85 && stats.energy > 85 ? 6 : 0) + (P.hp >= maxHP() * 0.9 ? 4 : 0); // fed + rested + healthy = happier
+  stats.mood = clamp(stats.mood + (moodGoal - stats.mood) * dtHours * (stats.mood < moodGoal ? 0.12 : 0.05) - (stats.hunger < 20 ? dtHours * 3 : 0) - (stats.energy < 15 ? dtHours * 2 : 0), 0, 100);
   needWarnT -= dt;
   if (stats.hunger <= 0) { stats.starveT = (stats.starveT || 0) + dt; P.hp -= dt * 0.6; if (stats.starveT > 90 || P.hp <= 0) { stats.starveT = 0; toast('You collapsed from hunger...', 3); die(); } } else stats.starveT = 0;
   if (needWarnT <= 0) {
@@ -377,6 +378,7 @@ function equipWeapon() {
   hudCache.wpn = null;
 }
 function selectWeapon(id) {
+  if (stats.jail && id !== 'fist') { toast('No weapons inside. Your stuff is in a locker at intake.'); sfx.fail(); return; }
   if (!arsenal.owned.includes(id)) { toast(`${SLOT[id].name} is locked. Buy one at Bay Arms.`); sfx.fail(); return; }
   if (id !== 'fist') arsenal.last = id;
   arsenal.cur = id; equipWeapon(); sfx.equip(); saveGame();
@@ -388,8 +390,17 @@ function startReload() { const a = am(); if (P.reload <= 0 && a.res > 0 && a.mag
 // ---------------- vehicles
 const vehicles = [];
 let ride = null, myCar = null, headSpot = null, headTarget = null;
+// indicators: four amber lamps on the corners, blinked by setBlink(obj, -1 | 0 | 1)
+const BLINK_ON = new THREE.MeshBasicMaterial({ color: '#ffb21a' }), BLINK_OFF = new THREE.MeshStandardMaterial({ color: '#7a4a10', roughness: 0.4 }), blinkGeo = new THREE.BoxGeometry(0.16, 0.1, 0.1);
+function addBlinkers(group, L, W, y = 0.75) {
+  const out = { L: [], R: [] };
+  for (const side of [-1, 1]) for (const end of [1, -1]) { const m = new THREE.Mesh(blinkGeo, BLINK_OFF); m.position.set(side * (W / 2 - 0.08), y, end * (L / 2 - 0.02)); group.add(m); (side > 0 ? out.R : out.L).push(m); }
+  return out;
+}
+function setBlink(bl, dir) { if (!bl) return; const on = Math.floor(time * 3.2) % 2 === 0; for (const m of bl.L) m.material = dir < 0 && on ? BLINK_ON : BLINK_OFF; for (const m of bl.R) m.material = dir > 0 && on ? BLINK_ON : BLINK_OFF; }
 function makeVehicle(cfg, x, z, h, personal) {
   const b = buildCar(cfg); dyn.add(b.group);
+  if (!b.two) b.blink = addBlinkers(b.group, b.length, b.width, Math.min(0.8, b.height * 0.55));
   const v = { cfg, b, st: computeCarStats(cfg), s: { x, z, h, v: 0, vx: 0, vz: 0, steer: 0, braking: false }, personal };
   vehicles.push(v); placeVehicle(v); return v;
 }
@@ -446,13 +457,21 @@ function updateTraffic(dt) {
     t.speed = damp(t.speed, want, want < t.speed ? 6 : 1.2, dt);
     if (block && t.honk <= 0 && Math.random() < 0.01) { t.honk = 4; if (Math.hypot(t.x - ox, t.z - oz) < 30) sfx.horn(); }
     t.pos += t.dir * t.speed * dt;
-    if ((t.dir > 0 && t.pos >= t.next) || (t.dir < 0 && t.pos <= t.next)) {
+    // decide the next turn ~25m early so the car can signal it
+    if (t.planFor !== t.next && Math.abs(t.next - t.pos) < 26) {
       const node = t.next, c = t.c;
       const idxAlong = Math.round((node - (t.axis === 'x' ? c.cx : c.cz)) / 48), idxLine = Math.round((t.line - (t.axis === 'x' ? c.cz : c.cx)) / 48);
       const rA = t.axis === 'x' ? c.kx : c.kz, rL = t.axis === 'x' ? c.kz : c.kx, opts = [];
       if (idxAlong + t.dir >= rA[0] && idxAlong + t.dir <= rA[1]) opts.push('s', 's');
       if (idxLine + 1 <= rL[1]) opts.push('+'); if (idxLine - 1 >= rL[0]) opts.push('-');
-      const ch = opts.length ? pick(opts) : 'u';
+      t.plan = opts.length ? pick(opts) : 'u'; t.planFor = t.next;
+      if (t.plan === '+' || t.plan === '-') { const nd = t.plan === '+' ? 1 : -1, nfx = t.axis === 'x' ? 0 : nd, nfz = t.axis === 'x' ? nd : 0; t.sig = Math.sign(wrapA(Math.atan2(nfx, nfz) - t.h)); } else t.sig = 0;
+    }
+    if (!t.blink) t.blink = addBlinkers(t.mesh, t.lib.len || 4.4, 1.9, 0.7);
+    setBlink(t.blink, t.sig || 0);
+    if ((t.dir > 0 && t.pos >= t.next) || (t.dir < 0 && t.pos <= t.next)) {
+      const node = t.next;
+      const ch = t.planFor === node && t.plan ? t.plan : 'u'; t.planFor = null; t.sig = 0;
       if (ch === 's') t.next = node + t.dir * 48;
       else if (ch === 'u') { t.dir = -t.dir; t.next = node + t.dir * 48; }
       else { const nd = ch === '+' ? 1 : -1, oldLine = t.line; t.axis = t.axis === 'x' ? 'z' : 'x'; t.line = node; t.pos = oldLine; t.dir = nd; t.next = oldLine + nd * 48; }
@@ -662,9 +681,9 @@ function toast(msg, dur = 2.4) { const t = $('toast'); t.textContent = msg; t.cl
 function hurt(d) { if (P.dead || d <= 0) return; P.hp = Math.max(0, P.hp - d); P.hurtT = 0; hurtFlash = 0.35; shake = Math.max(shake, 0.3); navigator.vibrate?.(30); if (P.hp <= 0) die(); }
 function die() {
   if (P.dead) return;
-  P.dead = true; P.deadT = 3.2; if (ride) exitCar(); if (inside) exitInterior(true); if (WANT.stars) clearWanted();
+  P.dead = true; P.deadT = 3.2; if (ride) exitCar(); if (inside && !stats.jail) exitInterior(true); if (WANT.stars) clearWanted();
   const lost = Math.floor(money * 0.1); money -= lost; stats.mood = Math.max(0, stats.mood - 20);
-  $('deathScreen').querySelector('span').textContent = `Hospital bill: ${fmt(lost)}. Waking up at Bay General...`;
+  $('deathScreen').querySelector('span').textContent = stats.jail ? 'Waking up in the prison infirmary...' : `Hospital bill: ${fmt(lost)}. Waking up at Bay General...`;
   $('deathScreen').classList.add('on'); if (job) endJob('You blacked out. Shift over.');
 }
 function homeSpot() {
@@ -677,6 +696,11 @@ function respawn() {
   P.dead = false; P.hp = maxHP() * 0.8; P.hurtT = 99; P.kx = P.kz = 0; const starved = stats.hunger <= 1; stats.hunger = Math.max(stats.hunger, 45); stats.energy = Math.max(stats.energy, 40);
   heroRoot.visible = true; hero.root.rotation.x = 0;
   $('deathScreen').classList.remove('on');
+  if (stats.jail) { // you stay locked up: the prison has its own infirmary
+    if (inside?.id !== 'prison') { enterPrison(false); return; }
+    const w = inside.h.toWorld(14, 11.8); P.x = w.x; P.z = w.z; P.face = Math.PI; P.y = 0; updateCamera(0, true);
+    toast(starved ? 'You collapsed from hunger. Nurse Ortega put you on a drip. Eat at the canteen!' : 'You woke up in the prison infirmary. Still locked up.', 4); return;
+  }
   const h = PLACES.find(q => q.id === 'v_hospital');
   Object.assign(P, { x: h.x, z: h.z, face: 0 }); P.y = baseY(P.x, P.z);
   enterInterior(h);
@@ -723,7 +747,7 @@ function updateFoot(dt) {
   for (const p of peds.list) { const dx = P.x - p.x, dz = P.z - p.z, d = Math.hypot(dx, dz); if (d < 0.7 && d > 0.01 && p.state !== 'down') { p.x -= dx / d * (0.7 - d); p.z -= dz / d * (0.7 - d); } }
   for (const n of allNpcs()) { const dx = P.x - n.x, dz = P.z - n.z, d = Math.hypot(dx, dz); if (d < 0.75 && d > 0.01) { P.x = n.x + dx / d * 0.75; P.z = n.z + dz / d * 0.75; } }
   if (!canWalk(P.x, P.z)) { P.x = ox; P.z = oz; }
-  if (inside && P.z > ORIGIN.z + inside.h.d / 2 + 0.35) { exitInterior(); return; }
+  if (inside && P.z > ORIGIN.z + inside.h.d / 2 - (inside.id === 'prison' ? 0.6 : -0.35)) { if (stats.jail && inside.id === 'prison') { P.z = ORIGIN.z + inside.h.d / 2 - 0.6; if (time > gateT) { gateT = time + 3; toast(`The gate is locked. ${hrs(jailLeft())} left.`); } } else { exitInterior(); return; } }
   const gy = swim ? WATER_Y - 1.05 : Math.max(baseY(P.x, P.z), inside ? -99 : roofAt(P.x, P.z, P.y));
   if (editMode) { updateEdit(dt); }
   else {
@@ -995,8 +1019,10 @@ function carSmoke(v, dt) {
 function repairCar(v, svc) {
   const dmgPct = 100 - (v.hp ?? 100), cost = svc === 'wash' ? Math.max(25, Math.round(dmgPct * 8)) : Math.max(15, Math.round(dmgPct * 6));
   if (v.wrecked) { toast("It's a burnt-out wreck. Nothing to fix."); return; }
+  if (WANT.stars && WANT.seen) { toast("Not with the cops watching! Lose them first."); sfx.fail(); return; }
   if (money < cost) { toast(`That'll be ${fmt(cost)}. You can't afford it.`); sfx.fail(); return; }
   spend(cost); v.s.v = 0;
+  if (WANT.stars) setTimeout(() => clearWanted('Fresh look, new plates. The cops lost you.'), 900);
   fade(() => {
     const s = { ...v.s }, wasRide = ride === v;
     if (v === myCar) { rebuildMyCar(s); if (wasRide) { ride = myCar; heroRoot.visible = !!myCar.b.two; } }
@@ -1026,6 +1052,7 @@ function riderPose(v, dt) {
 // car-vs-car: two circles per car (front & back). The moving car gets pushed back, the other one gets shoved.
 function carCircles(v) { const s = v.s, fx = Math.sin(s.h), fz = Math.cos(s.h), o = v.b.length * 0.27, r = v.b.width * 0.56; return [[s.x + fx * o, s.z + fz * o, r], [s.x - fx * o, s.z - fz * o, r]]; }
 function collideCars(v, o, spd) {
+  if (v.towed || o.towed || v.towing === o || o.towing === v) return false;
   const A = carCircles(v), B = carCircles(o); let hit = false;
   for (const a of A) for (const b of B) {
     const dx = a[0] - b[0], dz = a[1] - b[1], d = Math.hypot(dx, dz), m = a[2] + b[2];
@@ -1053,7 +1080,23 @@ function updateVehicles(dt) {
       const brk = input.held('x') || input.keys.has('KeyS') || input.keys.has('ArrowDown');
       const onRoad = !!roadAt(c.x, c.z), sand = c.z > sandLine(c.x), hill = c.x < -300 && !onRoad;
       const top = s.top * dk * (onRoad ? 1 : Math.min(1, (sand ? 0.45 : hill ? 0.55 : 0.65) * s.off));
-      if (gas && !brk) { if (c.v < -0.3) c.v = Math.min(0, c.v + 16 * dt); else if (c.v < top) c.v = Math.min(top, c.v + s.acc * dt * (1 - Math.max(0, c.v) / (s.top * 1.15))); }
+      // launch control: hold brake + drive while stopped to build revs, let go of brake to launch
+      if (gas && brk && Math.abs(c.v) < (v.launch > 0 ? 4 : 1.2) && !b.two) {
+        // brake + drive = wheelspin (and launch control when you let go of the brake); steer at the same time for donuts
+        v.launch = Math.min(1, (v.launch || 0) + dt * 0.9);
+        const dn = clamp(-st.x, -1, 1);
+        if (Math.abs(dn) > 0.25) { c.h = wrapA(c.h + dn * 3.2 * dt); c.v = 2.6; c.steer = dn; v.donut = true; for (let q = 0; q < 2; q++) spawnParticles(c.x - Math.sin(c.h) * b.length * 0.4 + rand(-0.6, 0.6), 0.25, c.z - Math.cos(c.h) * b.length * 0.4 + rand(-0.6, 0.6), ['#f0f0f0', '#c8c8c8'], 1, 1.2, 1.4, 0.55, -1); if (Math.random() < dt * 2) sfx.click?.(); }
+        else { c.v = 0; v.donut = false; }
+        for (const w of b.wheels) if (!w.front) w.spin.rotation.x += 40 * dt;
+        if (Math.random() < dt * (10 + v.launch * 30)) spawnParticles(c.x - Math.sin(c.h) * b.length * 0.45, 0.25, c.z - Math.cos(c.h) * b.length * 0.45, ['#e8e8e8', '#bdbdbd'], 1, 1.5, 0.9, 0.4, -1);
+        if (v.launch >= 1 && !v.launchReady && !v.donut) { v.launchReady = true; toast('Launch control ready. Let go of the brake!', 1.2); navigator.vibrate?.(15); }
+      } else if (gas && !brk && v.launch > 0.25 && !v.donut) {
+        c.v = Math.max(c.v, s.top * 0.42 * v.launch); shake = Math.max(shake, 0.25 * v.launch); if (v.launch >= 1) toast('LAUNCH!', 0.8);
+        spawnParticles(c.x - Math.sin(c.h) * b.length * 0.45, 0.25, c.z - Math.cos(c.h) * b.length * 0.45, ['#e8e8e8', '#bdbdbd'], 14, 3, 1.2, 0.5, -1);
+        v.launch = 0; v.launchReady = false;
+      } else { v.launch = 0; v.launchReady = false; v.donut = false; }
+      if (v.launch > 0) { /* revving on the spot */ }
+      else if (gas && !brk) { if (c.v < -0.3) c.v = Math.min(0, c.v + 16 * dt); else if (c.v < top) c.v = Math.min(top, c.v + s.acc * dt * (1 - Math.max(0, c.v) / (s.top * 1.15))); }
       else if (brk) { if (c.v > 0.3) { c.v = Math.max(0, c.v - 18 * dt); c.braking = true; } else c.v = Math.max(-s.top * 0.32, c.v - s.acc * 0.6 * dt); }
       else c.v = damp(c.v, 0, 0.8, dt);
       if (c.v > top + 0.5) c.v = damp(c.v, top, 1.5, dt);
@@ -1089,11 +1132,67 @@ function updateVehicles(dt) {
     for (const w of b.wheels) { w.spin.rotation.x += c.v * dt / b.wr; if (w.front) w.pivot.rotation.y = c.steer * 0.45; }
   }
   const lv = ride || myCar, on = night > 0.25;
-  for (const v of vehicles) { v.b.headM.emissiveIntensity = on ? 2.2 : 0.4; v.b.tailM.emissiveIntensity = v.s.braking || (v === ride && input.held('x') && v.s.v > 0.3) ? 3 : on ? 1.2 : 0.4; if (v.b.revM) v.b.revM.emissiveIntensity = v.s.v < -0.4 ? 2.4 : 0; if (v.b.glow) v.b.glow.material.opacity = 0.35 + night * 0.4; }
+  for (const v of vehicles) { if (v.b.blink) setBlink(v.b.blink, v.wrecked ? 0 : v === ride ? gpsTurn(v) : 0); v.b.headM.emissiveIntensity = on ? 2.2 : 0.4; v.b.tailM.emissiveIntensity = v.s.braking || (v === ride && input.held('x') && v.s.v > 0.3) ? 3 : on ? 1.2 : 0.4; if (v.b.revM) v.b.revM.emissiveIntensity = v.s.v < -0.4 ? 2.4 : 0; if (v.b.glow) v.b.glow.material.opacity = 0.35 + night * 0.4; }
   if (lv) { const s = lv.s, fx = Math.sin(s.h), fz = Math.cos(s.h); headSpot.intensity = on && ride ? 60 : 0; headSpot.position.set(s.x + fx * lv.b.length * 0.5, 1.0, s.z + fz * lv.b.length * 0.5); headTarget.position.set(s.x + fx * 18, 0, s.z + fz * 18); }
-  engineSound(!!ride, ride ? Math.abs(ride.s.v) : 0);
+  engineSound(!!ride, ride ? Math.max(Math.abs(ride.s.v), (ride.launch || 0) * 30) : 0);
 }
 
+// which way the GPS route turns next (within ~35m): -1 / 0 / +1 in car-local x
+function gpsTurn(v) {
+  if (!route || route.length < 3 || v.b.two) return 0;
+  const c = v.s; let k = 0, bd = 1e9;
+  for (let i = 0; i < route.length; i++) { const d = Math.hypot(route[i][0] - c.x, route[i][1] - c.z); if (d < bd) { bd = d; k = i; } }
+  if (bd > 14) return 0;
+  for (let j = k; j < route.length - 1; j++) {
+    if (Math.hypot(route[j][0] - c.x, route[j][1] - c.z) > 35) break;
+    const a = Math.atan2(route[j + 1][0] - route[j][0], route[j + 1][1] - route[j][1]), dh = wrapA(a - c.h);
+    if (Math.abs(dh) > 0.7 && Math.abs(dh) < 2.6) return Math.sign(dh);
+  }
+  return 0;
+}
+// ================================================================ FARMS: barns, silos, hay and tractors ploughing the rows
+const farmGroup = new THREE.Group(); G.scene.add(farmGroup);
+(function buildFarms() {
+  const M = c => new THREE.MeshStandardMaterial({ color: c, roughness: 0.8, flatShading: true });
+  const red = M('#a8302a'), white = M('#f2ece0'), roof = M('#4a4a50'), silo = M('#c8ccd4'), hay = M('#e0c060'), wood = M('#7a5230');
+  const box = (w, h, d, m, x, y, z, ry = 0) => { const o = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), m); o.position.set(x, y + h / 2, z); o.rotation.y = ry; o.castShadow = o.receiveShadow = true; farmGroup.add(o); return o; };
+  for (const f of FIELDS) {
+    const bx = f.x1 - 10, bz = f.z0 + 9;
+    box(10, 5, 12, red, bx, 0, bz);                                   // barn
+    for (const s of [-1, 1]) { const r = box(6.4, 0.25, 12.6, roof, bx + s * 2.6, 6.0, bz); r.rotation.z = s * -0.62; }
+    box(3.2, 4, 0.12, white, bx, 0, bz + 6.02); box(0.2, 4, 0.14, white, bx, 0, bz + 6.05);       // big doors
+    box(0.18, 4.6, 0.16, white, bx - 1.5, 0, bz + 6.06, 0).rotation.z = 0.7; box(0.18, 4.6, 0.16, white, bx + 1.5, 0, bz + 6.06).rotation.z = -0.7;
+    addCollider({ x0: bx - 5, x1: bx + 5, z0: bz - 6, z1: bz + 6, h: 8 });
+    const sx = bx - 9.5, sz = bz - 2;                                // silo
+    const sl = new THREE.Mesh(new THREE.CylinderGeometry(2.2, 2.2, 10, 14), silo); sl.position.set(sx, 5, sz); sl.castShadow = true; farmGroup.add(sl);
+    const dome = new THREE.Mesh(new THREE.SphereGeometry(2.25, 14, 8, 0, Math.PI * 2, 0, Math.PI / 2), M('#9aa0aa')); dome.position.set(sx, 10, sz); farmGroup.add(dome);
+    addCollider({ x: sx, z: sz, r: 2.3 });
+    for (let i = 0; i < 5; i++) { const h = new THREE.Mesh(new THREE.CylinderGeometry(0.75, 0.75, 1.2, 12).rotateZ(Math.PI / 2), hay); h.position.set(bx - 4 + i * 1.6, 0.75, bz + 9.5 + (i % 2) * 1.8); h.castShadow = true; farmGroup.add(h); }
+    for (let i = 0; i < 6; i++) box(0.14, 1.1, 0.14, wood, f.x0 + 2 + i * 3, 0, f.z0 + 1);    // a bit of fence by the yard
+    box(17, 0.1, 0.08, wood, f.x0 + 9.5, 0.8, f.z0 + 1); box(17, 0.1, 0.08, wood, f.x0 + 9.5, 0.45, f.z0 + 1);
+  }
+})();
+const TRACTOR_CFG = { ...DEFAULT_CAR, body: 'tractor', bodyColor: '#2f8a3a', accentColor: '#ffd23f', name: 'Tractor' };
+function ploughTarget(v, c) {
+  const F = v.field; v.lane ??= F.x0 + 8; v.end ??= 1;
+  const tz = v.end > 0 ? F.z1 - 8 : F.z0 + 22;
+  if (Math.abs(c.z - tz) < 4 && Math.abs(c.x - v.lane) < 4) { v.end = -v.end; v.lane += 6; if (v.lane > F.x1 - 22) v.lane = F.x0 + 8; }
+  return { x: v.lane, z: v.end > 0 ? F.z1 - 8 : F.z0 + 22 };
+}
+let farmT = 0;
+function updateFarm(dt) {
+  if (inside) return;
+  const f = focusPos();
+  for (const v of vehicles) if (v.farm && v.ai === 'plough' && Math.abs(v.s.v) > 1 && Math.random() < dt * 8) spawnParticles(v.s.x - Math.sin(v.s.h) * 2, 0.4, v.s.z - Math.cos(v.s.h) * 2, ['#8a6a44', '#a07a50', '#6a5034'], 1, 1, 1.0, 0.45, -1);
+  farmT -= dt; if (farmT > 0) return; farmT = 2;
+  for (const F of FIELDS) {
+    const dx = Math.max(F.x0 - f.x, 0, f.x - F.x1), dz = Math.max(F.z0 - f.z, 0, f.z - F.z1), d = Math.hypot(dx, dz);
+    if (F.tractor && !vehicles.includes(F.tractor)) F.tractor = null;
+    if (!F.tractor && d < 150) { const v = makeVehicle(TRACTOR_CFG, F.x0 + 8, F.z0 + 24, 0, false); v.ai = 'plough'; v.field = F; v.farm = true; F.tractor = v; }
+    else if (F.tractor && d > 260 && ride !== F.tractor) { removeVehicle(F.tractor); F.tractor = null; }
+    else if (F.tractor && F.tractor.ai === 'plough' && d > 260) F.tractor = null;
+  }
+}
 // ================================================================ NPC looks
 const SKINS = ['#f6c9a4', '#e8b088', '#d39a6a', '#b77a4b', '#8d5524', '#6b3f22', '#452a1a'];
 function seeded(seed) { let s = Math.abs(seed | 0) % 2147483646 + 1; return () => (s = (s * 16807) % 2147483647) / 2147483647; }
@@ -1114,6 +1213,10 @@ function npcCfg(role, seed, style) {
     case 'bartender': return { ...base, top: 'long', topColor: '#ffffff', pants: 'jeans', pantsColor: '#16161b', shoes: 'boots', shoeColor: '#16161b', facialHair: 'moustache' };
     case 'dj': return { ...base, top: 'jacket', topColor: '#9b51e0', accent: '#38e8ff', pants: 'jeans', pantsColor: '#16161b', shoes: 'sneakers', shoeColor: '#ffffff', eyewear: 'visor', hat: 'none', hair: 'mohawk' };
     case 'cop': return { ...COP_CFG, skin: base.skin, hairColor: base.hairColor };
+    case 'guard': return { ...COP_CFG, skin: base.skin, hairColor: base.hairColor, topColor: '#3a4466', hatColor: '#3a4466', accent: '#c8ccd4', build: 1.2 };
+    case 'inmate': return { ...base, ...JUMPSUIT, top: r() < 0.25 ? 'tank' : 'long', shoeColor: '#e8e8e8', facialHair: c(['none', 'stubble', 'goatee', 'beard']), hair: c(['buzz', 'short', 'afro', 'buzz', 'ponytail']) };
+    case 'cook': return { ...base, top: 'long', topColor: '#ffffff', pants: 'jeans', pantsColor: '#3a3d45', shoes: 'boots', shoeColor: '#16161b', hat: 'beanie', hatColor: '#ffffff', facialHair: 'none' };
+    case 'fed': return { ...base, top: 'suit', topColor: '#16161b', accent: '#ffffff', pants: 'jeans', pantsColor: '#16161b', shoes: 'boots', shoeColor: '#16161b', eyewear: 'shades', hair: 'short', facialHair: 'none' };
     case 'bookie': return { ...base, top: 'suit', topColor: '#3a3d45', accent: '#d4af37', pants: 'jeans', pantsColor: '#16161b', shoes: 'boots', shoeColor: '#16161b', eyewear: 'shades', hat: 'none', facialHair: 'goatee' };
     case 'nurse': return { ...base, top: 'tshirt', topColor: '#7ad1c9', pants: 'jeans', pantsColor: '#7ad1c9', shoes: 'sneakers', shoeColor: '#ffffff', hat: 'none' };
     case 'doctor': return { ...base, top: 'long', topColor: '#ffffff', pants: 'jeans', pantsColor: '#3a5fa0', shoes: 'boots', shoeColor: '#16161b', eyewear: 'glasses', hat: 'none' };
@@ -1192,12 +1295,18 @@ function enterInterior(place, prop) {
     tpl.npcs.forEach((n, i) => {
       const w = h.toWorld(n.x, n.z);
       const cfg = (n.role === 'clerk' || n.role === 'gun' || n.role === 'barber') ? npcCfg(n.role, [...place.id].reduce((a, c) => a + c.charCodeAt(0), 0) + i, place.style) : npcCfg(n.role, [...(place?.id || id)].reduce((a, c) => a + c.charCodeAt(0), 0) * 3 + i);
+      if (n.id) { const pc = n.role === 'inmate' ? prisonNpcCfg(n.id, 300 + i) : cfg; inside.npcs.push({ x: w.x, z: w.z, role: n.role, cfg: pc, fig: null, face: n.face || 0, homeFace: n.face || 0, t: Math.random() * 5, parent: dyn, name: PRISONERS[n.id].name, relId: 'pr:' + n.id, pr: n.id, dance: false }); return; }
       inside.npcs.push({ x: w.x, z: w.z, role: n.role, cfg, fig: null, face: 0, homeFace: 0, t: Math.random() * 5, parent: dyn, name: nameFor((place?.id || id) + n.role + i), relId: (place?.id || id) + ':' + n.role, dance: false });
     });
     if (prop) addFamilyNpcs(prop);
     if (prop && WANT.stars) clearWanted('You laid low at home. The heat is off.');
+    if (prop && stats.escaped) { charCfg = { ...stats.escaped }; stats.escaped = null; buildHero(); toast('You burned the jumpsuit and changed into your own clothes.', 3); }
     if (id === 'hospital' && fam().preg?.labour === 'hospital' && date) setTimeout(() => { if (inside?.id === 'hospital') { toast('Nurses rush her to maternity!', 3); giveBirth('hospital'); } }, 1500);
     if (id === 'pit') for (let i = 0; i < 8; i++) { const a = i / 8 * Math.PI * 2, w = h.toWorld(1 + Math.cos(a) * 4.8, -1.5 + Math.sin(a) * 4.8); inside.npcs.push({ x: w.x, z: w.z, role: 'guest', cfg: npcCfg('guest', 700 + i), fig: null, face: Math.atan2(-Math.cos(a), -Math.sin(a)), homeFace: Math.atan2(-Math.cos(a), -Math.sin(a)), t: rand(0, 6), parent: dyn, name: 'Spectator', dance: true }); }
+    if (id === 'prison') { // the rest of the block: eating, shooting the breeze, working out
+      const spots = [[-16, -2.0, Math.PI], [-10.5, -2.0, Math.PI], [-16, 5.5, Math.PI], [-10.5, 7.5, 0], [-16, 3.0, 0], [12, 1.5, 3.9], [15.5, -4, 1.2], [16.5, 3.5, 4.4], [9.5, 5.5, 0.5], [-7, -12, 0], [2, -11.8, 0], [-13, 12, 1.6]];
+      spots.forEach(([x, z, f], i) => { const w = h.toWorld(x, z); inside.npcs.push({ x: w.x, z: w.z, role: 'guest', cfg: npcCfg('inmate', 1200 + i), fig: null, face: f, homeFace: f, t: rand(0, 6), parent: dyn, name: 'Inmate', dance: false }); });
+    }
     if (id === 'club') for (let i = 0; i < 6; i++) { const w = h.toWorld(-2 + (i % 3) * 2, -0.8 + Math.floor(i / 3) * 2.4); inside.npcs.push({ x: w.x, z: w.z, role: 'guest', cfg: npcCfg('guest', 900 + i), fig: null, face: rand(0, 6), homeFace: rand(0, 6), t: rand(0, 6), parent: dyn, name: 'Clubber', dance: true }); }
     for (const s of tpl.spots) { const w = h.toWorld(s.x, s.z); inside.marks.push({ ...makeMarker(w.x, w.z, s.icon, '#ffd23f', { interior: true, small: true }, G.scene), spot: s }); }
     const door = h.toWorld(0, h.d / 2 - 1.3);
@@ -1289,7 +1398,8 @@ function findAction() {
     for (const m of inside.marks) { const d = Math.hypot(m.x - P.x, m.z - P.z); if (d < bd) { bd = d; best = { kind: 'spot', spot: m.spot, icon: m.spot.icon === 'chat' ? 'chat' : 'door', label: SPOT_VERB(m.spot) }; } }
     if (inside.prop) for (const f of inside.h.furn) { const a = FURN[f.t].act; if (!a) continue; const w = inside.h.toWorld(f.x, f.z), d = Math.hypot(w.x - P.x, w.z - P.z) - Math.max(FURN[f.t].w, FURN[f.t].d) / 2 + 0.3; if (d < bd) { bd = d; best = { kind: 'furn', item: f, icon: 'chat', label: FURN_VERB[a] }; } }
     for (const n of inside.npcs) if (n.fam) { const d = Math.hypot(n.x - P.x, n.z - P.z); if (d < bd) { bd = d; best = { kind: 'fam', n, icon: 'chat', label: n.role === 'spouse' ? 'Talk' : (kidStage(n.fam) === 'Baby' ? 'Hold' : 'Talk') }; } }
-    if (P.z > ORIGIN.z + inside.h.d / 2 - 1.6 && Math.abs(P.x - ORIGIN.x) < 1.6) return { kind: 'exit', icon: 'exit', label: 'Leave' };
+    for (const n of inside.npcs) if (n.pr) { const d = Math.hypot(n.x - P.x, n.z - P.z) - 0.4; if (d < bd) { bd = d; best = { kind: 'pnpc', n, icon: 'chat', label: n.role === 'guard' ? 'Guard' : 'Talk' }; } }
+    if (P.z > ORIGIN.z + inside.h.d / 2 - 1.6 && Math.abs(P.x - ORIGIN.x) < 1.6) return stats.jail && inside.id === 'prison' ? best : { kind: 'exit', icon: 'exit', label: 'Leave' };
     return best;
   }
   if (ride) {
@@ -1314,7 +1424,7 @@ function findAction() {
   return best;
 }
 function doAction(a) {
-  if (a.kind === 'vehicle') { if (a.v.rental && !a.v.paid) { if (money < 2) { toast('E-scooter rental is $2'); return; } spend(2); a.v.paid = true; toast('Bay Scoot rental: $2'); } enterVehicle(a.v); }
+  if (a.kind === 'vehicle') { if (a.v.farm) { a.v.ai = null; if (a.v.field) a.v.field.tractor = null; a.v.field = null; } if (a.v.rental && !a.v.paid) { if (money < 2) { toast('E-scooter rental is $2'); return; } spend(2); a.v.paid = true; toast('Bay Scoot rental: $2'); } enterVehicle(a.v); }
   else if (a.kind === 'jack') jackTraffic(a.t);
   else if (a.kind === 'parked') breakIntoParked(a.p);
   else if (a.kind === 'ped') talkToPed(a.p);
@@ -1324,6 +1434,7 @@ function doAction(a) {
   else if (a.kind === 'furn') useFurn(a.item);
   else if (a.kind === 'exit') exitInterior();
   else if (a.kind === 'fam') talkFamily(a.n);
+  else if (a.kind === 'pnpc') talkPrisoner(a.n.pr ? a.n : a.n);
   else if (a.kind === 'ladder') { P.ladder = a.L; P.y = a.top ? a.L.top - 0.05 : 0.3; sfx.click(); }
 }
 function openPlace(p) {
@@ -1340,6 +1451,7 @@ function openPlace(p) {
 }
 async function doSpot(s) {
   const place = inside.place, id = inside.id;
+  if (id === 'prison') return prisonSpot(s);
   if (s.kind === 'talk') return talkVenue();
   if (s.kind === 'mirror') return openShop('clothes', place);
   if (s.kind === 'range') {
@@ -1401,7 +1513,7 @@ async function talkDealer(p) {
     if (stats.haggle[p.id] !== dayN) opts.push({ label: I('smile', `Haggle <small>(Charm ${lvl('charm')})</small>`), id: 'haggle' });
     opts.push({ label: I('x', 'Later'), id: 'bye' });
     const c = opts[await talk.choose(opts)].id;
-    if (c === 'trade') { const v = await openTrade(p); if (v) bumpRel(p.id, Math.min(6, v / 400)); await talk.say(pick(['Pleasure doing business.', 'Smart move.', 'Anything else?', 'Come back tomorrow, prices change.'])); }
+    if (c === 'trade') { const v = await openTrade(p); if (v) dealHeat(p.x, p.z, v); if (v) bumpRel(p.id, Math.min(6, v / 400)); await talk.say(pick(['Pleasure doing business.', 'Smart move.', 'Anything else?', 'Come back tomorrow, prices change.'])); }
     else if (c === 'chat') {
       await talk.say(pick(["How's business?", "What's new around here?", "You good?"]), 'you');
       const k = stats.relDay[p.id + ':chat:' + dayN];
@@ -1591,7 +1703,30 @@ async function talkHomeless(p) {
 
 
 // ================================================================ POLICE: wanted stars, chases, arrests, the station cells
-const WANT = { v: 0, stars: 0, loseT: 0, seen: false, sirenT: 0, arrestT: 0, flash: 0 };
+const WANT = { v: 0, stars: 0, loseT: 0, seen: false, sirenT: 0, arrestT: 0, flash: 0, lx: 0, lz: 0, coolT: 0, spawnT: 0, losT: 0 };
+// heat needed for each star: 1 star is easy to get, 5 stars takes a real rampage
+const STAR_AT = [0, 0.01, 2, 4.5, 8, 12];
+function heatStars() { let st = 0; for (let i = 1; i <= 5; i++) if (WANT.v >= STAR_AT[i]) st = i; return st; }
+const searchR = () => 35 + (WANT.stars || WANT.prev || 1) * 12; // the circle cops search after losing sight of you
+const evadeNeed = () => 5 + WANT.stars * 2.2; // seconds out of sight (and out of the circle) to lose them
+// can a cop at (ax,az) see (bx,bz)? buildings block the view
+function losClear(ax, az, bx, bz) {
+  const d = Math.hypot(bx - ax, bz - az), n = Math.ceil(d / 2.5);
+  for (let i = 1; i < n; i++) { const t = i / n, c = solidPoint(ax + (bx - ax) * t, az + (bz - az) * t, 2.2); if (c && !c.r && (c.h || 99) > 3) return false; }
+  return true;
+}
+// every cop has a vision cone (shown on the minimap): ~140 degrees ahead, plus a small all-round radius up close
+const CONE = 1.2, NEAR = 9;
+const nightK = () => (clockH < 6 || clockH >= 20 ? 0.7 : 1);
+function eyes() { // [x, z, heading, range] for every officer and police car around
+  const k = nightK(), out = [];
+  for (const v of copCars) if (v.police && v.ai !== 'leave') out.push([v.s.x, v.s.z, v.s.h, 55 * k]);
+  for (const c of cops) if (c.cop === 'chase' && c.state !== 'down') out.push([c.x, c.z, c.face, 34 * k]);
+  for (const t of traffic) if (t.police) out.push([t.rx, t.rz, t.rh, 40 * k]);
+  return out;
+}
+function inCone(e, x, z) { const dx = x - e[0], dz = z - e[1], d = Math.hypot(dx, dz); if (d > e[3]) return false; if (d < NEAR) return true; return Math.abs(wrapA(Math.atan2(dx, dz) - e[2])) < CONE; }
+function copSees(x, z) { for (const e of eyes()) if (inCone(e, x, z) && losClear(e[0], e[1], x, z)) return true; return false; }
 const cops = [], copCars = [];
 const COP_CFG = { ...DEFAULT_CHAR, top: 'long', topColor: '#1d2b52', accent: '#ffd23f', pants: 'jeans', pantsColor: '#16161b', shoes: 'boots', shoeColor: '#16161b', hat: 'cap', hatColor: '#1d2b52', mask: 'none', back: 'none', eyewear: 'none', facialHair: 'none', hair: 'short' };
 let copLook = null;
@@ -1599,14 +1734,35 @@ function nearestCop(x, z) { let d = 1e9; for (const c of cops) d = Math.min(d, M
 // a crime happened; witnesses / nearby cops raise your wanted level
 function crime(amt, x = P.x, z = P.z) {
   if (inside || P.dead) return;
-  const nc = nearestCop(x, z), witness = nc < 45 || WANT.stars > 0 || Math.random() < 0.55 || amt >= 1;
+  const copSaw = copSees(x, z);
+  // while you're hiding, only cops that can see you (or the odd brave witness calling it in) add heat
+  const witness = copSaw || (WANT.stars ? WANT.seen || Math.random() < 0.25 : Math.random() < 0.55 || amt >= 1);
   if (!witness) return;
   const before = WANT.stars;
-  WANT.v = Math.min(5.2, WANT.v + amt * (nc < 45 ? 1.6 : 1)); WANT.loseT = 0;
-  WANT.stars = Math.min(5, Math.ceil(WANT.v - 0.05));
+  WANT.v = Math.min(14, WANT.v + amt * (copSaw ? 1.3 : 1)); if (copSaw || !before || WANT.seen) { WANT.lx = x; WANT.lz = z; } WANT.loseT = 0; WANT.patrolT = 0;
+  // stars climb one at a time with a breather between (see updatePolice), so a shoot-out doesn't jump straight to 5
+  if (!before) WANT.stars = Math.min(2, heatStars());
+  else if (WANT.coolT <= 0 && heatStars() > before) WANT.stars = before + 1;
+  if (WANT.stars > before) { WANT.coolT = 7; if (!before) { WANT.seen = copSaw; WANT.spawnT = copSaw ? 1.5 : 3; if (!copSaw) setTimeout(() => toast('Someone called it in. Get out of the red circle!', 2.5), 2300); } }
   if (WANT.stars > before) { toast(WANT.stars === 1 ? 'The police are on to you!' : `Wanted level ${WANT.stars}!`, 2); WANT.flash = 1.2; navigator.vibrate?.([20, 40, 20]); }
 }
-function clearWanted(msg) { WANT.v = 0; WANT.stars = 0; WANT.loseT = 0; P.arrestT = 0; for (const v of copCars) v.ai = 'leave'; for (const c of cops) { c.cop = 'leave'; peds.flee(c, P.x, P.z); } if (msg) toast(msg, 2.5); }
+// drug deals: a cop who can see the deal calls it in; otherwise there's a small chance someone snitches later
+function dealHeat(x, z, value) {
+  if (inside) return;
+  const seen = copSees(x, z);
+  if (seen) { setTimeout(() => { crime(1.6, x, z); toast('A cop saw the deal!', 2.5); }, 400); return; }
+  const snitch = 0.04 + Math.min(0.1, value / 20000) - (lvl('dealing') - 1) * 0.004;
+  if (Math.random() < snitch) setTimeout(() => { if (inside || WANT.stars) return; WANT.v = Math.max(WANT.v, STAR_AT[1]); WANT.stars = Math.max(1, WANT.stars); WANT.lx = x; WANT.lz = z; WANT.seen = false; WANT.loseT = 0; WANT.coolT = 7; toast('Somebody snitched on your deal. The cops are searching the area.', 3.5); }, rand(5000, 15000));
+}
+// you slipped away: the units keep patrolling the area for a while; get spotted by one and it's back on
+function lostCops() {
+  WANT.prev = WANT.stars; WANT.pv = WANT.v; WANT.patrolT = 40 + WANT.stars * 8;
+  WANT.v = 0; WANT.stars = 0; WANT.loseT = 0; WANT.coolT = 0; P.arrestT = 0;
+  for (const v of copCars) if (v.ai === 'chase') { v.ai = 'patrol'; v.sp = null; }
+  for (const c of cops) { c.cop = 'leave'; peds.flee(c, P.x, P.z); }
+  toast('You lost them. Cops are still patrolling the area. Stay out of their sight.', 3);
+}
+function clearWanted(msg) { WANT.patrolT = 0; WANT.v = 0; WANT.stars = 0; WANT.loseT = 0; WANT.coolT = 0; P.arrestT = 0; for (const v of copCars) v.ai = 'leave'; for (const c of cops) { c.cop = 'leave'; peds.flee(c, P.x, P.z); } if (msg) toast(msg, 2.5); }
 function makeCopCar(x, z, h) {
   const v = makeVehicle({ ...DEFAULT_CAR, ...CAR_PRESETS.Police }, x, z, h, false); v.ai = 'chase'; v.police = true;
   const lightM = [new THREE.MeshBasicMaterial({ color: '#ff2a3a' }), new THREE.MeshBasicMaterial({ color: '#2a6aff' })];
@@ -1619,20 +1775,51 @@ function makeCop(x, z) {
   peds.list.push(p); cops.push(p); return p;
 }
 function spawnCopCar() {
-  const f = focusPos();
-  for (let i = 0; i < 12; i++) {
-    const a = rand(0, 6.28), d = rand(55, 85), x = f.x + Math.sin(a) * d, z = f.z + Math.cos(a) * d;
+  const f = focusPos(), head = ride ? ride.s.h : P.face;
+  for (let i = 0; i < 16; i++) {
+    let x, z;
+    if (WANT.seen) { // reinforcements come from behind you, never out of nowhere in front
+      const a = head + Math.PI + rand(-1.6, 1.6), d = rand(80, 105); x = f.x + Math.sin(a) * d; z = f.z + Math.cos(a) * d;
+    } else { // searching: units sweep the circle around where you were last seen
+      const a = rand(0, 6.28), d = rand(0.4, 1.3) * searchR(); x = WANT.lx + Math.sin(a) * d; z = WANT.lz + Math.cos(a) * d;
+      if (Math.hypot(x - f.x, z - f.z) < 80) continue;
+    }
     const r = roadAt(x, z); if (!r || !walkable(x, z, false)) continue;
+    if (losClear(x, z, f.x, f.z) && Math.hypot(x - f.x, z - f.z) < 90) continue;
     makeCopCar(x, z, Math.atan2(f.x - x, f.z - z)); return;
   }
 }
+// where a searching unit heads: random spots inside the search circle
+function searchSpot(v) {
+  for (let i = 0; i < 8; i++) { const a = rand(0, 6.28), d = rand(0, searchR()), x = WANT.lx + Math.sin(a) * d, z = WANT.lz + Math.cos(a) * d; if (roadAt(x, z)) return { x, z }; }
+  return { x: WANT.lx, z: WANT.lz };
+}
 function aiDrive(v, c, s, dt) {
   if (v.ai === 'park') { c.v = damp(c.v, 0, 4, dt); c.steer = damp(c.steer, 0, 4, dt); return; }
-  const tg = v.ai === 'leave' ? { x: c.x + Math.sin(c.h) * 50, z: c.z + Math.cos(c.h) * 50 } : v.ai === 'respond' ? v.target : focusPos();
+  let tg = v.ai === 'leave' ? { x: c.x + Math.sin(c.h) * 50, z: c.z + Math.cos(c.h) * 50 } : v.ai === 'respond' ? v.target : focusPos();
+  if (v.ai === 'plough') tg = ploughTarget(v, c);
+  else if (v.ai === 'patrol') { if (!v.sp || Math.hypot(v.sp.x - c.x, v.sp.z - c.z) < 10) v.sp = searchSpot(v); tg = v.sp; }
+  else if (v.police && v.ai === 'chase' && !WANT.seen) { // lost you: drive around the search area
+    if (!v.sp || Math.hypot(v.sp.x - c.x, v.sp.z - c.z) < 10) v.sp = searchSpot(v);
+    tg = v.sp;
+  } else if (v.police) v.sp = null;
+  // follow the streets (A* over the road grid) instead of ploughing straight through buildings
+  if ((v.ai === 'respond' || (v.police && (v.ai === 'chase' || v.ai === 'patrol'))) && tg) {
+    const far = Math.hypot(tg.x - c.x, tg.z - c.z);
+    if (far > 14) {
+      v.pathT = (v.pathT || 0) - dt;
+      if (!v.path || v.pathT <= 0 || Math.hypot(tg.x - v.pathTo[0], tg.z - v.pathTo[1]) > 12) { v.pathT = 2.5; v.pathTo = [tg.x, tg.z]; v.path = findRoute(c.x, c.z, tg.x, tg.z); v.pi = 1; }
+      const P2 = v.path;
+      if (P2 && P2.length > 1) {
+        while (v.pi < P2.length - 1 && Math.hypot(P2[v.pi][0] - c.x, P2[v.pi][1] - c.z) < 7) v.pi++;
+        const q = P2[Math.min(v.pi, P2.length - 1)]; tg = { x: q[0], z: q[1] };
+      }
+    } else v.path = null;
+  }
   const dx = tg.x - c.x, dz = tg.z - c.z, d = Math.hypot(dx, dz), err = wrapA(Math.atan2(dx, dz) - c.h);
   if (v.unstuck > 0) { v.unstuck -= dt; c.v = damp(c.v, -7, 3, dt); c.steer = damp(c.steer, -Math.sign(err || 1), 6, dt); return; }
   const onFootClose = (!ride && d < 11 && v.ai === 'chase') || (v.ai === 'respond' && d < 10);
-  const top = onFootClose ? 0 : d > 40 ? s.top * 0.92 : d > 14 ? 20 : 9;
+  const top = onFootClose ? 0 : v.ai === 'plough' ? 4.5 : v.ai === 'patrol' ? 10 : (v.police && !WANT.seen && v.ai === 'chase') ? 13 : d > 40 ? s.top * 0.92 : d > 14 ? 20 : 9;
   c.v = damp(c.v, Math.abs(err) > 1.7 && d > 10 ? 7 : top, onFootClose ? 4 : 1.4, dt);
   c.steer = damp(c.steer, clamp(err * 1.8, -1, 1), 7, dt);
   if (Math.abs(c.v) < 1.2 && !onFootClose) { v.stuckT = (v.stuckT || 0) + dt; if (v.stuckT > 1.4) { v.stuckT = 0; v.unstuck = 1.1; } } else v.stuckT = 0;
@@ -1648,7 +1835,7 @@ function copShot(c, tx, tz) {
   m.position.set(c.x, 1.3, c.z); m.rotation.set(0, a, 0); dyn.add(m);
   const sp = 70; bullets.push({ x: c.x, y: 1.3, z: c.z, vx: Math.sin(a) * sp, vz: Math.cos(a) * sp, life: Math.hypot(tx - c.x, tz - c.z) / sp, m, ammo: 'std', slot: 'pistol', cop: true });
   sfx.shot(false, false);
-  if (Math.random() < 0.3 + WANT.stars * 0.05) hurt(ride ? 3 : 6 + Math.random() * 5);
+  if (losClear(c.x, c.z, tx, tz) && Math.random() < 0.3 + WANT.stars * 0.05) hurt(ride ? 3 : 6 + Math.random() * 5);
 }
 function busted() {
   if (P.dead) return;
@@ -1661,8 +1848,10 @@ function busted() {
   $('deathScreen').querySelector('b').textContent = 'BUSTED';
   $('deathScreen').querySelector('span').textContent = `Fined ${fmt(fine)}${lostG.length ? ', stash confiscated' : ''}. ${s * 8} hours in a cell...`;
   $('deathScreen').classList.add('on');
+  if (s >= 2) $('deathScreen').querySelector('span').textContent = `Fined ${fmt(fine)}${lostG.length ? ', stash confiscated' : ''}. Sentenced to ${hrs(PRISON_SENT[Math.min(5, s)])} at Bay County Correctional.`;
   setTimeout(() => {
     $('deathScreen').classList.remove('on'); $('deathScreen').querySelector('b').textContent = 'You blacked out';
+    if (s >= 2) return goToPrison(s);
     advanceTime(s * 8); feed({ mood: -20, hunger: -15 });
     const st = PLACES.find(q => q.id === 'v_police'); Object.assign(P, { x: st.x, z: st.z }); enterInterior(st);
     setTimeout(() => { if (inside?.id !== 'police') return; const w = inside.h.toWorld(3.6, -5.6); P.x = w.x; P.z = w.z; P.face = 0; toast('Released. The cell door is open. Stay out of trouble.', 4); }, 400);
@@ -1673,19 +1862,41 @@ function updatePolice(dt) {
   if (inside) return;
   const f = focusPos();
   // how many cops chase you
-  const wantCars = WANT.stars ? Math.min(5, WANT.stars + (WANT.stars >= 4 ? 1 : 0)) : 0;
-  if (copCars.filter(v => v.ai === 'chase').length < wantCars && Math.random() < dt * 1.5) spawnCopCar();
-  // losing them: stay out of sight
+  WANT.coolT = Math.max(0, WANT.coolT - dt);
+  if (!WANT.stars && WANT.patrolT > 0) {
+    WANT.patrolT -= dt;
+    WANT.losT -= dt;
+    if (WANT.losT <= 0) { WANT.losT = 0.3; const sees = copSees(f.x, f.z), near = Math.hypot(f.x - WANT.lx, f.z - WANT.lz) < searchR() + 40;
+      if (sees && near) { WANT.stars = Math.max(1, WANT.prev || 1); WANT.v = Math.max(STAR_AT[WANT.stars], WANT.pv || 0); WANT.seen = true; WANT.lx = f.x; WANT.lz = f.z; WANT.patrolT = 0; WANT.coolT = 7; for (const v of copCars) if (v.ai === 'patrol') v.ai = 'chase'; toast('Spotted by a patrol! The chase is back on!', 2.5); navigator.vibrate?.([20, 40, 20]); } }
+    if (WANT.patrolT <= 0) for (const v of copCars) if (v.ai === 'patrol') v.ai = 'leave';
+  }
+  if (WANT.stars && WANT.seen && WANT.coolT <= 0 && heatStars() > WANT.stars) { WANT.stars++; WANT.coolT = 7; toast(`Wanted level ${WANT.stars}!`, 2); WANT.flash = 1.2; navigator.vibrate?.([20, 40, 20]); }
+  const wantCars = WANT.stars ? [0, 1, 2, 3, 4, 5][WANT.stars] : 0;
+  // reinforcements arrive at a steady pace instead of all at once
+  WANT.spawnT -= dt;
+  if (WANT.stars && WANT.spawnT <= 0 && copCars.filter(v => v.police && v.ai === 'chase').length < wantCars) { WANT.spawnT = Math.max(2.5, 7 - WANT.stars); spawnCopCar(); }
+  // losing them: break line of sight, get out of the search circle, stay hidden
   if (WANT.stars) {
-    const nc = nearestCop(f.x, f.z); WANT.seen = nc < 70;
-    if (!WANT.seen) { WANT.loseT += dt; if (WANT.loseT > 5 + WANT.stars * 3) clearWanted('You lost the cops.'); }
-    else WANT.loseT = Math.max(0, WANT.loseT - dt * 0.5);
+    const nc = nearestCop(f.x, f.z);
+    WANT.losT -= dt;
+    if (WANT.losT <= 0) {
+      WANT.losT = 0.25; const was = WANT.seen; WANT.seen = copSees(f.x, f.z);
+      if (WANT.seen && !was) toast('Spotted!', 1.2);
+      if (!WANT.seen && was) toast('Out of sight. Get out of the search area.', 2.2);
+    }
+    if (WANT.seen) { WANT.lx = f.x; WANT.lz = f.z; WANT.loseT = 0; }
+    else {
+      const outside = Math.hypot(f.x - WANT.lx, f.z - WANT.lz) > searchR();
+      // out of the circle: gone in ~3s. hiding inside it works too, just slowly
+      WANT.loseT += dt * (outside ? evadeNeed() / 3 : 0.3);
+      if (WANT.loseT > evadeNeed()) lostCops();
+    }
     WANT.sirenT -= dt; if (WANT.sirenT <= 0 && nc < 90) { WANT.sirenT = 0.55; const A = audio(); if (A) { sfx.note(760, A.currentTime, 0.25, 'sawtooth', 0.012, 1600); sfx.note(980, A.currentTime + 0.27, 0.25, 'sawtooth', 0.012, 1600); } }
   }
-  if (WANT.stars) for (let i = traffic.length - 1; i >= 0; i--) { const t = traffic[i]; if (t.police && Math.hypot(t.rx - f.x, t.rz - f.z) < 60) { traffic.splice(i, 1); dyn.remove(t.mesh); makeCopCar(t.rx, t.rz, t.rh); } }
+  if (WANT.stars) for (let i = traffic.length - 1; i >= 0; i--) { const t = traffic[i]; if (t.police && Math.hypot(t.rx - f.x, t.rz - f.z) < 40 && losClear(t.rx, t.rz, f.x, f.z)) { traffic.splice(i, 1); dyn.remove(t.mesh); makeCopCar(t.rx, t.rz, t.rh); } }
   for (const v of copCars) if (v.siren) { const on = Math.floor(time * 6) % 2; v.siren[0].visible = !!on; v.siren[1].visible = !on; }
   // cleanup
-  for (let i = copCars.length - 1; i >= 0; i--) { const v = copCars[i]; if (Math.hypot(v.s.x - f.x, v.s.z - f.z) > (v.ai === 'leave' ? 70 : 160)) { removeVehicle(v); copCars.splice(i, 1); } }
+  for (let i = copCars.length - 1; i >= 0; i--) { const v = copCars[i]; if (Math.hypot(v.s.x - f.x, v.s.z - f.z) > (v.ai === 'leave' ? 70 : v.ai === 'patrol' ? 200 : 160)) { removeVehicle(v); copCars.splice(i, 1); } }
   for (let i = cops.length - 1; i >= 0; i--) { const c = cops[i]; if (!peds.list.includes(c)) { cops.splice(i, 1); continue; } if (c.cop === 'leave' && Math.hypot(c.x - f.x, c.z - f.z) > 50) { peds.list.splice(peds.list.indexOf(c), 1); dyn.remove(c.root); cops.splice(i, 1); } }
   // officers on foot
   let close = false;
@@ -1694,6 +1905,12 @@ function updatePolice(dt) {
     if (!WANT.stars) { c.cop = 'leave'; peds.flee(c, f.x, f.z); continue; }
     const d = Math.hypot(f.x - c.x, f.z - c.z);
     c.shootT -= dt;
+    const sees = WANT.seen && (d < 8 || losClear(c.x, c.z, f.x, f.z));
+    if (!sees) { // search on foot around where you were last seen
+      if (!c.sp || Math.hypot(c.sp.x - c.x, c.sp.z - c.z) < 3) { const a = rand(0, 6.28), r = rand(0, searchR() * 0.6); c.sp = { x: WANT.lx + Math.sin(a) * r, z: WANT.lz + Math.cos(a) * r }; }
+      c.state = 'chase'; c.tx = c.sp.x; c.tz = c.sp.z; continue;
+    }
+    c.sp = null;
     if (WANT.stars >= 3 && d < 24) { c.state = 'punch'; c.tx = f.x; c.tz = f.z; if (c.shootT <= 0) { c.shootT = rand(0.8, 1.4); copShot(c, f.x, f.z); } }
     else { c.state = d > 1.2 ? 'chase' : 'punch'; c.tx = f.x; c.tz = f.z; }
     if (!ride && d < 1.5 && WANT.stars <= 2) close = true;
@@ -1725,23 +1942,31 @@ async function talkPolice(n, place) {
 // ================================================================ EMERGENCY SERVICES: fires, fire engines, ambulances
 const fires = [], ems = [];
 const FIRE_CFG = { ...DEFAULT_CAR, body: 'boxtruck', bodyColor: '#c9302c', accentColor: '#f2f2f2', decal: 'twotone', finish: 'gloss', roof: 'none', name: 'Fire engine' };
+const TOW_CFG = { ...DEFAULT_CAR, body: 'pickup', bodyColor: '#ffc21a', accentColor: '#16161b', decal: 'stripes', finish: 'gloss', roof: 'none', name: 'Tow truck', wheels: 'steel' };
 const AMB_CFG = { ...DEFAULT_CAR, body: 'van', bodyColor: '#f4f4f4', accentColor: '#e23b3b', decal: 'stripes', finish: 'gloss', roof: 'none', name: 'Ambulance' };
 const CREW = { fire: { ...DEFAULT_CHAR, top: 'jacket', topColor: '#c2a040', accent: '#ffd23f', pants: 'cargo', pantsColor: '#c2a040', shoes: 'boots', shoeColor: '#16161b', hat: 'cap', hatColor: '#c9302c', mask: 'none', back: 'none', eyewear: 'none', facialHair: 'none' },
   med: { ...DEFAULT_CHAR, top: 'long', topColor: '#2f6fae', accent: '#ffffff', pants: 'jeans', pantsColor: '#1d2b52', shoes: 'sneakers', shoeColor: '#ffffff', hat: 'none', mask: 'none', back: 'none', eyewear: 'none', facialHair: 'none' } };
 const crewLook = {};
 function addFire(x, z) { if (inside || fires.length > 6) return; fires.push({ x, z, t: 40 }); setTimeout(() => dispatch('fire', x, z), 3500 + Math.random() * 3000); }
-function dispatch(kind, x, z) {
+function dispatch(kind, x, z, wreck) {
+  dispatch.wreck = wreck || null;
   if (inside || ems.some(e => e.kind === kind && !e.done)) return;
   const f = focusPos(); if (Math.hypot(x - f.x, z - f.z) > 140) return;
   for (let i = 0; i < 12; i++) {
     const a = rand(0, 6.28), d = rand(70, 100), sx = x + Math.sin(a) * d, sz = z + Math.cos(a) * d;
     if (!roadAt(sx, sz) || !walkable(sx, sz, false)) continue;
-    const v = makeVehicle(kind === 'fire' ? FIRE_CFG : AMB_CFG, sx, sz, Math.atan2(x - sx, z - sz), false);
+    const v = makeVehicle(kind === 'fire' ? FIRE_CFG : kind === 'tow' ? TOW_CFG : AMB_CFG, sx, sz, Math.atan2(x - sx, z - sz), false);
     v.ai = 'respond'; v.target = { x, z }; v.ems = kind;
-    const lm = kind === 'fire' ? ['#ff2a3a', '#ffffff'] : ['#ff2a3a', '#2a6aff'];
+    const lm = kind === 'fire' ? ['#ff2a3a', '#ffffff'] : kind === 'tow' ? ['#ff9a1a', '#ffd23f'] : ['#ff2a3a', '#2a6aff'];
+    if (kind === 'tow') { // crane boom and hook on the back
+      const gm = new THREE.MeshStandardMaterial({ color: '#2a2b30', metalness: 0.5, roughness: 0.5 }), L = v.b.length;
+      const boom = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.22, 2.0), gm); boom.position.set(0, v.b.height + 0.25, -L * 0.35); boom.rotation.x = 0.45; v.b.group.add(boom);
+      const post = new THREE.Mesh(new THREE.BoxGeometry(0.3, 1.0, 0.3), gm); post.position.set(0, v.b.height - 0.2, -L * 0.12); v.b.group.add(post);
+      const hook = new THREE.Mesh(new THREE.BoxGeometry(1.4, 0.16, 0.2), gm); hook.position.set(0, 0.55, -L / 2 - 0.15); v.b.group.add(hook);
+    }
     v.siren = lm.map((col, j) => { const b = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.16, 0.28), new THREE.MeshBasicMaterial({ color: col })); b.position.set(j ? 0.4 : -0.4, v.b.height + 0.1, v.b.length * 0.3); v.b.group.add(b); return b; });
     if (kind === 'fire') { const lad = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.12, v.b.length * 0.8), new THREE.MeshStandardMaterial({ color: '#c9ccd2', metalness: 0.6 })); lad.position.set(0, v.b.height + 0.08, -0.2); v.b.group.add(lad); }
-    ems.push({ kind, v, x, z, stage: 'drive', crew: [], t: 0 }); return;
+    ems.push({ kind, v, x, z, stage: 'drive', crew: [], t: 0, wreck: kind === 'tow' ? dispatch.wreck : null }); return;
   }
 }
 function updateEmergency(dt) {
@@ -1753,13 +1978,28 @@ function updateEmergency(dt) {
     const f = focusPos(); if (!ride && Math.hypot(f.x - F.x, f.z - F.z) < 1.6) { hurt(dt * 18); }
     if (F.t <= 0) fires.splice(i, 1);
   }
+  // burnt-out wrecks get towed away (yours too only if you abandon it far away: we leave your car alone)
+  for (const w of vehicles) if (w.wrecked && !w.towed && w !== myCar && !w.towCalled && w.burnT <= 0) { w.wreckT = (w.wreckT || 0) + dt; if (w.wreckT > 30 && !ems.some(e => e.kind === 'tow' && !e.done)) { w.towCalled = true; dispatch('tow', w.s.x, w.s.z, w); if (!ems.some(e => e.wreck === w)) w.towCalled = false, w.wreckT = 20; } }
   // injured people get an ambulance
   if (!ems.some(e => e.kind === 'med' && !e.done)) { const hurtP = peds.list.find(p => p.injured && p.state === 'down'); if (hurtP && Math.random() < dt * 0.4) dispatch('med', hurtP.x, hurtP.z); }
   for (let i = ems.length - 1; i >= 0; i--) {
     const E = ems[i], v = E.v;
-    if (!vehicles.includes(v)) { for (const c of E.crew) { const k = peds.list.indexOf(c); if (k >= 0) peds.list.splice(k, 1); dyn.remove(c.root); } ems.splice(i, 1); continue; }
+    if (!vehicles.includes(v)) { if (E.wreck && vehicles.includes(E.wreck) && E.wreck.towed) removeVehicle(E.wreck); for (const c of E.crew) { const k = peds.list.indexOf(c); if (k >= 0) peds.list.splice(k, 1); dyn.remove(c.root); } ems.splice(i, 1); continue; }
     if (v.siren) { const on = Math.floor(time * 5) % 2; v.siren[0].visible = !!on; v.siren[1].visible = !on; }
     const d = Math.hypot(v.s.x - E.x, v.s.z - E.z);
+    if (E.kind === 'tow') { // tow truck: pull up, hook the wreck, drive off with it dangling behind
+      const w = E.wreck;
+      if (!w || !vehicles.includes(w)) { E.stage = 'leave'; v.ai = 'leave'; E.done = true; }
+      else if (E.stage === 'drive') { v.target = { x: w.s.x, z: w.s.z }; if (Math.hypot(v.s.x - w.s.x, v.s.z - w.s.z) < 10.5 && Math.abs(v.s.v) < 2.5) { E.stage = 'hook'; E.t = 0; v.ai = 'park'; sfx.click(); } }
+      else if (E.stage === 'hook') { E.t += dt; if (Math.random() < dt * 8) spawnParticles(w.s.x, 0.8, w.s.z, ['#ffd23f', '#ffffff'], 1, 2, 0.3, 0.08, 4); if (E.t > 3) { E.stage = 'tow'; w.towed = true; v.towing = w; v.ai = 'leave'; w.b.group.rotation.order = 'YXZ'; } }
+      if (E.stage === 'tow' && w && vehicles.includes(w)) {
+        const back = v.b.length / 2 + w.b.length / 2 - 0.4; w.s.h = v.s.h; w.s.x = v.s.x - Math.sin(v.s.h) * back; w.s.z = v.s.z - Math.cos(v.s.h) * back; w.s.v = 0; w.s.vx = w.s.vz = 0;
+        w.b.group.position.set(w.s.x, baseY(w.s.x, w.s.z) + 0.45, w.s.z); w.b.group.rotation.set(-0.16, w.s.h, 0);
+        if (Math.hypot(v.s.x - focusPos().x, v.s.z - focusPos().z) > 90) { removeVehicle(w); removeVehicle(v); ems.splice(i, 1); }
+      }
+      if (v.siren) { const on = Math.floor(time * 3) % 2; v.siren[0].visible = !!on; v.siren[1].visible = !on; }
+      continue;
+    }
     if (E.stage === 'drive' && d < 11 && Math.abs(v.s.v) < 2) {
       E.stage = 'work'; E.t = 0; v.ai = 'park';
       const look = crewLook[E.kind] ||= bakeCfg(CREW[E.kind === 'fire' ? 'fire' : 'med']);
@@ -2372,7 +2612,7 @@ async function talkCustomer(c) {
   const have = stash[g.id] || 0;
   const c2 = await talk.choose([{ label: I('deal', `Hand over ${c.qty} <small>for ${fmt(c.pay)}</small>`), disabled: have < c.qty }, I('x', have < c.qty ? `I don't have it yet (${have}/${c.qty})` : 'Not yet')]);
   if (c2 === 0) {
-    stash[g.id] -= c.qty; addMoney(c.pay); gainXP('dealing', Math.round(c.pay / 25)); bumpRel('street', 4, false); relNames.street = 'the streets';
+    stash[g.id] -= c.qty; addMoney(c.pay); dealHeat(c.npc.x ?? P.x, c.npc.z ?? P.z, c.pay); gainXP('dealing', Math.round(c.pay / 25)); bumpRel('street', 4, false); relNames.street = 'the streets';
     await talk.say(pick(["Pleasure doing business. I'll tell my friends.", "Good stuff. I'll hit you up again.", "Respect."]));
     endTalk(); removeCustomer(c); saveGame(); return;
   }
@@ -2409,7 +2649,7 @@ function nextFare() { const s = randomRoadSpot(80, 260); job.stage = 'pickup'; j
 function binMesh() { const g = new THREE.Group(); const mk = (w, h, d, c, y) => { const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), new THREE.MeshStandardMaterial({ color: c, roughness: 0.8 })); m.position.y = y; m.castShadow = true; g.add(m); return m; }; mk(0.7, 1.0, 0.75, '#2f6f3a', 0.55); mk(0.76, 0.08, 0.82, '#255a2f', 1.09); mk(0.1, 0.1, 0.1, '#16161b', 0.1).position.set(0.25, 0.1, -0.3); return g; }
 function nextBin() { const f = focusPos(); let best = null, bd = 1e9; for (const b of job.bins) { const d = Math.hypot(b.x - f.x, b.z - f.z); if (d < bd) { bd = d; best = b; } } if (best) { job.target = best; setWaypoint(best.x, best.z, 'Next bin'); } else { job.stage = 'return'; job.target = { x: job.depot.x, z: job.depot.z + 6 }; setWaypoint(job.target.x, job.target.z, 'Back to the depot'); } }
 function nextParcel() { const s = randomRoadSpot(200, 650); job.stage = 'deliver'; job.target = s; job.t = s.d / 8 + 25; job.pay = Math.round(60 + s.d * 0.3); setWaypoint(s.x, s.z, 'Parcel drop-off'); }
-function endJob(msg) { if (!job) return; if (job.bins) for (const b of job.bins) dyn.remove(b.m); if (job.v) job.v.taxi = false; toast(`${msg} Earned ${fmt(job.earned)} from ${job.fares} jobs.`, 3.5); if (fareFig) { dyn.remove(fareFig); fareFig = null; } jobMarker.visible = false; job = null; clearWaypoint(); }
+function endJob(msg) { if (!job) return; if (job.cs && !job.csDone) setTimeout(() => { toast('You skipped community service. A warrant is out for you!', 3.5); WANT.v = Math.max(WANT.v, STAR_AT[2]); WANT.stars = Math.max(WANT.stars, 2); WANT.seen = true; WANT.lx = P.x; WANT.lz = P.z; WANT.spawnT = 2; }, 3800); if (job.bins) for (const b of job.bins) dyn.remove(b.m); if (job.v) job.v.taxi = false; toast(`${msg} Earned ${fmt(job.earned)} from ${job.fares} jobs.`, 3.5); if (fareFig) { dyn.remove(fareFig); fareFig = null; } jobMarker.visible = false; job = null; clearWaypoint(); }
 function updateJob(dt) {
   if (!job) return;
   const f = focusPos(), d = Math.hypot(f.x - job.target.x, f.z - job.target.z);
@@ -2417,9 +2657,10 @@ function updateJob(dt) {
     jobMarker.visible = true; jobMarker.position.set(job.target.x, 3, job.target.z); jobMarker.material.opacity = 0.2 + Math.sin(time * 5) * 0.08;
     if (ride !== job.v) return;
     if (d < 7 && Math.abs(ride.s.v) < 2.5) {
+      if (job.stage === 'return' && job.cs) { job.csDone = true; endJob('Community service complete. Your record is clean.'); feed({ mood: 10 }); return; }
       if (job.stage === 'return') { const bonus = 150; job.earned += bonus; addMoney(bonus); endJob(`Round complete! +${fmt(bonus)} bonus.`); return; }
       const b = job.target; job.bins.splice(job.bins.indexOf(b), 1); b.m.position.y += 0.6; setTimeout(() => dyn.remove(b.m), 400);
-      const pay = 35; job.earned += pay; job.fares++; addMoney(pay); gainXP('stamina', 6); gainXP('driving', 4); sfx.thud(); spawnParticles(b.x + 2, 2, b.z, ['#6a5a3a', '#8a8a6a', '#3a3a3a'], 8, 3, 0.6, 0.15);
+      const pay = job.cs ? 0 : 35; job.earned += pay; job.fares++; if (pay) addMoney(pay); gainXP('stamina', 6); gainXP('driving', 4); sfx.thud(); spawnParticles(b.x + 2, 2, b.z, ['#6a5a3a', '#8a8a6a', '#3a3a3a'], 8, 3, 0.6, 0.15);
       toast(`Bin emptied +${fmt(pay)} (${8 - job.bins.length}/8)`, 1.6); nextBin();
     }
     return;
@@ -2476,6 +2717,267 @@ function updateCamera(dt, snap) {
 }
 function gameLayout() { G.cam.aspect = W / H; G.cam.clearViewOffset(); G.cam.setViewOffset(W, H, 0, padHeight() * 0.25, W, H); G.cam.updateProjectionMatrix(); }
 
+
+// ================================================================ PRISON: Bay County Correctional. Its own little world:
+// free roam cell block, canteen, yard, visiting room, infirmary. Lights out fast-forwards the night.
+const PRISON_SENT = [0, 0, 12, 24, 48, 72]; // hours by wanted level when busted
+const PRISONERS = {
+  grimes: { name: 'Officer Grimes', tag: 'Guard', pitch: 120 }, guard2: { name: 'Officer Pike', tag: 'Guard', pitch: 130 },
+  joy: { name: 'Mama Joy', tag: 'Canteen', pitch: 210 }, nurse: { name: 'Nurse Ortega', tag: 'Infirmary', pitch: 220 },
+  walsh: { name: 'Agent Walsh', tag: 'Federal agent', pitch: 140 },
+  tony: { name: 'Big Tony', tag: 'Shot caller · lifer', pitch: 95, look: { build: 1.5, hair: 'buzz', hairColor: '#141414', facialHair: 'goatee', height: 1.05 } },
+  dre: { name: 'Dre "Hands"', tag: 'Inmate · fighter', pitch: 130, look: { build: 1.35, hair: 'afro', facialHair: 'stubble', top: 'tank' } },
+  pops: { name: 'Pops', tag: 'Lifer · 31 years in', pitch: 100, look: { hair: 'short', hairColor: '#d8d8d8', facialHair: 'bigbeard', eyewear: 'glasses', build: 0.95 } },
+  rico: { name: 'Rico', tag: 'Inmate · talks a lot', pitch: 175, look: { hair: 'quiff', build: 0.9, facialHair: 'moustache' } },
+  moose: { name: 'Moose', tag: 'Lifer · weights', pitch: 85, look: { build: 1.7, hair: 'buzz', height: 1.1, facialHair: 'beard', top: 'tank' } },
+  mikey: { name: 'Lil Mikey', tag: 'New fish', pitch: 190, look: { build: 0.85, height: 0.92, hair: 'short', facialHair: 'none' } },
+};
+const JUMPSUIT = { top: 'long', topColor: '#ff7a1a', accent: '#ff7a1a', pants: 'jeans', pantsColor: '#ff7a1a', shoes: 'sneakers', shoeColor: '#e8e8e8', hat: 'none', mask: 'none', back: 'none', eyewear: 'none', gloves: 'none' };
+const jail = () => stats.jail;
+const jailLeft = () => Math.max(0, jail().until - gameHours());
+const hrs = h => h >= 24 ? `${Math.floor(h / 24)}d ${Math.round(h % 24)}h` : `${Math.max(1, Math.round(h))}h`;
+const prisonPlace = () => ({ ...PLACES.find(q => q.id === 'v_police'), interior: 'prison', name: 'Bay County Correctional' });
+function prisonNpcCfg(id, seed) { const base = npcCfg('inmate', seed); return { ...base, ...(PRISONERS[id]?.look || {}) }; }
+function wearJumpsuit(on) {
+  if (on) { stats.jail.outfit ||= { ...charCfg }; charCfg = { ...charCfg, ...JUMPSUIT, top: charCfg.top === 'swim' || charCfg.top === 'shirtless' ? 'long' : JUMPSUIT.top }; }
+  else if (stats.jail?.outfit || stats.escaped) { charCfg = { ...(stats.jail?.outfit || stats.escaped) }; }
+  buildHero();
+}
+function goToPrison(stars) {
+  const h = PRISON_SENT[Math.min(5, stars)] || 12;
+  stats.jail = { until: gameHours() + h, total: h, outfit: { ...charCfg }, shiv: false, spoon: false, dig: 0, plan: false, snitch: false, fights: 0, debt: 0, meals: {}, lawyer: false, csAsked: false };
+  if (arsenal.cur !== 'fist') { arsenal.last = arsenal.cur; arsenal.cur = 'fist'; }
+  wearJumpsuit(true); enterPrison(true);
+}
+function enterPrison(intake) {
+  prisonEnterT = time + 3;
+  const pl = prisonPlace(); Object.assign(P, { x: pl.x, z: pl.z }); enterInterior(pl);
+  setTimeout(() => {
+    if (inside?.id !== 'prison') return;
+    const w = inside.h.toWorld(-4.6, -12.6); P.x = w.x; P.z = w.z; P.face = 0; updateCamera(0, true);
+    if (intake) setTimeout(intakeTalk, 500); else toast(`Bay County Correctional. ${hrs(jailLeft())} left.`, 3);
+  }, 400);
+}
+async function intakeTalk() {
+  const g = inside?.npcs.find(n => n.pr === 'grimes'); if (!g) return;
+  const J = jail(), bail = bailCost();
+  beginTalk(g.cfg, 'Officer Grimes', 'Intake', 120, g.relId);
+  await talk.say(`Welcome to Bay County. You're in for ${hrs(J.total)}. Phone, cash, weapons: confiscated. You get them back when you leave.`);
+  await talk.say("Orange suits you. Cell 5 is yours. Canteen's open all day, yard's open till lights out at 22:00.");
+  const opts = [I('check', 'Fine. I\'ll do my time'), I('cash', `Post bail <small>${fmt(bail)}</small>`)];
+  const cs = J.total <= 24 && Math.random() < 0.65; if (cs) opts.push(I('trash', 'Offer: community service instead'));
+  const c = await talk.choose(opts);
+  if (c === 1) { if (money < bail) { await talk.say("With what money? Get comfortable."); } else { spend(bail); await talk.say('Bail posted. Lucky you.'); endTalk(); return releasePrison('Bail posted. You walk out a free man... for now.'); } }
+  else if (c === 2) { await talk.say("Judge says first-timers can work it off. One full bin round for the city. No pay. Skip it and you're back here with a warrant."); const k = await talk.choose([I('check', 'Deal'), I('x', 'Nah, I\'ll do the time')]); if (k === 0) { endTalk(); return communityService(); } }
+  await talk.say(pick(['Keep your head down.', 'Don\'t make me come find you.', 'Move along.'])); endTalk();
+}
+const bailCost = () => Math.round(150 * jailLeft() + 200);
+function releasePrison(msg = 'Time served. You are free to go.') {
+  fade(() => {
+    wearJumpsuit(false); stats.jail = null; stats.escaped = null;
+    if (inside) exitInterior(true);
+    toast(msg, 3.5); saveGame();
+  });
+}
+function communityService() {
+  wearJumpsuit(false); stats.jail = null;
+  exitInterior(true);
+  const depot = PLACES.find(q => q.id === 'j_bins');
+  setTimeout(() => { startJob(depot); job.cs = true; toast('Community service: empty 8 bins and return the lorry. Unpaid. Skip it and the cops come for you.', 4.5); }, 300);
+}
+function escapePrison(how) {
+  const out = jail().outfit; stats.escaped = out; stats.jail = null;
+  fade(() => {
+    if (inside) exitInterior(true);
+    const a = rand(0, 6.28); P.x += Math.sin(a) * 40; P.z += Math.cos(a) * 40; for (let i = 0; i < 20 && !walkable(P.x, P.z); i++) { P.x += rand(-8, 8); P.z += rand(-8, 8); }
+    P.y = baseY(P.x, P.z); updateCamera(0, true);
+    WANT.v = STAR_AT[4]; WANT.stars = 4; WANT.seen = true; WANT.lx = P.x; WANT.lz = P.z; WANT.coolT = 7; WANT.spawnT = 2;
+    toast(how + ' You\'re out! Still in the jumpsuit. Lose the cops, then change at home or a clothes store.', 5); saveGame();
+  });
+}
+// fast-forward cutscene: dark overlay, clock spins, then you wake up on your bunk
+let cutting = false;
+function prisonSkip(hours, title, sub, after) {
+  if (cutting) return; cutting = true;
+  const el = $('jailCut'), st = gameHours(), hEnd = Math.min(hours, jailLeft() + 0.01);
+  el.querySelector('b').textContent = title; el.querySelector('span').textContent = sub || ''; el.classList.add('on'); setState('mini');
+  const t0 = performance.now(), dur = 2600, clk = el.querySelector('i');
+  const tick = () => {
+    const k = Math.min(1, (performance.now() - t0) / dur), g = st + hEnd * k, hh = Math.floor(g % 24), mm = Math.floor((g % 1) * 60);
+    clk.textContent = `Day ${Math.floor(g / 24)} · ${String(hh).padStart(2, '0')}:${String(mm).padStart(2, '0')}`;
+    if (k < 1) return requestAnimationFrame(tick);
+    advanceTime(hEnd); stats.energy = 100; stats.hunger = Math.max(stats.hunger, 55); P.hp = Math.max(P.hp, maxHP() * 0.8);
+    if (inside?.id === 'prison') { const w = inside.h.toWorld(-4.6, -13.0); P.x = w.x; P.z = w.z; P.face = 0; }
+    el.classList.remove('on'); cutting = false; setState('play'); updateCamera(0, true);
+    after?.(); if (stats.jail && jailLeft() <= 0.01) releasePrison();
+  };
+  requestAnimationFrame(tick);
+}
+let lockT = 0, gateT = 0, prisonEnterT = 0;
+function updatePrison(dt) {
+  if (!stats.jail || P.dead || cutting) return;
+  if (inside?.id !== 'prison') { if (!inside && state === 'play' && time > prisonEnterT) enterPrison(false); return; }
+  if (jailLeft() <= 0) { releasePrison(); return; }
+  lockT -= dt;
+  if ((clockH >= 22 || clockH < 6) && lockT <= 0 && state === 'play') {
+    lockT = 5; toast('LIGHTS OUT! Back to your cells!', 2);
+    setTimeout(() => { if (!stats.jail || state !== 'play') return; const toMorning = ((30 - clockH) % 24) || 8;
+      const J = jail(); let extra = '';
+      if (J.plan && J.spoon) { J.dig = Math.min(100, J.dig + 34); extra = J.dig >= 100 ? 'The tunnel is through.' : `You dug all night with the spoon. Tunnel ${J.dig}%.`; }
+      prisonSkip(toMorning, 'Lights out', extra || pick(['Somebody snores like a chainsaw.', 'Footsteps. A guard\'s torch. Silence.', 'You stare at the ceiling and think about everything.']), () => { toast(`Morning count. ${hrs(jailLeft())} left.`, 3); if (J.dig >= 100 && stats.jail) tunnelReady(); }); }, 1200);
+  }
+}
+async function tunnelReady() {
+  modal(`<h3>The tunnel is through</h3><p>Behind the toilet, a gap just wide enough. Pops was right.</p>`, [{ label: 'Crawl out', cls: 'big', fn: () => { closeModal(); escapePrison('You crawl through the tunnel into a storm drain.'); } }, { label: 'Not yet', fn: closeModal }]);
+}
+async function prisonSpot(s) {
+  const J = jail();
+  if (!J) { toast('You don\'t live here any more.'); return; }
+  if (s.kind === 'bunk') {
+    const left = jailLeft(), btns = [
+      { label: `Nap (2h)`, fn: () => { closeModal(); prisonSkip(2, 'Nap', 'You drift off on the thin mattress.'); } },
+      { label: `Do your time (${hrs(left)})`, cls: 'big', fn: () => { closeModal(); prisonSkip(left + 0.02, 'Doing time', pick(['Days blur. Count, chow, yard, count.', 'You read every book in the library. Twice.', 'Push-ups. Letters. Waiting.']), () => feed({ mood: -10 })); } },
+    ];
+    if (J.plan && J.spoon && J.dig < 100) btns.push({ label: `Dig the tunnel (${J.dig}%)`, fn: () => { closeModal(); if (Math.random() < 0.2) { J.spoon = false; J.until += 12; prisonSkip(4, 'Caught!', 'A guard hears scraping. Spoon confiscated, +12h, a night in the hole.'); } else { J.dig = Math.min(100, J.dig + 25); prisonSkip(3, 'Digging', `Scrape. Scrape. Tunnel ${J.dig}%.`, () => { if (J.dig >= 100) tunnelReady(); }); } } });
+    if (J.dig >= 100) btns.push({ label: 'Use the tunnel', cls: 'big', fn: () => { closeModal(); escapePrison('You crawl through the tunnel into a storm drain.'); } });
+    btns.push({ label: 'Cancel', fn: closeModal });
+    modal(`<h3>Cell 5</h3><p>${hrs(left)} left on your sentence.${J.dig ? ` Tunnel: ${J.dig}%.` : ''}</p>`, btns); return;
+  }
+  if (s.kind === 'canteen') {
+    const k = 'meal:' + dayN; J.meals[k] ||= 0;
+    if (J.meals[k] >= 3) { toast('Three trays a day. Mama Joy says come back tomorrow.'); return; }
+    J.meals[k]++; fade(() => { advanceTime(0.4); feed({ hunger: 45, mood: 3 }); toast(pick(['Mystery meat, mash and a carton of milk. Filling.', 'Taco Tuesday, prison style. Not bad actually.', 'Chili and cornbread. Somebody traded you their pudding.']), 3); });
+    if (J.plan && !J.spoon && Math.random() < 0.7) setTimeout(() => { J.spoon = true; toast('You slipped a metal spoon up your sleeve. Pops will be pleased.', 3.5); }, 600);
+    return;
+  }
+  if (s.kind === 'plift') { const r = await mini('gym', { title: 'Yard weights' }); gainXP('strength', r.score * 14); gainXP('health', r.score * 3); feed({ energy: -10, mood: 6 }); if (r.score > 5) bumpRel('pr:moose', 3); return; }
+  if (s.kind === 'hoops') { fade(() => { advanceTime(0.5); gainXP('stamina', 12); feed({ mood: 10, energy: -8 }); bumpRel('pr:dre', 2); toast(pick(['Pickup game on the yard. You hit the game winner.', 'You got crossed up by Dre. The yard went wild.', 'Three on three. Your team took it.']), 3); }); return; }
+  if (s.kind === 'infirmary') { fade(() => { advanceTime(1); P.hp = maxHP(); feed({ energy: 10 }); toast('Nurse Ortega patched you up. Full health.', 3); }); return; }
+  if (s.kind === 'payphone') return payPhone();
+}
+async function payPhone() {
+  const J = jail(), f = fam(), opts = [], ids = [];
+  if (f.partner) { opts.push(I('heart', `Call ${f.partner.name}`)); ids.push('partner'); }
+  if (f.kids.some(k => kidAge(k) >= 7)) { opts.push(I('people', 'Call the kids')); ids.push('kids'); }
+  if (!J.lawyer) { opts.push(I('case', `Call a lawyer <small>${fmt(500)}</small>`)); ids.push('lawyer'); }
+  opts.push(I('cash', `Bail bondsman <small>${fmt(Math.round(bailCost() * 0.15))} fee</small>`)); ids.push('bond');
+  opts.push(I('chat', 'Call Uncle Ray')); ids.push('ray');
+  opts.push(I('x', 'Hang up')); ids.push('bye');
+  beginTalk(charCfg, 'Pay phone', '25¢ a minute', 180, null);
+  await talk.say('*You pick up the grimy receiver and dial.*', 'you');
+  const c = ids[await talk.choose(opts)];
+  if (c === 'partner') {
+    const r = rel(f.partner.id);
+    await talk.say(r >= 50 ? pick(['Baby! Are you okay? I miss you so much.', 'I put money on your books. Stay safe in there, please.']) : pick(['You got yourself locked up? Really?', 'I can\'t talk long. Call me when you\'re out.']), 'them');
+    bumpRel(f.partner.id, 4); feed({ mood: r >= 50 ? 15 : 2 });
+    if (r >= 70 && money < bailCost()) { await talk.say('I\'ll come post your bail. Don\'t do anything stupid.'); endTalk(); return releasePrison(`${f.partner.name} posted your bail.`); }
+  } else if (c === 'kids') { await talk.say(pick(['Dad? When are you coming home?', 'We drew you a picture. Mom says you\'re on a trip.']), 'them'); feed({ mood: 18 }); }
+  else if (c === 'lawyer') {
+    if (money < 500) await talk.say('Saul Goodwin, attorney at law. Five hundred up front, friend. Call back when you have it.', 'them');
+    else { spend(500); J.lawyer = true; const cut = jailLeft() * 0.3; J.until -= cut; await talk.say(`Saul Goodwin here. Procedural error at your arrest. I got ${hrs(cut)} knocked off.`, 'them'); }
+  } else if (c === 'bond') {
+    const fee = Math.round(bailCost() * 0.15);
+    if (money < fee) await talk.say('Bay Bail Bonds. You need the fee up front, pal.', 'them');
+    else { spend(fee); await talk.say('Done. Walk out the front. Miss your court date and I send the cops.', 'them'); endTalk(); return releasePrison('Bailed out by Bay Bail Bonds.'); }
+  } else if (c === 'ray') { await talk.say(pick(['Kid! What did I tell you? Keep your nose clean!', 'Ha! Your old uncle did a weekend in Bay County back in \'89. Eat the pudding, avoid Moose.']), 'them'); feed({ mood: 8 }); }
+  endTalk(); saveGame();
+}
+// ---------------- people inside
+async function talkPrisoner(n) {
+  const J = jail(), id = n.pr, P2 = PRISONERS[id], rid = 'pr:' + id;
+  beginTalk(n.cfg, P2.name, P2.tag, P2.pitch, rid);
+  if (!J) { await talk.say('You don\'t belong in here any more.'); return endTalk(); }
+  if (J.snitch && (id === 'tony' || id === 'dre' || id === 'moose') && !J.snitchFought) {
+    await talk.say(id === 'tony' ? 'Heard you had a nice chat with the feds. Snitches get stitches.' : 'Tony says you a rat.'); J.snitchFought = true;
+    endTalk(); return prisonFight(id, true);
+  }
+  for (;;) {
+    const opts = [], ids = [];
+    const add = (ic, t, k) => { opts.push(I(ic, t)); ids.push(k); };
+    add('chat', 'Chat', 'chat');
+    if (id === 'grimes' || id === 'guard2') { add('lock', `How long have I got?`, 'time'); add('cash', `Post bail <small>${fmt(bailCost())}</small>`, 'bail'); if (!J.csAsked && J.total <= 24 && !J.fights) add('trash', 'Can I do community service?', 'cs'); add('cash', `Bribe <small>${fmt(1000)}</small>`, 'bribe'); add('fist', 'Mouth off', 'mouth'); }
+    if (id === 'tony') { add('bag', 'Need a shiv', 'shiv'); if (!J.debt) add('star', 'Got any work?', 'work'); if (J.debt === 2) add('cash', 'Rico paid up', 'paid'); add('bolt', 'Start a riot', 'riot'); }
+    if (id === 'dre' || id === 'moose') add('fist', 'Square up', 'fight');
+    if (id === 'rico' && J.debt === 1) add('cash', 'Tony wants his money', 'collect');
+    if (id === 'pops' && rel(rid) >= 25 && !J.plan) add('key', 'How do I get out of here?', 'plan');
+    if (id === 'walsh') add('shield', 'What do the feds want?', 'deal');
+    if (id === 'joy') add('food', `Extra portion <small>${fmt(5)}</small>`, 'food');
+    if (id === 'nurse') add('cross', 'Patch me up', 'heal');
+    if (id === 'mikey') add('shield', 'Anyone bothering you?', 'protect');
+    add('x', 'Later', 'bye');
+    const c = ids[await talk.choose(opts)];
+    if (c === 'bye') break;
+    if (c === 'chat') {
+      const lines = { tony: ['Thirty years I been running this block. Respect is the only currency in here.', 'You see Rico? Don\'t tell him nothing.', 'Outside you\'re somebody. In here you\'re a number. Unless you\'re me.'],
+        dre: ['Yard\'s the only place I feel free.', 'You fight? Nah, for real, you fight?', 'Golden Gloves at sixteen. Then this.'],
+        pops: ['Got in when gas was a dollar. They took my youth, but they ain\'t took my mind.', 'Walls talk, kid. You just gotta listen.', 'Every man in here thinks about the outside. Some of us think about the inside of the walls.'],
+        rico: ['Psst. You hear about Moose? Nah, I can\'t say. ...Okay I\'ll say.', 'I know everything that goes on in this place. Everything.', 'Guards like me. I\'m likeable.'],
+        moose: ['Life. No parole. So I lift.', 'Spot me. Don\'t drop it on my neck.', '...'],
+        mikey: ['First time inside. Is it always this loud?', 'They took my shoelaces. Why do they take your shoelaces?', 'I just want to go home, man.'],
+        joy: ['Eat, baby, you\'re skin and bones.', 'Twenty years I been feeding these boys.', 'Pudding\'s on Thursdays. Don\'t tell nobody.'],
+        nurse: ['Hydrate. Nobody in here hydrates.', 'You\'d be amazed what they swallow.'], walsh: ['I don\'t do small talk.'], grimes: ['Keep it moving.', 'I got eight years to my pension. Don\'t ruin it.'], guard2: ['Eyes forward.', 'Nice day for the yard.'] }[id];
+      await talk.say(pick(lines)); bumpRel(rid, 4); gainXP('charm', 5); feed({ mood: 2 });
+    }
+    else if (c === 'time') await talk.say(`${hrs(jailLeft())} left. Lights out at 22:00, count at 06:00.`);
+    else if (c === 'bail') { const b = bailCost(); if (money < b) await talk.say('You ain\'t got it. Sit down.'); else { spend(b); endTalk(); return releasePrison('Bail posted. You walk out a free man.'); } }
+    else if (c === 'cs') { J.csAsked = true; if (Math.random() < 0.6 + rel(rid) * 0.004) { await talk.say('Judge signed off. One bin round, no pay. Skip it and you come right back.'); endTalk(); return communityService(); } await talk.say('Request denied. Judge says you sit.'); }
+    else if (c === 'bribe') { if (money < 1000) { await talk.say('With what?'); continue; } spend(1000); if (Math.random() < 0.45) { await talk.say('...I didn\'t see nothing. Paperwork says you\'re done. Go.'); endTalk(); return releasePrison('Grimes "lost" your paperwork.'); } J.until += 6; await talk.say('Attempted bribery of an officer. That\'s six more hours. And I\'m keeping the money.'); }
+    else if (c === 'mouth') { await talk.say(pick(['Hey Grimes, your mama called. She wants her uniform back.', 'This place is a dump and you\'re the janitor.']), 'you'); await talk.say('Solitary. Now.'); endTalk(); J.until += 2; return prisonSkip(4, 'The hole', 'Four hours in solitary. No light. You count the cracks in the wall.', () => { feed({ mood: -8 }); bumpRel('pr:tony', 3); toast('+2h on your sentence. The yard heard you mouthed off. Respect +', 3); }); }
+    else if (c === 'shiv') { if (J.shiv) { await talk.say('You already got one. Keep it hidden.'); continue; } if (rel(rid) < 15) { await talk.say('I don\'t know you. Earn some respect first.'); continue; } if (money < 150) { await talk.say('Hundred fifty. Commissary prices.'); continue; } spend(150); J.shiv = true; await talk.say('Toothbrush and a razor. Keep it in your sock. You didn\'t get it from me.'); toast('Got a shiv. You hit harder in prison fights.', 3); }
+    else if (c === 'work') { J.debt = 1; await talk.say('Rico owes me two hundred. Go collect. However you gotta.'); }
+    else if (c === 'paid') { J.debt = 3; addMoney(60); bumpRel(rid, 20, false); await talk.say('Good. Here, your cut. You\'re alright, new guy.'); }
+    else if (c === 'riot') {
+      if (rel(rid) < 30 && !J.shiv) { await talk.say('A riot? You? Nobody follows you. Earn it.'); continue; }
+      await talk.say('...You serious? Alright. When the bell rings for chow, it goes down.'); endTalk(); return prisonRiot();
+    }
+    else if (c === 'fight') { endTalk(); return prisonFight(id, false); }
+    else if (c === 'collect') {
+      await talk.say('Tony wants his two hundred.', 'you');
+      const k = await talk.choose([I('fist', 'Pay up or else'), I('chat', 'Talk him into it')]);
+      if (k === 1 && Math.random() < 0.3 + lvl('charm') * 0.06) { await talk.say('Fine, fine! Here. Tell Tony we\'re good.'); J.debt = 2; }
+      else if (k === 1) await talk.say('Nice try. Tell Tony he can come get it himself.');
+      else { endTalk(); const won = await prisonFight('rico', false); if (won) { J.debt = 2; toast('Rico paid up. Go see Tony.', 3); } return; }
+    }
+    else if (c === 'plan') { J.plan = true; await talk.say('*whispers* Wall behind cell 5\'s toilet is old brick over a storm drain. Get a spoon from the canteen. Dig at night. Three nights, maybe less.'); await talk.say('And kid? Don\'t tell Rico.'); }
+    else if (c === 'deal') {
+      if (J.fed) { await talk.say('We already talked. Enjoy your stay.'); continue; }
+      await talk.say('Agent Walsh. Someone\'s moving product all over Bay City. Give me a name and I\'ll halve your sentence.');
+      const k = await talk.choose([I('chat', 'Give them a dealer\'s name'), I('x', 'I ain\'t no snitch'), I('case', 'Talk to my lawyer')]);
+      J.fed = true;
+      if (k === 0) { J.until -= jailLeft() * 0.5; J.snitch = true; for (const p of PLACES) if (p.kind === 'dealer') stats.rel[p.id] = Math.max(0, rel(p.id) - 40); await talk.say('Pleasure doing business. Half your time is gone. Watch your back.'); toast('Sentence halved. Dealers won\'t trust you, and word travels in here...', 4); }
+      else if (k === 1) { bumpRel('pr:tony', 10, false); await talk.say('Suit yourself. Enjoy the orange.'); toast('The block respects a man who keeps his mouth shut.', 3); }
+      else await talk.say('Lawyers. Always lawyers.');
+    }
+    else if (c === 'food') { if (money < 5) continue; spend(5); feed({ hunger: 25, mood: 4 }); await talk.say('Extra mash, extra gravy. Don\'t tell nobody.'); }
+    else if (c === 'heal') { P.hp = maxHP(); await talk.say('There. Try not to get stabbed.'); }
+    else if (c === 'protect') { await talk.say(rel(rid) < 15 ? 'N-no. I\'m fine.' : 'Rico keeps taking my pudding. And the guys at table three...'); bumpRel(rid, 6); bumpRel('pr:tony', 2); feed({ mood: 5 }); }
+  }
+  endTalk(); saveGame();
+}
+const PR_OPP = { dre: { name: 'Dre "Hands"', hp: 80, power: 10, tell: 0.8, col: '#ff7a1a', skin: '#8d5524' }, moose: { name: 'Moose', hp: 110, power: 13, tell: 0.85, col: '#ff7a1a', skin: '#e8b088' }, rico: { name: 'Rico', hp: 45, power: 6, tell: 0.95, col: '#ff7a1a' }, tony: { name: 'Big Tony', hp: 100, power: 12, tell: 0.75, col: '#ff7a1a' }, guard: { name: 'Riot squad', hp: 90, power: 11, tell: 0.8, col: '#1d2b52' } };
+async function prisonFight(id, forced) {
+  const J = jail(), o = { ...PR_OPP[id] || PR_OPP.dre, purse: 0 };
+  if (J?.shiv) o.hp = Math.round(o.hp * 0.7);
+  const r = await mini('cage', { opp: o, str: lvl('strength') + (J?.shiv ? 2 : 0), stam: lvl('stamina'), winText: 'He\'s down!', loseText: 'Lights out' });
+  if (!J) return false;
+  J.fights++;
+  if (r.win) { gainXP('strength', 30); feed({ mood: 12, energy: -15 }); hurt(8); bumpRel('pr:tony', 6, false); bumpRel('pr:' + id, forced ? 0 : 5, false); toast(`You put ${o.name} down. The yard saw it.`, 3); }
+  else { hurt(35); feed({ mood: -10, energy: -15 }); toast(`${o.name} got the better of you.`, 3); }
+  if (Math.random() < 0.45) { J.until += 4; setTimeout(() => toast('Guards broke it up. +4h on your sentence.', 3), 1600); }
+  saveGame(); return !!r.win;
+}
+async function prisonRiot() {
+  const J = jail(); $('hurt').style.background = 'rgba(255,0,0,.35)'; shake = 1; sfx.boom?.();
+  toast('RIOT! Trays flying, alarms screaming!', 3);
+  for (const n of inside.npcs) n.dance = true;
+  await new Promise(r => setTimeout(r, 1500)); $('hurt').style.background = '';
+  const r = await mini('cage', { opp: { ...PR_OPP.guard, hp: J.shiv ? 60 : 90 }, str: lvl('strength') + (J.shiv ? 2 : 0), stam: lvl('stamina'), winText: 'You broke through!', loseText: 'Pepper-sprayed' });
+  for (const n of inside.npcs) n.dance = false;
+  if (r.win && Math.random() < 0.55) {
+    modal('<h3>The gate is jammed open</h3><p>In the chaos the main gate is stuck half open. Nobody is watching it.</p>', [{ label: 'RUN', cls: 'big', fn: () => { closeModal(); escapePrison('You sprint through the jammed gate during the riot.'); } }, { label: 'Stay put', fn: () => { closeModal(); bumpRel('pr:tony', 15, false); toast('You stayed. Tony respects the chaos you caused.', 3); } }]);
+  } else { J.until += 12; prisonSkip(12, 'Lockdown', 'The riot squad clears the block. Everyone in their cells. +12h on your sentence.', () => { feed({ mood: -10 }); bumpRel('pr:tony', 10, false); }); }
+}
+
 // ================================================================ HUD, minimap
 let MAP = null;
 const mm = $('minimap'), mctx = mm.getContext('2d');
@@ -2502,6 +3004,10 @@ function drawMinimap() {
     if (route) { mctx.strokeStyle = '#b26bff'; mctx.lineWidth = 9; mctx.lineJoin = 'round'; mctx.lineCap = 'round'; mctx.beginPath(); route.forEach(([x, z], i) => { const [a, b] = toS(x, z); i ? mctx.lineTo(a, b) : mctx.moveTo(a, b); }); mctx.stroke(); }
     mctx.fillStyle = '#ffffff';
     for (const t of traffic) { const [a, b] = toS(t.rx, t.rz); mctx.fillRect(a - 3, b - 3, 6, 6); }
+    if ((WANT.stars && !WANT.seen) || WANT.patrolT > 0) { const [a, b] = toS(WANT.lx, WANT.lz), rr = searchR() / span * R * 2, fl = Math.floor(time * 3) % 2, pat = !WANT.stars; mctx.fillStyle = pat ? 'rgba(42,106,255,.12)' : fl ? 'rgba(255,42,58,.22)' : 'rgba(42,106,255,.22)'; mctx.strokeStyle = pat ? 'rgba(42,106,255,.6)' : fl ? 'rgba(255,42,58,.8)' : 'rgba(42,106,255,.8)'; mctx.lineWidth = 2; if (pat) mctx.setLineDash([6, 5]); mctx.beginPath(); mctx.arc(a, b, rr, 0, 7); mctx.fill(); mctx.stroke(); mctx.setLineDash([]); }
+    // police vision cones: always on, so you can see who's watching before a deal
+    for (const e of eyes()) { const [a, b] = toS(e[0], e[1]); if (Math.hypot(a - S / 2, b - S / 2) > R + 30) continue; const rr = e[3] / span * R * 2, ang = Math.atan2(Math.cos(e[2]), Math.sin(e[2])); const g = mctx.createRadialGradient(a, b, 0, a, b, rr); g.addColorStop(0, WANT.stars ? 'rgba(255,60,70,.38)' : 'rgba(80,140,255,.34)'); g.addColorStop(1, 'rgba(80,140,255,0)'); mctx.fillStyle = g; mctx.beginPath(); mctx.moveTo(a, b); mctx.arc(a, b, rr, ang - CONE, ang + CONE); mctx.closePath(); mctx.fill(); }
+    for (const t of traffic) if (t.police) { const [a, b] = toS(t.rx, t.rz); mctx.fillStyle = '#2a6aff'; mctx.strokeStyle = '#fff'; mctx.lineWidth = 2; mctx.beginPath(); mctx.arc(a, b, 6, 0, 7); mctx.fill(); mctx.stroke(); }
     for (const v of copCars) { const [a, b] = toS(v.s.x, v.s.z); mctx.fillStyle = Math.floor(time * 6) % 2 ? '#ff2a3a' : '#2a6aff'; mctx.beginPath(); mctx.arc(a, b, 7, 0, 7); mctx.fill(); }
     for (const c of cops) { const [a, b] = toS(c.x, c.z); mctx.fillStyle = '#2a6aff'; mctx.fillRect(a - 3, b - 3, 6, 6); }
     mctx.fillStyle = '#ffffff';
@@ -2560,7 +3066,7 @@ function updateHUD(dt) {
   const f = focusPos();
   setText('zoneTxt', inside ? (inside.prop ? inside.prop.name : inside.place.name) : zoneName(f.x, f.z));
   if (waypoint && !inside) { const d = Math.hypot(f.x - waypoint.x, f.z - waypoint.z); setText('wpTxt', `${d > 1000 ? (d / 1000).toFixed(1) + ' km' : Math.round(d / 10) * 10 + ' m'}${waypoint.label ? ' · ' + waypoint.label : ''}`); } else setText('wpTxt', '');
-  { const wh = $('wantedHud'), key = WANT.stars + (WANT.seen ? 's' : ''); if (hudCache.want !== key) { hudCache.want = key; wh.innerHTML = WANT.stars ? Array.from({ length: 5 }, (_, i) => `<i class="${i < WANT.stars ? '' : 'off'}"></i>`).join('') : ''; } wh.classList.toggle('flash', WANT.stars > 0 && WANT.seen); }
+  { const wh = $('wantedHud'), key = WANT.stars; if (hudCache.want !== key) { hudCache.want = key; wh.innerHTML = WANT.stars ? Array.from({ length: 5 }, (_, i) => `<i class="${i < WANT.stars ? '' : 'off'}"></i>`).join('') + '<u><s></s></u>' : ''; } wh.classList.toggle('flash', WANT.stars > 0 && !WANT.seen); wh.classList.toggle('seen', WANT.stars > 0 && WANT.seen); const bar = wh.querySelector('s'); if (bar) bar.style.width = (WANT.seen ? 0 : Math.min(100, WANT.loseT / evadeNeed() * 100)) + '%'; }
   needBar('nHunger', stats.hunger); needBar('nEnergy', stats.energy); needBar('nMood', stats.mood);
   const a = am(), id = arsenal.cur, wk = id + '|' + a.mag + '|' + a.res + '|' + (P.reload > 0);
   if (hudCache.wpn !== wk) { hudCache.wpn = wk; $('wpnBtn').innerHTML = iconSVG(id) + (ws.kind === 'melee' ? '' : ws.kind === 'grenade' ? `<b>${a.res}</b>` : P.reload > 0 ? '<b class="rl">RELOAD</b>' : `<b>${a.mag}</b><span>${a.res}</span>`); }
@@ -2568,7 +3074,7 @@ function updateHUD(dt) {
   $('editBtn').classList.toggle('hidden', !(inside && inside.prop) || editMode);
   $('radioBtn').classList.toggle('hidden', !ride);
   $('speedo').classList.add('hidden');
-  $('phoneBtn').classList.toggle('badge', phoneBadge > 0);
+  $('phoneBtn').classList.toggle('badge', phoneBadge > 0); $('phoneBtn').classList.toggle('hidden', !!stats.jail);
   if (ride) setText('speedTxt', String(Math.round(Math.abs(ride.s.v) * 3.6)));
   const jt = race ? `Race ${race.i}/${RACE.points.length} · ${Math.ceil(race.t)}s` : job ? (job.type === 'bins' ? (job.stage === 'return' ? 'Bins · return the lorry' : `Bins · ${8 - job.bins.length}/8 · ${fmt(job.earned)}`) : job.type === 'taxi' ? (job.stage === 'pickup' ? `Cab · pick up fare · ${fmt(job.earned)}` : `Cab · drop off · ${Math.ceil(job.t)}s · ${fmt(job.pay)}`) : `Courier · ${Math.ceil(job.t)}s · ${fmt(job.pay)}`) : '';
   setText('raceTxt', jt); $('raceTxt').classList.toggle('hidden', !jt);
@@ -2630,6 +3136,7 @@ const APPS = [
   ['settings', 'Settings', 'gear', 'linear-gradient(135deg,#9aa0aa,#5d636e)'],
 ];
 function openPhone(app = 'home') {
+  if (stats.jail) { toast('Your phone was confiscated at intake. Use the pay phone in the visiting room.', 3); sfx.fail(); return; }
   if (ride && Math.abs(ride.s.v) > 3) { toast('Stop the car to use your phone'); return; }
   if (editMode) endEdit();
   sfx.click(); setState('phone'); $('phone').classList.remove('hidden');
@@ -2800,6 +3307,7 @@ function startGame() {
   if (!ride) updateFoot(0.001);
   updateCamera(0, true); applySettings();
   setState('play');
+  stats.escaped = null; if (stats.jail) { wearJumpsuit(true); enterPrison(false); }
   if (!save) { phoneBadge = 1; toast('Check your phone. Uncle Ray left you a message.', 4); }
   else if (!save.stats) { phoneBadge = 1; toast('New: needs, skills, homes and interiors. Check your phone!', 4); }
   else if (!store.get('bc_seen7')) { store.set('bc_seen7', 1); phoneBadge = 1; toast('New: the Work app on your phone lists every job. Upgrade cars at Bay Customs.', 4.5); }
@@ -2841,7 +3349,7 @@ function step(dt) {
     updateAngry(dt);
     updateNpcList(npcs, dt); updateFlyer(dt);
   } else updateNpcList(inside.npcs, dt);
-  updateDate(dt); famTexts(dt); updateFx(dt); updatePolice(dt); if (!inside) updateEmergency(dt);
+  updateDate(dt); famTexts(dt); updateFx(dt); updatePolice(dt); updatePrison(dt); updateFarm(dt); if (!inside) updateEmergency(dt);
   updateBullets(dt); updateProjectiles(dt); updateParticles(dt); updateCash(dt); updateMarkers(); updateRace(dt); updateRoute(dt); updateCustomers(dt); updateJob(dt);
   if (input.consume('map') || input.consume('pause')) openPhone('maps');
   for (let i = 1; i <= 9; i++) if (input.keys.has('Digit' + i)) { input.keys.delete('Digit' + i); selectWeapon(SLOTS[i - 1].id); }
@@ -2968,6 +3476,7 @@ $('randBtn').onclick = () => {
     if (shop.kind === 'gun') { arsenal.cfg[shop.slot] = { ...pvGunCfg }; shop.orig = { ...pvGunCfg }; saveGame(); toast('Work done. Looks mean.'); updateShopPrice(); return; }
     if (shop.kind === 'mods') { shop.orig = { ...carCfg }; store.set('bc_cars', garage); saveGame(); gainXP('driving', Math.round(price / 200)); toast('Bay Customs: work done. She looks great.'); sfx.coin(); updateShopPrice(); return; }
     if (shop.kind === 'carshop') { garage.cars.push({ ...DEFAULT_CAR, ...pvCarCfg }); garage.active = garage.cars.length - 1; store.set('bc_cars', garage); bumpRel(shop.relId, 10, false); if (ride === myCar) exitCar(); rebuildMyCar({ x: inside.back.x, z: inside.back.z, h: 0 }); pendingCar = true; toast(`You bought a ${BODIES[pvCarCfg.body].label}! It'll be outside.`, 3); feed({ mood: 25 }); return; }
+    if (stats.escaped) { stats.escaped = null; toast('Jumpsuit in the bin. Nobody will recognise you now.', 3); }
     charCfg = { ...previewCfg }; store.set('rr_char', charCfg); saveGame(); feed({ mood: 10 }); gainXP('charm', Math.round(price / 20));
     shop.orig = { ...charCfg }; shop.outfit = null; [...$('presets').children].forEach(c => c.classList.remove('on'));
     toast(shop.kind === 'barber' ? 'Fresh cut. Looking good.' : 'Looking sharp.'); updateShopPrice(); return;
@@ -3006,4 +3515,4 @@ function frame(now) {
 }
 startGame();
 requestAnimationFrame(frame);
-window.__game = { get animals() { return animals; }, crime, WANT, copCars, cops, pitFight, busted, fam, famNewDay, makeOfficial, talkFamily, get dayN() { return dayN; }, set dayN(v) { dayN = v; }, scene: G.scene, cam: G.cam, snap: () => updateCamera(0, true), get state() { return state; }, P, input, get ride() { return ride; }, get myCar() { return myCar; }, get traffic() { return traffic; }, peds, setTime: h => { clockH = h; }, openCustom, enterVehicle, exitCar, get money() { return money; }, set money(v) { money = v; }, openPlace, PLACES, PROPERTIES, runMinigame, get action() { return action; }, arsenal, selectWeapon, openPhone, setWaypoint, get route() { return route; }, talkToPed, talk, doAction, stats, get inside() { return inside; }, enterInterior, exitInterior, get customers() { return customers; }, newCustomer, startEdit, endEdit, get job() { return job; }, gainXP, storage, doSpot, useFurn, phoneGo, talkVenue, talkJob, openPlace, talkCustomer, startJob, openCarShop, damageCar, repairCar, addFire, get fires() { return fires; }, get ems() { return ems; }, get vehicles() { return vehicles; }, makeVehicle, DEFAULT_CAR };
+window.__game = { get animals() { return animals; }, crime, WANT, copCars, cops, pitFight, busted, fam, famNewDay, makeOfficial, talkFamily, get dayN() { return dayN; }, set dayN(v) { dayN = v; }, scene: G.scene, cam: G.cam, snap: () => updateCamera(0, true), get state() { return state; }, P, input, get ride() { return ride; }, get myCar() { return myCar; }, get traffic() { return traffic; }, peds, setTime: h => { clockH = h; }, openCustom, enterVehicle, exitCar, get money() { return money; }, set money(v) { money = v; }, openPlace, PLACES, PROPERTIES, runMinigame, get action() { return action; }, arsenal, selectWeapon, openPhone, setWaypoint, get route() { return route; }, talkToPed, talk, doAction, stats, get inside() { return inside; }, enterInterior, exitInterior, get customers() { return customers; }, newCustomer, startEdit, endEdit, get job() { return job; }, gainXP, storage, doSpot, useFurn, phoneGo, talkVenue, talkJob, openPlace, talkCustomer, startJob, openCarShop, damageCar, repairCar, addFire, get fires() { return fires; }, get ems() { return ems; }, get vehicles() { return vehicles; }, makeVehicle, DEFAULT_CAR, setState: x => setState(x), get jail() { return stats.jail; } };

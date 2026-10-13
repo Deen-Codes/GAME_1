@@ -1,9 +1,9 @@
 // Enterable interiors. Rooms are built far away from the city (at ORIGIN) and the player is moved
 // there, so the normal movement, camera and collision code keeps working. South wall is cut away.
 import * as THREE from '../lib/three.module.min.js';
-import { FURN, buildFurn } from './furniture.js?v=23';
-import { addCollider, removeCollider } from './world.js?v=23';
-import { buildCar } from './car.js?v=23';
+import { FURN, buildFurn } from './furniture.js?v=25';
+import { addCollider, removeCollider } from './world.js?v=25';
+import { buildCar } from './car.js?v=25';
 
 export const ORIGIN = { x: 0, z: 2600 };
 const T = (name, w, d, floor, wall, items, npcs, spots, extra = {}) => ({ name, w, d, floor, wall, items, npcs, spots, ...extra });
@@ -41,6 +41,10 @@ export const INTERIORS = {
     [{ role: 'pastor', x: 0, z: -8.6 }], [{ kind: 'talk', x: 0, z: -6.1, label: 'Talk', icon: 'chat' }, { kind: 'pray', x: 0, z: 2.6, label: 'Sit & reflect', icon: 'heart' }], { light: '#ffe2b0' }),
   club: T('Neon Room', 18, 14, '#14101e', '#1e1430', [['dancefloor', 0, 0.5], ['djbooth', 0, -5], ['barcounter', -6.5, 4.5], ['sign', 0, -6.9, 0, '#38e8ff']],
     [{ role: 'dj', x: 0, z: -5.9 }, { role: 'bartender', x: -6.5, z: 3.6 }], [{ kind: 'dj', x: 0, z: -3.9, label: 'DJ', icon: 'music' }, { kind: 'dance', x: 0, z: 0.5, label: 'Dance', icon: 'smile' }, { kind: 'talk', x: -6.5, z: 5.9, label: 'Bar', icon: 'drink' }], { light: '#b26bff', dark: true }),
+  prison: T('Bay County Correctional', 40, 32, '#9a9ea6', '#c8ccd4', [['cot', -17.9, -15.4, Math.PI / 2], ['toilet', -16.5, -15.6], ['cellbars', -17.5, -13.6], ['cot', -14.9, -15.4, Math.PI / 2], ['toilet', -13.5, -15.6], ['cellbars', -14.5, -13.6], ['cot', -11.9, -15.4, Math.PI / 2], ['toilet', -10.5, -15.6], ['cellbars', -11.5, -13.6], ['cot', -8.9, -15.4, Math.PI / 2], ['toilet', -7.5, -15.6], ['cellbars', -8.5, -13.6], ['cot', -5.9, -15.4, Math.PI / 2], ['toilet', -4.5, -15.6], ['cellbars', -5.5, -13.6], ['cot', -2.9, -15.4, Math.PI / 2], ['toilet', -1.5, -15.6], ['cellbars', -2.5, -13.6], ['cot', 0.09999999999999998, -15.4, Math.PI / 2], ['toilet', 1.5, -15.6], ['cellbars', 0.5, -13.6], ['cot', 3.1, -15.4, Math.PI / 2], ['toilet', 4.5, -15.6], ['cellbars', 3.5, -13.6], ['cellwall', -19, -14.8], ['cellwall', -16, -14.8], ['cellwall', -13, -14.8], ['cellwall', -10, -14.8], ['cellwall', -7, -14.8], ['cellwall', -4, -14.8], ['cellwall', -1, -14.8], ['cellwall', 2, -14.8], ['cellwall', 5, -14.8], ['serving', -13, -8.2], ['ptable', -16, -3], ['ptable', -10.5, -3], ['ptable', -16, 2], ['ptable', -10.5, 2], ['ptable', -16, 6.5], ['ptable', -10.5, 6.5], ['pwall', -16.4, 9.4, Math.PI / 2], ['pwall', -9.6, 9.4, Math.PI / 2], ['court', 13.5, -2], ['fence', 7, -10, Math.PI / 2], ['fence', 7, -6, Math.PI / 2], ['fence', 7, 4, Math.PI / 2], ['fence', 7, 8, Math.PI / 2], ['hoop', 19.3, -2, -Math.PI / 2], ['bench', 10, -10], ['bench', 13, -10], ['bag', 17.5, -10], ['payphone', -19.7, 11.5, Math.PI / 2], ['payphone', -19.7, 13.2, Math.PI / 2], ['table', -11, 13, 0, '#9aa0aa'], ['chair', -11, 12.1], ['chair', -11, 13.9, Math.PI], ['hbed', 14, 13.2], ['hbed', 17.5, 13.2], ['curtain', 15.8, 13.2], ['monitor', 14.9, 14.6], ['pwall', 9.4, 13.4], ['tower', 4, 11.5], ['gate', 0, 15.9], ['sign', -3, -15.95, 0, '#ff8a2a']],
+    [{ role: 'guard', x: 4, z: 12.6, id: 'grimes' }, { role: 'cook', x: -13, z: -9.2, id: 'joy' }, { role: 'nurse', x: 16, z: 10.6, id: 'nurse' }, { role: 'fed', x: -11, z: 14.0, id: 'walsh' },
+    { role: 'inmate', x: -16, z: -1.7, id: 'tony', face: Math.PI }, { role: 'inmate', x: 14, z: 1.5, id: 'dre' }, { role: 'inmate', x: -1.5, z: -11.6, id: 'pops' }, { role: 'inmate', x: 10, z: -2, id: 'rico' }, { role: 'inmate', x: 11.5, z: -11.4, id: 'moose' }, { role: 'inmate', x: -10.5, z: 0.7, id: 'mikey' },
+    { role: 'guard', x: 7.6, z: -1, id: 'guard2', extra: true }], [{ kind: 'bunk', x: -4.6, z: -14.6, label: 'Your bunk', icon: 'bed' }, { kind: 'canteen', x: -13, z: -6.9, label: 'Canteen', icon: 'food' }, { kind: 'plift', x: 11.5, z: -8.4, label: 'Lift weights', icon: 'dumbbell' }, { kind: 'hoops', x: 17, z: -2, label: 'Shoot hoops', icon: 'target' }, { kind: 'payphone', x: -18.6, z: 12.3, label: 'Pay phone', icon: 'phone' }, { kind: 'infirmary', x: 15.8, z: 11.6, label: 'Infirmary', icon: 'cross' }], { light: '#f0f4ff', prison: true }),
   // homes
   studio: T('Studio', 10, 8, '#c9b89a', '#e8e2d6', [], [], [], { home: true }),
   apartment: T('Apartment', 14, 10, '#b89a7a', '#e6e9f0', [], [], [], { home: true }),
@@ -80,14 +84,16 @@ export function buildInterior(id, furniture = null, carCfgs = []) {
   cols.push(wc(-w / 2 - 1, -d / 2 - 1, w / 2 + 1, -d / 2), wc(-w / 2 - 1, -d / 2, -w / 2, d / 2 + 1), wc(w / 2, -d / 2, w / 2 + 1, d / 2 + 1), wc(-w / 2, d / 2, -dw / 2, d / 2 + 1), wc(dw / 2, d / 2, w / 2, d / 2 + 1));
   // lights
   const lc = tpl.light || '#fff1dc';
-  for (const [x, z] of [[-w / 4, -d / 6], [w / 4, -d / 6], [0, d / 4]]) { const l = new THREE.PointLight(lc, tpl.dark ? 12 : 18, Math.max(w, d) * 1.1, 1.4); l.position.set(x, H - 0.3, z); g.add(l); }
+  for (const [x, z] of (w > 30 ? [[-w / 3, -d / 4], [0, -d / 4], [w / 3, -d / 4], [-w / 3, d / 4], [0, d / 4], [w / 3, d / 4]] : [[-w / 4, -d / 6], [w / 4, -d / 6], [0, d / 4]])) { const l = new THREE.PointLight(lc, tpl.dark ? 12 : 18, Math.max(w, d) * 1.1, 1.4); l.position.set(x, H - 0.3, z); g.add(l); }
   // fixtures
   const furn = [];
   const place = (t, x, z, r = 0, c) => {
     const f = FURN[t]; if (!f) return null;
     const m = buildFurn(t, c); m.position.set(x, 0, z); m.rotation.y = r; g.add(m);
     const item = { t, x, z, r, c, mesh: m, col: null };
-    if (!f.flat && t !== 'lane' && t !== 'sign' && t !== 'painting') { const sw = Math.abs(Math.cos(r)) > 0.5 ? f.w : f.d, sd = Math.abs(Math.cos(r)) > 0.5 ? f.d : f.w; item.col = { x0: ORIGIN.x + x - sw / 2, x1: ORIGIN.x + x + sw / 2, z0: ORIGIN.z + z - sd / 2, z1: ORIGIN.z + z + sd / 2, h: 2.5 }; addCollider(item.col); }
+    if (t === 'cellbars') { // bars with an open doorway in the middle: collide only on either side of it
+      const ax = Math.abs(Math.cos(r)) > 0.5; item.cols = [-1, 1].map(sd => { const a = sd * 0.95, hw = 0.47; return ax ? { x0: ORIGIN.x + x + a - hw, x1: ORIGIN.x + x + a + hw, z0: ORIGIN.z + z - 0.1, z1: ORIGIN.z + z + 0.1, h: 2.5 } : { x0: ORIGIN.x + x - 0.1, x1: ORIGIN.x + x + 0.1, z0: ORIGIN.z + z + a - hw, z1: ORIGIN.z + z + a + hw, h: 2.5 }; }); item.cols.forEach(addCollider);
+    } else if (!f.flat && t !== 'lane' && t !== 'sign' && t !== 'painting') { const sw = Math.abs(Math.cos(r)) > 0.5 ? f.w : f.d, sd = Math.abs(Math.cos(r)) > 0.5 ? f.d : f.w; item.col = { x0: ORIGIN.x + x - sw / 2, x1: ORIGIN.x + x + sw / 2, z0: ORIGIN.z + z - sd / 2, z1: ORIGIN.z + z + sd / 2, h: 2.5 }; addCollider(item.col); }
     furn.push(item); return item;
   };
   for (const [t, x, z, r, c] of tpl.items) place(t, x, z, r, c);
@@ -103,6 +109,6 @@ export function buildInterior(id, furniture = null, carCfgs = []) {
     place,
     remove(item) { if (item.col) removeCollider(item.col); g.remove(item.mesh); furn.splice(furn.indexOf(item), 1); },
     move(item, x, z, r) { if (item.col) removeCollider(item.col); g.remove(item.mesh); furn.splice(furn.indexOf(item), 1); return place(item.t, x, z, r, item.c); },
-    dispose() { for (const c of cols) removeCollider(c); for (const f of furn) if (f.col) removeCollider(f.col); g.traverse(o => { if (o.geometry) o.geometry.dispose(); }); },
+    dispose() { for (const c of cols) removeCollider(c); for (const f of furn) { if (f.col) removeCollider(f.col); if (f.cols) f.cols.forEach(removeCollider); } g.traverse(o => { if (o.geometry) o.geometry.dispose(); }); },
   };
 }
