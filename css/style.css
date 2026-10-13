@@ -425,3 +425,8 @@ input[type=text] { width: 100%; padding: 10px 12px; border-radius: 10px; border:
 /* when a job/race timer pill is showing, drop pop-up messages below it so they never overlap */
 #hud:has(#raceTxt:not(.hidden)) .toast { top: calc(var(--sat) + 226px); }
 .race-txt { font-size: 14px !important; padding: 7px 14px; }
+
+/* stick on the right: mirror the whole control layout */
+#pad.righty #stickZone { left: auto; right: 0; }
+#pad.righty #stickBase { left: auto; right: calc(18px + var(--sar)); }
+#pad.righty .face { right: auto; left: calc(14px + var(--sal)); }

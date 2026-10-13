@@ -1,25 +1,25 @@
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA } from './character.js?v=57';
-import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=57';
-import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=57';
-import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=57';
-import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=57';
-import { buildPanel, renderStats } from './ui.js?v=57';
-import { Input } from './input.js?v=57';
-import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime } from './audio.js?v=57';
-import { runMinigame } from './minigames.js?v=57';
-import { Peds, bakeCfg, figure, setWalk, setTownSource } from './peds.js?v=57';
-import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=57';
-import { findRoute } from './nav.js?v=57';
-import { COURSES, CAREERS, QUIZ } from './careers.js?v=57';
-import { EVENTS, EVENT_BY_ID } from './events.js?v=57';
-import { attachWheel } from './wheel.js?v=57';
-import { Animals } from './animals.js?v=57';
-import { Talk } from './talk.js?v=57';
-import { svg, drawIcon } from './icons.js?v=57';
-import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=57';
-import { FURN, CATALOG } from './furniture.js?v=57';
-import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE } from './interiors.js?v=57';
+import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA } from './character.js?v=58';
+import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=58';
+import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=58';
+import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=58';
+import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=58';
+import { buildPanel, renderStats } from './ui.js?v=58';
+import { Input } from './input.js?v=58';
+import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime } from './audio.js?v=58';
+import { runMinigame } from './minigames.js?v=58';
+import { Peds, bakeCfg, figure, setWalk, setTownSource } from './peds.js?v=58';
+import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=58';
+import { findRoute } from './nav.js?v=58';
+import { COURSES, CAREERS, QUIZ } from './careers.js?v=58';
+import { EVENTS, EVENT_BY_ID } from './events.js?v=58';
+import { attachWheel } from './wheel.js?v=58';
+import { Animals } from './animals.js?v=58';
+import { Talk } from './talk.js?v=58';
+import { svg, drawIcon } from './icons.js?v=58';
+import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=58';
+import { FURN, CATALOG } from './furniture.js?v=58';
+import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE } from './interiors.js?v=58';
 
 const $ = id => document.getElementById(id);
 let inside = null, editMode = false, held = null, pendingCar = false, homeMusic = false, phoneBadge = 0;
@@ -194,6 +194,7 @@ let animals = null; // created once baseY exists (see below)
 { const sc = peds.scare.bind(peds); peds.scare = (x, z, r = 18) => { sc(x, z, r); animals?.scare(x, z, r * 1.6); }; }
 const talk = new Talk();
 function applySettings() {
+  $('pad').classList.toggle('righty', settings.stickSide === 'right');
   setMuted(!settings.sound);
   renderer.shadowMap.enabled = settings.shadows; sun.castShadow = settings.shadows;
   G.scene.traverse(o => { if (o.material) o.material.needsUpdate = true; });
@@ -892,7 +893,7 @@ function updateFoot(dt) {
 
 // ---------------- getting in and out of cars (animated: walk to the door, climb in / step out, or bail out at speed)
 let carAnim = null;
-const DRIVER = -1; // right-hand drive: the driver's door is on the right of the car
+const DRIVER = 1; // American left-hand drive: the driver's door is on the left of the car
 // walk to the driver's door; from the passenger side you go round the front of the car first
 function planIn(v, spd = 6) {
   const side = v.b.two ? sideOf(v, P.x, P.z) : DRIVER, door = doorSpot(v, side), h = v.s.h;
@@ -1178,8 +1179,16 @@ function updateVehicles(dt) {
     if (driving && !P.dead) {
       const st = input.stick;
       const dead = v.wrecked || (v.hp ?? 100) <= 0;
-      let gas = !dead && (input.held('a') || input.keys.has('KeyW') || input.keys.has('ArrowUp'));
-      let brk = !dead && (input.held('x') || input.keys.has('KeyS') || input.keys.has('ArrowDown'));
+      const stickMode = (settings.steer || 'screen') === 'screen';
+      // stick driving frees up the buttons: horn and headlights instead of drive and brake
+      let gas = !dead && ((!stickMode && input.held('a')) || input.keys.has('KeyW') || input.keys.has('ArrowUp'));
+      let brk = !dead && ((!stickMode && input.held('x')) || input.keys.has('KeyS') || input.keys.has('ArrowDown'));
+      if (stickMode) {
+        if (input.consume('a') || input.keys.has('KeyH') && !v.hornK) { sfx.horn(); peds.scare(c.x, c.z, 9); for (const t of traffic) if (Math.hypot(t.rx - c.x, t.rz - c.z) < 25) t.honk = 0; }
+        v.hornK = input.keys.has('KeyH');
+        if (input.consume('x') || input.keys.has('KeyL') && !v.lightK) toggleLights();
+        v.lightK = input.keys.has('KeyL');
+      }
       // full stick driving: push where you want to go and the car drives there; pull back against it to brake, then reverse
       let thr = 1, stickDrive = false;
       if ((settings.steer || 'screen') === 'screen' && !gas && !brk && !dead && st.m > 0.3) {
@@ -1251,19 +1260,19 @@ function updateVehicles(dt) {
     for (const w of b.wheels) { w.spin.rotation.x += c.v * dt / b.wr; if (w.front) w.pivot.rotation.y = c.steer * 0.45; }
   }
   const lv = ride || myCar, on = night > 0.25;
-  for (const v of vehicles) { if (v.b.blink) setBlink(v.b.blink, v.wrecked ? 0 : v === ride ? gpsTurn(v) : 0); v.b.headM.emissiveIntensity = on ? 2.2 : 0.4; v.b.tailM.emissiveIntensity = v.s.braking || (v === ride && input.held('x') && v.s.v > 0.3) ? 3 : on ? 1.2 : 0.4; if (v.b.revM) v.b.revM.emissiveIntensity = v.s.v < -0.4 ? 2.4 : 0; if (v.b.glow) v.b.glow.material.opacity = 0.35 + night * 0.4; }
-  if (lv) { const s = lv.s, fx = Math.sin(s.h), fz = Math.cos(s.h); headSpot.intensity = on && ride ? 60 : 0; headSpot.position.set(s.x + fx * lv.b.length * 0.5, 1.0, s.z + fz * lv.b.length * 0.5); headTarget.position.set(s.x + fx * 18, 0, s.z + fz * 18); }
+  for (const v of vehicles) { if (v.b.blink) setBlink(v.b.blink, v.wrecked ? 0 : v === ride ? gpsTurn(v) : 0); v.b.headM.emissiveIntensity = on && (v !== ride || lightsOn()) ? 2.2 : 0.4; v.b.tailM.emissiveIntensity = v.s.braking ? 3 : on && (v !== ride || lightsOn()) ? 1.2 : 0.4; if (v.b.revM) v.b.revM.emissiveIntensity = v.s.v < -0.4 ? 2.4 : 0; if (v.b.glow) v.b.glow.material.opacity = 0.35 + night * 0.4; }
+  if (lv) { const s = lv.s, fx = Math.sin(s.h), fz = Math.cos(s.h); headSpot.intensity = on && ride && lightsOn() ? 60 : 0; headSpot.position.set(s.x + fx * lv.b.length * 0.5, 1.0, s.z + fz * lv.b.length * 0.5); headTarget.position.set(s.x + fx * 18, 0, s.z + fz * 18); }
   engineSound(!!ride, ride ? Math.max(Math.abs(ride.s.v), (ride.launch || 0) * 30) : 0);
 }
 
-// which way the GPS route turns next (within ~35m): -1 / 0 / +1 in car-local x
+// which way the GPS route turns next (only once you're close to the junction): -1 / 0 / +1 in car-local x
 function gpsTurn(v) {
   if (!route || route.length < 3 || v.b.two) return 0;
   const c = v.s; let k = 0, bd = 1e9;
   for (let i = 0; i < route.length; i++) { const d = Math.hypot(route[i][0] - c.x, route[i][1] - c.z); if (d < bd) { bd = d; k = i; } }
   if (bd > 14) return 0;
   for (let j = k; j < route.length - 1; j++) {
-    if (Math.hypot(route[j][0] - c.x, route[j][1] - c.z) > 35) break;
+    if (Math.hypot(route[j][0] - c.x, route[j][1] - c.z) > clamp(8 + Math.abs(c.v) * 0.8, 12, 24)) break; // only signal as you near the junction
     const a = Math.atan2(route[j + 1][0] - route[j][0], route[j + 1][1] - route[j][1]), dh = wrapA(a - c.h);
     if (Math.abs(dh) > 0.7 && Math.abs(dh) < 2.6) return Math.sign(dh);
   }
@@ -2346,7 +2355,7 @@ function losClear(ax, az, bx, bz) {
 const CONE = 1.2, NEAR = 9;
 const nightK = () => (clockH < 6 || clockH >= 20 ? 0.7 : 1);
 function eyes() { // [x, z, heading, range] for every officer and police car around
-  const k = nightK(), out = [];
+  const k = nightK() * (ride && !lightsOn() && night > 0.35 ? 0.65 : 1), out = [];
   for (const v of copCars) if (v.police && v.ai !== 'leave') out.push([v.s.x, v.s.z, v.s.h, 55 * k]);
   for (const c of cops) if (c.cop === 'chase' && c.state !== 'down') out.push([c.x, c.z, c.face, 34 * k]);
   for (const t of traffic) if (t.police) out.push([t.rx, t.rz, t.rh, 40 * k]);
@@ -2405,7 +2414,53 @@ function lostCops() {
   toast('You lost them. Cops are still patrolling the area. Stay out of their sight.', 3);
 }
 function ditchJumpsuit() { if (!stats.escaped || stats.jail) return; charCfg = { ...stats.escaped }; stats.escaped = null; buildHero(); setTimeout(() => toast('You grabbed clothes off a washing line and ditched the jumpsuit.', 3.5), 2600); }
-function clearWanted(msg) { WANT.patrolT = 0; ditchJumpsuit(); WANT.v = 0; WANT.stars = 0; WANT.loseT = 0; WANT.coolT = 0; P.arrestT = 0; for (const v of copCars) v.ai = 'leave'; for (const c of cops) { c.cop = 'leave'; peds.flee(c, P.x, P.z); } if (msg) toast(msg, 2.5); }
+// ---------------- headlights and traffic stops
+// Lights are Auto (on after dark) or Off. Off is sneakier at night (cops spot you from less far away),
+// but a cop who sees you driving in the dark with no lights pulls you over. So does serious speeding in town.
+const lightsOn = () => stats.lights !== 'off';
+function toggleLights() { stats.lights = lightsOn() ? 'off' : 'auto'; sfx.click(); toast(lightsOn() ? 'Headlights: auto' : 'Headlights off', 1.4); }
+let stopCheckT = 0;
+function trafficCheck(dt) {
+  if (!ride || ride.b.two === 'bike' || WANT.stars || inside || (stats.stopCd || 0) > gameHours()) return;
+  stopCheckT -= dt; if (stopCheckT > 0) return; stopCheckT = 0.5;
+  const c = ride.s, spd = Math.abs(c.v), road = !!roadAt(c.x, c.z);
+  let why = null;
+  if (night > 0.35 && !lightsOn() && spd > 3 && road) why = 'lights';
+  else if (spd > 25 && cityAt(c.x, c.z, -6)) why = 'speed';
+  if (!why || !copSees(c.x, c.z)) return;
+  WANT.pull = why; WANT.pullT = 0; WANT.pullMph = Math.round(spd * 2.237);
+  forceWanted(1); WANT.flash = 1.2; sfx.siren?.();
+  toast(why === 'lights' ? 'Police lights behind you. Your headlights are off. Pull over and stop.' : 'Police lights behind you. Pull over and stop.', 3.5);
+}
+async function trafficStop(v) {
+  const why = WANT.pull, warned = stats.ticketWarn || 0, hot = stashCount() > 0;
+  WANT.pull = null; ride.s.v = 0;
+  beginTalk(copLook?.cfg || COP_CFG, 'Officer ' + pick(['Diaz', 'Walsh', 'Kowalski', 'Price', 'Reyes', 'Hart']), 'Traffic stop', 130, null, null, null, false, true);
+  await talk.say(why === 'lights' ? pick(['Evening. Know why I pulled you over? Your headlights are off. It\'s dark out there.', 'Driving with no lights at night? Headlights go on from sunset to sunrise. That\'s the law.']) : `License and registration. You were doing ${WANT.pullMph} in a 35. This is a city street, not a racetrack.`);
+  // sometimes they want a look in the car, and a stash in there is a problem
+  if (hot && Math.random() < 0.3) {
+    await talk.say('Mind if I take a look inside the vehicle?');
+    const k = await talk.choose([I('check', 'Go ahead'), I('shield', `I know my rights. No. <small>(Charm ${lvl('charm')})</small>`), I('run', 'Floor it')]);
+    if (k === 0) { await talk.say('...Well, well. What do we have here. Step out of the car.'); endTalk(); return busted(true); }
+    if (k === 2) { await talk.say('Hey! STOP!'); endTalk(); WANT.v = Math.max(WANT.v, STAR_AT[2]); WANT.stars = 2; WANT.coolT = 7; toast('Fleeing a traffic stop! Wanted level 2!', 2); return; }
+    await talk.say('No, you need probable cause for that, officer.', 'you');
+    if (Math.random() > 0.35 + lvl('charm') * 0.05) { await talk.say('I smell something. That\'s my probable cause. Out of the car.'); endTalk(); return busted(true); }
+    await talk.say('...Fine. Smart mouth.');
+  }
+  const fine = why === 'lights' ? 100 : 200;
+  const opts = [I('chat', warned < 2 ? 'Sorry officer, my mistake' : 'Try to talk my way out of it'), I('cash', `Take the ticket <small>${fmt(fine)}</small>`), I('run', 'Floor it')];
+  const k = await talk.choose(opts);
+  if (k === 2) { await talk.say('Hey! Get back here!'); endTalk(); WANT.v = Math.max(WANT.v, STAR_AT[2]); WANT.stars = 2; WANT.coolT = 7; toast('Fleeing a traffic stop! Wanted level 2!', 2); return; }
+  if (k === 0) {
+    await talk.say(why === 'lights' ? 'I didn\'t realise they were off. I\'ll switch them on right now.' : 'Sorry, I didn\'t realise how fast I was going.', 'you');
+    if (warned === 0 || Math.random() < 0.25 + lvl('charm') * 0.04) { stats.ticketWarn = warned + 1; await talk.say(why === 'lights' ? 'Get those lights on. I\'ll let you off with a warning this time.' : 'Slow it down. This is your warning.'); }
+    else { await talk.say(`Heard that one before. That's a ${fmt(fine)} ticket.`); spend(Math.min(money, fine)); }
+  } else { spend(Math.min(money, fine)); await talk.say('Here\'s your ticket. Drive safe.'); }
+  endTalk();
+  if (why === 'lights') { stats.lights = 'auto'; toast('You switched your headlights back on.', 2); }
+  stats.stopCd = gameHours() + 2; clearWanted(); v.ai = 'leave';
+}
+function clearWanted(msg) { WANT.patrolT = 0; WANT.pull = null; ditchJumpsuit(); WANT.v = 0; WANT.stars = 0; WANT.loseT = 0; WANT.coolT = 0; P.arrestT = 0; for (const v of copCars) v.ai = 'leave'; for (const c of cops) { c.cop = 'leave'; peds.flee(c, P.x, P.z); } if (msg) toast(msg, 2.5); }
 function makeCopCar(x, z, h) {
   const v = makeVehicle({ ...DEFAULT_CAR, ...CAR_PRESETS.Police }, x, z, h, false); v.ai = 'chase'; v.police = true;
   const lightM = [new THREE.MeshBasicMaterial({ color: '#ff2a3a' }), new THREE.MeshBasicMaterial({ color: '#2a6aff' })];
@@ -2470,6 +2525,7 @@ function aiDrive(v, c, s, dt) {
   if (Math.abs(c.v) < 1.2 && !onFootClose) { v.stuckT = (v.stuckT || 0) + dt; if (v.stuckT > 1.4) { v.stuckT = 0; v.unstuck = 1.1; } } else v.stuckT = 0;
   // officers jump out when you're on foot nearby (or you've stopped the car)
   if (v.ai === 'chase' && !v.police) return;
+  if (v.ai === 'chase' && !v.deployed && WANT.pull && ride && pd < 16 && Math.abs(ride.s.v) < 1.5 && Math.abs(c.v) < 3 && state === 'play') { v.deployed = true; trafficStop(v); return; }
   if (v.ai === 'chase' && !v.deployed && pd < 14 && (!ride || Math.abs(ride.s.v) < 2) && Math.abs(c.v) < 3) {
     v.deployed = true; const n = WANT.stars >= 3 ? 2 : 1;
     for (let i = 0; i < n; i++) makeCop(c.x + Math.cos(c.h) * (i ? -2 : 2), c.z - Math.sin(c.h) * (i ? -2 : 2));
@@ -2536,6 +2592,8 @@ async function copStop(c) {
 function updatePolice(dt) {
   WANT.flash = Math.max(0, WANT.flash - dt);
   if (inside) return;
+  trafficCheck(dt);
+  if (WANT.pull) { WANT.pullT += dt; if (!ride || WANT.stars > 1) WANT.pull = null; else if (WANT.pullT > 35) { WANT.pull = null; WANT.v = Math.max(WANT.v, STAR_AT[2]); WANT.stars = 2; WANT.coolT = 7; toast('You didn\'t pull over. Wanted level 2!', 2.5); } }
   const f = focusPos();
   // how many cops chase you
   WANT.coolT = Math.max(0, WANT.coolT - dt);
@@ -4012,6 +4070,7 @@ const ICONS = {
 };
 const BTN_SVG = {
   jump: '<path d="M12 20V6"/><path d="M6 12l6-6 6 6"/><path d="M5 3h14"/>', gas: '<path d="M6 13l6-6 6 6"/><path d="M6 19l6-6 6 6"/>', brake: '<path d="M6 5l6 6 6-6"/><path d="M6 11l6 6 6-6"/>',
+  lights: '<path d="M10 6c-4 0-6 3-6 6s2 6 6 6c1.6 0 2.2-1.5 2.2-6S11.6 6 10 6z"/><path d="M15 8h6M15 12h6M15 16h6"/>',
   horn: '<path d="M4 10v4h4l5 4V6L8 10z"/><path d="M16 9a4 4 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11"/>', exit: '<path d="M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4"/><path d="M10 16l-4-4 4-4M6 12h10"/>',
   fire: '<circle cx="12" cy="12" r="7"/><path d="M12 2v5M12 17v5M2 12h5M17 12h5"/>', smash: '<path d="M14 3l-2 6 5 1-7 11 2-7-5-1z"/>', throw: '<circle cx="8" cy="15" r="4"/><path d="M12 11c3-4 6-5 9-5M18 3l3 3-3 3"/>',
 };
@@ -4049,6 +4108,7 @@ function updateHUD(dt) {
   const jt = race ? `Race ${race.i}/${RACE.points.length} · ${Math.ceil(race.t)}s` : job ? (job.type === 'bins' ? (job.stage === 'return' ? 'Bins · return the lorry' : `Bins · ${8 - job.bins.length}/8 · ${fmt(job.earned)}`) : job.type === 'taxi' ? (job.stage === 'pickup' ? `Cab · pick up fare · ${fmt(job.earned)}` : `Cab · drop off · ${Math.ceil(job.t)}s · ${fmt(job.pay)}`) : `Courier · ${Math.ceil(job.t)}s · ${fmt(job.pay)}`) : '';
   setText('raceTxt', jt); $('raceTxt').classList.toggle('hidden', !jt);
   if (editMode) { setBtn('btnA', held ? 'check' : 'hand', held ? 'Place' : 'Pick up'); setBtn('btnB', 'check', 'Done'); setBtn('btnX', 'rotate', 'Rotate'); setBtn('btnY', 'box', 'Store'); }
+  else if (ride && (settings.steer || 'screen') === 'screen') { setBtn('btnA', 'horn', 'Horn'); setBtn('btnX', 'lights', stats.lights === 'off' ? 'Lights off' : 'Lights auto'); setBtn('btnB', ws.kind === 'gun' ? 'fire' : 'none', ws.kind === 'gun' ? 'Shoot' : ''); setBtn('btnY', action ? action.icon : 'exit', action ? action.label : 'Get out'); }
   else if (ride) { setBtn('btnA', 'gas', 'Drive'); setBtn('btnX', 'brake', ride.s.v > 0.5 ? 'Brake' : 'Reverse'); setBtn('btnB', ws.kind === 'gun' ? 'fire' : 'none', ws.kind === 'gun' ? 'Shoot' : ''); setBtn('btnY', action ? action.icon : 'exit', action ? action.label : 'Get out'); }
   else {
     setBtn('btnA', action ? action.icon : 'none', action ? action.label : '');
@@ -4061,7 +4121,7 @@ function updateHUD(dt) {
   $('btnA').classList.toggle('idle', !ride && !action && !editMode);
   $('btnX').classList.toggle('idle', !ride && !editMode && (inside || false));
   $('btnY').classList.toggle('idle', !ride && !editMode && !(!inside && (ws.kind === 'gun' || ws.kind === 'rpg')));
-  $('pad').classList.toggle('driving', !!ride);
+  $('pad').classList.toggle('driving', !!ride && (settings.steer || 'screen') !== 'screen');
   if (toastT > 0) { toastT -= dt; if (toastT <= 0) $('toast').classList.remove('on'); }
   drawMinimap();
 }
@@ -4276,12 +4336,14 @@ function renderPhone() {
     el.innerHTML = `${back}<h4>Settings</h4>
       <button class="ph-row" id="stSound"><span>Sound</span><b>${settings.sound ? 'On' : 'Off'}</b></button>
       ${stats.burner ? `<button class="ph-row" id="stCust"><span>Burner phone</span><b>${CUST_MODES[custMode()]}</b></button>` : ''}
+      <button class="ph-row" id="stStick"><span>Stick side</span><b>${settings.stickSide === 'right' ? 'Right' : 'Left'}</b></button>
       <button class="ph-row" id="stSteer"><span>Car steering</span><b>${(settings.steer || 'screen') === 'screen' ? 'Point where you go' : 'Classic (left/right)'}</b></button>
       <button class="ph-row" id="stShadow"><span>Shadows (off = smoother)</span><b>${settings.shadows ? 'On' : 'Off'}</b></button>
       <div class="ph-sec">Danger zone</div><button class="ph-row danger" id="stReset"><span>Reset all progress</span></button>
       <p class="ph-hint">Bay City ${VERSION}</p>`;
     $('stSound').onclick = () => { settings.sound = !settings.sound; applySettings(); renderPhone(); };
     if ($('stCust')) $('stCust').onclick = () => { cycleCustMode(); renderPhone(); };
+    $('stStick').onclick = () => { settings.stickSide = settings.stickSide === 'right' ? 'left' : 'right'; applySettings(); renderPhone(); };
     $('stSteer').onclick = () => { settings.steer = (settings.steer || 'screen') === 'screen' ? 'car' : 'screen'; applySettings(); renderPhone(); };
     $('stShadow').onclick = () => { settings.shadows = !settings.shadows; applySettings(); renderPhone(); };
     let armed = false; $('stReset').onclick = () => { if (!armed) { armed = true; $('stReset').querySelector('span').textContent = 'Tap again to wipe everything'; return; } for (const k of ['bc_save', 'bc_arsenal', 'rr_char', 'rr_gun', 'bc_car', 'bc_cars']) localStorage.removeItem(k); location.reload(); };
@@ -4299,7 +4361,7 @@ function saveGame() {
   store.set('bc_save', save); store.set('bc_arsenal', arsenal); store.set('bc_cars', garage);
 }
 // auto-update: bookmarks and home-screen apps can hold on to an old copy. Check version.json (never cached) and reload once if newer.
-const BUILD = 57;
+const BUILD = 58;
 function checkUpdate() {
   fetch('version.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(j => {
     if (!(j.v > BUILD)) return;
@@ -4588,4 +4650,4 @@ function frame(now) {
 }
 startGame();
 requestAnimationFrame(frame);
-window.__game = { get animals() { return animals; }, crime, WANT, copCars, cops, pitFight, busted, fam, famNewDay, makeOfficial, talkFamily, get dayN() { return dayN; }, set dayN(v) { dayN = v; }, scene: G.scene, cam: G.cam, snap: () => updateCamera(0, true), get state() { return state; }, P, input, get ride() { return ride; }, get myCar() { return myCar; }, get traffic() { return traffic; }, peds, setTime: h => { clockH = h; }, openCustom, enterVehicle, exitCar, get money() { return money; }, set money(v) { money = v; }, openPlace, PLACES, PROPERTIES, runMinigame, get action() { return action; }, arsenal, selectWeapon, openPhone, setWaypoint, get route() { return route; }, talkToPed, talk, doAction, stats, get inside() { return inside; }, enterInterior, exitInterior, get customers() { return customers; }, newCustomer, startEdit, endEdit, get job() { return job; }, gainXP, storage, doSpot, useFurn, phoneGo, talkVenue, talkJob, openPlace, talkCustomer, startJob, openCarShop, damageCar, repairCar, addFire, get fires() { return fires; }, get ems() { return ems; }, get vehicles() { return vehicles; }, makeVehicle, makeCop, prisonFight, life, startDealMeet, get lifeAct() { return lifeAct; }, get train() { return train; }, get trainRide() { return trainRide; }, boardTrain, eventReset: () => { eventOpen = false; }, bodyCheck, attendClass, talkAdmissions, edu, startDance, get dance() { return dance; }, radioSet: i => { radioSet(i); radioOn(true); }, get zoom() { return zoom; }, set zoom(z) { zoom = z; }, DEFAULT_CAR, setState: x => setState(x), get jail() { return stats.jail; }, witness, personOf, dealHeat };
+window.__game = { get animals() { return animals; }, crime, WANT, copCars, cops, pitFight, busted, fam, famNewDay, makeOfficial, talkFamily, get dayN() { return dayN; }, set dayN(v) { dayN = v; }, scene: G.scene, cam: G.cam, snap: () => updateCamera(0, true), get state() { return state; }, P, input, get ride() { return ride; }, get myCar() { return myCar; }, get traffic() { return traffic; }, peds, setTime: h => { clockH = h; }, openCustom, enterVehicle, exitCar, get money() { return money; }, set money(v) { money = v; }, openPlace, PLACES, PROPERTIES, runMinigame, get action() { return action; }, arsenal, selectWeapon, openPhone, setWaypoint, get route() { return route; }, talkToPed, talk, doAction, stats, get inside() { return inside; }, enterInterior, exitInterior, get customers() { return customers; }, newCustomer, startEdit, endEdit, get job() { return job; }, gainXP, storage, doSpot, useFurn, phoneGo, talkVenue, talkJob, openPlace, talkCustomer, startJob, openCarShop, damageCar, repairCar, addFire, get fires() { return fires; }, get ems() { return ems; }, get vehicles() { return vehicles; }, makeVehicle, makeCop, prisonFight, life, startDealMeet, get lifeAct() { return lifeAct; }, get train() { return train; }, get trainRide() { return trainRide; }, boardTrain, eventReset: () => { eventOpen = false; }, bodyCheck, attendClass, talkAdmissions, edu, startDance, get dance() { return dance; }, radioSet: i => { radioSet(i); radioOn(true); }, get zoom() { return zoom; }, set zoom(z) { zoom = z; }, DEFAULT_CAR, setState: x => setState(x), get jail() { return stats.jail; }, witness, personOf, dealHeat, trafficStop };

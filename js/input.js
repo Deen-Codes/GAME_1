@@ -45,7 +45,7 @@ export class Input {
       if (id !== null) { try { zone.releasePointerCapture(id); } catch (_) {} id = null; }
       this.touch = true; id = e.pointerId; try { zone.setPointerCapture(id); } catch (_) {}
       const zr = zone.getBoundingClientRect();
-      ox = Math.max(zr.left + 70, e.clientX); oy = Math.min(zr.bottom - 66, Math.max(zr.top + 66, e.clientY)); // keep the whole stick on screen
+      ox = Math.min(zr.right - 70, Math.max(zr.left + 70, e.clientX)); oy = Math.min(zr.bottom - 66, Math.max(zr.top + 66, e.clientY)); // keep the whole stick on screen
       base.style.left = (ox - zr.left) + 'px'; base.style.top = (oy - zr.top) + 'px'; base.classList.add('live');
       e.preventDefault();
     });

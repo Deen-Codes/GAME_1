@@ -1,8 +1,8 @@
 // Conversations staged like a Pokémon battle: they stand on a platform facing you,
 // you see the back of your own head in the foreground, subtitles type out, you pick replies.
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject } from './character.js?v=57';
-import { sfx, audio } from './audio.js?v=57';
+import { buildCharacter, poseCharacter, disposeObject } from './character.js?v=58';
+import { sfx, audio } from './audio.js?v=58';
 
 const $ = id => document.getElementById(id);
 const BG = {
@@ -192,6 +192,14 @@ export class Talk {
         n.armR.pivot.rotation.set(-2.05, 0, 0.55); n.armL.pivot.rotation.set(-0.15, 0, -0.1); n.head.rotation.x = 0.15 + Math.sin(this.t * 1.1) * 0.04; n.head.rotation.y = -0.2;
       }
       if (this.bubbles) { this.bubbles.position.set(n.root.position.x, n.root.position.y + (n.height ? n.height - 1.7 : 0), n.root.position.z); this.bubbles.children.forEach((b, i) => { b.position.y = [2.05, 2.3, 2.62][i] + Math.sin(this.t * 2 + i) * 0.04; }); }
+    }
+    if (this.seat && this.seatG && !this.think && y) { // you're sat in the driver's seat; whoever it is talks to you through the window
+      const ry = y.root.rotation.y - Math.PI / 2;
+      this.seatG.position.copy(y.root.position); this.seatG.rotation.y = ry;
+      y.root.rotation.y = ry; y.root.position.y -= 0.42;
+      y.legL.pivot.rotation.x = -1.45; y.legR.pivot.rotation.x = -1.45; y.legL.knee.rotation.x = 1.3; y.legR.knee.rotation.x = 1.3;
+      y.armL.pivot.rotation.set(-1.25, 0, -0.32); if (this.talking !== 'you') y.armR.pivot.rotation.set(-1.25, 0, 0.32);
+      y.head.rotation.y = 1.35 + (this.talking === 'you' ? Math.sin(this.t * 3.1) * 0.1 : 0);
     }
     if (this.pose && n) {
       this.prop.position.copy(this.pNpc.g.position); this.prop.rotation.y = n.root.rotation.y;
