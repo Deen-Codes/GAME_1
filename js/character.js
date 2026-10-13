@@ -132,7 +132,7 @@ export function buildCharacter(cfg) {
     const r = torsoW * (0.15 + 0.035 * bust);
     for (const sx of [-1, 1]) {
       const sm = chestM.clone(); sm.flatShading = false;
-      const bm = new THREE.Mesh(new THREE.SphereGeometry(1, 12, 9), sm); bm.castShadow = true;
+      const bm = new THREE.Mesh(new THREE.SphereGeometry(1, 18, 14), sm); bm.castShadow = true;
       bm.scale.set(r * 1.05, r * 0.85, r * (0.42 + 0.3 * bust));
       bm.position.set(sx * torsoW * 0.135, torsoH * 0.57, torsoD * 0.44);
       torso.add(bm);

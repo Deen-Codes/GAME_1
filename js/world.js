@@ -159,6 +159,81 @@ function clearRect(x0, z0, x1, z1) {
     if (o.t === 'tree') for (const c of collidersNear(o.x, o.z).slice()) if (c.r && Math.abs(c.x - o.x) < 0.01 && Math.abs(c.z - o.z) < 0.01) removeCollider(c);
   }
 }
+// Places out in the open (beach, pier, chop shop...) get a proper structure built behind their marker.
+export function addStructure(p) {
+  const S = { g_taco: [9, 5], g_gallery: [7, 3], g_surf: [7, 5], g_gym: [14, 9], g_hoops: [15, 26], v_anchor: [12, 9], p_shack: [6, 5], p_beach: [13, 10], chop: [16, 12], race: [16, 2] }[p.id];
+  if (!S) return;
+  const [w, d] = S, cx = p.x, cz = p.z - d / 2 - (p.id === 'race' ? 0 : 2.4), y = p.id === 'g_gallery' ? 0.28 : 0;
+  clearRect(cx - w / 2 - 1, cz - d / 2 - 1, cx + w / 2 + 1, cz + d / 2 + 1);
+  addObj({ t: 'struct', s: p.id, x: cx, z: cz, w, d, y });
+  const col = (x0, z0, x1, z1, h = 4) => addCollider({ x0: cx + x0, z0: cz + z0, x1: cx + x1, z1: cz + z1, h });
+  switch (p.id) {
+    case 'g_taco': col(-3.6, -1.4, 3.6, 1.4, 3); break;
+    case 'g_gallery': col(-3.5, -1.5, 3.5, 1.5, 3); break;
+    case 'g_surf': col(-2.2, -2.5, 2.2, 1.0, 3); break;
+    case 'v_anchor': col(-6, -4.5, 6, 2.5, 5); break;
+    case 'p_shack': col(-3, -2.5, 3, 2.5, 4); break;
+    case 'p_beach': col(-6.5, -5, 6.5, 3, 7); break;
+    case 'chop': col(-8, -6, 8, 6, 6); break;
+    case 'g_gym': col(-6.6, -4, -5.8, -3.2, 3); col(5.8, -4, 6.6, -3.2, 3); break;
+    case 'race': col(-8.3, -0.3, -7.5, 0.3, 6); col(7.5, -0.3, 8.3, 0.3, 6); break;
+  }
+}
+function drawStruct(o, B) {
+  const X = o.x, Z = o.z, Y = o.y || 0, b = (x, y, z, w, h, d, c, opt) => B.box(X + x, Y + y, Z + z, w, h, d, c, opt);
+  switch (o.s) {
+    case 'g_taco': { // food truck + picnic tables
+      b(-0.6, 0.55, 0, 6, 2.5, 2.6, '#ffffff'); b(-0.6, 1.0, 1.31, 6, 0.35, 0.02, '#ff8a2a'); b(3.2, 0.55, 0, 1.8, 1.9, 2.5, '#ff8a2a'); b(3.6, 1.6, 0, 0.9, 0.7, 2.4, '#2a3442');
+      b(-0.8, 1.4, 1.32, 3.2, 1.1, 0.04, '#2a2a30', { key: 'glow' }); b(-0.8, 2.55, 1.9, 3.6, 0.1, 1.3, '#e23b3b'); b(-0.8, 1.32, 1.6, 3.2, 0.1, 0.6, '#c9ccd2');
+      b(-0.6, 3.05, 0, 3, 0.7, 0.3, '#ffd23f', { key: 'sign' });
+      for (const [x, z] of [[-2.4, -1.3], [-2.4, 1.3], [2.6, -1.3], [2.6, 1.3]]) b(x, 0, z, 0.7, 0.55, 0.3, '#16161a');
+      for (const tx of [-6, 6]) { b(tx, 0, 1.2, 1.8, 0.75, 0.9, '#8a5a35'); b(tx, 0, 0.4, 1.8, 0.45, 0.35, '#8a5a35'); b(tx, 0, 2.0, 1.8, 0.45, 0.35, '#8a5a35'); B.box(X + tx, Y, Z + 1.2, 0.08, 2.4, 0.08, '#ddd'); B.cone(X + tx, Y + 2.2, Z + 1.2, 1.5, 0.6, tx < 0 ? '#e23b3b' : '#ffd23f', 8); }
+      break; }
+    case 'g_gallery': { // carnival booth
+      b(0, 0, 0.9, 7, 1.1, 0.8, '#e23b3b'); b(0, 0, -1.3, 7, 3.2, 0.3, '#2f80ed'); for (const x of [-3.4, 3.4]) b(x, 0, -0.2, 0.25, 3.4, 2.6, '#ffd23f');
+      for (let i = 0; i < 7; i++) b(-3 + i, 3.4, -0.2, 1, 0.3, 2.8, i % 2 ? '#ffffff' : '#e23b3b');
+      for (let i = 0; i < 5; i++) { B.cyl(X - 2.4 + i * 1.2, Y + 1.5 + (i % 2) * 0.7, Z - 1.1, 0.35, 0.08, '#ffffff', 10); B.cyl(X - 2.4 + i * 1.2, Y + 1.5 + (i % 2) * 0.7, Z - 1.05, 0.2, 0.09, '#e23b3b', 10); }
+      b(0, 3.7, -0.2, 3.4, 0.7, 0.2, '#ffd23f', { key: 'sign' }); break; }
+    case 'g_surf': { // surf shack + board rack
+      b(0, 0, -1, 4, 2.8, 3, '#1fb5a8'); B.prism(X, Y + 2.8, Z - 1, 4.6, 1.2, 3.6, '#f2d0a0'); b(0, 0, 0.55, 1.2, 2, 0.06, '#6b4a33');
+      b(0, 2.9, 0.6, 3, 0.6, 0.15, '#ffffff', { key: 'sign' });
+      const cols = ['#ff6fb5', '#ffd23f', '#2f80ed', '#ff8a2a', '#4cd964'];
+      for (let i = 0; i < 5; i++) b(2.6 + (i % 3) * 0.55, 0, -0.4 + Math.floor(i / 3) * 1.3, 0.12, 2.4, 0.55, cols[i]);
+      b(-2.9, 0, 1.4, 0.1, 4, 0.1, '#ddd'); b(-2.6, 3.4, 1.4, 0.6, 0.4, 0.04, '#e23b3b'); break; }
+    case 'g_gym': { // Muscle Beach outdoor gym
+      b(0, 0, 0, 14, 0.12, 9, '#3a3d45'); for (const x of [-6.2, 6.2]) b(x, 0.12, -3.6, 0.3, 3, 0.3, '#c9ccd2'); b(0, 3, -3.6, 12.8, 0.4, 0.4, '#ffd23f', { key: 'sign' });
+      for (const x of [-3, 3]) { b(x, 0.12, -0.5, 0.6, 0.5, 1.6, '#16161b'); b(x, 1.1, -0.9, 2, 0.08, 0.08, '#9aa0aa'); b(x - 0.95, 0.9, -0.9, 0.12, 0.45, 0.45, '#16161b'); b(x + 0.95, 0.9, -0.9, 0.12, 0.45, 0.45, '#16161b'); for (const sx of [-0.3, 0.3]) b(x + sx, 0.12, -1.2, 0.08, 1.1, 0.08, '#9aa0aa'); }
+      b(0, 0.12, 2.6, 4, 0.6, 0.6, '#5a5a62'); for (let i = 0; i < 6; i++) b(-1.6 + i * 0.64, 0.72, 2.6, 0.3, 0.2, 0.2, '#16161b');
+      for (const x of [-5.5, 5.5]) { b(x, 0.12, 2.2, 0.2, 2.6, 0.2, '#c9ccd2'); b(x + (x < 0 ? 0.9 : -0.9), 0.12, 2.2, 0.2, 2.6, 0.2, '#c9ccd2'); b(x + (x < 0 ? 0.45 : -0.45), 2.6, 2.2, 1.1, 0.1, 0.1, '#c9ccd2'); }
+      break; }
+    case 'g_hoops': { // basketball court
+      b(0, 0, 0, 15, 0.1, 26, '#c8693a'); b(0, 0.1, 0, 13.6, 0.02, 24.6, '#2f6fae'); b(0, 0.12, 0, 13.6, 0.02, 0.15, '#ffffff');
+      for (const s2 of [-1, 1]) { b(0, 0.12, s2 * 9.6, 4.8, 0.02, 5, '#c8693a'); b(0, 0.12, s2 * 12.2, 0.2, 3.8, 0.4, '#3a3d45'); b(0, 3.9, s2 * 11.95, 1.9, 1.2, 0.08, '#ffffff'); for (const [ox, oz, ww, dd] of [[0, -0.25, 0.5, 0.05], [0, 0.25, 0.5, 0.05], [-0.25, 0, 0.05, 0.5], [0.25, 0, 0.05, 0.5]]) b(ox, 3.6, s2 * 11.5 + oz, ww, 0.05, dd, '#ff8a2a'); }
+      B.cyl(X, Y + 0.13, Z, 2, 0.02, '#ffffff', 16); B.cyl(X, Y + 0.14, Z, 1.85, 0.02, '#2f6fae', 16);
+      for (const x of [-7.6, 7.6]) b(x, 0, 0, 0.1, 3, 26, '#9aa0aa'); break; }
+    case 'v_anchor': { // beach bar with deck
+      b(0, 0, -1, 12, 4.2, 7, '#2f4f6f'); b(0, 4.2, -1, 12.6, 0.4, 7.6, '#e8e2d6'); b(0, 0, 3.3, 13, 0.3, 2.4, '#8a5a35');
+      b(0, 2.9, 2.7, 9, 0.12, 1.6, '#ffffff'); b(0, 0.3, 2.6, 2.6, 2.4, 0.1, '#33475a', { key: 'glow' }); b(0, 3.3, 2.56, 4, 0.8, 0.12, '#1fb5a8', { key: 'sign' });
+      for (const x of [-4.5, 4.5]) { b(x, 1.3, 2.56, 2.2, 1.2, 0.1, '#ffcf8a', { key: 'glow' }); B.cyl(X + x, Y + 0.3, Z + 3.9, 0.35, 0.9, '#6b4a33', 8); }
+      B.cyl(X - 5.2, Y + 4.6, Z - 1, 0.12, 2.2, '#ddd', 6); b(-5.2, 6.3, -1, 1.4, 0.12, 0.12, '#ddd'); break; }
+    case 'p_shack': { // little wooden pier shack
+      b(0, 0, 0, 6, 0.3, 5, '#8a6a45'); b(0, 0.3, -0.3, 4.6, 2.8, 3.6, '#c9a26a'); B.prism(X, Y + 3.1, Z - 0.3, 5.2, 1.4, 4.2, '#6b4a33');
+      b(0, 0.3, 1.52, 1.1, 2.1, 0.06, '#5a3d28'); b(1.5, 1.4, 1.52, 1, 0.8, 0.05, '#33475a', { key: 'glow' }); b(-1.5, 1.4, 1.52, 1, 0.8, 0.05, '#33475a', { key: 'glow' }); break; }
+    case 'p_beach': { // Malibay beach house on stilts
+      for (const x of [-5.5, 5.5]) for (const z of [-4, 2]) b(x, 0, z, 0.4, 1.2, 0.4, '#e8e2d6');
+      b(0, 1.2, -1, 12, 0.3, 8, '#e8e2d6'); b(0, 1.5, -1.5, 10, 3.6, 6, '#ffffff', { sideKey: 'win', uv: true, topCol: '#ffffff' }); b(0, 5.1, -1.5, 11, 0.4, 7, '#2f80ed');
+      b(0, 1.5, 2.6, 12, 0.1, 2.2, '#c9a26a'); for (let i = 0; i < 5; i++) b(-1 + i * 0.5, 0, 4.2 - i * 0.0, 2.2, 0.25, 0.4, '#c9a26a');
+      b(4, 1.6, 2.8, 0.1, 1.2, 0.1, '#ddd'); B.cone(X + 4, Y + 2.6, Z + 2.8, 1.4, 0.6, '#ff6fb5', 8); break; }
+    case 'chop': { // Lucky's Chop Shop
+      b(0, 0, 0, 16, 5.5, 12, '#7a7d84'); for (let i = 0; i < 16; i++) b(-7.5 + i, 0, 6.02, 0.06, 5.5, 0.04, '#6a6d74');
+      b(-3, 0, 6.05, 6, 4, 0.1, '#3a3d45'); for (let i = 0; i < 8; i++) b(-3, 0.25 + i * 0.5, 6.1, 6, 0.06, 0.04, '#2a2a30');
+      b(4.5, 0, 6.05, 1.2, 2.2, 0.1, '#5a3d28'); b(0, 4.6, 6.15, 7, 0.8, 0.2, '#ff8a2a', { key: 'sign' });
+      for (const [x, z, r] of [[5, 8.5, 0.2], [-6, 8, -0.3]]) b(x, 0, z, 0.8, 0.8, 0.8, '#16161a'); break; }
+    case 'race': { // start/finish gantry + checkered line
+      for (let i = 0; i < 16; i++) for (let j = 0; j < 2; j++) B.flat(X - 7.5 + i, Y + 0.08, Z - 0.5 + j, 1, 1, (i + j) % 2 ? '#111111' : '#ffffff');
+      for (const x of [-7.9, 7.9]) b(x, 0, 0, 0.6, 6, 0.6, '#c9ccd2'); b(0, 5.4, 0, 16.4, 1.2, 0.5, '#e23b3b', { key: 'sign' }); b(0, 5.6, 0.26, 8, 0.8, 0.02, '#ffffff', { key: 'sign' }); break; }
+  }
+}
 // Put a real front door on the building facing a place's sidewalk, and move the place marker to stand in front of it.
 const SIDE_N = { n: [0, -1], s: [0, 1], e: [1, 0], w: [-1, 0] };
 export function attachDoor(p, accent = '#ff8a2a', sign = null, build = null) {
@@ -736,6 +811,7 @@ function drawObj(o, B) {
     }
     case 'bench': B.box(o.x, 0.2, o.z, o.rot ? 0.6 : 2, 0.45, o.rot ? 2 : 0.6, '#8a5a35'); break;
     case 'rock': B.box(o.x, -2, o.z, o.w, o.h + 2, o.d, o.col, { rot: r() * 0.6 }); B.box(o.x + 2, o.h - 1, o.z - 1, o.w * 0.6, 3, o.d * 0.6, '#3f6b35', { rot: r() }); break;
+    case 'struct': drawStruct(o, B); break;
     case 'umbrella': B.box(o.x, 0, o.z, 0.1, 2.2, 0.1, '#ddd'); B.cone(o.x, 2.0, o.z, 1.6, 0.7, o.col, 8); break;
     case 'lifeguard':
       for (const sx of [-1, 1]) for (const sz of [-1, 1]) B.box(o.x + sx * 1.2, 0, o.z + sz * 1.2, 0.2, 2.6, 0.2, '#f2f2f2');

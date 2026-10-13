@@ -1,5 +1,5 @@
 // Everything you can walk or drive up to: shops, barbers, property, dealers, minigames, chop shop, race.
-import { blockSide, attachDoor } from './world.js?v=13';
+import { blockSide, attachDoor, addStructure } from './world.js?v=14';
 
 const S = (city, i, j, side) => blockSide(city, i, j, side);
 
@@ -161,3 +161,4 @@ export const CHOP_VALUE = { hatch: 350, sedan: 500, coupe: 700, sports: 1400, mu
 const DOOR_COL = { clothes: '#ff6fb5', barber: '#2f80ed', guns: '#e23b3b', diner: '#ffd23f', mart: '#4cd964', gym: '#ff8a2a', casino: '#d4af37', motors: '#38e8ff', casa: '#c98a4a', bar: '#1fb5a8', club: '#9b51e0', church: '#c9a24a', hospital: '#e23b3b' };
 for (const p of PLACES) if (p.interior && p.door) attachDoor(p, DOOR_COL[p.interior] || '#ff8a2a', null, p.church ? 'church' : null);
 for (const p of PROPERTIES) if (p.door) attachDoor(p, '#4cd964');
+for (const p of [...PLACES, ...PROPERTIES]) if (!p.door) addStructure(p);
