@@ -61,7 +61,8 @@ let job = null;
 const safes = () => Object.values(homes).flat().filter(f => f.t === 'safe').length;
 const stashCap = () => 40 + owned.size * 20 + safes() * 40;
 const stashCount = () => Object.values(stash).reduce((a, b) => a + b, 0);
-const lvl = id => stats.lvl[id] || 1;
+let goldBoost = 0; // Gold Leaf makes you smoother
+const lvl = id => (stats.lvl[id] || 1) + (id === 'charm' ? goldBoost : 0);
 const maxHP = () => 100 + (lvl('health') - 1) * 10;
 
 // ---- textures
@@ -336,6 +337,7 @@ function feed(f) { // apply a food/drink/activity effect object
   if (f.mood) stats.mood = clamp(stats.mood + f.mood, 0, 100);
   if (f.health) P.hp = Math.min(maxHP(), P.hp + f.health);
   if (f.groceries) stats.groceries += f.groceries;
+  if (f.drunk) addDrunk(f.drunk);
 }
 let needWarnT = 0;
 function updateNeeds(dtHours, dt) {
@@ -565,7 +567,7 @@ function meleeHit() {
   let hit = false;
   for (const p of peds.list) {
     const dx = p.x - P.x, dz = p.z - P.z, d = Math.hypot(dx, dz);
-    if (d < ws.reach && (dx * fx + dz * fz) / (d || 1) > 0.35 && peds.knock(p, fx, fz, ws.power)) { hit = true; spawnParticles(p.x, 1.4, p.z, ['#ffffff', '#ffd23f'], 6, 3, 0.3, 0.08); if (Math.random() < 0.35) dropCash(p.x, p.z, 5 + Math.floor(Math.random() * 25)); peds.scare(p.x, p.z, 14); }
+    if (d < ws.reach && (dx * fx + dz * fz) / (d || 1) > 0.35 && peds.knock(p, fx, fz, ws.power * (fxOn('pills') ? 1.6 : 1))) { hit = true; spawnParticles(p.x, 1.4, p.z, ['#ffffff', '#ffd23f'], 6, 3, 0.3, 0.08); if (Math.random() < 0.35) dropCash(p.x, p.z, 5 + Math.floor(Math.random() * 25)); peds.scare(p.x, p.z, 14); }
   }
   for (const t of traffic) if (Math.hypot(t.rx - P.x, t.rz - P.z) < ws.reach + 1.4) { t.stun = 2; t.honk = 0; hit = true; }
   if (hit) { sfx.punch(); shake = Math.max(shake, 0.15); navigator.vibrate?.(15); gainXP('strength', 4); }
@@ -589,6 +591,7 @@ function homeSpot() {
   return best ? { x: best.x, z: best.z, name: best.name } : { x: SPAWN.x, z: SPAWN.z, name: 'Downtown Clinic' };
 }
 function respawn() {
+  fxReset();
   P.dead = false; P.hp = maxHP() * 0.8; P.hurtT = 99; P.kx = P.kz = 0; const starved = stats.hunger <= 1; stats.hunger = Math.max(stats.hunger, 45); stats.energy = Math.max(stats.energy, 40);
   heroRoot.visible = true; hero.root.rotation.x = 0;
   $('deathScreen').classList.remove('on');
@@ -615,7 +618,7 @@ function updateFoot(dt) {
   P.x += P.kx * dt; P.z += P.kz * dt; P.kx = damp(P.kx, 0, 4, dt); P.kz = damp(P.kz, 0, 4, dt);
   const tired = stats.energy < 10 ? 0.7 : 1, runMul = 1 + (lvl('stamina') - 1) * 0.035;
   const sp = (st.m > 0.85 ? 7.2 * runMul : 4.6) * st.m * (ws.mob || 1) * tired * (inside ? 0.8 : 1), ox = P.x, oz = P.z;
-  if (st.m > 0.1) { const mx = st.x / st.m, mz = -st.y / st.m; P.x += mx * sp * dt; P.z += mz * sp * dt; P.face += wrapA(Math.atan2(mx, mz) - P.face) * (1 - Math.exp(-14 * dt)); }
+  if (st.m > 0.1) { const wob = Math.sin(time * 1.4) * Math.min(1, FX.drunk) * 0.7, mx0 = st.x / st.m, mz0 = -st.y / st.m, mx = mx0 * Math.cos(wob) - mz0 * Math.sin(wob), mz = mx0 * Math.sin(wob) + mz0 * Math.cos(wob); P.x += mx * sp * fxSpeed() * dt; P.z += mz * sp * fxSpeed() * dt; P.face += wrapA(Math.atan2(mx, mz) - P.face) * (1 - Math.exp(-14 * dt)); }
   resolve(P, 0.4, Math.max(0, P.y - baseY(P.x, P.z)));
   if (!inside) for (const v of vehicles) { if ((v.s.x - P.x) ** 2 + (v.s.z - P.z) ** 2 > 36) continue; for (const [cx, cz, r] of carCircles(v)) { const dx = P.x - cx, dz = P.z - cz, d = Math.hypot(dx, dz), m = r + 0.35; if (d < m && d > 1e-3 && P.y < baseY(P.x, P.z) + 1.2) { P.x = cx + dx / d * m; P.z = cz + dz / d * m; } } }
   for (const p of peds.list) { const dx = P.x - p.x, dz = P.z - p.z, d = Math.hypot(dx, dz); if (d < 0.7 && d > 0.01 && p.state !== 'down') { p.x -= dx / d * (0.7 - d); p.z -= dz / d * (0.7 - d); } }
@@ -625,7 +628,7 @@ function updateFoot(dt) {
   const gy = baseY(P.x, P.z);
   if (editMode) { updateEdit(dt); }
   else {
-    if (input.consume('b') && P.y <= gy + 0.01 && !P.dead) P.vy = 7.5;
+    if (input.consume('b') && P.y <= gy + 0.01 && !P.dead) P.vy = fxJump();
     // ---- weapon use (holstered indoors)
     P.fireCd -= dt; P.burstT -= dt; P.recoil = Math.max(0, P.recoil - dt * 4); P.swing = Math.max(0, P.swing - dt);
     const a = am(), kind = inside ? 'none' : ws.kind, firing = !P.dead && input.held('x');
@@ -656,7 +659,7 @@ function updateFoot(dt) {
   const moved = Math.hypot(P.x - ox, P.z - oz) / Math.max(dt, 1e-4);
   if (moved > 6.5 && !inside) { P.runDist += moved * dt; if (P.runDist > 60) { P.runDist = 0; gainXP('stamina', 2); } }
   P.phase += dt * moved * 1.8;
-  P.vy -= 24 * dt; P.y += P.vy * dt; if (P.y <= gy) { P.y = gy; P.vy = 0; }
+  P.vy -= fxGrav() * dt; P.y += P.vy * dt; if (P.y <= gy) { P.y = gy; P.vy = 0; }
   heroRoot.position.set(P.x, P.y, P.z); hero.root.rotation.y = P.face;
   hero.root.rotation.x = P.dead ? damp(hero.root.rotation.x, -Math.PI / 2, 8, dt) : 0;
   const kind = inside ? 'none' : ws.kind, firing = input.held('x');
@@ -853,7 +856,7 @@ function updateVehicles(dt) {
       else if (brk) { if (c.v > 0.3) { c.v = Math.max(0, c.v - 18 * dt); c.braking = true; } else c.v = Math.max(-s.top * 0.32, c.v - s.acc * 0.6 * dt); }
       else c.v = damp(c.v, 0, 0.8, dt);
       if (c.v > top + 0.5) c.v = damp(c.v, top, 1.5, dt);
-      c.steer = damp(c.steer, clamp(-st.x, -1, 1), 9, dt);
+      c.steer = damp(c.steer, clamp(-st.x + Math.sin(time * 1.1) * Math.min(1, FX.drunk) * 0.45, -1, 1), 9, dt);
       if (input.consume('y')) sfx.horn();
       input.consume('b'); input.consume('x');
       if (input.consume('a')) { if (action) doAction(action); else exitCar(); }
@@ -1369,6 +1372,57 @@ async function talkHomeless(p) {
   }
   endTalk(); peds.release(p);
 }
+
+// ================================================================ ALTERNATE STATES: alcohol and the (fictional) goods you deal
+// Each one changes how the game looks and plays for a while. Mixing too much = you wake up in hospital.
+const FX = { drunk: 0, trips: {}, filt: '' };
+const TRIP = {
+  haze: { name: 'Blue Haze', dur: 75, msg: 'Everything slows down. Colours get rich. You could eat a whole taco truck.', mood: 15 },
+  pills: { name: 'Red Pills', dur: 60, msg: 'Heart racing. You feel FAST. And strong.', mood: 10, energy: 25 },
+  dust: { name: 'Pixie Dust', dur: 70, msg: 'Wow. Rainbows. Sparkles. You love everyone.', mood: 35 },
+  moon: { name: 'Moon Rocks', dur: 70, msg: 'Gravity is optional now. Try jumping.', mood: 20 },
+  glow: { name: 'Glowstix', dur: 65, msg: 'The city turns neon. Is that... sound you can see?', mood: 25 },
+  gold: { name: 'Gold Leaf', dur: 90, msg: 'You feel rich. Smooth. Unstoppable. Everyone wants to talk to you.', mood: 30 },
+};
+function addDrunk(v) {
+  FX.drunk += v;
+  if (FX.drunk > 1.2 && FX.drunk - v <= 1.2) toast("You're properly drunk now. Maybe don't drive.", 3);
+  if (FX.drunk > 2.6) { FX.drunk = 0.6; toast('You drank way too much and blacked out...', 3); setTimeout(() => die(), 600); }
+}
+function useGood(id) {
+  if (!stash[id]) return;
+  stash[id]--;
+  const active = Object.keys(FX.trips).length;
+  if (FX.trips[id] || active >= 2 && Math.random() < 0.55 || FX.drunk > 1.5 && active >= 1 && Math.random() < 0.4) { toast('Your heart is pounding... everything goes dark.', 3); FX.trips = {}; setTimeout(() => die(), 900); return; }
+  const T = TRIP[id]; FX.trips[id] = T.dur; feed({ mood: T.mood, energy: T.energy || 0 }); toast(T.msg, 3.5); sfx.whoosh?.(); saveGame();
+}
+const fxOn = id => (FX.trips[id] || 0) > 0;
+const fxSpeed = () => (fxOn('pills') ? 1.35 : 1) * (fxOn('haze') ? 0.9 : 1);
+const fxGrav = () => fxOn('moon') ? 7 : 24, fxJump = () => fxOn('moon') ? 13 : 7.5;
+function updateFx(dt) {
+  FX.drunk = Math.max(0, FX.drunk - dt * 0.012); goldBoost = fxOn('gold') ? 3 : 0;
+  for (const k of Object.keys(FX.trips)) { FX.trips[k] -= dt; if (FX.trips[k] <= 0) { delete FX.trips[k]; feed({ mood: -12, energy: k === 'pills' ? -30 : -8 }); toast(`The ${TRIP[k].name} wears off. You feel flat.`, 2.5); } }
+  if (fxOn('haze')) stats.hunger = Math.max(0, stats.hunger - dt * 0.15); // munchies
+  // particles around you
+  const f = focusPos();
+  if (fxOn('dust') && Math.random() < dt * 10) spawnParticles(f.x + rand(-2, 2), 1 + Math.random() * 2, f.z + rand(-2, 2), ['#ff6fb5', '#ffd23f', '#38e8ff', '#4cd964', '#b26bff'], 1, 0.6, 1.2, 0.12, -0.6);
+  if (fxOn('gold') && Math.random() < dt * 5) spawnParticles(f.x + rand(-1.5, 1.5), 2.2, f.z + rand(-1.5, 1.5), ['#ffd23f', '#fff2b0'], 1, 0.5, 1.4, 0.1, 2);
+  if (fxOn('glow') && Math.random() < dt * 4) spawnParticles(f.x + rand(-4, 4), 0.3, f.z + rand(-4, 4), ['#38e8ff', '#ff3b8a', '#b6ff3b'], 2, 2, 0.8, 0.18, -2);
+  // screen look
+  const t = time, d = Math.min(1.5, FX.drunk), parts = [];
+  if (d > 0.15) parts.push(`blur(${(d * 1.4).toFixed(2)}px)`, `saturate(${(1 + d * 0.3).toFixed(2)})`);
+  if (fxOn('haze')) parts.push('saturate(1.7)', 'hue-rotate(-18deg)', 'contrast(1.05)');
+  if (fxOn('pills')) parts.push(`contrast(${(1.15 + Math.max(0, Math.sin(t * 7.5)) * 0.15).toFixed(2)})`, 'saturate(1.4)');
+  if (fxOn('dust')) parts.push(`hue-rotate(${Math.floor((t * 70) % 360)}deg)`, 'saturate(2.2)');
+  if (fxOn('moon')) parts.push('hue-rotate(230deg)', 'saturate(1.3)', 'brightness(1.05)');
+  if (fxOn('glow')) parts.push('invert(0.88)', `hue-rotate(${170 + Math.sin(t) * 40}deg)`, 'saturate(2.6)', 'contrast(1.25)');
+  if (fxOn('gold')) parts.push('sepia(0.55)', 'saturate(1.9)', 'brightness(1.08)');
+  const filt = parts.join(' ');
+  if (filt !== FX.filt) { FX.filt = filt; $('c').style.filter = filt; }
+  const vig = $('fxVig'); const pulse = fxOn('pills') ? 0.35 + Math.max(0, Math.sin(t * 7.5)) * 0.4 : d > 0.6 ? 0.25 + Math.sin(t * 1.3) * 0.1 : 0;
+  vig.style.opacity = pulse.toFixed(2); vig.style.setProperty('--vc', fxOn('pills') ? 'rgba(255,30,60,.55)' : 'rgba(40,10,60,.5)');
+}
+function fxReset() { FX.drunk = 0; FX.trips = {}; FX.filt = ''; $('c').style.filter = ''; }
 // ================================================================ FAMILY: partner, engagement, marriage, pregnancy, kids that grow up
 const BOY_NAMES = ['Leo', 'Max', 'Noah', 'Eli', 'Jayden', 'Marcus', 'Theo', 'Ezra', 'Kai', 'Luca'], GIRL_NAMES = ['Ava', 'Lily', 'Mila', 'Zara', 'Ruby', 'Isla', 'Nova', 'Ellie', 'Aria', 'Skye'];
 function fam() { stats.fam ||= { partner: null, kids: [], preg: null, home: null, seen: 0 }; stats.texts ||= {}; stats.propMode ||= {}; return stats.fam; }
@@ -1944,6 +1998,7 @@ function updateCamera(dt, snap) {
   camDist = snap ? want : damp(camDist, want, 2.5, dt);
   const k = snap ? 1 : 1 - Math.exp(-6 * dt);
   camLook.x += (tx - camLook.x) * k; camLook.z += (tz - camLook.z) * k; camLook.y += (ty - camLook.y) * k;
+  if (FX.drunk > 0.2) { camLook.x += Math.sin(time * 0.8) * Math.min(1.5, FX.drunk) * 0.06; camLook.z += Math.cos(time * 0.6) * Math.min(1.5, FX.drunk) * 0.05; }
   if (inside) { camLook.x = clamp(camLook.x, ORIGIN.x - inside.h.w / 4, ORIGIN.x + inside.h.w / 4); camLook.z = clamp(camLook.z, ORIGIN.z - inside.h.d / 4, ORIGIN.z + inside.h.d / 4 + 1); }
   const pitch = (inside ? 60 : 56) * DEG;
   shake = Math.max(0, shake - dt * 1.5);
@@ -2214,8 +2269,9 @@ function renderPhone() {
     if ($('phQuitJob')) $('phQuitJob').onclick = () => { endJob('Shift ended.'); renderPhone(); };
   } else if (phoneApp === 'wallet') {
     const inc = PROPERTIES.filter(p => owned.has(p.id) && propMode(p.id) === 'rent').reduce((a, p) => a + p.income, 0);
-    const items = GOODS.filter(g => stash[g.id]).map(g => `<div class="ph-row"><span style="color:${g.col}">${svg(g.icon, 'sm')} <b style="color:#fff">${g.name}</b></span><b>×${stash[g.id]}</b></div>`).join('') || '<p class="ph-hint">Stash is empty.</p>';
-    el.innerHTML = `${back}<h4>Wallet</h4><div class="ph-cash">${fmt(money)}</div><p class="ph-hint">Daily income ${fmt(inc)} · Stash ${stashCount()}/${stashCap()} · Groceries ${stats.groceries} meals</p><div class="ph-sec">Stash</div>${items}`;
+    const items = GOODS.filter(g => stash[g.id]).map(g => `<div class="ph-row"><span style="color:${g.col}">${svg(g.icon, 'sm')} <b style="color:#fff">${g.name}</b></span><span class="rowbtns" style="margin:0;flex:none"><b>×${stash[g.id]}</b><button class="ph-mini" data-use-g="${g.id}">Use</button></span></div>`).join('') || '<p class="ph-hint">Stash is empty.</p>';
+    el.innerHTML = `${back}<h4>Wallet</h4><div class="ph-cash">${fmt(money)}</div><p class="ph-hint">Daily income ${fmt(inc)} · Stash ${stashCount()}/${stashCap()} · Groceries ${stats.groceries} meals</p><div class="ph-sec">Stash</div>${items}${Object.keys(FX.trips).length || FX.drunk > 0.2 ? `<p class="ph-hint">Feeling: ${[FX.drunk > 0.2 ? (FX.drunk > 1.2 ? 'drunk' : 'tipsy') : '', ...Object.keys(FX.trips).map(k => TRIP[k].name)].filter(Boolean).join(', ')}</p>` : ''}`;
+    el.querySelectorAll('[data-use-g]').forEach(b => b.onclick = () => { closePhone(); useGood(b.dataset.useG); });
   } else if (phoneApp === 'garage') {
     el.innerHTML = `${back}<h4>Garage</h4><p class="ph-hint">Buy more cars at Bay Motors downtown. Upgrade them at Bay Customs.</p>${garage.cars.map((c, i) => `<div class="ph-row col"><span><b>${c.name || BODIES[c.body].label}</b> <small>${BODIES[c.body].label}${i === garage.active ? ' · driving' : ''}</small></span><span class="rowbtns">${i !== garage.active ? `<button class="ph-mini" data-use="${i}">Use</button>` : ''}<button class="ph-mini" data-mod="${i}">Upgrade</button></span></div>`).join('')}
       <button class="ph-btn" id="phBring">${svg('pin', 'sm')} Bring my car here</button><button class="ph-btn" id="phFind">${svg('map', 'sm')} Mark my car on the map</button>`;
@@ -2316,7 +2372,7 @@ function step(dt) {
     updateAngry(dt);
     updateNpcList(npcs, dt); updateFlyer(dt);
   } else updateNpcList(inside.npcs, dt);
-  updateDate(dt); famTexts(dt);
+  updateDate(dt); famTexts(dt); updateFx(dt);
   updateBullets(dt); updateProjectiles(dt); updateParticles(dt); updateCash(dt); updateMarkers(); updateRace(dt); updateRoute(dt); updateCustomers(dt); updateJob(dt);
   if (input.consume('map') || input.consume('pause')) openPhone('maps');
   for (let i = 1; i <= 9; i++) if (input.keys.has('Digit' + i)) { input.keys.delete('Digit' + i); selectWeapon(SLOTS[i - 1].id); }

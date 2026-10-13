@@ -366,3 +366,4 @@ input[type=text] { width: 100%; padding: 10px 12px; border-radius: 10px; border:
 .bub.me { align-self: flex-end; background: #2f80ed; border-radius: 16px 16px 4px 16px; }
 .ph-replies { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
 .ph-replies .ph-mini { flex: 1 1 45%; }
+#fxVig { --vc: rgba(255,30,60,.5); position: fixed; inset: 0; pointer-events: none; z-index: 3; opacity: 0; background: radial-gradient(ellipse at center, transparent 45%, var(--vc) 100%); transition: opacity .15s; }

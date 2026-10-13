@@ -69,6 +69,30 @@ Walk into shops, venues and homes:
 - WooHoo Sims-style, under the duvet with a bouncing bed, or in a parked car with steamy windows. It fades to black.
 - Women you've dated are in Contacts. Ask them out again from your phone.
 
+## Family
+- Make it official, propose (a $2,500 ring), and book a $5,000 wedding at Bay Chapel with Father Gabe. Your wife moves into your family home.
+- WooHoo with "try for a baby" and she may fall pregnant. Her belly grows over 90 days. When her water breaks, choose a home birth or rush her to Bay General.
+- Kids grow from baby to toddler, child, teen and adult. Cuddle, play, help with homework, teach them to drive, and give pocket money. Teens text you for cash.
+- Neglect your family and they'll let you know. Cheat and your partner may find out.
+- Messages has real chats with your partner, dates and kids. Text them, ask them out and keep the relationship alive.
+
+## Homes
+- Each home can be your family home, rented out for daily income, left vacant, or sold for 75% of its price. You can't sell the home your family lives in.
+
+## Hospital
+- Bay General Hospital: reception, doctor, ward beds, check-ups and pregnancy scans. You wake up here after blacking out or collapsing from hunger.
+
+## Drinking and getting high (all fictional goods)
+- Beer, shots, whiskey and cocktails at the Anchor and the Neon Room. Get tipsy and the screen blurs, you stagger and the car drifts. Drink too much and you black out.
+- Use what you buy from dealers (phone > Wallet > Use):
+  - Blue Haze: slow, saturated colours, munchies.
+  - Red Pills: speed and punch power, red pulse, then a crash.
+  - Pixie Dust: rainbow world with sparkles.
+  - Moon Rocks: low gravity and huge jumps.
+  - Glowstix: neon inverted city.
+  - Gold Leaf: golden glow and +3 Charm.
+- Mixing too much means an overdose and a trip to hospital.
+
 ## Cars, jacking and crashes
 - Climb in and out of cars with an animation. Exit at speed to bail out and roll, while the car keeps going.
 - Jacking drags the driver out. Brave drivers get up and fight you or chase their car, and can pull you back out. The rest run off.

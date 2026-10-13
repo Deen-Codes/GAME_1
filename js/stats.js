@@ -46,8 +46,10 @@ export const FOODS = {
   coffee: { name: 'Coffee', price: 5, hunger: 2, energy: 20, mood: 2 },
   shake: { name: 'Milkshake', price: 7, hunger: 10, mood: 8 },
   taco: { name: 'Street Taco', price: 6, hunger: 18, mood: 4 },
-  beer: { name: 'Beer', price: 8, mood: 10, energy: -5 },
-  cocktail: { name: 'Cocktail', price: 18, mood: 16, energy: -6 },
+  beer: { name: 'Beer', price: 8, mood: 10, energy: -5, drunk: 0.35 },
+  shot: { name: 'Tequila Shot', price: 10, mood: 12, drunk: 0.55 },
+  whiskey: { name: 'Whiskey', price: 16, mood: 14, drunk: 0.7 },
+  cocktail: { name: 'Cocktail', price: 18, mood: 16, energy: -6, drunk: 0.5 },
   energy: { name: 'Energy Drink', price: 6, energy: 25, mood: -2 },
   snack: { name: 'Snack Bar', price: 3, hunger: 10 },
   groceries: { name: 'Groceries (5 meals)', price: 35, groceries: 5 },
@@ -56,7 +58,7 @@ export const FOODS = {
 export const MENUS = {
   diner: ['pancakes', 'burger', 'fries', 'salad', 'steak', 'shake', 'coffee'],
   mart: ['groceries', 'snack', 'energy', 'coffee', 'beer'],
-  bar: ['beer', 'cocktail', 'fries', 'burger'],
-  club: ['beer', 'cocktail', 'energy'],
+  bar: ['beer', 'shot', 'whiskey', 'cocktail', 'fries', 'burger'],
+  club: ['beer', 'shot', 'cocktail', 'energy'],
   taco: ['taco', 'shake'],
 };
