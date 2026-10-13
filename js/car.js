@@ -24,9 +24,9 @@ export const BODIES = {
 const o = (label, m = {}) => ({ label, m });
 export const CAR_PARTS = {
   engine: { eco: o('Eco', { top: 24, acc: 7 }), stock: o('Stock', { top: 32, acc: 10 }), sport: o('Sport', { top: 40, acc: 13 }), race: o('Race', { top: 48, acc: 17 }), rocket: o('Rocket', { top: 60, acc: 22 }) },
-  tyres: { street: o('Street', { grip: 1 }), sport: o('Sport', { grip: 1.2 }), offroad: o('Off-road', { grip: 0.95, off: 1.5 }), drift: o('Drift', { grip: 0.65 }) },
+  tyres: { street: o('Street', { grip: 1 }), sport: o('Low profile', { grip: 1.2 }), offroad: o('Mud terrain', { grip: 0.95, off: 1.5 }), drift: o('Drift (stretched)', { grip: 0.65 }), whitewall: o('Whitewall', { grip: 0.95 }), slick: o('Racing slick', { grip: 1.3, off: 0.7 }) },
   suspension: { lowered: o('Lowered', { grip: 1.08, off: 0.8 }), stock: o('Stock'), lifted: o('Lifted', { grip: 0.92, off: 1.25 }) },
-  wheels: { steel: o('Steel'), fivespoke: o('Five-spoke'), mesh: o('Mesh'), deepdish: o('Deep dish'), offroad: o('Off-road'), turbine: o('Turbine') },
+  wheels: { steel: o('Steel'), fivespoke: o('Five-spoke'), mesh: o('Mesh'), deepdish: o('Deep dish'), offroad: o('Beadlock'), turbine: o('Turbine'), wire: o('Wire spoke'), aero: o('Aero disc'), split: o('Split spoke') },
   wheelSize: { s: o('Small'), m: o('Medium'), l: o('Large', { off: 1.1 }) },
   front: { stock: o('Stock'), lip: o('Splitter', { grip: 1.03 }), bullbar: o('Bull bar', { off: 1.05 }), pushbar: o('Push bar') },
   rear: { stock: o('Stock'), diffuser: o('Diffuser', { grip: 1.02 }), hitch: o('Tow hitch') },
@@ -167,7 +167,7 @@ export function buildCar(cfg) {
   const glass = new THREE.MeshStandardMaterial({ color: tintCol, roughness: 0.08, metalness: 0.5, transparent: true, opacity: c.tint === 'clear' ? 0.6 : 0.9, flatShading: true });
   const headM = new THREE.MeshStandardMaterial({ color: '#ffffff', emissive: c.headlights, emissiveIntensity: 0.6, roughness: 0.2 });
   const tailM = new THREE.MeshStandardMaterial({ color: '#7a0a10', emissive: '#ff1a2a', emissiveIntensity: 0.5, roughness: 0.3 });
-  const rimM = new THREE.MeshStandardMaterial({ color: c.rimColor, roughness: 0.25, metalness: 0.85, flatShading: true });
+  const rimM = new THREE.MeshStandardMaterial({ color: c.rimColor || '#c9ccd2', roughness: 0.25, metalness: 0.85, flatShading: true });
 
   const add = (geo, mat, x, y, z) => { const m = new THREE.Mesh(geo, mat); m.position.set(x, y, z); m.castShadow = true; grp.add(m); return m; };
   const bx = (w, h, d, mat, x, y, z) => add(new THREE.BoxGeometry(w, h, d), mat, x, y, z);
@@ -292,27 +292,59 @@ export function buildCar(cfg) {
   if (!B.open && !B.topless) for (const sx of [-1, 1]) bx(0.14, 0.08, 0.1, c.decal === 'none' ? bodyM : accM, sx * (W / 2 + 0.05), top + 0.12, B.co + B.cl * 0.32);
 
   // ---- wheels
-  const wheelbase = L * 0.62, track = W / 2 - 0.05;
-  const tw = c.wheels === 'offroad' ? 0.36 : c.wheels === 'deepdish' ? 0.32 : 0.26;
-  const tyreGeo = new THREE.CylinderGeometry(wr, wr, tw, c.wheels === 'offroad' ? 10 : 14); tyreGeo.rotateZ(Math.PI / 2);
-  const rimR = wr * (c.wheels === 'offroad' ? 0.55 : 0.66);
-  const rimGeo = new THREE.CylinderGeometry(rimR, rimR, tw + 0.02, 12); rimGeo.rotateZ(Math.PI / 2);
+  const wheelbase = L * 0.62, track = W / 2 + 0.01;
+  const tyre = c.tyres || 'street';
+  const tw = (c.wheels === 'offroad' || tyre === 'offroad' ? 0.38 : c.wheels === 'deepdish' ? 0.34 : 0.3) * (tyre === 'slick' ? 1.12 : 1);
+  // rim-to-tyre ratio: low profile/drift = big rims and thin rubber, mud tyres = small rims and tall rubber
+  const rimR = wr * ({ sport: 0.76, drift: 0.8, slick: 0.7, offroad: 0.55, whitewall: 0.6 }[tyre] || 0.66);
+  const tyreM = new THREE.MeshStandardMaterial({ color: '#1a1a1e', roughness: 0.95, flatShading: true });
+  const wallM = new THREE.MeshStandardMaterial({ color: tyre === 'whitewall' ? '#f2efe6' : tyre === 'sport' ? '#d8262c' : tyre === 'drift' ? '#ffd23f' : '#2b2b31', roughness: 0.8 });
+  const dish = new THREE.MeshStandardMaterial({ color: new THREE.Color(c.rimColor || '#c9ccd2').multiplyScalar(0.35), roughness: 0.6, metalness: 0.3 });
+  // brighter, less mirror-like so the chosen rim colour actually reads on screen
+  rimM.metalness = 0.45; rimM.roughness = 0.3; rimM.emissive = new THREE.Color(c.rimColor || '#c9ccd2').multiplyScalar(0.12);
+  const chromeLip = new THREE.MeshStandardMaterial({ color: '#eef1f5', roughness: 0.2, metalness: 0.6, emissive: '#30343a' });
+  // tyre: lathe profile with rounded shoulders (axis = X after rotation)
+  const sh = tyre === 'offroad' ? 0.06 : tyre === 'drift' ? 0.02 : 0.045, h = tw / 2;
+  const prof = [[rimR * 0.98, -h + 0.01], [wr - sh, -h], [wr - sh * 0.3, -h + sh * 0.6], [wr, -h + sh * 1.4], [wr, h - sh * 1.4], [wr - sh * 0.3, h - sh * 0.6], [wr - sh, h], [rimR * 0.98, h - 0.01]];
+  if (tyre === 'drift') { prof[1][0] = wr - 0.07; prof[6][0] = wr - 0.07; } // stretched: sidewall pulled in
+  const tyreGeo = new THREE.LatheGeometry(prof.map(([r, y]) => new THREE.Vector2(r, y)), 22); tyreGeo.rotateZ(Math.PI / 2);
+  tyreM.side = THREE.DoubleSide;
+  const cyl = (r, w, seg = 18) => new THREE.CylinderGeometry(r, r, w, seg).rotateZ(Math.PI / 2);
   const wheels = [];
   for (const fz of [1, -1]) for (const sx of [-1, 1]) {
     const pivot = new THREE.Group(); pivot.position.set(sx * track, wr, fz * wheelbase / 2); grp.add(pivot);
     const spin = new THREE.Group(); pivot.add(spin);
-    const t = new THREE.Mesh(tyreGeo, dark); t.castShadow = true; spin.add(t);
-    const r = new THREE.Mesh(rimGeo, rimM); spin.add(r);
-    const face = sx * (tw / 2 + 0.012);
-    const spokes = { steel: 0, fivespoke: 5, mesh: 10, deepdish: 6, offroad: 6, turbine: 12 }[c.wheels] ?? 5;
-    if (c.wheels === 'steel') { const cap = new THREE.Mesh(new THREE.CylinderGeometry(rimR * 0.35, rimR * 0.35, 0.03, 10).rotateZ(Math.PI / 2), chrome); cap.position.x = face; spin.add(cap); }
-    for (let i = 0; i < spokes; i++) {
-      const a = (i / spokes) * Math.PI * 2;
-      const s = new THREE.Mesh(new THREE.BoxGeometry(0.02, rimR * 1.7, c.wheels === 'mesh' || c.wheels === 'turbine' ? 0.025 : 0.06), c.wheels === 'deepdish' ? chrome : rimM);
-      s.position.x = face; s.rotation.x = a; if (c.wheels === 'turbine') s.rotation.y = 0.5 * sx; spin.add(s);
+    const t = new THREE.Mesh(tyreGeo, tyreM); spin.add(t);
+    const face = sx * (h + 0.005);          // outer face of the wheel
+    const at = (m, x, y = 0, z = 0) => { m.position.set(x, y, z); spin.add(m); return m; };
+    // sidewall ring (coloured stripe for whitewall / low profile / drift)
+    if (wallM.color.getHex() !== 0x2b2b31 || tyre === 'street') at(new THREE.Mesh(new THREE.RingGeometry(rimR * 1.02, tyre === 'whitewall' ? wr * 0.88 : rimR * 1.02 + (wr - rimR) * 0.35, 22).rotateY(sx * Math.PI / 2), wallM), face - sx * 0.002);
+    // tread blocks
+    if (tyre === 'offroad') for (let i = 0; i < 14; i++) { const a = i / 14 * Math.PI * 2; for (const k of [-1, 1]) { const lug = at(new THREE.Mesh(new THREE.BoxGeometry(tw * 0.42, 0.07, 0.13), tyreM), k * tw * 0.24, Math.cos(a + k * 0.2) * (wr + 0.02), Math.sin(a + k * 0.2) * (wr + 0.02)); lug.rotation.x = a + k * 0.2; } }
+    else if (tyre !== 'slick') for (let i = 0; i < 18; i++) { const a = i / 18 * Math.PI * 2; const g = at(new THREE.Mesh(new THREE.BoxGeometry(tw * 0.78, 0.008, 0.035), dark), 0, Math.cos(a) * (wr - 0.002), Math.sin(a) * (wr - 0.002)); g.rotation.x = a; }
+    // rim: dark recessed dish, raised outer lip, then the spoke design on top
+    at(new THREE.Mesh(cyl(rimR, 0.02), dish), sx * (h - 0.09));
+    at(new THREE.Mesh(new THREE.TorusGeometry(rimR * 0.97, 0.035, 6, 24).rotateY(Math.PI / 2), c.wheels === 'deepdish' || c.wheels === 'wire' ? chromeLip : rimM), face);
+    const fx = face + sx * 0.01, deep = sx * (h - 0.06);
+    const spoke = (a, len, wid, dep, x, mat = rimM, r0 = rimR * 0.18, twist = 0) => { const m = new THREE.Mesh(new THREE.BoxGeometry(dep, len, wid), mat); m.position.set(x, Math.cos(a) * (r0 + len / 2), Math.sin(a) * (r0 + len / 2)); m.rotation.x = a; m.rotation.y = twist; spin.add(m); return m; };
+    const hub = (r, mat = rimM) => at(new THREE.Mesh(cyl(r, 0.06, 12), mat), fx);
+    const L0 = rimR * 0.8;
+    switch (c.wheels) {
+      case 'steel': at(new THREE.Mesh(cyl(rimR * 0.93, 0.03), rimM), sx * (h - 0.03)); for (let i = 0; i < 8; i++) { const a = i / 8 * Math.PI * 2; at(new THREE.Mesh(cyl(rimR * 0.1, 0.035, 8), dish), sx * (h - 0.015), Math.cos(a) * rimR * 0.62, Math.sin(a) * rimR * 0.62); } hub(rimR * 0.34, chromeLip); break;
+      case 'fivespoke': for (let i = 0; i < 5; i++) spoke(i / 5 * Math.PI * 2, L0, rimR * 0.32, 0.07, fx - sx * 0.02); hub(rimR * 0.26); break;
+      case 'mesh': for (let i = 0; i < 10; i++) { spoke(i / 10 * Math.PI * 2, L0, 0.035, 0.05, fx - sx * 0.02, rimM, rimR * 0.18, 0.5); spoke(i / 10 * Math.PI * 2 + 0.31, L0, 0.035, 0.05, fx - sx * 0.025, rimM, rimR * 0.18, -0.5); } hub(rimR * 0.22); break;
+      case 'deepdish': at(new THREE.Mesh(new THREE.TorusGeometry(rimR * 0.78, rimR * 0.17, 6, 24).rotateY(Math.PI / 2), chromeLip), sx * (h - 0.04)); for (let i = 0; i < 6; i++) spoke(i / 6 * Math.PI * 2, rimR * 0.45, rimR * 0.2, 0.05, deep, rimM, rimR * 0.16); hub(rimR * 0.2, chromeLip); break;
+      case 'offroad': at(new THREE.Mesh(new THREE.TorusGeometry(rimR * 0.9, 0.05, 6, 20).rotateY(Math.PI / 2), rimM), fx); for (let i = 0; i < 16; i++) { const a = i / 16 * Math.PI * 2; at(new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.04, 0.04), chromeLip), fx + sx * 0.03, Math.cos(a) * rimR * 0.9, Math.sin(a) * rimR * 0.9); } at(new THREE.Mesh(cyl(rimR * 0.72, 0.03), rimM), sx * (h - 0.04)); for (let i = 0; i < 6; i++) { const a = i / 6 * Math.PI * 2; at(new THREE.Mesh(cyl(rimR * 0.13, 0.04, 8), dish), sx * (h - 0.02), Math.cos(a) * rimR * 0.48, Math.sin(a) * rimR * 0.48); } hub(rimR * 0.22, dish); break;
+      case 'turbine': for (let i = 0; i < 12; i++) spoke(i / 12 * Math.PI * 2, L0, rimR * 0.2, 0.03, fx - sx * 0.015, rimM, rimR * 0.2, 0.7 * sx); hub(rimR * 0.3, chromeLip); break;
+      case 'wire': for (let i = 0; i < 24; i++) spoke(i / 24 * Math.PI * 2, L0 * 1.02, 0.014, 0.014, fx - sx * (0.02 + (i % 2) * 0.03), chromeLip, rimR * 0.2, (i % 2 ? 0.35 : -0.35)); hub(rimR * 0.3, rimM); at(new THREE.Mesh(new THREE.ConeGeometry(rimR * 0.14, 0.12, 3).rotateZ(-sx * Math.PI / 2), chromeLip), fx + sx * 0.06); break;
+      case 'aero': at(new THREE.Mesh(cyl(rimR * 0.93, 0.04, 22), rimM), sx * (h - 0.01)); for (let i = 0; i < 3; i++) spoke(i / 3 * Math.PI * 2, rimR * 0.55, 0.05, 0.02, fx + sx * 0.01, dish, rimR * 0.3, 0.2); hub(rimR * 0.18, dish); break;
+      case 'split': for (let i = 0; i < 6; i++) { const a = i / 6 * Math.PI * 2; spoke(a, L0 * 0.5, rimR * 0.2, 0.07, fx - sx * 0.02); spoke(a - 0.2, L0 * 0.55, rimR * 0.1, 0.05, fx - sx * 0.025, rimM, rimR * 0.18 + L0 * 0.45); spoke(a + 0.2, L0 * 0.55, rimR * 0.1, 0.05, fx - sx * 0.025, rimM, rimR * 0.18 + L0 * 0.45); } hub(rimR * 0.24, chromeLip); break;
+      default: for (let i = 0; i < 5; i++) spoke(i / 5 * Math.PI * 2, L0, rimR * 0.3, 0.06, fx); hub(rimR * 0.25);
     }
-    if (c.wheels === 'deepdish') { const lip = new THREE.Mesh(new THREE.TorusGeometry(rimR * 0.95, 0.03, 4, 14).rotateY(Math.PI / 2), chrome); lip.position.x = face; spin.add(lip); }
-    if (c.wheels === 'offroad') for (let i = 0; i < 10; i++) { const a = i / 10 * Math.PI * 2; const tr = new THREE.Mesh(new THREE.BoxGeometry(tw + 0.04, 0.08, 0.12), dark); tr.position.set(0, Math.cos(a) * wr, Math.sin(a) * wr); tr.rotation.x = -a; spin.add(tr); }
+    // a brake disc + caliper peeking through big-rim designs
+    if (['fivespoke', 'mesh', 'turbine', 'wire', 'split'].includes(c.wheels)) { at(new THREE.Mesh(cyl(rimR * 0.72, 0.03, 16), new THREE.MeshStandardMaterial({ color: '#8a8d93', roughness: 0.5, metalness: 0.5 })), sx * (h - 0.12)); }
+    spin.traverse(m => { if (m.isMesh) m.castShadow = true; });
+    if (['fivespoke', 'mesh', 'turbine', 'wire', 'split'].includes(c.wheels)) { const cal = new THREE.Mesh(new THREE.BoxGeometry(0.06, rimR * 0.45, rimR * 0.35), new THREE.MeshStandardMaterial({ color: c.accentColor || '#e23b3b', roughness: 0.4 })); cal.position.set(sx * (h - 0.09), rimR * 0.45, -fz * rimR * 0.2); pivot.add(cal); }
     wheels.push({ pivot, spin, front: fz > 0 });
   }
   // underglow

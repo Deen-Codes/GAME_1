@@ -355,3 +355,7 @@ input[type=text] { width: 100%; padding: 10px 12px; border-radius: 10px; border:
 .ph-status .ph-sig { display: flex; align-items: center; gap: 5px; }
 .ph-status .bars { width: 16px; height: 10px; background: linear-gradient(90deg, #fff 0 3px, transparent 3px 4px, #fff 4px 7px, transparent 7px 8px, #fff 8px 11px, transparent 11px 12px, #fff 12px 15px); clip-path: polygon(0 100%, 100% 0, 100% 100%); }
 .ph-status .batt { width: 22px; height: 11px; border: 1.5px solid #fff; border-radius: 3px; position: relative; background: linear-gradient(90deg, #fff 75%, transparent 75%); background-clip: content-box; padding: 1px; }
+
+#wheel.live { pointer-events: auto; }
+.wheel-center { pointer-events: none; }
+.wheel-center::before { content: attr(data-label); position: absolute; left: 50%; top: -34px; transform: translateX(-50%); font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: .06em; padding: 4px 10px; border-radius: 999px; background: rgba(255,255,255,.14); white-space: nowrap; }

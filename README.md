@@ -54,6 +54,22 @@ Walk into shops, venues and homes:
 - Bay Motors car dealership
 - Casa Bay Furniture
 
+## Living city
+- Every window looks into a real room with depth (walls, floors, furniture, people, curtains) that shifts as you move. About half the rooms light up at night.
+- Shops, venues and homes have proper front doors with lit signs. The marker sits at the door.
+- Pigeons, crows and seagulls peck around and fly up to lamp posts when you get close. There are also stray cats, people walking their dogs, and squirrels. Deer graze in the hills by day. At night raccoons, possums, coyotes and owls come out.
+- Homeless people sleep rough on the pavements. Talk to them, give money or food, and they may share tips or a hidden stash.
+- Beachgoers wear swimwear, which you can also buy at Venice Surf Co.
+- Bay Chapel: sit and reflect, talk to Father Gabe, donate, and use the food bank once he trusts you.
+
+## Cars, jacking and crashes
+- Climb in and out of cars with an animation. Exit at speed to bail out and roll, while the car keeps going.
+- Jacking drags the driver out. Brave drivers get up and fight you or chase their car, and can pull you back out. The rest run off.
+- Cars collide with each other. Traffic stops for parked cars and turns around if blocked.
+- 9 rim designs and 6 tyre types, all visibly different. Upgrades cost money at Bay Customs; the phone's Garage sets GPS there.
+- Weapon and radio wheels: tap to open, tap to pick.
+- The Work app lists every way to make money.
+
 ## Homes and furniture
 You start with a free studio downtown. Bigger apartments, houses and the Baywood mansion can be bought. Buy furniture at Casa Bay; it's delivered to your storage. Inside any home, tap the pencil button to edit: pick up, move, rotate, store or add furniture. Furniture is usable:
 - bed: sleep

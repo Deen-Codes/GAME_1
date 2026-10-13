@@ -1,4 +1,5 @@
-// GTA V-style radial selector. Hold a button, slide toward a segment, release to pick.
+// GTA V-style radial selector. Tap the button to open it, then tap a segment to pick (or hold and slide, release to pick).
+// Tap the centre for the centre action (holster / close), or tap outside to close.
 let el = null;
 function ensure() {
   if (el) return el;
@@ -11,10 +12,17 @@ const arc = (r0, r1, a0, a1) => {
   const large = a1 - a0 > Math.PI ? 1 : 0;
   return `M${p(r1, a0)} A${r1} ${r1} 0 ${large} 1 ${p(r1, a1)} L${p(r0, a1)} A${r0} ${r0} 0 ${large} 0 ${p(r0, a0)}Z`;
 };
-export function attachWheel(btn, { items, onSelect, onTap, onOpen, onClose }) {
-  let id = null, ox = 0, oy = 0, open = false, timer = 0, list = [], hover = -1;
-  const show = () => {
-    if (open) return; open = true; list = items(); ensure(); hover = list.findIndex(i => i.current);
+let active = null; // the wheel that's open right now
+export function attachWheel(btn, { items, onSelect, onTap, centre, onOpen, onClose }) {
+  let opener = null, ox = 0, oy = 0, moved = false, list = [], hover = -1, isOpen = false;
+  const W = { close };
+  const zone = (x, y) => { // -1 centre, -2 outside, else segment index
+    const r = el.querySelector('.wheel-ring').getBoundingClientRect(), dx = x - (r.left + r.width / 2), dy = y - (r.top + r.height / 2), d = Math.hypot(dx, dy);
+    if (d < 58) return -1; if (d > 175) return -2;
+    const n = list.length; let a = Math.atan2(dx, -dy); if (a < 0) a += Math.PI * 2; return Math.round(a / (Math.PI * 2) * n) % n;
+  };
+  function show() {
+    if (isOpen) return; isOpen = true; active = W; list = items(); ensure(); hover = list.findIndex(i => i.current);
     const n = list.length, svg = document.getElementById('wheelSvg'), box = document.getElementById('wheelItems');
     svg.innerHTML = ''; box.innerHTML = '';
     list.forEach((it, i) => {
@@ -24,29 +32,43 @@ export function attachWheel(btn, { items, onSelect, onTap, onOpen, onClose }) {
       d.style.left = `calc(50% + ${Math.sin(am) * 107}px)`; d.style.top = `calc(50% - ${Math.cos(am) * 107}px)`;
       d.innerHTML = `${it.icon}<small>${it.short || ''}</small>`; box.appendChild(d);
     });
-    paint(); el.classList.remove('hidden'); onOpen?.(); navigator.vibrate?.(8);
-  };
-  const paint = () => {
+    const c = el.querySelector('.wheel-center'); c.dataset.label = centre ? centre() : 'Close';
+    paint(); el.classList.remove('hidden'); el.classList.add('live'); onOpen?.(); navigator.vibrate?.(8);
+  }
+  function close() { if (!isOpen) return; isOpen = false; active = null; el.classList.add('hidden'); el.classList.remove('live'); onClose?.(); }
+  const pickAt = i => { close(); if (i >= 0) { if (!list[i].disabled || true) onSelect(list[i], i); } else if (i === -1 && centre) onTap?.(); navigator.vibrate?.(6); };
+  function paint() {
     el.querySelectorAll('#wheelSvg path').forEach(p => { const i = +p.dataset.i; p.setAttribute('class', (i === hover ? 'on ' : '') + (list[i].disabled ? 'off' : '')); });
     const it = list[hover];
     document.getElementById('wheelName').textContent = it ? it.label : '';
     document.getElementById('wheelSub').innerHTML = it ? (it.sub || '') : '';
-  };
+  }
   btn.addEventListener('pointerdown', e => {
     e.preventDefault(); e.stopPropagation();
-    if (id !== null) return; id = e.pointerId; btn.setPointerCapture(id); ox = e.clientX; oy = e.clientY;
-    timer = setTimeout(show, 220);
+    if (isOpen) { close(); return; }
+    if (active) active.close();
+    opener = e.pointerId; ox = e.clientX; oy = e.clientY; moved = false; show();
   });
   btn.addEventListener('pointermove', e => {
-    if (e.pointerId !== id) return;
-    const dx = e.clientX - ox, dy = e.clientY - oy, d = Math.hypot(dx, dy);
-    if (!open && d > 14) { clearTimeout(timer); show(); }
-    if (open && d > 22) { const n = list.length; let a = Math.atan2(dx, -dy); if (a < 0) a += Math.PI * 2; const i = Math.round(a / (Math.PI * 2) * n) % n; if (i !== hover) { hover = i; paint(); navigator.vibrate?.(4); } }
+    if (e.pointerId !== opener || !isOpen) return;
+    if (Math.hypot(e.clientX - ox, e.clientY - oy) > 22) moved = true;
+    if (moved) { const z = zone(e.clientX, e.clientY); if (z >= 0 && z !== hover) { hover = z; paint(); navigator.vibrate?.(4); } }
   });
   const end = e => {
-    if (e.pointerId !== id) return; id = null; clearTimeout(timer);
-    if (open) { open = false; el.classList.add('hidden'); onClose?.(); if (hover >= 0 && !list[hover].disabled) onSelect(list[hover], hover); else if (hover >= 0) onSelect(list[hover], hover); }
-    else onTap?.();
+    if (e.pointerId !== opener) return; opener = null;
+    if (isOpen && moved) { const z = zone(e.clientX, e.clientY); if (z >= 0) pickAt(z); } // hold-and-slide still works
   };
   btn.addEventListener('pointerup', end); btn.addEventListener('pointercancel', end);
+  // taps on the open wheel
+  ensure();
+  if (!el.dataset.bound) {
+    el.dataset.bound = 1;
+    el.addEventListener('pointerdown', e => { if (!active) return; e.preventDefault(); e.stopPropagation(); active._down(e); });
+    el.addEventListener('pointermove', e => { if (active) active._move(e); });
+    el.addEventListener('pointerup', e => { if (active) active._up(e); });
+  }
+  let tapId = null;
+  W._down = e => { tapId = e.pointerId; const z = zone(e.clientX, e.clientY); if (z >= 0) { hover = z; paint(); } };
+  W._move = e => { if (e.pointerId !== tapId) return; const z = zone(e.clientX, e.clientY); if (z >= 0 && z !== hover) { hover = z; paint(); } };
+  W._up = e => { if (e.pointerId !== tapId) return; tapId = null; const z = zone(e.clientX, e.clientY); if (z === -2) close(); else pickAt(z); };
 }

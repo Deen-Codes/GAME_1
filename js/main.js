@@ -2,7 +2,7 @@ import * as THREE from '../lib/three.module.min.js';
 import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA } from './character.js';
 import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js';
 import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js';
-import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, parkedIn, resolve, walkable, onPier, roadAt, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, blockSide } from './world.js';
+import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, windowShader, parkedIn, resolve, walkable, onPier, roadAt, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, blockSide } from './world.js';
 import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js';
 import { buildPanel, renderStats } from './ui.js';
 import { Input } from './input.js';
@@ -12,6 +12,7 @@ import { Peds, bakeCfg, figure } from './peds.js';
 import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js';
 import { findRoute } from './nav.js';
 import { attachWheel } from './wheel.js';
+import { Animals } from './animals.js';
 import { Talk } from './talk.js';
 import { svg, drawIcon } from './icons.js';
 import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js';
@@ -105,7 +106,7 @@ function ensureCarLib() {
 
 // ================================================================ see-through fade
 const fadeU = { uPlayer: { value: new THREE.Vector3() }, uCam: { value: new THREE.Vector3() }, uFade: { value: 1 } };
-function addFade(mat) {
+function addFade(mat, extra) {
   mat.onBeforeCompile = sh => {
     Object.assign(sh.uniforms, fadeU);
     sh.vertexShader = 'varying vec3 vWP;\n' + sh.vertexShader.replace('#include <project_vertex>', '#include <project_vertex>\nvWP = (modelMatrix * vec4(transformed, 1.0)).xyz;');
@@ -116,10 +117,11 @@ function addFade(mat) {
         float rad = 2.5 + t * 9.0;
         if (t > 0.01 && d < rad) { vec2 g = floor(gl_FragCoord.xy * 0.5); if (d < rad - 1.5 || mod(g.x + g.y, 2.0) < 1.0) discard; }
       }`);
+    if (extra) extra(sh);
   };
   mat.needsUpdate = true;
 }
-addFade(MATS.solid); addFade(MATS.win); addFade(MATS.glow);
+addFade(MATS.solid); addFade(MATS.win, windowShader); addFade(MATS.glow);
 
 // ================================================================ PREVIEW (customisers & shops)
 const pv = { scene: new THREE.Scene(), cam: new THREE.PerspectiveCamera(35, 1, 0.05, 200), turn: new THREE.Group(), gunStand: new THREE.Group(), carStand: new THREE.Group(), rot: -0.5, vel: 0, dirty: true, focus: new THREE.Vector3(0, 1, 0), dist: 6 };
@@ -185,6 +187,8 @@ water.rotation.x = -Math.PI / 2; water.position.set(120, WATER_Y, 700); water.re
 const world = new THREE.Group(); G.scene.add(world);
 const dyn = new THREE.Group(); G.scene.add(dyn);
 const peds = new Peds(dyn);
+let animals = null; // created once baseY exists (see below)
+{ const sc = peds.scare.bind(peds); peds.scare = (x, z, r = 18) => { sc(x, z, r); animals?.scare(x, z, r * 1.6); }; }
 const talk = new Talk();
 function applySettings() {
   setMuted(!settings.sound);
@@ -277,7 +281,7 @@ function applyTime(h, px, pz) {
   lerpCol(sun.color, k0[5], k1[5], t); sun.intensity = k0[6] + (k1[6] - k0[6]) * t;
   const day = h >= 6 && h < 18.5, a = day ? (h - 6) / 12.5 * Math.PI : ((h + 5.5) % 24) / 11.5 * Math.PI;
   sun.position.set(px + Math.cos(a) * 70, 90 * Math.max(0.4, Math.sin(a)) + 25, pz + 40); sun.target.position.set(px, 0, pz);
-  MATS.win.emissiveIntensity = night * 1.1; MATS.glow.emissiveIntensity = 0.15 + night * 1.6; MATS.pool.opacity = night * 0.28;
+  MATS.win.emissiveIntensity = night * 1.1; MATS.sign.emissiveIntensity = 0.15 + night * 0.9; MATS.glow.emissiveIntensity = 0.15 + night * 1.6; MATS.pool.opacity = night * 0.28;
   lantern.intensity = night * 14;
   water.material.color.lerpColors(cA.set('#3e94d4'), cB.set('#173a66'), night);
 }
@@ -427,9 +431,12 @@ function updateTraffic(dt) {
     let block = false;
     const check = (x, z, rad) => { const dx = x - t.x, dz = z - t.z, al = dx * t.fx + dz * t.fz, lat = Math.abs(-dx * t.fz + dz * t.fx); if (al > 0 && al < 7 + t.speed * 0.4 && lat < rad) block = true; };
     check(ox, oz, ride ? 2.6 : 1.8);
-    for (const o of traffic) if (o !== t && o.axis === t.axis && o.dir === t.dir) check(o.x, o.z, 1.6);
+    for (const v of vehicles) if (v !== ride) check(v.s.x, v.s.z, 2.4);
+    for (const o of traffic) if (o !== t && (o.axis === t.axis ? o.dir === t.dir : true)) check(o.x, o.z, o.axis === t.axis ? 1.6 : 2.2);
     for (const p of peds.list) if (p.state === 'cross' || p.state === 'flee' || p.state === 'talk') check(p.x, p.z, 1.6);
     t.stun -= dt; t.honk -= dt;
+    t.blockT = block ? (t.blockT || 0) + dt : 0;
+    if (t.blockT > 4 + (t.cruise % 1) * 2) { t.blockT = 0; t.next = t.next - t.dir * 48; t.dir = -t.dir; block = false; } // stuck: turn around
     const want = block || t.stun > 0 ? 0 : t.cruise;
     t.speed = damp(t.speed, want, want < t.speed ? 6 : 1.2, dt);
     if (block && t.honk <= 0 && Math.random() < 0.01) { t.honk = 4; if (Math.hypot(t.x - ox, t.z - oz) < 30) sfx.horn(); }
@@ -449,6 +456,7 @@ function updateTraffic(dt) {
     t.rx = damp(t.rx, t.x, 7, dt); t.rz = damp(t.rz, t.z, 7, dt); t.rh += wrapA(t.h - t.rh) * (1 - Math.exp(-7 * dt));
     t.mesh.position.set(t.rx, 0.04, t.rz); t.mesh.rotation.y = t.rh;
     if (t.speed > 3) for (const p of peds.list) if (Math.hypot(p.x - t.rx, p.z - t.rz) < 1.8 && peds.knock(p, t.fx, t.fz, t.speed * 0.7)) { sfx.thud(); t.stun = 2; }
+    for (const v of vehicles) if (v !== ride) { const dx = v.s.x - t.rx, dz = v.s.z - t.rz, d = Math.hypot(dx, dz); if (d < 3.4 && d > 0.01) { const k = 3.4 - d; v.s.x += dx / d * k; v.s.z += dz / d * k; if (t.speed > 4) { v.s.vx += dx / d * t.speed * 0.5; v.s.vz += dz / d * t.speed * 0.5; v.coast = 0.8; sfx.thud(); t.stun = 2; } t.speed = 0; placeVehicle(v); } }
     if (ride) {
       const s = ride.s, dx = s.x - t.rx, dz = s.z - t.rz, d = Math.hypot(dx, dz);
       if (d < 3.2 && d > 0.01) { s.x += dx / d * (3.2 - d); s.z += dz / d * (3.2 - d); if (Math.abs(s.v) > 6) { spawnParticles(t.rx + dx / 2, 0.8, t.rz + dz / 2, ['#ffd23f', '#ffffff'], 6, 4, 0.3, 0.1); shake = 0.3; t.stun = 2; sfx.thud(); } s.v *= 0.6; s.vx *= 0.6; s.vz *= 0.6; }
@@ -607,6 +615,7 @@ function updateFoot(dt) {
   const sp = (st.m > 0.85 ? 7.2 * runMul : 4.6) * st.m * (ws.mob || 1) * tired * (inside ? 0.8 : 1), ox = P.x, oz = P.z;
   if (st.m > 0.1) { const mx = st.x / st.m, mz = -st.y / st.m; P.x += mx * sp * dt; P.z += mz * sp * dt; P.face += wrapA(Math.atan2(mx, mz) - P.face) * (1 - Math.exp(-14 * dt)); }
   resolve(P, 0.4, Math.max(0, P.y - baseY(P.x, P.z)));
+  if (!inside) for (const v of vehicles) { if ((v.s.x - P.x) ** 2 + (v.s.z - P.z) ** 2 > 36) continue; for (const [cx, cz, r] of carCircles(v)) { const dx = P.x - cx, dz = P.z - cz, d = Math.hypot(dx, dz), m = r + 0.35; if (d < m && d > 1e-3 && P.y < baseY(P.x, P.z) + 1.2) { P.x = cx + dx / d * m; P.z = cz + dz / d * m; } } }
   for (const p of peds.list) { const dx = P.x - p.x, dz = P.z - p.z, d = Math.hypot(dx, dz); if (d < 0.7 && d > 0.01 && p.state !== 'down') { p.x -= dx / d * (0.7 - d); p.z -= dz / d * (0.7 - d); } }
   for (const n of allNpcs()) { const dx = P.x - n.x, dz = P.z - n.z, d = Math.hypot(dx, dz); if (d < 0.75 && d > 0.01) { P.x = n.x + dx / d * 0.75; P.z = n.z + dz / d * 0.75; } }
   if (!canWalk(P.x, P.z)) { P.x = ox; P.z = oz; }
@@ -667,28 +676,136 @@ function updateFoot(dt) {
   P.flash -= dt; muzzleFlash.visible = P.flash > 0; muzzleLight.intensity = Math.max(0, muzzleLight.intensity - dt * 90);
 }
 
-// ---------------- getting in and out of cars
-function enterVehicle(v) {
+// ---------------- getting in and out of cars (animated: walk to the door, climb in / step out, or bail out at speed)
+let carAnim = null;
+const sideOf = (v, x, z) => { const h = v.s.h; return ((x - v.s.x) * Math.cos(h) - (z - v.s.z) * Math.sin(h)) >= 0 ? 1 : -1; };
+function doorSpot(v, side) { const s = v.s, h = s.h, o = v.b.width / 2 + 0.55; return { x: s.x + Math.cos(h) * o * side + Math.sin(h) * 0.25, z: s.z - Math.sin(h) * o * side + Math.cos(h) * 0.25 }; }
+function seatSpot(v, side) { const s = v.s, h = s.h; return { x: s.x + Math.cos(h) * 0.35 * side + Math.sin(h) * 0.2, z: s.z - Math.sin(h) * 0.35 * side + Math.cos(h) * 0.2 }; }
+function sitIn(v) {
   ride = v; heroRoot.visible = false; muzzleFlash.visible = false; audio();
   radioOn(true);
   toast(v.personal ? (carCfg.name || 'Your car') : v.taxi ? 'Bay Cab' : `${BODIES[v.cfg.body]?.label || 'Car'} (stolen)`, 1.6);
 }
+function enterVehicle(v, anim = true) {
+  if (!anim || P.dead || carAnim) { if (!carAnim) sitIn(v); return; }
+  const side = sideOf(v, P.x, P.z), door = doorSpot(v, side);
+  v.s.v = 0; v.s.vx = v.s.vz = 0;
+  carAnim = { type: 'in', v, side, t: 0, from: { x: P.x, z: P.z }, door, d1: clamp(Math.hypot(door.x - P.x, door.z - P.z) / 6, 0.12, 0.6), d2: 0.5 };
+  sfx.click();
+}
 function exitCar() {
-  const v = ride; if (!v) return;
-  const s = v.s, h = s.h, lx = Math.cos(h), lz = -Math.sin(h);
-  const spots = [[lx * 2.4, lz * 2.4], [-lx * 2.4, -lz * 2.4], [-Math.sin(h) * 3.8, -Math.cos(h) * 3.8], [Math.sin(h) * 3.8, Math.cos(h) * 3.8]];
-  let placed = false;
-  for (const [dx, dz] of spots) { const p = { x: s.x + dx, z: s.z + dz }; if (!walkable(p.x, p.z)) continue; const bx = p.x, bz = p.z; resolve(p, 0.4, 0); if (Math.hypot(p.x - bx, p.z - bz) < 0.6) { P.x = p.x; P.z = p.z; placed = true; break; } }
-  if (!placed) { P.x = s.x + lx * 2.4; P.z = s.z + lz * 2.4; }
-  ride = null; P.y = baseY(P.x, P.z); heroRoot.visible = !P.dead; P.face = h;
-  s.v = 0; s.vx = s.vz = 0; radioOn(false);
+  const v = ride; if (!v || carAnim) return;
+  const s = v.s, h = s.h, spd = Math.abs(s.v);
   if (job && job.type === 'taxi') endJob('You left the cab. Shift over.');
+  ride = null; radioOn(false);
+  if (spd > 7) { // bail out: tumble out the side, the car rolls on without you
+    const side = 1, rx = Math.cos(h) * side, rz = -Math.sin(h) * side, fx = Math.sin(h), fz = Math.cos(h);
+    const seat = seatSpot(v, side); Object.assign(P, { x: seat.x + rx * 1.4, z: seat.z + rz * 1.4, face: h + Math.PI / 2 * side });
+    P.kx = fx * s.v * 0.55 + rx * 6; P.kz = fz * s.v * 0.55 + rz * 6; P.vy = 4.5; P.y = baseY(P.x, P.z) + 0.6;
+    v.coast = 3; heroRoot.visible = true;
+    carAnim = { type: 'bail', v, t: 0, dur: 1.25 };
+    hurt(Math.min(35, 4 + spd * 0.45)); sfx.thud(); shake = 0.35; gainXP('stamina', 4);
+    return;
+  }
+  s.v = 0; s.vx = s.vz = 0;
+  const lx = Math.cos(h), lz = -Math.sin(h);
+  const spots = [[1, lx * 2.4, lz * 2.4], [-1, -lx * 2.4, -lz * 2.4], [1, -Math.sin(h) * 3.8, -Math.cos(h) * 3.8], [1, Math.sin(h) * 3.8, Math.cos(h) * 3.8]];
+  let to = null, side = 1;
+  for (const [sd, dx, dz] of spots) { const p = { x: s.x + dx, z: s.z + dz }; if (!walkable(p.x, p.z)) continue; const bx = p.x, bz = p.z; resolve(p, 0.4, 0); if (Math.hypot(p.x - bx, p.z - bz) < 0.6) { to = p; side = sd; break; } }
+  if (!to) to = { x: s.x + lx * 2.4, z: s.z + lz * 2.4 };
+  const seat = seatSpot(v, side);
+  Object.assign(P, { x: seat.x, z: seat.z, face: Math.atan2(to.x - seat.x, to.z - seat.z) });
+  heroRoot.visible = !P.dead;
+  carAnim = { type: 'out', v, t: 0, from: seat, to, dur: 0.5 };
+}
+function updateCarAnim(dt) {
+  const A = carAnim; A.t += dt;
+  for (const k of ['a', 'b', 'x', 'y']) input.consume(k);
+  const lerp = (a, b, k) => a + (b - a) * k, ease = k => k * k * (3 - 2 * k);
+  let speed = 0, y = baseY(P.x, P.z), tumble = 0;
+  if (A.type === 'jack') {
+    const v = A.v, dr = A.driver, seat = seatSpot(v, A.side);
+    if (A.t < A.d1) { const k = ease(A.t / A.d1); P.x = lerp(A.from.x, A.door.x, k); P.z = lerp(A.from.z, A.door.z, k); P.face = Math.atan2(A.door.x - A.from.x, A.door.z - A.from.z); speed = 1; }
+    else if (A.t < A.d1 + A.d2) { // grab the driver and drag them out onto the street
+      const k = (A.t - A.d1) / A.d2, out = { x: A.door.x + (A.door.x - seat.x) * 1.4, z: A.door.z + (A.door.z - seat.z) * 1.4 };
+      P.face = Math.atan2(seat.x - P.x, seat.z - P.z);
+      dr.root.visible = true; dr.state = 'held';
+      dr.x = lerp(seat.x, out.x, ease(k)); dr.z = lerp(seat.z, out.z, ease(k)); dr.face = P.face + Math.PI;
+      dr.root.position.set(dr.x, 0.17 + Math.sin(k * Math.PI) * 0.35, dr.z); dr.root.rotation.y = dr.face; dr.inner.rotation.x = -k * 1.3;
+      hero.armR.pivot.rotation.set(-1.4 + k * 1.2, 0, 0.1); hero.armL.pivot.rotation.set(-1.4 + k * 1.2, 0, -0.1);
+      v.b.group.rotation.z = Math.sin(k * Math.PI * 2) * 0.05 * A.side;
+      if (!A.thud && k > 0.85) { A.thud = 1; sfx.thud(); spawnParticles(dr.x, 0.3, dr.z, ['#c9c2b5'], 5, 2, 0.4, 0.12); }
+      heroRoot.position.set(P.x, y, P.z); hero.root.rotation.y = P.face; return;
+    } else { // driver hits the deck, then we climb in
+      if (!A.dropped) { A.dropped = 1; peds.knock(dr, A.door.x - seat.x, A.door.z - seat.z, 2); dr.t = 1.4; if (dr.brave) { dr.angry = true; dr.angryT = 18; dr.car = v; } }
+      A.type = 'in'; A.d1 = 0; A.t = 0; A.door = { x: P.x, z: P.z };
+    }
+  }
+  if (A.type === 'in') {
+    const v = A.v;
+    if (A.t < A.d1) { const k = ease(A.t / A.d1), ox = P.x, oz = P.z; P.x = lerp(A.from.x, A.door.x, k); P.z = lerp(A.from.z, A.door.z, k); P.face = Math.atan2(A.door.x - A.from.x, A.door.z - A.from.z); speed = 1; }
+    else {
+      const k = Math.min(1, (A.t - A.d1) / A.d2), seat = seatSpot(v, A.side);
+      P.x = lerp(A.door.x, seat.x, ease(k)); P.z = lerp(A.door.z, seat.z, ease(k));
+      P.face += wrapA(v.s.h - P.face) * Math.min(1, dt * 10);
+      y += Math.sin(k * Math.PI) * 0.25 - k * 0.35;          // step up, then sink into the seat
+      v.b.group.rotation.z = Math.sin(k * Math.PI) * 0.04 * A.side; // car rocks as you climb in
+      if (k > 0.85) heroRoot.visible = false;
+      if (k >= 1) { carAnim = null; v.b.group.rotation.z = 0; sitIn(v); return; }
+    }
+  } else if (A.type === 'out') {
+    const k = Math.min(1, A.t / A.dur), v = A.v;
+    P.x = lerp(A.from.x, A.to.x, ease(k)); P.z = lerp(A.from.z, A.to.z, ease(k));
+    y += (1 - k) * -0.35 + Math.sin(k * Math.PI) * 0.2; speed = k > 0.4 ? 0.6 : 0;
+    v.b.group.rotation.z = Math.sin(k * Math.PI) * 0.035;
+    if (k >= 1) { carAnim = null; v.b.group.rotation.z = 0; P.y = baseY(P.x, P.z); return; }
+  } else { // bail
+    P.x += P.kx * dt; P.z += P.kz * dt; P.kx = damp(P.kx, 0, 2.6, dt); P.kz = damp(P.kz, 0, 2.6, dt);
+    resolve(P, 0.4, 0); if (!walkable(P.x, P.z)) { P.kx = -P.kx * 0.3; P.kz = -P.kz * 0.3; }
+    P.vy -= 24 * dt; P.y += P.vy * dt; const gy = baseY(P.x, P.z); if (P.y < gy) { P.y = gy; P.vy = Math.abs(P.vy) > 3 ? Math.abs(P.vy) * 0.3 : 0; }
+    y = P.y; tumble = A.t < 0.85 ? A.t * 13 : 0;
+    if (A.t > 0.15 && A.t < 0.2) spawnParticles(P.x, 0.3, P.z, ['#c9c2b5', '#8a857c'], 6, 3, 0.4, 0.15);
+    if (A.t >= A.dur) { carAnim = null; hero.root.rotation.x = 0; P.kx = P.kz = 0; return; }
+  }
+  if (A.type !== 'bail') P.y = y;
+  heroRoot.position.set(P.x, y, P.z); hero.root.rotation.y = P.face;
+  hero.root.rotation.x = A.type === 'bail' ? (A.t < 0.85 ? -tumble : damp(hero.root.rotation.x, 0, 10, dt)) : 0;
+  P.phase += dt * speed * 9;
+  poseCharacter(hero, { phase: P.phase, speed, air: A.type === 'bail' && A.t < 0.85, aim: -0.55, recoil: 0, t: time });
 }
 function jackTraffic(t) {
+  if (carAnim) return;
   traffic.splice(traffic.indexOf(t), 1); dyn.remove(t.mesh);
   const v = makeVehicle(t.lib.cfg, t.rx, t.rz, t.rh, false);
-  peds.spawnLoose(t.rx + Math.cos(t.rh) * 2.4, t.rz - Math.sin(t.rh) * 2.4, P.x, P.z);
-  peds.scare(t.rx, t.rz, 15); enterVehicle(v); sfx.thud(); gainXP('strength', 3);
+  const side = sideOf(v, P.x, P.z), door = doorSpot(v, side);
+  const driver = peds.spawnLoose(t.rx, t.rz, P.x, P.z);
+  driver.state = 'held'; driver.root.visible = false; driver.name = pick(NPC_NAMES);
+  driver.brave = Math.random() < 0.4 + (night > 0.5 ? 0.1 : 0) - (ws.kind === 'gun' && !holstered() ? 0.3 : 0);
+  carAnim = { type: 'jack', v, side, t: 0, from: { x: P.x, z: P.z }, door, d1: clamp(Math.hypot(door.x - P.x, door.z - P.z) / 6.5, 0.12, 0.5), d2: 0.75, d3: 0.5, driver };
+  peds.scare(t.rx, t.rz, 15); sfx.click(); gainXP('strength', 3);
+}
+function holstered() { return arsenal.cur === 'fist' || !!P.holster; }
+// the driver you dragged out: brave ones try to get their car back, the rest run off
+function updateAngry(dt) {
+  for (const p of peds.list) {
+    if (!p.angry) continue;
+    p.angryT -= dt;
+    const tgt = ride ? ride.s : P, d = Math.hypot(tgt.x - p.x, tgt.z - p.z);
+    if (p.state === 'down' || p.state === 'talk') continue;
+    if (p.angryT <= 0 || d > 45 || P.dead) { p.angry = false; if (p.state !== 'down') peds.flee(p, tgt.x, tgt.z); if (d > 45) toast(`${p.name} gave up chasing you.`, 2); continue; }
+    if (ride && ride === p.car) {
+      if (Math.abs(ride.s.v) > 3) { p.state = 'chase'; p.tx = tgt.x; p.tz = tgt.z; continue; }
+      if (d < 2.6) { // yank you out and drive off
+        const v = ride; exitCar(); hurt(6); sfx.punch?.(); toast(`${p.name} pulled you out and took the car back!`, 3);
+        carAnim = null; P.x = v.s.x + Math.cos(v.s.h) * 2.6; P.z = v.s.z - Math.sin(v.s.h) * 2.6; P.kx = Math.cos(v.s.h) * 4; P.kz = -Math.sin(v.s.h) * 4;
+        p.angry = false; peds.list.splice(peds.list.indexOf(p), 1); dyn.remove(p.root); v.stolenBack = 6; v.s.v = 11; v.coast = 6; return;
+      }
+      p.state = 'chase'; p.tx = tgt.x; p.tz = tgt.z;
+    } else if (!ride) {
+      if (d > 1.3) { p.state = 'chase'; p.tx = P.x; p.tz = P.z; }
+      else { p.state = 'punch'; p.tx = P.x; p.tz = P.z; p.hitCd = (p.hitCd || 0) - dt; if (p.hitCd <= 0) { p.hitCd = 0.9; hurt(5 + Math.random() * 4); sfx.punch?.(); shake = 0.15; } }
+    } else { p.state = 'chase'; p.tx = tgt.x; p.tz = tgt.z; }
+  }
 }
 async function breakIntoParked(p) {
   setState('mini');
@@ -701,6 +818,22 @@ async function breakIntoParked(p) {
   ensureCarLib(); enterVehicle(makeVehicle(carLib[Math.floor(p.seed * carLib.length)].cfg, p.x, p.z, p.rot, false)); gainXP('driving', 5);
 }
 const carPos = { x: 0, z: 0 };
+// car-vs-car: two circles per car (front & back). The moving car gets pushed back, the other one gets shoved.
+function carCircles(v) { const s = v.s, fx = Math.sin(s.h), fz = Math.cos(s.h), o = v.b.length * 0.27, r = v.b.width * 0.56; return [[s.x + fx * o, s.z + fz * o, r], [s.x - fx * o, s.z - fz * o, r]]; }
+function collideCars(v, o, spd) {
+  const A = carCircles(v), B = carCircles(o); let hit = false;
+  for (const a of A) for (const b of B) {
+    const dx = a[0] - b[0], dz = a[1] - b[1], d = Math.hypot(dx, dz), m = a[2] + b[2];
+    if (d >= m || d < 1e-3) continue;
+    const nx = dx / d, nz = dz / d, push = m - d;
+    v.s.x += nx * push * 0.55; v.s.z += nz * push * 0.55; o.s.x -= nx * push * 0.45; o.s.z -= nz * push * 0.45;
+    const rel = (v.s.vx - o.s.vx) * -nx + (v.s.vz - o.s.vz) * -nz;
+    if (rel > 0) { o.s.vx -= nx * rel * 0.55; o.s.vz -= nz * rel * 0.55; v.s.vx += nx * rel * 0.5; v.s.vz += nz * rel * 0.5; v.s.v *= 0.75; if (o !== ride) o.coast = Math.max(o.coast || 0, 0.8); }
+    hit = rel;
+  }
+  placeVehicle(o);
+  if (hit > 6 && (v.hitCd || 0) < time) { v.hitCd = time + 0.5; sfx.thud(); shake = Math.max(shake, Math.min(0.5, hit / 30)); spawnParticles((v.s.x + o.s.x) / 2, 0.7, (v.s.z + o.s.z) / 2, ['#ffd23f', '#ffffff', '#888'], 8, 4, 0.35, 0.1); if (v === ride && hit > 16) hurt((hit - 16) * 1.2); }
+}
 let driveDist = 0;
 function updateVehicles(dt) {
   for (const v of [...vehicles]) {
@@ -723,7 +856,8 @@ function updateVehicles(dt) {
       input.consume('b'); input.consume('x');
       if (input.consume('a')) { if (action) doAction(action); else exitCar(); }
       driveDist += Math.abs(c.v) * dt; if (driveDist > 250) { driveDist = 0; gainXP('driving', 3); }
-    } else { c.v = damp(c.v, 0, 3, dt); c.steer = damp(c.steer, 0, 6, dt); }
+    } else if (v.stolenBack > 0) { v.stolenBack -= dt; c.v = 11; c.steer = 0; if (v.stolenBack <= 0) { removeVehicle(v); continue; } }
+    else { v.coast = (v.coast || 0) - dt; c.v = damp(c.v, 0, v.coast > 0 ? 0.45 : 3, dt); c.steer = damp(c.steer, 0, v.coast > 0 ? 0.5 : 6, dt); }
     const spd = Math.abs(c.v);
     const turn = c.steer * s.turn * clamp(spd / 6, 0, 1) * (1 - Math.min(0.45, spd / s.top * 0.45)) * Math.sign(c.v || 1);
     c.h = wrapA(c.h + turn * dt);
@@ -735,8 +869,9 @@ function updateVehicles(dt) {
     let hit = false;
     for (const sgn of [1, -1]) { carPos.x = c.x + fx * half * sgn; carPos.z = c.z + fz * half * sgn; if (resolve(carPos, r, 0)) { c.x = carPos.x - fx * half * sgn; c.z = carPos.z - fz * half * sgn; hit = true; } }
     if (!walkable(c.x, c.z, false)) { c.x = ox; c.z = oz; hit = true; }
+    for (const o of vehicles) if (o !== v && (o.s.x - c.x) ** 2 + (o.s.z - c.z) ** 2 < 81) collideCars(v, o, spd);
     if (hit) { if (spd > 9) { spawnParticles(c.x + fx * 2, 0.7, c.z + fz * 2, ['#ffd23f', '#ffffff', '#888'], 10, 5, 0.4, 0.1); shake = Math.max(shake, Math.min(0.6, spd / 40)); sfx.thud(); } if (driving && spd > 15) hurt((spd - 15) * 1.6); c.v *= -0.25; c.vx *= 0.2; c.vz *= 0.2; }
-    if (driving && spd > 4) for (const p of peds.list) if (Math.hypot(p.x - c.x, p.z - c.z) < r + 0.9 && peds.knock(p, c.vx / spd, c.vz / spd, spd * 0.8)) { sfx.thud(); c.v *= 0.85; if (Math.random() < 0.4) dropCash(p.x, p.z, 5 + Math.floor(Math.random() * 25)); peds.scare(p.x, p.z, 20); }
+    if ((driving || v.coast > 0) && spd > 4) for (const p of peds.list) if (Math.hypot(p.x - c.x, p.z - c.z) < r + 0.9 && peds.knock(p, c.vx / spd, c.vz / spd, spd * 0.8)) { sfx.thud(); c.v *= 0.85; if (Math.random() < 0.4) dropCash(p.x, p.z, 5 + Math.floor(Math.random() * 25)); peds.scare(p.x, p.z, 20); }
     if (c.braking && spd > 12) spawnParticles(c.x - fx * 1.8, 0.2, c.z - fz * 1.8, '#d8d8d8', 1, 1, 0.6, 0.35, -1);
     placeVehicle(v);
     b.group.rotation.z = clamp((-c.vx * fz + c.vz * fx) * 0.012, -0.08, 0.08);
@@ -767,6 +902,7 @@ function npcCfg(role, seed, style) {
     case 'sales': return { ...base, top: 'suit', topColor: '#3a3fbf', accent: '#ffffff', pants: 'jeans', pantsColor: '#3a3d45', shoes: 'boots', shoeColor: '#16161b', eyewear: 'glasses' };
     case 'bartender': return { ...base, top: 'long', topColor: '#ffffff', pants: 'jeans', pantsColor: '#16161b', shoes: 'boots', shoeColor: '#16161b', facialHair: 'moustache' };
     case 'dj': return { ...base, top: 'jacket', topColor: '#9b51e0', accent: '#38e8ff', pants: 'jeans', pantsColor: '#16161b', shoes: 'sneakers', shoeColor: '#ffffff', eyewear: 'visor', hat: 'none', hair: 'mohawk' };
+    case 'pastor': return { ...base, top: 'suit', topColor: '#16161b', accent: '#ffffff', pants: 'jeans', pantsColor: '#16161b', shoes: 'boots', shoeColor: '#16161b', hair: 'short', hairColor: '#9a9a9a', eyewear: 'glasses', facialHair: 'none' };
     case 'dispatcher': return { ...base, top: 'jacket', topColor: '#ffd23f', accent: '#16161b', pants: 'jeans', pantsColor: '#3a3d45', shoes: 'boots', shoeColor: '#7a5230', hat: 'cap', hatColor: '#ffd23f' };
     case 'clerk': { const o = OUTFITS[style || 'street']; const out = o ? o[Math.floor(r() * o.length)].cfg : {}; return { ...base, ...out }; }
     default: { const cols = ['#e23b3b', '#2f80ed', '#4cd964', '#ffd23f', '#ff8a2a', '#9b51e0', '#ffffff', '#16161b', '#ff6fb5', '#1fb5a8']; return { ...base, top: c(['tshirt', 'hoodie', 'long', 'jacket', 'tank']), topColor: c(cols), accent: c(cols), pants: c(['jeans', 'shorts', 'cargo']), pantsColor: c(['#2f80ed', '#16161b', '#c2b280', '#3a3d45']), shoes: 'sneakers', shoeColor: c(cols), hat: c(['none', 'none', 'cap', 'beanie']), hatColor: c(cols) }; }
@@ -847,7 +983,7 @@ function enterInterior(place, prop) {
     for (const s of tpl.spots) { const w = h.toWorld(s.x, s.z); inside.marks.push({ ...makeMarker(w.x, w.z, s.icon, '#ffd23f', { interior: true, small: true }, G.scene), spot: s }); }
     const door = h.toWorld(0, h.d / 2 - 1.3);
     Object.assign(P, { x: door.x, z: door.z, face: Math.PI, y: 0, vy: 0 });
-    for (const t of traffic) dyn.remove(t.mesh); traffic.length = 0; peds.clear();
+    for (const t of traffic) dyn.remove(t.mesh); traffic.length = 0; peds.clear(); animals?.clear();
     water.visible = false; signGroup.visible = false;
     updateCamera(0, true); hudCache.zone = null;
     sfx.click();
@@ -860,7 +996,7 @@ function exitInterior(silent) {
     inside.h.dispose(); G.scene.remove(inside.h.group);
     for (const n of inside.npcs) if (n.fig) dyn.remove(n.fig.root);
     for (const m of inside.marks) G.scene.remove(m.g);
-    Object.assign(P, { x: inside.back.x, z: inside.back.z + 1.2, face: 0 }); P.y = baseY(P.x, P.z);
+    const dn = inside.place?.doorN || [0, 1]; Object.assign(P, { x: inside.back.x + dn[0] * 0.8, z: inside.back.z + dn[1] * 0.8, face: Math.atan2(dn[0], dn[1]) }); P.y = baseY(P.x, P.z);
     const pend = pendingCar; inside = null; pendingCar = false;
     water.visible = true; signGroup.visible = true;
     loadBudget = 60; updateChunks(P.x, P.z, 2); loadBudget = 2;
@@ -924,7 +1060,7 @@ function openStorage() {
 
 // ================================================================ ACTIONS (context button)
 let action = null;
-const VERB = { dealer: 'Talk', clothes: 'Enter', barber: 'Enter', guns: 'Enter', venue: 'Enter', game: 'Play', chop: 'Sell car', race: 'Race', property: 'View', job: 'Talk', customer: 'Talk' };
+const VERB = { dealer: 'Talk', clothes: 'Enter', barber: 'Enter', guns: 'Enter', venue: 'Enter', game: 'Play', chop: 'Sell car', mods: 'Customise', race: 'Race', property: 'View', job: 'Talk', customer: 'Talk' };
 const SPOT_VERB = s => s.label;
 function findAction() {
   if (P.dead) return null;
@@ -975,6 +1111,7 @@ function openPlace(p) {
   else if (p.kind === 'game') openGame(p);
   else if (p.kind === 'job') talkJob(p);
   else if (p.kind === 'chop') openChop(p);
+  else if (p.kind === 'mods') { if (!ride || !ride.personal) { toast('Bay Customs only works on your own cars. Drive one in.'); sfx.fail(); return; } ride.s.v = 0; openCustom('car'); }
   else if (p.kind === 'race') openRace(p);
 }
 async function doSpot(s) {
@@ -991,6 +1128,7 @@ async function doSpot(s) {
   if (s.kind === 'tread') { if (money < 10) { toast('Gym sessions cost $10'); return; } spend(10); const r = await mini('tread'); gainXP('stamina', Math.round(r.score * 0.7)); gainXP('health', Math.round(r.score * 0.35)); feed({ energy: -12, mood: 5 }); }
   if (s.kind === 'blackjack' || s.kind === 'slots') { if (money < 10) { toast('You need at least $10 to play'); return; } const r = await mini(s.kind, { money }); if (r.money) addMoney(r.money); feed({ mood: r.money > 0 ? 8 : -3 }); }
   if (s.kind === 'dj') { const r = await mini('beat', { title: 'Neon Room DJ set' }); if (r.money) addMoney(r.money); gainXP('charm', r.score); feed({ mood: 10, energy: -6 }); }
+  if (s.kind === 'pray') { const first = !stats.relDay['pray:' + dayN]; stats.relDay['pray:' + dayN] = 1; fade(() => { advanceTime(0.5); feed({ mood: first ? 22 : 5, energy: 4 }); P.hp = Math.min(maxHP(), P.hp + 20); toast(first ? 'You sit in silence for a while. You feel lighter. Mood up.' : 'You sit quietly for a bit.', 3); }); }
   if (s.kind === 'dance') { fade(() => { advanceTime(0.5); feed({ mood: 14, energy: -8 }); gainXP('charm', 12); gainXP('stamina', 8); toast('You owned the dance floor. Mood up, Charm up.'); }); }
   saveGame();
 }
@@ -1077,6 +1215,7 @@ async function talkVenue() {
   if (id === 'casino') return talkCashier(n, place);
   if (id === 'motors') return talkSales(n, place);
   if (id === 'casa') return talkCasa(n, place);
+  if (id === 'church') return talkPastor(n, place);
 }
 function nearestNpc() { let best = null, bd = 1e9; for (const n of inside.npcs) { if (n.role === 'guest') continue; const d = Math.hypot(n.x - P.x, n.z - P.z); if (d < bd) { bd = d; best = n; } } return best; }
 async function talkShop(p, n) {
@@ -1132,6 +1271,26 @@ async function talkTrainer(n, place) {
   } else if (c === 1) await talk.say(`Strength ${lvl('strength')}, stamina ${lvl('stamina')}, health ${lvl('health')}. ${lvl('strength') < 4 ? 'We have work to do.' : 'Looking strong!'}`);
   endTalk();
 }
+async function talkPastor(n, place) {
+  beginTalk(n.cfg, 'Father Gabe', place.name, 170, n.relId); relNames[n.relId] = 'Father Gabe';
+  const r = rel(n.relId);
+  await talk.say(r >= 40 ? "Good to see you again, my friend. How is your heart today?" : pick(["Welcome, friend. Everyone is welcome here.", "Peace be with you. Sit as long as you like."]));
+  const c = await talk.choose([I('chat', 'Just looking for some peace'), I('heart', `Donate <small>$50</small>`), I('hand', 'I need to get something off my chest'), r >= 60 ? I('food', 'Is the food bank open?') : I('book', 'Any advice?'), I('x', 'Goodbye')]);
+  if (c === 0) { await talk.say(pick(["The city is loud. In here, it's quiet. Stay a while.", "Peace isn't found, it's made. One choice at a time."])); bumpRel(n.relId, 4); feed({ mood: 6 }); gainXP('charm', 5); }
+  else if (c === 1) { if (money < 50) await talk.say("Keep your money, friend. Your presence is enough."); else { spend(50); bumpRel(n.relId, 8, false); feed({ mood: 12 }); gainXP('charm', 15); await talk.say("Thank you. This will feed a lot of families on the south side."); } }
+  else if (c === 2) {
+    await talk.say("Go on. Nothing leaves this room.");
+    const d = await talk.choose([I('deal', "I've been selling things I shouldn't."), I('car', "I've taken cars that weren't mine."), I('x', 'Never mind')]);
+    if (d < 2) { await talk.say(d === 0 ? "Every man has a past. What matters is where you're walking now. Be careful out there." : "The car can be replaced. You can't. Drive safe, and think of the people in them."); feed({ mood: 15 }); bumpRel(n.relId, 5); }
+    else await talk.say("Whenever you're ready.");
+  }
+  else if (c === 3) {
+    if (r >= 60) { if (stats.relDay['food:' + dayN]) await talk.say("Come back tomorrow, there'll be more."); else { stats.relDay['food:' + dayN] = 1; stats.groceries += 3; await talk.say("Here, take a bag. Three meals' worth. Don't argue."); toast('+3 meals of groceries'); } }
+    else await talk.say(pick(["Eat well, sleep well, and call your family.", "Be kind to the people you meet. In this city, it comes back around.", "Money buys a lot. Not friends, though. Those you earn."]));
+    bumpRel(n.relId, 2); gainXP('charm', 4);
+  }
+  endTalk();
+}
 async function talkCashier(n, place) {
   beginTalk(n.cfg, n.name, place.name, 300, n.relId);
   await talk.say(pick(["Welcome to the Lucky 7. Tables are hot tonight.", "Feeling lucky?"]));
@@ -1171,7 +1330,37 @@ const PED_LINES = {
   airport: ["My flight got delayed again.", "Do you work here?"],
   night: ["Kinda late to be out, huh?", "The city looks good at night.", "You shouldn't be walking around here this late."],
 };
+const HL_NAMES = ['Old Pete', 'Sunny', 'Marlene', 'Big Walt', 'Dutch', 'Rosie', 'Preacher', 'Mike the Vet'];
+async function talkHomeless(p) {
+  peds.talk(p, P.x, P.z);
+  p.name ??= pick(HL_NAMES); p.helped ??= 0;
+  beginTalk(p.look.cfg, p.name, 'Lives on the street', 140 + Math.random() * 60);
+  await talk.say(p.helped ? pick(["Hey, it's you again. You're good people.", "My friend! Sit down, sit down."]) : pick(["Spare some change? Anything helps.", "Don't mind me. Just resting my bones.", "Nice day for it, huh? ...For something, anyway."]));
+  let done = false;
+  while (!done) {
+    const c = await talk.choose([I('cash', 'Give $5'), I('cash', 'Give $20'), I('food', `Share a meal ${stats.groceries ? '' : '<small>(no groceries)</small>'}`), I('chat', 'How did you end up here?'), I('star', 'Know anything useful?'), I('x', 'Bye')]);
+    if (c === 0 || c === 1) { const a = c ? 20 : 5; if (money < a) { await talk.say("It's alright, friend. Looks like you're as broke as me."); continue; } spend(a); p.helped++; feed({ mood: c ? 10 : 5 }); gainXP('charm', c ? 12 : 4); bumpRel('street', c ? 2 : 1); await talk.say(c ? "Twenty?! God bless you. Seriously." : "Thank you. Means more than you know."); }
+    else if (c === 2) { if (!stats.groceries) { await talk.say("That's kind, but you've got nothing on you. QuickMart sells groceries."); continue; } stats.groceries--; p.helped += 2; feed({ mood: 14 }); gainXP('charm', 15); await talk.say("A real meal... I haven't had one in days. Thank you."); }
+    else if (c === 3) await talk.say(pick(["Lost my job at the docks, then the apartment. Happens faster than you'd think.", "Came out here for the sun. Stayed for the... well. The sun's still nice.", "Served two tours. Came home and nothing fit anymore.", "Long story. Bad landlord, worse luck."]));
+    else if (c === 4) {
+      if (!p.helped) { await talk.say("Information costs, friend. Even out here."); continue; }
+      const t = hotTip();
+      if (Math.random() < 0.45) { // a hidden cash stash nearby
+        const a = Math.random() * 6.28, x = P.x + Math.sin(a) * rand(40, 90), z = P.z + Math.cos(a) * rand(40, 90);
+        const spot = walkable(x, z) ? { x, z } : { x: P.x + 40, z: P.z };
+        await talk.say("Saw some guy stash a bag behind a bin over that way. Didn't look like he was coming back. I'll mark it for you.");
+        dropCash(spot.x, spot.z, 80 + Math.floor(Math.random() * 220)); setWaypoint(spot.x, spot.z, 'Stashed cash');
+      } else if (t) await talk.say(`Word on the street: ${t.p.npc} is ${t.pr.hot === 'cheap' ? `selling ${t.g.name} cheap` : `paying big for ${t.g.name}`}.`);
+      else await talk.say("Cops roll through downtown around midnight. Stay smart.");
+      done = true;
+    }
+    else done = true;
+  }
+  endTalk(); peds.release(p);
+}
 async function talkToPed(p) {
+  if (p.kind === 'homeless') return talkHomeless(p);
+  if (p.angry) { toast(`${p.name || 'They'} want their car back!`); return; }
   peds.talk(p, P.x, P.z);
   p.buyer ??= Math.random() < (night > 0.5 ? 0.55 : 0.32) + (lvl('dealing') - 1) * 0.03;
   p.chats ??= 0;
@@ -1393,7 +1582,7 @@ function startJob(p) {
   if (p.job === 'taxi') {
     const v = makeVehicle({ ...DEFAULT_CAR, ...CAR_PRESETS.Taxi }, p.x + 6, p.z + 6, 0, false); v.taxi = true;
     const sp = { x: p.x, z: p.z + 7 }; for (let r = 4; r < 40; r += 4) { if (roadAt(p.x, p.z + r)) { sp.z = p.z + r; break; } } v.s.x = sp.x; v.s.z = sp.z; placeVehicle(v);
-    enterVehicle(v); job = { type: 'taxi', v, stage: 'pickup', fares: 0, earned: 0 }; nextFare();
+    enterVehicle(v, false); job = { type: 'taxi', v, stage: 'pickup', fares: 0, earned: 0 }; nextFare();
   } else { job = { type: 'courier', stage: 'deliver', fares: 0, earned: 0, depot: p }; nextParcel(); }
   toast(job.type === 'taxi' ? 'Shift started. Follow the GPS to your first fare.' : 'Parcel loaded. Deliver it before time runs out!', 3);
 }
@@ -1572,14 +1761,14 @@ attachWheel($('wpnBtn'), {
     return { icon: iconSVG(s.id), label: s.kind === 'gun' && own ? (arsenal.cfg[s.id].name || s.name) : s.name, short: own && s.kind !== 'melee' ? (s.kind === 'grenade' ? `${a.res}` : `${a.mag + a.res}`) : '', sub, disabled: !own, current: arsenal.cur === s.id };
   }),
   onSelect: (it, i) => selectWeapon(SLOTS[i].id),
-  onTap: () => holsterToggle(),
+  onTap: () => holsterToggle(), centre: () => arsenal.cur === 'fist' ? 'Fists' : 'Holster',
   onOpen: () => { timeScale = 0.2; }, onClose: () => { timeScale = 1; },
 });
 const ST_ICON = ['sun', 'music', 'moon', 'x'];
 attachWheel($('radioBtn'), {
   items: () => STATIONS.map((s, i) => ({ icon: svg(ST_ICON[i] || 'radio', 'wheel'), label: s.name.split(' — ')[0], sub: s.name.split(' — ')[1] || '', current: radioIndex() === i })),
   onSelect: (it, i) => { radioSet(i); radioOn(!!ride); toast(STATIONS[i].name, 1.4); },
-  onTap: () => { const i = (radioIndex() + 1) % STATIONS.length; radioSet(i); radioOn(!!ride); toast(STATIONS[i].name, 1.4); },
+  centre: () => 'Close',
   onOpen: () => { timeScale = 0.2; }, onClose: () => { timeScale = 1; },
 });
 $('editBtn').addEventListener('pointerdown', e => { e.stopPropagation(); startEdit(); });
@@ -1594,6 +1783,7 @@ const APPS = [
   ['contacts', 'Contacts', 'heart', 'linear-gradient(135deg,#ff6fb5,#c9306f)'],
   ['me', 'Me', 'user', 'linear-gradient(135deg,#38e8ff,#2f80ed)'],
   ['places', 'Places', 'pin', 'linear-gradient(135deg,#ff6a74,#e23b3b)'],
+  ['work', 'Work', 'case', 'linear-gradient(135deg,#ffd23f,#ff8a2a)'],
   ['wallet', 'Wallet', 'wallet', 'linear-gradient(135deg,#3a3a44,#111)'],
   ['garage', 'Garage', 'car', 'linear-gradient(135deg,#ff8a2a,#e05a10)'],
   ['homes', 'Homes', 'house', 'linear-gradient(135deg,#b26bff,#6b2fd0)'],
@@ -1611,7 +1801,7 @@ function openPhone(app = 'home') {
 function closePhone() { $('phone').classList.remove('open'); setTimeout(() => { $('phone').classList.add('hidden'); if (state === 'phone') setState('play'); }, 260); }
 function phoneGo(app) { phoneApp = app; if (app === 'msgs') phoneBadge = 0; renderPhone(); }
 function messages() {
-  const out = [{ from: 'Uncle Ray', av: 'user', text: "Welcome to Bay City, kid. I got you a little studio downtown (the purple key on your map). Eat, sleep, keep your energy up. Dealers buy low and sell high, and they'll treat you better once they know you. Customers will text you here too. Make money, buy property, live large." }];
+  const out = [{ from: 'Uncle Ray', av: 'user', text: "Welcome to Bay City, kid. I got you a little studio downtown (the purple key on your map). Eat, sleep, keep your energy up. Dealers buy low and sell high, and they'll treat you better once they know you. Customers will text you here too. Make money, buy property, live large. Need honest work? The Work app lists taxi and courier jobs." }];
   for (const c of customers) { const g = GOODS.find(x => x.id === c.good); out.push({ from: c.name, av: 'deal', text: `Need ${c.qty} ${g.name} near ${c.area}. Paying ${fmt(c.pay)}. Don't keep me waiting (${Math.max(0, Math.ceil(c.exp - gameHours()))}h).`, at: { x: c.x, z: c.z, name: `${c.name}'s order` } }); }
   for (const p of PLACES) if (p.kind === 'dealer' && rel(p.id) >= 20) { const pr = dealerPricesFor(p); for (const g of GOODS) if (pr[g.id].hot) out.push({ from: p.npc, av: 'deal', text: pr[g.id].hot === 'cheap' ? `Got ${g.name} going cheap today. ${fmt(pr[g.id].buy)} each. Come thru.` : `Paying top dollar for ${g.name} today: ${fmt(pr[g.id].sell)}. Bring what you got.`, at: p }); }
   const inc = PROPERTIES.filter(p => owned.has(p.id)).reduce((a, p) => a + p.income, 0);
@@ -1669,15 +1859,29 @@ function renderPhone() {
     const f = inside ? inside.back : focusPos(), all = [];
     el.innerHTML = `${back}<h4>Places</h4><div class="ph-list">${groups.map(([t, ic, list]) => `<div class="ph-sec">${svg(ic, 'sm')} ${t}</div>` + list.map(p => { all.push(p); const d = Math.hypot(p.x - f.x, p.z - f.z); return `<button class="ph-row" data-i="${all.length - 1}"><span>${svg(p.icon, 'sm')} ${p.name}${p.price !== undefined && p.home ? ` <small>${owned.has(p.id) ? '· owned' : '· ' + fmt(p.price)}</small>` : ''}</span><small>${d > 1000 ? (d / 1000).toFixed(1) + 'km' : Math.round(d) + 'm'}</small></button>`; }).join('')).join('')}</div>`;
     el.querySelectorAll('[data-i]').forEach(b => b.onclick = () => { const p = all[+b.dataset.i]; setWaypoint(p.x, p.z, p.name); toast(p.name); closePhone(); });
+  } else if (phoneApp === 'work') {
+    const f = inside ? inside.back : focusPos(), dist = p => `${Math.round(Math.hypot(p.x - f.x, p.z - f.z))} m`;
+    const W = [
+      ['j_taxi', 'Taxi driver', 'Bay Cabs gives you a cab. Pick up fares, drive them fast. Pays per fare plus a speed tip. Trains Driving.', '$60-200 a fare'],
+      ['j_courier', 'Courier', 'Speedy Couriers hands you parcels to deliver before the clock runs out. Trains Stamina.', '$80-260 a drop'],
+      ['g_taco', 'Taco truck shift', 'Build orders on the beach taco truck.', 'Tips per order'],
+      ['d_dt', 'Dealing', 'Buy low from dealers, sell high to other dealers or to customers who text you. Friends give better prices.', 'Big money, risky'],
+      ['chop', 'Car theft', "Jack or break into cars, drive them to Lucky's Chop Shop.", '$350-2,600 a car'],
+      ['race', 'Street racing', 'Bring any car to the race start for a checkpoint race.', '$450 a win'],
+      ['v_casino', 'Casino', 'Blackjack and slots at Lucky 7.', 'Luck'],
+    ].map(([id, t, d, pay]) => ({ p: PLACES.find(q => q.id === id), t, d, pay })).filter(w => w.p);
+    el.innerHTML = `${back}<h4>Work</h4>${job ? `<div class="ph-row col on"><span><b>On shift: ${job.type === 'taxi' ? 'Taxi' : 'Courier'}</b><small>${job.fares} done · ${fmt(job.earned)}</small></span><span class="rowbtns"><button class="ph-mini" id="phQuitJob">End shift</button></span></div>` : ''}<p class="ph-hint">Ways to make money in Bay City. Tap one to set GPS.</p>${W.map((w, i) => `<button class="ph-row col" data-w="${i}"><span><b>${svg(w.p.icon, 'sm')} ${w.t}</b><small>${dist(w.p)}</small></span><small style="white-space:normal;opacity:.8">${w.d}</small><small style="color:#7dff9a">${w.pay}</small></button>`).join('')}`;
+    el.querySelectorAll('[data-w]').forEach(b => b.onclick = () => { const w = W[+b.dataset.w]; setWaypoint(w.p.x, w.p.z, w.p.name); toast(`GPS set: ${w.p.name}`); closePhone(); });
+    if ($('phQuitJob')) $('phQuitJob').onclick = () => { endJob('Shift ended.'); renderPhone(); };
   } else if (phoneApp === 'wallet') {
     const inc = PROPERTIES.filter(p => owned.has(p.id)).reduce((a, p) => a + p.income, 0);
     const items = GOODS.filter(g => stash[g.id]).map(g => `<div class="ph-row"><span style="color:${g.col}">${svg(g.icon, 'sm')} <b style="color:#fff">${g.name}</b></span><b>×${stash[g.id]}</b></div>`).join('') || '<p class="ph-hint">Stash is empty.</p>';
     el.innerHTML = `${back}<h4>Wallet</h4><div class="ph-cash">${fmt(money)}</div><p class="ph-hint">Daily income ${fmt(inc)} · Stash ${stashCount()}/${stashCap()} · Groceries ${stats.groceries} meals</p><div class="ph-sec">Stash</div>${items}`;
   } else if (phoneApp === 'garage') {
-    el.innerHTML = `${back}<h4>Garage</h4><p class="ph-hint">Buy more cars at Bay Motors downtown.</p>${garage.cars.map((c, i) => `<div class="ph-row col"><span><b>${c.name || BODIES[c.body].label}</b> <small>${BODIES[c.body].label}${i === garage.active ? ' · driving' : ''}</small></span><span class="rowbtns">${i !== garage.active ? `<button class="ph-mini" data-use="${i}">Use</button>` : ''}<button class="ph-mini" data-mod="${i}">Customise</button></span></div>`).join('')}
+    el.innerHTML = `${back}<h4>Garage</h4><p class="ph-hint">Buy more cars at Bay Motors downtown. Upgrade them at Bay Customs.</p>${garage.cars.map((c, i) => `<div class="ph-row col"><span><b>${c.name || BODIES[c.body].label}</b> <small>${BODIES[c.body].label}${i === garage.active ? ' · driving' : ''}</small></span><span class="rowbtns">${i !== garage.active ? `<button class="ph-mini" data-use="${i}">Use</button>` : ''}<button class="ph-mini" data-mod="${i}">Upgrade</button></span></div>`).join('')}
       <button class="ph-btn" id="phBring">${svg('pin', 'sm')} Bring my car here</button><button class="ph-btn" id="phFind">${svg('map', 'sm')} Mark my car on the map</button>`;
     el.querySelectorAll('[data-use]').forEach(b => b.onclick = () => { if (ride === myCar) exitCar(); garage.active = +b.dataset.use; store.set('bc_cars', garage); rebuildMyCar(); if (!inside) bringCar(); renderPhone(); });
-    el.querySelectorAll('[data-mod]').forEach(b => b.onclick = () => { if (ride === myCar) exitCar(); garage.active = +b.dataset.mod; store.set('bc_cars', garage); carCfg = garage.cars[garage.active]; $('phone').classList.remove('open'); $('phone').classList.add('hidden'); openCustom('car'); });
+    el.querySelectorAll('[data-mod]').forEach(b => b.onclick = () => { const m = PLACES.find(p => p.id === 'mods'); if (+b.dataset.mod !== garage.active) { garage.active = +b.dataset.mod; store.set('bc_cars', garage); rebuildMyCar(); if (!inside) bringCar(); } setWaypoint(m.x, m.z, 'Bay Customs'); toast('Drive this car to Bay Customs to upgrade it. GPS is set.', 3.5); closePhone(); });
     $('phBring').onclick = () => { if (inside) { toast('Step outside first'); return; } if (ride) exitCar(); bringCar(); closePhone(); };
     $('phFind').onclick = () => { setWaypoint(myCar.s.x, myCar.s.z, 'My car'); closePhone(); };
   } else if (phoneApp === 'homes') {
@@ -1718,7 +1922,7 @@ function startGame() {
   myCar = null; rebuildMyCar();
   if (save && save.cx != null) Object.assign(myCar.s, { x: save.cx, z: save.cz, h: save.ch });
   placeVehicle(myCar);
-  if (save?.inCar) enterVehicle(myCar);
+  if (save?.inCar) enterVehicle(myCar, false);
   P.y = baseY(P.x, P.z); heroRoot.visible = !ride;
   refreshPropertyMarkers();
   for (const c of customers) attachCustomer(c);
@@ -1730,6 +1934,7 @@ function startGame() {
   setState('play');
   if (!save) { phoneBadge = 1; toast('Check your phone. Uncle Ray left you a message.', 4); }
   else if (!save.stats) { phoneBadge = 1; toast('New: needs, skills, homes and interiors. Check your phone!', 4); }
+  else if (!store.get('bc_seen7')) { store.set('bc_seen7', 1); phoneBadge = 1; toast('New: the Work app on your phone lists every job. Upgrade cars at Bay Customs.', 4.5); }
 }
 function bringCar(silent) {
   let best = null;
@@ -1757,11 +1962,14 @@ function step(dt) {
   updateNeeds(dh, dt);
   updateHealth(dt);
   action = findAction();
-  if (ride) { updateVehicles(dt); P.x = ride.s.x; P.z = ride.s.z; } else { updateFoot(dt); if (!inside) updateVehicles(dt); }
+  if (ride) { updateVehicles(dt); P.x = ride.s.x; P.z = ride.s.z; } else if (carAnim) { updateCarAnim(dt); updateVehicles(dt); } else { updateFoot(dt); if (!inside) updateVehicles(dt); }
   if (!inside) {
     updateTraffic(dt);
     const f = focusPos(), nc = cityNear(f.x, f.z, 30), nb = f.z > sandLine(f.x) - 60 && f.x > -330;
     peds.update(dt, f.x, f.z, nc, nb);
+    animals ||= new Animals(dyn, peds, (x, z) => baseY(x, z));
+    animals.update(dt, f.x, f.z, clockH, { x: f.x, z: f.z, car: !!ride && Math.abs(ride.s.v) > 2, run: !ride && input.stick.m > 0.85 }, false);
+    updateAngry(dt);
     updateNpcList(npcs, dt); updateFlyer(dt);
   } else updateNpcList(inside.npcs, dt);
   updateBullets(dt); updateProjectiles(dt); updateParticles(dt); updateCash(dt); updateMarkers(); updateRace(dt); updateRoute(dt); updateCustomers(dt); updateJob(dt);
@@ -1794,9 +2002,13 @@ const BODY_SCHEMA = CHAR_SCHEMA.filter(t => t.tab === 'Body' || t.tab === 'Face'
 const HAIR_SCHEMA = [{ tab: 'Cut', items: CHAR_SCHEMA.flatMap(t => t.items).filter(i => ['hair', 'hairColor', 'facialHair'].includes(i.key)) }];
 const CLOTHES_EXTRA = [{ tab: 'Colours', items: CHAR_SCHEMA.flatMap(t => t.items).filter(i => ['topColor', 'pantsColor', 'shoeColor', 'hatColor', 'accent', 'gloveColor', 'backColor'].includes(i.key)) },
   { tab: 'Extras', items: CHAR_SCHEMA.flatMap(t => t.items).filter(i => ['eyewear', 'gloves', 'back', 'hat'].includes(i.key)) }];
+const MOD_PRICES = { engine: { eco: 0, stock: 200, sport: 3000, race: 8000, rocket: 20000 }, tyres: { slick: 1500 }, spoiler: { gt: 1500, wing: 900 }, finish: { carbon: 2000, chrome: 2500 } };
+const MOD_BASE = { tyres: 600, wheels: 900, wheelSize: 500, suspension: 700, front: 400, rear: 400, skirts: 400, spoiler: 600, hood: 500, roof: 300, exhaust: 400, finish: 800, bodyColor: 500, accentColor: 200, decal: 300, tint: 200, rimColor: 150, headlights: 100, underglow: 600, glowColor: 100 };
+function modPrice(k, v) { return MOD_PRICES[k]?.[v] ?? MOD_BASE[k] ?? 0; }
 function shopPrice() {
   if (!shop) return 0;
   if (shop.kind === 'gun') { let t = 0; for (const k of Object.keys(pvGunCfg)) if (pvGunCfg[k] !== shop.orig[k]) t += SMITH_PRICES[k] ?? 100; return t; }
+  if (shop.kind === 'mods') { let t = 0; for (const k of Object.keys(carCfg)) if (carCfg[k] !== shop.orig[k]) t += modPrice(k, carCfg[k]); return t; }
   if (shop.kind === 'carshop') { const p = CAR_PRICES[pvCarCfg.body]; return Math.round(p * (rel(shop.relId) >= 40 ? 0.9 : 1)); }
   let total = shop.outfit ? shop.outfit.price : 0;
   for (const k of Object.keys(previewCfg)) {
@@ -1813,9 +2025,9 @@ function openCustom(kind) {
   $('customTitle').textContent = { char: 'Body & Face', car: 'Garage' }[kind];
   $('randBtn').textContent = 'Random'; $('randBtn').classList.remove('buy'); $('randBtn').disabled = false;
   const pres = $('presets'); pres.innerHTML = '';
-  if (kind === 'car') for (const [name, cfg] of Object.entries(CAR_PRESETS)) { const b = document.createElement('button'); b.textContent = name; b.onclick = () => { Object.assign(carCfg, { ...DEFAULT_CAR, ...cfg, body: carCfg.body }); changed(); panel.refresh(); }; pres.appendChild(b); }
+  if (kind === 'car') { shop = { kind: 'mods', orig: { ...carCfg } }; $('customTitle').textContent = 'Bay Customs'; $('randBtn').classList.add('buy'); }
   const get = () => kind === 'car' ? carCfg : charCfg;
-  const schema = kind === 'car' ? S.map(t => ({ ...t, items: t.items.filter(i => i.key !== 'body') })) : S;
+  const schema = kind === 'car' ? S.map(t => ({ ...t, items: t.items.filter(i => i.key !== 'body').map(i => i.key === 'roof' ? { ...i, options: i.options.filter(o => !['taxi', 'police'].includes(o[0])) } : i) })) : S;
   panel = buildPanel({ tabsEl: $('tabs'), contentEl: $('content'), schema, getCfg: get, onChange: (k, v) => { get()[k] = v; changed(); } });
   pv.dirty = true; changed();
 }
@@ -1865,11 +2077,12 @@ function updateShopPrice() { const p = shopPrice(); $('randBtn').textContent = p
 function changed() {
   store.set('rr_char', charCfg); store.set('bc_cars', garage);
   pv.dirty = true;
-  if (state === 'car') renderStats($('stats'), carStatBars(computeCarStats(carCfg)), `Engine <b>${CAR_PARTS.engine[carCfg.engine].label}</b> · Tyres <b>${CAR_PARTS.tyres[carCfg.tyres].label}</b>`);
+  if (state === 'car') { renderStats($('stats'), carStatBars(computeCarStats(carCfg)), `Engine <b>${CAR_PARTS.engine[carCfg.engine].label}</b> · Tyres <b>${CAR_PARTS.tyres[carCfg.tyres].label}</b> · Back cancels unpaid changes`); updateShopPrice(); }
   else if (state === 'char') $('stats').innerHTML = `<div class="statx">Body and face are free. Visit barbers for hair and clothing stores for outfits.</div>`;
 }
 $('backBtn').onclick = () => {
   const wasCar = state === 'car';
+  if (shop?.kind === 'mods') { for (const k of Object.keys(carCfg)) if (!(k in shop.orig)) delete carCfg[k]; Object.assign(carCfg, shop.orig); store.set('bc_cars', garage); }
   shop = null; previewCfg = null; pvCarCfg = null;
   const wasRide = ride;
   buildHero();
@@ -1883,6 +2096,7 @@ $('randBtn').onclick = () => {
     if (money < price) { sfx.fail(); toast(`You need ${fmt(price - money)} more`); return; }
     spend(price);
     if (shop.kind === 'gun') { arsenal.cfg[shop.slot] = { ...pvGunCfg }; shop.orig = { ...pvGunCfg }; saveGame(); toast('Work done. Looks mean.'); updateShopPrice(); return; }
+    if (shop.kind === 'mods') { shop.orig = { ...carCfg }; store.set('bc_cars', garage); saveGame(); gainXP('driving', Math.round(price / 200)); toast('Bay Customs: work done. She looks great.'); sfx.coin(); updateShopPrice(); return; }
     if (shop.kind === 'carshop') { garage.cars.push({ ...DEFAULT_CAR, ...pvCarCfg }); garage.active = garage.cars.length - 1; store.set('bc_cars', garage); bumpRel(shop.relId, 10, false); if (ride === myCar) exitCar(); rebuildMyCar({ x: inside.back.x, z: inside.back.z, h: 0 }); pendingCar = true; toast(`You bought a ${BODIES[pvCarCfg.body].label}! It'll be outside.`, 3); feed({ mood: 25 }); return; }
     charCfg = { ...previewCfg }; store.set('rr_char', charCfg); saveGame(); feed({ mood: 10 }); gainXP('charm', Math.round(price / 20));
     shop.orig = { ...charCfg }; shop.outfit = null; [...$('presets').children].forEach(c => c.classList.remove('on'));
@@ -1922,4 +2136,4 @@ function frame(now) {
 }
 startGame();
 requestAnimationFrame(frame);
-window.__game = { scene: G.scene, cam: G.cam, snap: () => updateCamera(0, true), get state() { return state; }, P, input, get ride() { return ride; }, get myCar() { return myCar; }, get traffic() { return traffic; }, peds, setTime: h => { clockH = h; }, openCustom, enterVehicle, exitCar, get money() { return money; }, set money(v) { money = v; }, openPlace, PLACES, PROPERTIES, runMinigame, get action() { return action; }, arsenal, selectWeapon, openPhone, setWaypoint, get route() { return route; }, talkToPed, talk, doAction, stats, get inside() { return inside; }, enterInterior, exitInterior, get customers() { return customers; }, newCustomer, startEdit, endEdit, get job() { return job; }, gainXP, storage, doSpot, useFurn, phoneGo, talkVenue, talkJob, openPlace, talkCustomer, startJob, openCarShop };
+window.__game = { get animals() { return animals; }, scene: G.scene, cam: G.cam, snap: () => updateCamera(0, true), get state() { return state; }, P, input, get ride() { return ride; }, get myCar() { return myCar; }, get traffic() { return traffic; }, peds, setTime: h => { clockH = h; }, openCustom, enterVehicle, exitCar, get money() { return money; }, set money(v) { money = v; }, openPlace, PLACES, PROPERTIES, runMinigame, get action() { return action; }, arsenal, selectWeapon, openPhone, setWaypoint, get route() { return route; }, talkToPed, talk, doAction, stats, get inside() { return inside; }, enterInterior, exitInterior, get customers() { return customers; }, newCustomer, startEdit, endEdit, get job() { return job; }, gainXP, storage, doSpot, useFurn, phoneGo, talkVenue, talkJob, openPlace, talkCustomer, startJob, openCarShop };

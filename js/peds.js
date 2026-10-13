@@ -30,8 +30,8 @@ const LOOKS = [];
 function makeLook(beach) {
   const cfg = { ...randomChar(), mask: 'none', skin: pick(SKINS), hairColor: pick(HAIRS), eyewear: Math.random() < 0.25 ? 'shades' : 'none', back: Math.random() < 0.15 ? 'backpack' : 'none', eyes: 'normal', headSize: rand(0.95, 1.1), height: rand(0.88, 1.12) };
   cfg.hat = Math.random() < 0.3 ? pick(['cap', 'beanie', 'cowboy', 'headband']) : 'none';
-  if (beach) Object.assign(cfg, { top: pick(['tank', 'tshirt', 'tank']), pants: 'shorts', shoes: 'bare', eyewear: Math.random() < 0.5 ? 'shades' : 'none', hat: Math.random() < 0.3 ? 'cap' : 'none' });
-  else if (cfg.top === 'armor') cfg.top = 'tshirt';
+  if (beach) Object.assign(cfg, { top: pick(['tank', 'tshirt', 'shirtless', 'swimtop', 'swimtop', 'shirtless']), pants: pick(['shorts', 'swim', 'swim']), shoes: 'bare', eyewear: Math.random() < 0.5 ? 'shades' : 'none', hat: Math.random() < 0.3 ? 'cap' : 'none' });
+  else { if (['armor', 'shirtless', 'swimtop'].includes(cfg.top)) cfg.top = 'tshirt'; if (cfg.pants === 'swim') cfg.pants = 'jeans'; }
   return { ...bakeCfg(cfg), beach };
 }
 // Bake any character config into 5 meshes (body + 4 limbs) so lots of people are cheap to draw.
@@ -50,7 +50,18 @@ export function figure(look) {
   const limbs = look.parts.map(p => { const g = new THREE.Group(); g.position.copy(p.pos); const m = new THREE.Mesh(p.geo, MAT); m.castShadow = true; g.add(m); inner.add(g); return g; });
   return { root, inner, limbs };
 }
-function ensureLooks() { if (LOOKS.length) return; for (let i = 0; i < 10; i++) LOOKS.push(makeLook(false)); for (let i = 0; i < 6; i++) LOOKS.push(makeLook(true)); }
+function homelessLook() {
+  const dull = ['#5a5040', '#3a3d45', '#55602f', '#6b4a33', '#4a4a52', '#7a6a50'];
+  const cfg = { ...randomChar(), mask: 'none', skin: pick(SKINS), hairColor: pick(['#3b2416', '#6b6b6b', '#9a9a9a', '#141414']), eyewear: 'none', back: Math.random() < 0.5 ? 'backpack' : 'none', eyes: 'normal',
+    top: pick(['hoodie', 'jacket', 'long']), topColor: pick(dull), accent: pick(dull), pants: pick(['cargo', 'jeans']), pantsColor: pick(dull), shoes: 'boots', shoeColor: '#3a2a1a', hat: Math.random() < 0.6 ? 'beanie' : 'none', hatColor: pick(dull), facialHair: pick(['bigbeard', 'beard', 'stubble']), hair: pick(['long', 'short', 'afro']) };
+  return { ...bakeCfg(cfg), homeless: true };
+}
+function ensureLooks() { if (LOOKS.length) return; for (let i = 0; i < 10; i++) LOOKS.push(makeLook(false)); for (let i = 0; i < 6; i++) LOOKS.push(makeLook(true)); for (let i = 0; i < 3; i++) LOOKS.push(homelessLook()); }
+const cityLooks = () => LOOKS.filter(l => !l.beach && !l.homeless);
+const PROP = new THREE.MeshStandardMaterial({ vertexColors: false, color: '#ffffff', roughness: 0.9 });
+const pm = c => new THREE.MeshStandardMaterial({ color: c, roughness: 0.9 });
+const BAG_M = [pm('#3a5f7a'), pm('#7a3a3a'), pm('#55602f')], CARD_M = pm('#b89a6a'), CART_M = new THREE.MeshStandardMaterial({ color: '#c9ccd2', metalness: 0.6, roughness: 0.4 });
+function propBox(w, h, d, m, x, y, z) { const b = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), m); b.position.set(x, y + h / 2, z); b.castShadow = true; return b; }
 
 const R = 16.6; // sidewalk loop offset from block centre
 function perim(s) { // param 0..8R around a square, clockwise from the NW corner
@@ -76,7 +87,7 @@ export class Peds {
       const i = c.kx[0] + Math.floor(Math.random() * (c.kx[1] - c.kx[0])), j = c.kz[0] + Math.floor(Math.random() * (c.kz[1] - c.kz[0]));
       const bx = c.cx + (i + 0.5) * 48, bz = c.cz + (j + 0.5) * 48, d = Math.hypot(bx - px, bz - pz);
       if (d < 30 || d > 100) continue;
-      const p = this.makePed(pick(LOOKS.filter(l => !l.beach)));
+      const p = this.makePed(pick(cityLooks()));
       Object.assign(p, { kind: 'city', c, bi: i, bj: j, bx, bz, s: Math.random() * 8 * R, dir: Math.random() < 0.5 ? 1 : -1 });
       const [x, z] = perim(p.s); p.x = bx + x; p.z = bz + z;
       this.list.push(p); return;
@@ -93,9 +104,30 @@ export class Peds {
   }
   spawnLoose(x, z, fromX, fromZ) {
     ensureLooks();
-    const p = this.makePed(pick(LOOKS.filter(l => !l.beach)));
+    const p = this.makePed(pick(cityLooks()));
     Object.assign(p, { kind: 'loose', x, z, hx: x, hz: z });
     this.list.push(p); this.flee(p, fromX, fromZ); return p;
+  }
+  // someone sleeping rough or sitting against a wall, with a bag, cardboard and sometimes a shopping cart
+  spawnHomeless(c, px, pz) {
+    ensureLooks();
+    for (let k = 0; k < 10; k++) {
+      const i = c.kx[0] + Math.floor(Math.random() * (c.kx[1] - c.kx[0])), j = c.kz[0] + Math.floor(Math.random() * (c.kz[1] - c.kz[0]));
+      const bx = c.cx + (i + 0.5) * 48, bz = c.cz + (j + 0.5) * 48, side = Math.floor(Math.random() * 4), s = rand(-12, 12), r = 15.3;
+      const x = bx + [s, r, s, -r][side], z = bz + [-r, s, r, s][side];
+      const d = Math.hypot(x - px, z - pz); if (d < 30 || d > 100 || !walkable(x, z)) continue;
+      const pos = { x, z }; resolve(pos, 0.6, 0);
+      const p = this.makePed(pick(LOOKS.filter(l => l.homeless)));
+      const lie = Math.random() < 0.55, face = [Math.PI, -Math.PI / 2, 0, Math.PI / 2][side]; // facing the street
+      Object.assign(p, { kind: 'homeless', x: pos.x, z: pos.z, hx: pos.x, hz: pos.z, hface: lie ? face + Math.PI / 2 : face, face: lie ? face + Math.PI / 2 : face, rest: lie ? 'lie' : 'sit', state: lie ? 'lie' : 'sit', speed: 1 });
+      const props = new THREE.Group();
+      if (lie) props.add(propBox(0.75, 0.22, 1.9, pick(BAG_M), 0, 0, -0.55));
+      props.add(propBox(1.0, 0.03, 1.6, CARD_M, lie ? 0 : 0, 0, lie ? -0.5 : -0.2));
+      if (!lie) { const sign = propBox(0.45, 0.32, 0.02, CARD_M, 0.35, 0.1, 0.45); sign.rotation.x = -0.35; props.add(sign); }
+      if (Math.random() < 0.5) { const cart = new THREE.Group(); cart.add(propBox(0.6, 0.45, 0.85, CART_M, 0, 0.35, 0)); cart.add(propBox(0.55, 0.35, 0.8, pick(BAG_M), 0, 0.5, 0)); cart.position.set(lie ? 0.9 : 0.9, 0, lie ? -0.3 : 0); props.add(cart); }
+      p.root.add(props); p.props = props;
+      this.list.push(p); return p;
+    }
   }
   talk(p, x, z) { p.state = 'talk'; p.lookX = x; p.lookZ = z; }
   release(p) { if (p.state === 'talk') this.settle(p); }
@@ -108,9 +140,11 @@ export class Peds {
     const nCity = this.list.filter(p => p.kind === 'city').length, nBeach = this.list.filter(p => p.kind === 'beach').length;
     if (nCity < cityTarget) this.spawnCity(nearCity, px, pz);
     if (nBeach < beachTarget) this.spawnBeach(px, pz);
+    if (nearCity && this.list.filter(p => p.kind === 'homeless').length < (nearCity.style === 'downtown' ? 4 : 2)) this.spawnHomeless(nearCity, px, pz);
     for (let i = this.list.length - 1; i >= 0; i--) {
       const p = this.list[i];
       if (Math.hypot(p.x - px, p.z - pz) > 125) { this.parent.remove(p.root); this.list.splice(i, 1); continue; }
+      if (p.state === 'held') continue;
       let mv = 0;
       if (p.state === 'talk') { p.face += Math.atan2(Math.sin(Math.atan2(p.lookX - p.x, p.lookZ - p.z) - p.face), Math.cos(Math.atan2(p.lookX - p.x, p.lookZ - p.z) - p.face)) * Math.min(1, dt * 8); }
       if (p.state === 'walk') {
@@ -137,6 +171,9 @@ export class Peds {
         if (p.state === 'idle' && p.t <= 0) { p.state = 'wander'; const a = rand(0, 6.28), r = rand(3, 12); p.tx = p.hx + Math.cos(a) * r; p.tz = p.hz + Math.sin(a) * r; }
         if (p.state === 'wander') { const dx = p.tx - p.x, dz = p.tz - p.z, d = Math.hypot(dx, dz); if (d < 0.3 || !walkable(p.tx, p.tz)) { p.state = 'idle'; p.t = rand(2, 7); } else { const s = Math.min(d, 1.1 * dt); p.x += dx / d * s; p.z += dz / d * s; p.face = Math.atan2(dx, dz); mv = 1.1; } }
       }
+      if (p.state === 'return') { const dx = p.hx - p.x, dz = p.hz - p.z, d = Math.hypot(dx, dz); if (d < 0.3) { p.x = p.hx; p.z = p.hz; p.face = p.hface; p.state = p.rest; } else { const s = Math.min(d, 1.2 * dt); p.x += dx / d * s; p.z += dz / d * s; p.face = Math.atan2(dx, dz); mv = 1.2; } }
+      if (p.state === 'chase') { const dx = p.tx - p.x, dz = p.tz - p.z, d = Math.hypot(dx, dz); if (d > 0.4) { const s = Math.min(d, 5.4 * dt), ox = p.x, oz = p.z; p.x += dx / d * s; p.z += dz / d * s; resolve(p, 0.35, 0); if (!walkable(p.x, p.z)) { p.x = ox; p.z = oz; } mv = 5.4; } p.face = Math.atan2(dx, dz); }
+      if (p.state === 'punch') { p.face = Math.atan2(p.tx - p.x, p.tz - p.z); }
       if (p.state === 'flee') {
         p.t -= dt; const ox = p.x, oz = p.z; p.x += p.fx * 4.6 * dt; p.z += p.fz * 4.6 * dt; resolve(p, 0.35, 0);
         if (!walkable(p.x, p.z)) { p.x = ox; p.z = oz; p.fx = -p.fx; p.fz = -p.fz; }
@@ -153,8 +190,14 @@ export class Peds {
       const sw = Math.min(1, mv / 1.5) * (mv > 3 ? 0.9 : 0.55);
       p.limbs[0].rotation.x = -Math.sin(p.phase) * sw; p.limbs[1].rotation.x = Math.sin(p.phase) * sw;
       p.limbs[2].rotation.x = Math.sin(p.phase) * sw * 0.8; p.limbs[3].rotation.x = -Math.sin(p.phase) * sw * 0.8;
+      if (p.state === 'punch') { p.pt = (p.pt || 0) + dt * 9; p.limbs[3].rotation.x = -1.5 + Math.sin(p.pt) * 0.6; p.limbs[2].rotation.x = -1.2 - Math.sin(p.pt) * 0.5; }
+      let yo = 0;
+      if (p.props) p.props.visible = p.state === 'lie' || p.state === 'sit';
+      if (p.state === 'lie') { p.inner.rotation.x = -Math.PI / 2; p.inner.position.set(0, 0.32, 0.45); p.limbs[2].rotation.x = 0.3; p.limbs[3].rotation.x = 0.3; }
+      else if (p.state === 'sit') { p.inner.position.set(0, -(p.limbs[0].position.y - 0.05), -0.15); p.limbs[0].rotation.x = -1.45; p.limbs[1].rotation.x = -1.35; p.limbs[2].rotation.x = -0.2; p.limbs[3].rotation.x = -0.5 + Math.sin(p.phase2 = (p.phase2 || 0) + dt) * 0.05; }
+      else p.inner.position.set(0, 0, 0);
       const y = p.kind === 'beach' ? Math.max(groundH(p.x, p.z), 0) : 0.17;
-      p.root.position.set(p.x, y, p.z); p.root.rotation.y = p.face;
+      p.root.position.set(p.x, y + yo, p.z); p.root.rotation.y = p.face;
     }
   }
   settle(p) {
@@ -166,7 +209,8 @@ export class Peds {
       let tx, tz; if (Math.abs(Math.abs(lx) - R) < Math.abs(Math.abs(lz) - R)) { tx = Math.sign(lx || 1) * R; tz = lz; } else { tx = lx; tz = Math.sign(lz || 1) * R; }
       const s = tz === -R ? tx + R : tx === R ? 2 * R + tz + R : tz === R ? 4 * R + (R - tx) : 6 * R + (R - tz);
       Object.assign(p, { state: 'cross', tx: bx + tx, tz: bz + tz, bi: i, bj: j, bx, bz, ns: s });
-    } else { p.state = 'idle'; p.hx = p.x; p.hz = p.z; p.t = rand(1, 3); }
+    } else if (p.kind === 'homeless') p.state = 'return';
+    else { p.state = 'idle'; p.hx = p.x; p.hz = p.z; p.t = rand(1, 3); }
   }
   clear() { for (const p of this.list) this.parent.remove(p.root); this.list = []; }
 }

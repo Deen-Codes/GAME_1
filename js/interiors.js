@@ -28,6 +28,9 @@ export const INTERIORS = {
     [{ role: 'clerk', x: 3, z: 2.9 }], [{ kind: 'talk', x: 3, z: 5.1, label: 'Browse', icon: 'sofa' }]),
   bar: T('The Anchor', 12, 10, '#5a4030', '#3a2a1a', [['barcounter', 0, -3.3], ['stool', -1.5, -2.4], ['stool', 0, -2.4], ['stool', 1.5, -2.4], ['table', -3.5, 2, 0, '#7a5230'], ['table', 3.5, 2, 0, '#7a5230'], ['chair', -4.6, 2], ['chair', 4.6, 2]],
     [{ role: 'bartender', x: 0, z: -4.2 }], [{ kind: 'talk', x: 0, z: -1.4, label: 'Order', icon: 'drink' }], { light: '#ffb35c' }),
+  church: T('Bay Chapel', 14, 20, '#9a8a74', '#ece4d0', [['altar', 0, -7.4], ['candles', -2.2, -8.2], ['candles', 2.2, -8.2], ['stained', -3.6, -9.9], ['stained', 0, -9.9], ['stained', 3.6, -9.9], ['rug', 0, -2, 0, '#8b1e3f'], ['rug', 0, 1.6, 0, '#8b1e3f'], ['plant', -6.2, -8.6], ['plant', 6.2, -8.6],
+    ['pew', -3.8, -4], ['pew', 3.8, -4], ['pew', -3.8, -2], ['pew', 3.8, -2], ['pew', -3.8, 0], ['pew', 3.8, 0], ['pew', -3.8, 2], ['pew', 3.8, 2], ['pew', -3.8, 4], ['pew', 3.8, 4]],
+    [{ role: 'pastor', x: 0, z: -8.6 }], [{ kind: 'talk', x: 0, z: -6.1, label: 'Talk', icon: 'chat' }, { kind: 'pray', x: 0, z: 2.6, label: 'Sit & reflect', icon: 'heart' }], { light: '#ffe2b0' }),
   club: T('Neon Room', 18, 14, '#14101e', '#1e1430', [['dancefloor', 0, 0.5], ['djbooth', 0, -5], ['barcounter', -6.5, 4.5], ['sign', 0, -6.9, 0, '#38e8ff']],
     [{ role: 'dj', x: 0, z: -5.9 }, { role: 'bartender', x: -6.5, z: 3.6 }], [{ kind: 'dj', x: 0, z: -3.9, label: 'DJ', icon: 'music' }, { kind: 'dance', x: 0, z: 0.5, label: 'Dance', icon: 'smile' }, { kind: 'talk', x: -6.5, z: 5.9, label: 'Bar', icon: 'drink' }], { light: '#b26bff', dark: true }),
   // homes

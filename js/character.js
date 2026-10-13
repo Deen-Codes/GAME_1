@@ -33,9 +33,9 @@ export const CHAR_SCHEMA = [
     color('hairColor', 'Hair colour', HAIR_COLORS),
   ] },
   { tab: 'Outfit', items: [
-    choice('top', 'Top', [['tshirt', 'T-shirt'], ['tank', 'Tank top'], ['long', 'Long sleeve'], ['hoodie', 'Hoodie'], ['jacket', 'Jacket'], ['suit', 'Suit'], ['armor', 'Armour']]),
+    choice('top', 'Top', [['tshirt', 'T-shirt'], ['tank', 'Tank top'], ['long', 'Long sleeve'], ['hoodie', 'Hoodie'], ['jacket', 'Jacket'], ['suit', 'Suit'], ['armor', 'Armour'], ['shirtless', 'Shirtless'], ['swimtop', 'Swim top']]),
     color('topColor', 'Top colour', BASIC),
-    choice('pants', 'Legs', [['jeans', 'Trousers'], ['shorts', 'Shorts'], ['cargo', 'Cargo'], ['armored', 'Armoured']]),
+    choice('pants', 'Legs', [['jeans', 'Trousers'], ['shorts', 'Shorts'], ['cargo', 'Cargo'], ['armored', 'Armoured'], ['swim', 'Swimwear']]),
     color('pantsColor', 'Legs colour', BASIC),
     choice('shoes', 'Shoes', [['sneakers', 'Trainers'], ['boots', 'Boots'], ['bare', 'Barefoot']]),
     color('shoeColor', 'Shoe colour', BASIC),
@@ -115,9 +115,11 @@ export function buildCharacter(cfg) {
   // ---- torso / top ----
   const longSleeve = ['long', 'hoodie', 'jacket', 'suit'].includes(c.top);
   const chestW = c.top === 'tank' ? torsoW * 0.92 : torsoW;
-  torso.add(box(chestW, torsoH, torsoD, topM, 0, torsoH / 2, 0));
-  torso.add(box(torsoW * 1.01, 0.06, torsoD * 1.01, dark, 0, 0.02, 0)); // belt
-  torso.add(box(0.08, 0.05, 0.02, metal, 0, 0.02, torsoD / 2 + 0.01)); // buckle
+  const swim = c.top === 'shirtless' || c.top === 'swimtop';
+  torso.add(box(chestW, torsoH, torsoD, swim ? skin : topM, 0, torsoH / 2, 0));
+  if (c.top === 'swimtop') torso.add(box(chestW * 1.02, torsoH * 0.16, torsoD * 1.04, topM, 0, torsoH * 0.72, 0)); // swim top band
+  if (c.pants !== 'swim') { torso.add(box(torsoW * 1.01, 0.06, torsoD * 1.01, dark, 0, 0.02, 0)); // belt
+  torso.add(box(0.08, 0.05, 0.02, metal, 0, 0.02, torsoD / 2 + 0.01)); } // buckle
   const fz = torsoD / 2;
   if (c.top === 'hoodie') {
     torso.add(box(torsoW * 0.78, 0.2, 0.16, topM, 0, torsoH - 0.02, -fz - 0.05));
@@ -316,7 +318,7 @@ export function buildCharacter(cfg) {
 
   // ---- arms ----
   const shoulderY = torsoH - 0.07;
-  const upperM = c.top === 'tank' ? skin : topM;
+  const upperM = c.top === 'tank' || swim ? skin : topM;
   const lowerM = longSleeve ? topM : skin;
   const makeArm = (side) => {
     const pivot = new THREE.Group(); pivot.position.set(side * (torsoW / 2 + limbW / 2 + 0.005), shoulderY, 0);
@@ -333,10 +335,11 @@ export function buildCharacter(cfg) {
   const armR = makeArm(-1), armL = makeArm(1);
 
   // ---- legs ----
-  const shinM = c.pants === 'shorts' ? skin : pantsM;
+  const shinM = c.pants === 'shorts' || c.pants === 'swim' ? skin : pantsM;
   const makeLeg = (side) => {
     const pivot = new THREE.Group(); pivot.position.set(side * torsoW * 0.24, 0, 0); hips.add(pivot);
-    pivot.add(box(legW, thighL, legW, pantsM, 0, -thighL / 2, 0));
+    if (c.pants === 'swim') { pivot.add(box(legW, thighL * 0.3, legW, pantsM, 0, -thighL * 0.15, 0)); pivot.add(box(legW * 0.98, thighL * 0.7, legW * 0.98, skin, 0, -thighL * 0.65, 0)); }
+    else pivot.add(box(legW, thighL, legW, pantsM, 0, -thighL / 2, 0));
     if (c.pants === 'cargo') pivot.add(box(0.03, thighL * 0.35, legW * 0.6, M(shade(c.pantsColor, 0.8)), side * (legW / 2 + 0.01), -thighL * 0.55, 0));
     if (c.pants === 'shorts') pivot.add(box(legW * 1.08, 0.05, legW * 1.08, M(shade(c.pantsColor, 0.8)), 0, -thighL + 0.03, 0));
     const knee = new THREE.Group(); knee.position.y = -thighL; pivot.add(knee);

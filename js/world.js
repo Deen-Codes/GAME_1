@@ -144,8 +144,61 @@ export const PARKED = []; // {x,z,rot,seed}
 export const LAMPS = [];
 
 function building(x, z, w, d, h, color, opts = {}) {
-  addObj({ t: 'bld', x, z, w, d, h, col: color, ...opts });
-  addCollider({ x0: x - w / 2, x1: x + w / 2, z0: z - d / 2, z1: z + d / 2, h: h + (opts.roofH || 0) });
+  const o = { t: 'bld', x, z, w, d, h, col: color, ...opts }; addObj(o);
+  o.cc = { x0: x - w / 2, x1: x + w / 2, z0: z - d / 2, z1: z + d / 2, h: h + (opts.roofH || 0) }; addCollider(o.cc);
+  return o;
+}
+function removeObj(o) { const c = chunks.get(ckey(...chunkOf(o.x, o.z))); if (c) { const i = c.objs.indexOf(o); if (i >= 0) c.objs.splice(i, 1); } }
+function objsNear(x0, z0, x1, z1) { const out = []; for (let i = Math.floor(x0 / CHUNK); i <= Math.floor(x1 / CHUNK); i++) for (let j = Math.floor(z0 / CHUNK); j <= Math.floor(z1 / CHUNK); j++) for (const o of chunks.get(ckey(i, j))?.objs || []) if (o.x >= x0 && o.x <= x1 && o.z >= z0 && o.z <= z1) out.push(o); return out; }
+// remove trees / parked cars / benches inside a world rect (so a shop or doorway isn't blocked)
+function clearRect(x0, z0, x1, z1) {
+  for (const o of objsNear(x0 - 1, z0 - 1, x1 + 1, z1 + 1)) {
+    if (!['tree', 'parked', 'bench'].includes(o.t) || o.x < x0 || o.x > x1 || o.z < z0 || o.z > z1) continue;
+    removeObj(o);
+    if (o.t === 'parked') { removeCollider(o.col); const i = PARKED.indexOf(o); if (i >= 0) PARKED.splice(i, 1); }
+    if (o.t === 'tree') for (const c of collidersNear(o.x, o.z).slice()) if (c.r && Math.abs(c.x - o.x) < 0.01 && Math.abs(c.z - o.z) < 0.01) removeCollider(c);
+  }
+}
+// Put a real front door on the building facing a place's sidewalk, and move the place marker to stand in front of it.
+const SIDE_N = { n: [0, -1], s: [0, 1], e: [1, 0], w: [-1, 0] };
+export function attachDoor(p, accent = '#ff8a2a', sign = null, build = null) {
+  const dd = p.door; if (!dd || !SIDE_N[dd.side]) return;
+  const [nx, nz] = SIDE_N[dd.side], tx = -nz, tz = nx, cx = dd.cx, cz = dd.cz;
+  const lat = (x, z) => (x - cx) * tx + (z - cz) * tz, fw = (x, z) => (x - cx) * nx + (z - cz) * nz;
+  const pl = lat(p.x, p.z);
+  let best = null, bs = -1e9;
+  if (build === 'church') { // clear the block and put up a chapel with a bell tower facing the street
+    for (const o of objsNear(cx - 18, cz - 18, cx + 18, cz + 18)) if (o.t === 'bld' && !o.y) { removeObj(o); removeCollider(o.cc); }
+    clearRect(cx - 18, cz - 18, cx + 18, cz + 18);
+    const nave = 14.6 - 13, bx = cx + nx * nave, bz = cz + nz * nave;
+    building(bx, bz, nx ? 26 : 14, nx ? 14 : 26, 8, '#ece4d0', { roof: 'pitch', roofH: 5, roofCol: '#6b3e2e', plain: true });
+    const tw = cx + nx * 12.1, tz2 = cz + nz * 12.1;
+    building(tw, tz2, 5, 5, 17, '#e4dac2', { roof: 'pitch', roofH: 5, roofCol: '#6b3e2e', plain: true });
+    addObj({ t: 'cross', x: tw + nx * 2.6, z: tz2 + nz * 2.6, nx, nz });
+    for (const k of [-1, 1]) tree(cx + nx * 16 + tx * 6 * k, cz + nz * 16 + tz * 6 * k, 'round', 0.8);
+    best = { front: 14.6, l0: -2.5, l1: 2.5 }; p.x = cx + nx * 16.6; p.z = cz + nz * 16.6;
+  }
+  if (!best) for (const o of objsNear(cx - 18, cz - 18, cx + 18, cz + 18)) {
+    if (o.t !== 'bld' || o.y || o.glass) continue;
+    const hn = nx ? o.w / 2 : o.d / 2, hl = nx ? o.d / 2 : o.w / 2;
+    const front = fw(o.x, o.z) + hn, l0 = lat(o.x, o.z) - hl, l1 = lat(o.x, o.z) + hl;
+    if (l1 - l0 < 4.5 || front < 5) continue;
+    const sc = front - Math.max(0, l0 - pl, pl - l1) * 0.8;
+    if (sc > bs) { bs = sc; best = { front, l0, l1 }; }
+  }
+  if (!best) { // empty lot (park / parking): build a small shop
+    const L = Math.max(-10, Math.min(10, pl)), fc = 14.6 - 5.5, bx = cx + nx * fc + tx * L, bz = cz + nz * fc + tz * L;
+    const w = nx ? 11 : 14, d = nx ? 14 : 11;
+    clearRect(bx - w / 2 - 0.5, bz - d / 2 - 0.5, bx + w / 2 + 0.5, bz + d / 2 + 0.5);
+    building(bx, bz, w, d, 6.5, '#ece4d6', { top: 'ac' });
+    best = { front: 14.6, l0: L - 7, l1: L + 7 };
+  }
+  const dl = Math.max(best.l0 + 1.8, Math.min(best.l1 - 1.8, pl)), f = best.front;
+  const P = (a, b) => ({ x: cx + nx * a + tx * b, z: cz + nz * a + tz * b });
+  const q0 = P(f + 0.1, dl - 1.8), q1 = P(17.5, dl + 1.8);
+  clearRect(Math.min(q0.x, q1.x), Math.min(q0.z, q1.z), Math.max(q0.x, q1.x), Math.max(q0.z, q1.z));
+  const dp = P(f, dl); addObj({ t: 'door', x: dp.x, z: dp.z, nx, nz, col: accent, sign });
+  const m = P(f + 2.1, dl); p.x = m.x; p.z = m.z; p.doorN = [nx, nz];
 }
 function tree(x, z, kind = 'round', s = 1) { addObj({ t: 'tree', x, z, kind, s }); addCollider({ x, z, r: 0.45 * s }); }
 
@@ -379,10 +432,90 @@ function radialTex() {
 }
 export const MATS = {
   solid: new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.88, metalness: 0.02, flatShading: true }),
-  win: new THREE.MeshStandardMaterial({ vertexColors: true, map: winMap, emissive: '#ffe2b0', emissiveMap: winEmit, emissiveIntensity: 0, roughness: 0.55, metalness: 0.1 }),
+  win: new THREE.MeshStandardMaterial({ vertexColors: true, map: winMap, emissive: '#ffffff', emissiveIntensity: 0, roughness: 0.55, metalness: 0.1 }),
   glow: new THREE.MeshStandardMaterial({ vertexColors: true, emissive: '#ffd27a', emissiveIntensity: 0, roughness: 0.4 }),
+  sign: new THREE.MeshStandardMaterial({ vertexColors: true, emissive: '#ffffff', emissiveIntensity: 0.15, roughness: 0.4 }),
   pool: new THREE.MeshBasicMaterial({ vertexColors: true, map: radialTex(), transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false }),
 };
+
+// Interior-mapped windows: each window pane ray-casts into a fake room (walls, floor, ceiling, furniture,
+// people, curtains), so you see into it with real parallax as the camera moves. Every room is different and
+// about half light up at night. Called from the material's onBeforeCompile (needs vWP = world position).
+MATS.sign.onBeforeCompile = sh => { sh.fragmentShader = sh.fragmentShader.replace('#include <emissivemap_fragment>', '#include <emissivemap_fragment>\n totalEmissiveRadiance *= vColor;'); };
+export function windowShader(sh) {
+  sh.fragmentShader = sh.fragmentShader.replace('#include <emissivemap_fragment>', `#include <emissivemap_fragment>
+  {
+    float nightF = clamp(emissive.r / 1.1, 0.0, 1.0);
+    totalEmissiveRadiance = vec3(0.0);
+    vec2 cuv = vMapUv * vec2(4.0, 8.0);
+    vec2 cell = floor(cuv), f = fract(cuv);
+    vec2 w = (f - 3.0 / 16.0) / (10.0 / 16.0);
+    if (w.x > 0.0 && w.x < 1.0 && w.y > 0.0 && w.y < 1.0) {
+      vec3 dp1 = dFdx(vWP), dp2 = dFdy(vWP); vec2 du1 = dFdx(vMapUv), du2 = dFdy(vMapUv);
+      vec3 N = normalize(cross(dp1, dp2));
+      if (dot(N, cameraPosition - vWP) < 0.0) N = -N;
+      vec3 T = cross(dp2, N) * du1.x + cross(N, dp1) * du2.x;
+      T = normalize(T - N * dot(N, T));
+      vec3 Bt = vec3(0.0, 1.0, 0.0);
+      vec3 V = normalize(vWP - cameraPosition);
+      vec3 r = vec3(dot(V, T), dot(V, Bt), dot(V, N));
+      r.z = min(r.z, -0.05);
+      float key = mod(floor(dot(vWP, N) + 0.5), 97.0) + floor(vColor.r * 8.0 + 0.5) * 3.0 + floor(vColor.g * 8.0 + 0.5) * 7.0 + (abs(N.x) > 0.5 ? 50.0 : 0.0);
+      vec2 sd = mod(cell + vec2(key * 3.1, key * 1.7), 289.0);
+      #define H(o) fract(sin(mod(dot(sd + o, vec2(12.9898, 78.233)), 6.2831853)) * 43758.5453)
+      float h1 = H(0.0), h2 = H(1.7), h3 = H(3.1), h4 = H(5.3), h5 = H(7.9), h6 = H(9.4);
+      // room spans the whole 3 m cell; ray starts at the pane
+      vec3 p = vec3(f, 0.0); float D = 0.9 + h5 * 0.5;
+      float tx = ((r.x > 0.0 ? 1.0 : 0.0) - p.x) / (abs(r.x) < 1e-4 ? 1e-4 : r.x);
+      float ty = ((r.y > 0.0 ? 1.0 : 0.0) - p.y) / (abs(r.y) < 1e-4 ? 1e-4 : r.y);
+      float tz = (-D - p.z) / r.z;
+      float t = min(min(tx, ty), tz);
+      vec3 hp = p + r * t;
+      vec3 wallC = mix(vec3(0.86, 0.83, 0.77), 0.55 + 0.4 * cos(6.2832 * (h1 + vec3(0.0, 0.33, 0.67))), 0.4);
+      vec3 floorC = h2 < 0.5 ? vec3(0.55, 0.38, 0.24) : mix(vec3(0.45, 0.47, 0.5), vec3(0.6, 0.35, 0.35), h3);
+      vec3 col; float depth = clamp(-hp.z / D, 0.0, 1.0);
+      if (t == tz) {
+        col = wallC;
+        vec2 b = hp.xy; // picture / shelf / tv on back wall
+        if (h3 > 0.45 && abs(b.x - (0.3 + h4 * 0.4)) < 0.14 && abs(b.y - 0.55) < 0.1) col = h3 > 0.8 ? vec3(0.08, 0.12, 0.2) : 0.5 + 0.5 * cos(6.2832 * (h4 + vec3(0.1, 0.4, 0.7)));
+        if (h3 < 0.25 && b.y < 0.62 && abs(b.x - (0.2 + h4 * 0.6)) < 0.16) col = vec3(0.42, 0.28, 0.18) * (fract(b.y * 8.0) < 0.15 ? 0.6 : 1.0);
+      } else if (t == ty) {
+        col = r.y < 0.0 ? floorC * 0.8 : vec3(0.93, 0.92, 0.9);
+        if (r.y > 0.0 && length(hp.xz - vec2(0.5, -D * 0.5)) < 0.12) col = vec3(1.6, 1.45, 1.1); // ceiling lamp
+      } else col = wallC * 0.82;
+      col *= mix(1.0, 0.55, depth);
+      // rug on the floor
+      if (t == ty && r.y < 0.0 && h6 > 0.35 && abs(hp.x - 0.5) < 0.3 && abs(hp.z + D * 0.55) < D * 0.25) col = (0.45 + 0.35 * cos(6.2832 * (h5 + vec3(0.0, 0.3, 0.6)))) * (abs(hp.x - 0.5) > 0.25 ? 0.7 : 1.0) * mix(1.0, 0.6, depth);
+      // furniture block (sofa / desk / bed / counter): front face + top, so it reads from above
+      { float zf = -D * (0.3 + h6 * 0.25), fd = D * (0.18 + h2 * 0.2), fx0 = 0.1 + h4 * 0.35, fwd = 0.3 + h2 * 0.3, fh = 0.2 + h5 * 0.18;
+        vec3 fc = 0.4 + 0.45 * cos(6.2832 * (h6 + vec3(0.0, 0.3, 0.6)));
+        float tf = zf / r.z; vec3 q = p + r * tf;
+        float tt = (fh - p.y) / min(r.y, -1e-4); vec3 q2 = p + r * tt;
+        if (tt > 0.0 && tt < t && q2.z < zf && q2.z > zf - fd && q2.x > fx0 && q2.x < fx0 + fwd) { col = fc * 1.05; t = tt; }
+        else if (tf > 0.0 && tf < t && q.y < fh && q.y > 0.0 && q.x > fx0 && q.x < fx0 + fwd) { col = fc * 0.7; t = tf; }
+        // plant in the corner
+        if (h1 > 0.55 && tf > 0.0 && tf < t && q.x > 0.8 && q.x < 0.93 && q.y < 0.5) { col = q.y < 0.16 ? vec3(0.55, 0.32, 0.2) : vec3(0.22, 0.55, 0.28); t = tf; } }
+      // a person standing in some rooms
+      if (h5 > 0.72) { float zp = -D * 0.3, tp = zp / r.z; if (tp > 0.0 && tp < t) { vec3 q = p + r * tp; float px = 0.25 + h3 * 0.5;
+        if ((abs(q.x - px) < 0.07 && q.y < 0.55 && q.y > 0.0) || length(vec2(q.x - px, q.y - 0.62)) < 0.06) col = mix(vec3(0.12, 0.1, 0.12), 0.4 + 0.4 * cos(6.2832 * (h2 + vec3(0.0, 0.3, 0.6))), step(q.y, 0.5) * (1.0 - nightF) * 0.6); } }
+      // lighting: daylight vs lit / dark at night (warm, cool, or TV-blue rooms)
+      float lit = step(0.48, h4);
+      vec3 lampC = h6 < 0.15 ? vec3(0.45, 0.6, 1.2) : h6 < 0.4 ? vec3(1.0, 0.95, 0.9) : vec3(1.25, 0.92, 0.6);
+      vec3 room = mix(col * 0.62, col * (lit > 0.5 ? lampC * 1.15 : vec3(0.035, 0.04, 0.07)), nightF);
+      // blinds / curtains on the pane itself
+      float blind = h2 > 0.82 ? 0.25 + h3 * 0.5 : 0.0;
+      if (w.y > 1.0 - blind && fract(w.y * 14.0) < 0.75) room = mix(vec3(0.82, 0.8, 0.74) * 0.6, vec3(0.82, 0.8, 0.74) * lampC * lit * 0.8, nightF);
+      float cw = h1 < 0.4 ? 0.12 + h5 * 0.1 : 0.0;
+      if (w.x < cw || w.x > 1.0 - cw) { vec3 cc = 0.5 + 0.35 * cos(6.2832 * (h3 + vec3(0.0, 0.3, 0.6))); room = mix(cc * 0.55, cc * mix(0.05, 0.9, lit) * lampC, nightF); }
+      // glass: reflection + frame mullion
+      float fres = 0.1 + 0.55 * pow(1.0 - abs(r.z), 3.0);
+      vec3 refl = mix(vec3(0.55, 0.68, 0.82), vec3(0.04, 0.05, 0.09), nightF);
+      vec3 em = mix(room, refl, fres);
+      if (abs(w.x - 0.5) < 0.025 || w.y < 0.03 || w.y > 0.97 || w.x < 0.03 || w.x > 0.97) { diffuseColor.rgb = vec3(0.22, 0.23, 0.26); }
+      else { diffuseColor.rgb = vec3(0.02); totalEmissiveRadiance = em; roughnessFactor = 0.18; metalnessFactor = 0.0; }
+    }
+  }`);
+}
 
 // ---------------- geometry builder
 const _a = new THREE.Vector3(), _b = new THREE.Vector3(), _n = new THREE.Vector3();
@@ -491,7 +624,7 @@ function drawObj(o, B) {
     case 'bld': {
       const y0 = 0.15 + (o.y || 0);
       if (o.roof === 'pitch') {
-        B.box(o.x, y0, o.z, o.w, o.h, o.d, o.col, { sideKey: 'win', uv: true, topCol: o.col });
+        B.box(o.x, y0, o.z, o.w, o.h, o.d, o.col, o.plain ? {} : { sideKey: 'win', uv: true, topCol: o.col });
         B.prism(o.x, y0 + o.h, o.z, o.w + 0.6, o.roofH, o.d + 0.6, o.roofCol);
         if (o.door) B.box(o.x, y0, o.z + o.d / 2, 1.1, 2.1, 0.12, '#6b4a33');
       } else {
@@ -541,6 +674,18 @@ function drawObj(o, B) {
       B.cyl(o.x, 0.8, o.z, 0.5, 1.6, '#c9c2b8', 8);
       B.cyl(o.x, 2.4, o.z, 1.0, 0.25, '#c9c2b8', 8);
       break;
+    case 'cross': { const rot = o.nx ? Math.PI / 2 : 0, x = o.x + o.nx * 0.1, z = o.z + o.nz * 0.1; B.box(x, 10.5, z, 0.45, 3, 0.25, '#e8c55a', { rot, key: 'sign' }); B.box(x, 11.6, z, 1.8, 0.45, 0.25, '#e8c55a', { rot, key: 'sign' }); B.box(o.x + o.nx * 0.05, 3.6, o.z + o.nz * 0.05, 1.6, 2.2, 0.2, '#5a8ad0', { rot, key: 'glow' }); break; }
+    case 'door': {
+      const rot = o.nx ? Math.PI / 2 : 0, out = (k, y, w, h, d, c, key) => B.box(o.x + o.nx * k, y, o.z + o.nz * k, w, h, d, c, { rot, key });
+      out(0.05, 0.15, 2.8, 2.9, 0.22, '#2a2a30');                 // frame
+      out(0.1, 0.15, 2.1, 2.5, 0.24, '#33475a', 'glow');          // glass doors (glow at night)
+      out(0.12, 0.15, 0.08, 2.5, 0.26, '#2a2a30');                // middle bar
+      out(0.12, 1.1, 1.9, 0.08, 0.26, '#c9ccd2');                 // push bar
+      out(0.25, 3.15, 3.8, 0.8, 0.3, o.col, 'sign');              // lit sign board
+      out(0.9, 2.85, 3.4, 0.12, 1.5, new THREE.Color(o.col).multiplyScalar(0.75).getStyle()); // awning
+      B.flat(o.x + o.nx * 0.9, 0.17, o.z + o.nz * 0.9, o.nx ? 1.4 : 2.6, o.nx ? 2.6 : 1.4, '#5a5a62');
+      break;
+    }
     case 'bench': B.box(o.x, 0.2, o.z, o.rot ? 0.6 : 2, 0.45, o.rot ? 2 : 0.6, '#8a5a35'); break;
     case 'rock': B.box(o.x, -2, o.z, o.w, o.h + 2, o.d, o.col, { rot: r() * 0.6 }); B.box(o.x + 2, o.h - 1, o.z - 1, o.w * 0.6, 3, o.d * 0.6, '#3f6b35', { rot: r() }); break;
     case 'umbrella': B.box(o.x, 0, o.z, 0.1, 2.2, 0.1, '#ddd'); B.cone(o.x, 2.0, o.z, 1.6, 0.7, o.col, 8); break;
@@ -641,5 +786,5 @@ export const SPAWN = { x: 8.2, z: 30, carX: 3, carZ: 40, carH: Math.PI };
 export function blockSide(cityId, i, j, side) {
   const c = CITIES.find(c => c.id === cityId);
   const cx = c.cx + (i + 0.5) * P, cz = c.cz + (j + 0.5) * P, o = 16.6;
-  return { x: cx + (side === 'e' ? o : side === 'w' ? -o : 0), z: cz + (side === 's' ? o : side === 'n' ? -o : 0) };
+  return { x: cx + (side === 'e' ? o : side === 'w' ? -o : 0), z: cz + (side === 's' ? o : side === 'n' ? -o : 0), door: { side, cx, cz } };
 }
