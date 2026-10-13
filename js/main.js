@@ -1,25 +1,25 @@
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA } from './character.js?v=71';
-import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=71';
-import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=71';
-import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, onBridge, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=71';
-import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=71';
-import { buildPanel, renderStats } from './ui.js?v=71';
-import { Input } from './input.js?v=71';
-import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime } from './audio.js?v=71';
-import { runMinigame } from './minigames.js?v=71';
-import { Peds, bakeCfg, figure, setWalk, setTownSource } from './peds.js?v=71';
-import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=71';
-import { findRoute } from './nav.js?v=71';
-import { COURSES, CAREERS, QUIZ } from './careers.js?v=71';
-import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=71';
-import { attachWheel } from './wheel.js?v=71';
-import { Animals } from './animals.js?v=71';
-import { Talk } from './talk.js?v=71';
-import { svg, drawIcon } from './icons.js?v=71';
-import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=71';
-import { FURN, CATALOG } from './furniture.js?v=71';
-import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE } from './interiors.js?v=71';
+import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA } from './character.js?v=72';
+import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=72';
+import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=72';
+import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=72';
+import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=72';
+import { buildPanel, renderStats } from './ui.js?v=72';
+import { Input } from './input.js?v=72';
+import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime } from './audio.js?v=72';
+import { runMinigame } from './minigames.js?v=72';
+import { Peds, bakeCfg, figure, setWalk, setTownSource } from './peds.js?v=72';
+import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=72';
+import { findRoute } from './nav.js?v=72';
+import { COURSES, CAREERS, QUIZ } from './careers.js?v=72';
+import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=72';
+import { attachWheel } from './wheel.js?v=72';
+import { Animals } from './animals.js?v=72';
+import { Talk } from './talk.js?v=72';
+import { svg, drawIcon } from './icons.js?v=72';
+import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=72';
+import { FURN, CATALOG } from './furniture.js?v=72';
+import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE } from './interiors.js?v=72';
 
 const $ = id => document.getElementById(id);
 let inside = null, editMode = false, held = null, pendingCar = false, homeMusic = false, phoneBadge = 0;
@@ -1703,7 +1703,7 @@ function findAction() {
   }
   let best = null, bd = 1e9;
   const consider = (d, a) => { if (d < bd) { bd = d; best = a; } };
-  for (const m of markers) if (!m.car) { const d = Math.hypot(m.x - P.x, m.z - P.z); if (d < 2.6) consider(d - 1, { kind: 'place', m, icon: m.npc ? 'chat' : 'door', label: m.place.kind === 'property' && owned.has(m.place.id) ? 'Enter' : VERB[m.place.kind] }); }
+  for (const m of markers) if (!m.car) { const d = Math.hypot(m.x - P.x, m.z - P.z); if (d < 2.6) consider(d - 1, { kind: 'place', m, icon: m.npc ? 'chat' : 'door', label: m.place.kind === 'property' && owned.has(m.place.id) ? 'Enter' : m.place.kind !== 'property' && !isOpen(m.place) ? `Closed · ${hh12(placeHours(m.place)[0])}` : VERB[m.place.kind] }); }
   for (const c of customers) if (c.npc?.fig) { const d = Math.hypot(c.x - P.x, c.z - P.z); if (d < 2.4) consider(d - 1.2, { kind: 'customer', c, icon: 'chat', label: 'Deal' }); }
   { const nl = nearLadder(); if (nl) consider(0.5, { kind: 'ladder', L: nl.L, top: nl.top, icon: 'run', label: nl.top ? 'Climb down' : 'Climb' }); }
   if (trainRide) return train.stop > 0 ? { kind: 'trainoff', icon: 'exit', label: 'Get off' } : null;
@@ -1733,8 +1733,14 @@ function doAction(a) {
   else if (a.kind === 'pnpc') talkPrisoner(a.n.pr ? a.n : a.n);
   else if (a.kind === 'ladder') { P.ladder = a.L; P.y = a.top ? a.L.top - 0.05 : 0.3; sfx.click(); }
 }
+// opening hours (24h clock; close past midnight wraps). Anything not listed is always open.
+const HOURS = { clothes: [9, 21], barber: [9, 19], guns: [10, 20], diner: [6, 23], college: [7, 21], office: [7, 19], gym: [5, 23], motors: [9, 20], casa: [10, 19], bar: [16, 3], club: [21, 5], pit: [20, 4], church: [7, 21], mods: [8, 22], taco: [10, 22], gallery: [10, 23], surf: [7, 19], hoops: [6, 22], taxi: [0, 24], bins: [5, 14], courier: [7, 20] };
+const placeHours = p => HOURS[p.interior] || HOURS[p.kind] || HOURS[p.game] || HOURS[p.job] || null;
+function isOpen(p) { const h = placeHours(p); if (!h) return true; const [o, c] = h, t = clockH; return o < c ? t >= o && t < c : t >= o || t < c; }
+const hh12 = h => { h = ((h % 24) + 24) % 24; return h === 0 ? 'midnight' : h === 12 ? 'noon' : h < 12 ? `${h}am` : `${h - 12}pm`; };
 function openPlace(p) {
   sfx.click();
+  if (!isOpen(p)) { const [o, c] = placeHours(p); toast(`${p.name} is closed. Open ${hh12(o)} to ${hh12(c)}.`, 3); sfx.fail(); return; }
   if (p.kind === 'dealer') talkDealer(p);
   else if (p.interior) enterInterior(p);
   else if (p.kind === 'property') { const prop = PROPERTIES.find(q => q.id === p.id); owned.has(p.id) ? (propMode(p.id) === 'rent' ? toast(`Tenants live at ${prop.name}. Switch it to Live or Vacant in the Homes app.`, 3.5) : enterInterior(null, prop)) : openProperty(prop); }
@@ -1986,7 +1992,7 @@ function lifeApi() {
     breakup: () => { const p = f.partner; if (p) { stats.rel[p.id] = 5; f.partner = null; } }, fat: () => body().fat, muscle: () => body().muscle, drinker: () => L.drinks > 12,
     hospital: () => { P.hp = 1; die(); }, wasInside: () => stats.jailRecord != null, loseStash: () => { for (const g of GOODS) stash[g.id] = 0; },
     dealMeet: () => startDealMeet(),
-    dayTime: () => clockH >= 8 && clockH < 14.5, inCar: () => !!ride, atHome: () => !!inside?.prop, moodV: () => stats.mood, waypoint: id => { const p = PLACES.find(q => q.id === id); if (p) setWaypoint(p.x, p.z, p.name); },
+    dayTime: () => clockH >= 8 && clockH < 14.5, inCar: () => !!ride, atHome: () => !!inside?.prop, neighbours: () => { const p = inside?.prop; return !!p && objsNear(p.x - 45, p.z - 45, p.x + 45, p.z + 45).filter(o => o.t === 'bld').length >= 3; }, moodV: () => stats.mood, waypoint: id => { const p = PLACES.find(q => q.id === id); if (p) setWaypoint(p.x, p.z, p.name); },
     // send the player somewhere: sets the GPS, and the outcome only happens when you get there
     errand: (where, key, data = {}, label = 'Errand', needCar = false) => {
       let x, z, name = label;
@@ -2077,7 +2083,8 @@ function lifeArrive() {
 }
 function deliverEvent(ev, data) {
   const api = lifeApi(), who = ev.who ? ev.who(api, data) : {};
-  if (ev.via === 'thought') return runEventTalk(ev, data, { cfg: charCfg, name: 'You', tag: ev.scene === 'car' ? 'Behind the wheel' : 'Thinking...', think: true, seat: ev.scene === 'car' });
+  if (ev.via === 'thought') { const bedF = inside?.prop && (clockH < 6 || clockH >= 21) ? inside.h.furn.find(f => FURN[f.t].act === 'sleep') : null; // at home at night you're lying in your own bed
+    return runEventTalk(ev, data, { cfg: charCfg, name: 'You', tag: ev.scene === 'car' ? 'Behind the wheel' : bedF ? 'In bed' : 'Thinking...', think: true, seat: ev.scene === 'car', bed: bedF ? (bedF.c || FURN[bedF.t].colors?.[0] || '#3a5fa0') + '|' + bedF.t : null, car: ev.scene === 'car' && ride ? { color: ride.cfg?.bodyColor } : null }); }
   if (ev.via === 'call') {
     eventOpen = true; const A = audio(); if (A) for (let i = 0; i < 4; i++) sfx.note(i % 2 ? 1180 : 940, A.currentTime + i * 0.18, 0.15, 'square', 0.03, 3000);
     navigator.vibrate?.([200, 100, 200]); toast(`Phone ringing: ${who.name || 'Unknown'}`, 1.8);
@@ -2123,7 +2130,7 @@ function endLifePed(A2) { const p = A2.p; if (!p) return; peds.release?.(p); p.s
 function pickupObject() { const A2 = lifeAct; if (!A2 || A2.kind !== 'object') return; dyn.remove(A2.g); lifeAct = null; sfx.coin(); runEventTalk(A2.ev, A2.data, { cfg: charCfg, name: 'You', tag: 'Thinking...', think: true }); }
 async function runEventTalk(ev, data, spk, after) {
   const api = lifeApi(); eventOpen = true;
-  beginTalk(spk.cfg, spk.name, spk.tag, spk.think ? 200 : 160 + Math.random() * 120, null, null, null, spk.think, !!spk.seat, !!spk.phone);
+  beginTalk(spk.cfg, spk.name, spk.tag, spk.think ? 200 : 160 + Math.random() * 120, null, null, null, spk.think, !!spk.seat, !!spk.phone, false, spk.bed || null);
   const lines = [].concat(ev.text(api, data));
   for (const l of lines) await talk.say(l);
   const ch = ev.choices(api, data), k = await talk.choose(ch.map(c => I('chat', c.label)));
@@ -2220,7 +2227,7 @@ function setTalkRel(id) { const el = $('talkRel'); if (!id) { el.classList.add('
 
 // ================================================================ CONVERSATIONS
 function zoneBg(x, z) { if (inside) return 'interior'; if (onPier(x, z)) return 'pier'; const n = zoneName(x, z); return n === 'Bay Beach' ? 'beach' : n === 'Hidden Hills' || n === 'Countryside' || n === 'Farmland' ? 'hills' : n.includes('Airport') ? 'airport' : n === 'Eastport' || n === 'Northfield' ? 'suburb' : 'city'; }
-function beginTalk(cfg, name, tag, pitch, relId, pet = null, pose = null, think = false, seat = false, phone = false, car = false) { talk.layout(W, H); talk.begin({ npcCfg: cfg, youCfg: charCfg, name, tag, pitch, bg: zoneBg(P.x, P.z), night, pet, pose, think, seat, phone, car, wall: inside ? INTERIORS[inside.id].wall : null, floor: inside ? INTERIORS[inside.id].floor : null, room: inside ? inside.id : null }); if (relId) relNames[relId] = name; setTalkRel(relId); setState('talk'); }
+function beginTalk(cfg, name, tag, pitch, relId, pet = null, pose = null, think = false, seat = false, phone = false, car = false, bed = null) { talk.layout(W, H); talk.begin({ npcCfg: cfg, youCfg: charCfg, name, tag, pitch, bg: zoneBg(P.x, P.z), night, pet, pose, think, seat, phone, car, bed, wall: inside ? INTERIORS[inside.id].wall : null, floor: inside ? INTERIORS[inside.id].floor : null, room: inside ? inside.id : null }); if (relId) relNames[relId] = name; setTalkRel(relId); setState('talk'); }
 function endTalk() { talkNeeds(false); talk.end(); setState('play'); }
 const I = (n, t) => `${svg(n, 'sm')} ${t}`;
 const DEALER_HI = { Stranger: ["Do I know you? ...What you need.", "Keep it quick, cops roll through here.", "New face. Prices are prices."], Known: ["You again. What you need?", "Ayy, back for more?"], Friendly: ["My guy! What we doing today?", "Good to see you. Fresh stock in."], Trusted: ["There's my best customer. I got you.", "For you? Always open."], Family: ["Family! Sit down, sit down.", "Anything you need, it's yours."] };
@@ -3518,25 +3525,34 @@ function dateCalls(dt) {
   stats.nextDateCall ??= gameHours() + rand(4, 9);
   if (gameHours() < stats.nextDateCall || date || state !== 'play' || talk.active || stats.jail || inside || dance || woo) return;
   stats.nextDateCall = gameHours() + rand(8, 16);
-  const ids = Object.keys(stats.dates || {}).filter(id => rel(id) >= 35); if (!ids.length) return;
+  stats.lastCall ||= {};
+  const ids = Object.keys(stats.dates || {}).filter(id => rel(id) >= 35 && stats.lastCall[id] !== dayN && (stats.lastCall[id] || 0) < dayN - 1); if (!ids.length) return; // nobody rings you two days running
   const id = pick(ids), d = stats.dates[id]; if (!d?.cfg) return;
-  dateCall(id, d);
+  stats.lastCall[id] = dayN; dateCall(id, d);
 }
 async function dateCall(id, d) {
   notify(d.name, 'Incoming call…', 3); sfx.coin();
   beginTalk(d.cfg, d.name, 'Calling you', 330, id, null, null, false, false, true);
   await talk.say(pick([`Hey you. I'm bored. Come pick me up?`, `I was just thinking about you... you free tonight?`, `Hiii. Wanna hang out? I'm already dressed.`]));
-  const k = await talk.choose([I('car', 'On my way'), I('x', 'Can\'t tonight, sorry')]);
+  const k = await talk.choose([I('car', 'On my way'), I('case', 'I\'m busy today, sorry'), I('x', 'Not tonight')]);
   if (k === 0) {
     const s = randomRoadSpot(70, 220); stats.dateMeet = { id, x: s.x + 3.5, z: s.z, until: gameHours() + 3 };
     await talk.say(pick(['Yay! I\'ll send you my location.', 'Don\'t keep me waiting!']));
     endTalk(); setWaypoint(s.x + 3.5, s.z, `Pick up ${d.name}`);
-  } else { bumpRel(id, -3, false); await talk.say(pick(['Oh. Okay. Another time then.', 'Fine. Your loss.'])); endTalk(); }
+  } else {
+    // everyone takes it differently: most are cool about it, some take it personally
+    const pr = prefsOf(id); pr.temper ??= Math.random();
+    if (k === 1) await talk.say('Got a lot on today. Can we do it another day?', 'you');
+    if (pr.temper > 0.72) { bumpRel(id, k === 1 ? -6 : -9, false); await talk.say(pick(['You\'re ALWAYS busy. Whatever.', 'Wow. Okay. Don\'t bother calling me then.', 'Fine. I guess I\'m not a priority.'])); }
+    else if (pr.temper > 0.4) { bumpRel(id, -2, false); await talk.say(pick(['Oh. Okay. Another time then.', 'Hmm. Alright, tomorrow maybe.'])); }
+    else { await talk.say(pick(['No worries! Go get your bag. Call me later.', 'All good, babe. Tomorrow then?', 'Totally get it. Don\'t work too hard!'])); }
+    endTalk();
+  }
 }
 async function talkDate() {
   if (!date || woo || state !== 'play') return;
   const D = date, inCar = !!(ride && D.inCar), pr = D.prefs;
-  beginTalk(D.cfg, D.name, `${relName(rel(D.id))} · on a date`, 330, D.id, null, null, false, false, false, inCar);
+  beginTalk(D.cfg, D.name, `${relName(rel(D.id))} · on a date`, 330, D.id, null, null, false, false, false, inCar ? { color: ride.cfg?.bodyColor || '#30323a', trim: ride.cfg?.accentColor } : false);
   await talk.say(pick(D.interest > 80 ? ['I like being around you.', 'So... what now?', 'You\'re fun, you know that?'] : inCar ? ['Where are we going?', 'Nice car.', 'So, where are you taking me?'] : ['Where are we going?', 'This is nice.', 'So, tell me something about you.']));
   const ok = (k, need) => { const n = D.used[k] = (D.used[k] || 0) + 1; return D.interest >= need - lvl('charm') * 2 || Math.random() < 0.25 / n; };
   for (;;) {
@@ -4512,12 +4528,25 @@ function messages() {
     parent: { from: 'Eastport Elementary', av: 'people', text: "Reminder: school pick-up is at 3pm. Your little one has been talking about you all week. Spend time together, it keeps their spirits up. Groceries are at the QuickMart." } }[stats.story];
   const out = intro ? [intro] : [];
   if (!intro) out.push({ from: 'Uncle Ray', av: 'user', text: "Welcome to Bay City, kid. I got you a little studio downtown (the purple key on your map). Eat, sleep, keep your energy up. Dealers buy low and sell high, and they'll treat you better once they know you. Customers will text you here too. Make money, buy property, live large. Need honest work? The Work app lists taxi and courier jobs." });
-  for (const c of customers) { const g = GOODS.find(x => x.id === c.good); out.push({ from: c.name, av: 'deal', text: `Need ${c.qty} ${g.name} near ${c.area}. Paying ${fmt(c.pay)}. Don't keep me waiting (${Math.max(0, Math.ceil(c.exp - gameHours()))}h).`, at: { x: c.x, z: c.z, name: `${c.name}'s order` } }); }
+  for (const c of customers) { const g = GOODS.find(x => x.id === c.good); out.push({ from: c.name, av: 'deal', cust: c.id, text: `Need ${c.qty} ${g.name} near ${c.area}. Paying ${fmt(c.pay)}. Don't keep me waiting (${Math.max(0, Math.ceil(c.exp - gameHours()))}h).`, at: { x: c.x, z: c.z, name: `${c.name}'s order` } }); }
   for (const p of PLACES) if (p.kind === 'dealer' && rel(p.id) >= 20) { const pr = dealerPricesFor(p); for (const g of GOODS) if (pr[g.id].hot) out.push({ from: p.npc, av: 'deal', text: pr[g.id].hot === 'cheap' ? `Got ${g.name} going cheap today. ${fmt(pr[g.id].buy)} each. Come thru.` : `Paying top dollar for ${g.name} today: ${fmt(pr[g.id].sell)}. Bring what you got.`, at: p }); }
   const inc = PROPERTIES.filter(p => owned.has(p.id) && propMode(p.id) === 'rent').reduce((a, p) => a + p.income, 0);
   if (inc) out.push({ from: 'Bay Realty', av: 'house', text: `Your properties earn ${fmt(inc)} every morning at 6am.` });
-  if (stats.groceries <= 0) out.push({ from: 'Fridge', av: 'fridge', text: 'Your fridge is empty. QuickMart sells groceries.' });
-  return out;
+  if (stats.groceries <= 0) out.push({ from: 'Fridge', av: 'fridge', text: 'Your fridge is empty. QuickMart sells groceries.', key: 'fridge:' + dayN });
+  // every message has a key; swiped-away ones stay gone
+  const del = stats.delMsgs ||= {};
+  return out.map(m => ({ ...m, key: m.key || (m.cust ? 'cust:' + m.cust : m.from + ':' + m.text.slice(0, 40)) })).filter(m => !del[m.key]);
+}
+// swipe a row left past the line to delete it (a red Delete shows underneath as you drag)
+function swipeDelete(root, sel, onDel) {
+  root.querySelectorAll(sel).forEach(w => {
+    const el = w.lastElementChild; let x0 = null, y0 = 0, dx = 0, lock = false;
+    el.addEventListener('pointerdown', e => { x0 = e.clientX; y0 = e.clientY; dx = 0; lock = false; el.style.transition = 'none'; });
+    el.addEventListener('pointermove', e => { if (x0 === null) return; const ddx = e.clientX - x0; if (!lock && Math.abs(e.clientY - y0) > 12 && Math.abs(ddx) < 12) { x0 = null; return; } if (Math.abs(ddx) > 8) lock = true; dx = Math.min(0, ddx); el.style.transform = `translateX(${dx}px)`; });
+    const up = () => { if (x0 === null) return; x0 = null; el.style.transition = 'transform .2s, opacity .2s'; if (dx < -90) { el.style.transform = 'translateX(-110%)'; el.style.opacity = '0'; sfx.click(); setTimeout(() => onDel(w), 200); } else el.style.transform = ''; };
+    el.addEventListener('pointerup', up); el.addEventListener('pointercancel', up); el.addEventListener('pointerleave', up);
+    el.addEventListener('click', e => { if (lock) { e.stopPropagation(); e.preventDefault(); } }, true);
+  });
 }
 const bar = (v, col = '#7dff9a') => `<span class="pbar"><i style="width:${clamp(v, 0, 100)}%;background:${col}"></i></span>`;
 function renderPhone() {
@@ -4584,8 +4613,11 @@ function renderPhone() {
   } else if (phoneApp === 'msgs') {
     const ms = messages();
     const chatIds = [...new Set([...(fam().partner ? [fam().partner.id] : []), ...Object.keys(stats.texts || {}), ...Object.keys(stats.dates || {}), ...fam().kids.filter(k => ['Teen', 'Adult'].includes(kidStage(k))).map(k => k.id)])];
-    const chats = chatIds.map(id => { const T = stats.texts?.[id] || [], last = T[T.length - 1]; return `<button class="ph-row" data-thr="${id}"><span>${svg(id.startsWith('kid:') ? 'smile' : 'heart', 'sm')} <b>${nameOf(id)}</b> <small style="white-space:normal">${last ? (last.me ? 'You: ' : '') + last.t : 'Tap to text'}</small></span></button>`; }).join('');
-    el.innerHTML = `${back}<h4>Messages</h4>${chats ? `<div class="ph-sec">Chats</div>${chats}<div class="ph-sec">Inbox</div>` : ''}${stats.burner ? `<button class="ph-row" id="msCust"><span>${svg('phone', 'sm')} Burner phone</span><b>${CUST_MODES[custMode()]}</b></button>` : ''}<div class="ph-list">${ms.map((m, i) => `<div class="ph-msg"><div class="av">${svg(m.av)}</div><div><b>${m.from}</b><p>${m.text}</p>${m.at ? `<button class="ph-mini" data-wp="${i}">${svg('pin', 'sm')} Set waypoint</button>` : ''}</div></div>`).join('')}</div>`;
+    const hid = stats.hideThr ||= {};
+    const chats = chatIds.filter(id => !(hid[id] != null && (stats.texts?.[id]?.length || 0) <= hid[id])).map(id => { const T = stats.texts?.[id] || [], last = T[T.length - 1]; return `<div class="swr" data-swthr="${id}"><div class="swr-del">Delete</div><button class="ph-row" data-thr="${id}"><span>${svg(id.startsWith('kid:') ? 'smile' : 'heart', 'sm')} <b>${nameOf(id)}</b> <small style="white-space:normal">${last ? (last.me ? 'You: ' : '') + last.t : 'Tap to text'}</small></span></button></div>`; }).join('');
+    el.innerHTML = `${back}<h4>Messages</h4>${chats ? `<div class="ph-sec">Chats</div>${chats}<div class="ph-sec">Inbox</div>` : ''}${stats.burner ? `<button class="ph-row" id="msCust"><span>${svg('phone', 'sm')} Burner phone</span><b>${CUST_MODES[custMode()]}</b></button>` : ''}${ms.length ? '<p class="ph-hint">Swipe a message left to delete it.</p>' : '<p class="ph-hint">No messages.</p>'}<div class="ph-list">${ms.map((m, i) => `<div class="swr" data-swmsg="${i}"><div class="swr-del">Delete</div><div class="ph-msg"><div class="av">${svg(m.av)}</div><div><b>${m.from}</b><p>${m.text}</p>${m.at ? `<button class="ph-mini" data-wp="${i}">${svg('pin', 'sm')} Set waypoint</button>` : ''}</div></div></div>`).join('')}</div>`;
+    swipeDelete(el, '[data-swmsg]', w => { const m = ms[+w.dataset.swmsg]; stats.delMsgs[m.key] = dayN; if (m.cust) { const c = customers.find(q => q.id === m.cust); if (c) removeCustomer(c); } saveGame(); renderPhone(); });
+    swipeDelete(el, '[data-swthr]', w => { const id = w.dataset.swthr; stats.hideThr[id] = stats.texts?.[id]?.length || 0; saveGame(); renderPhone(); });
     if ($('msCust')) $('msCust').onclick = () => { cycleCustMode(); renderPhone(); };
     el.querySelectorAll('[data-thr]').forEach(b => b.onclick = () => { phoneThread = b.dataset.thr; phoneGo('thread'); });
     el.querySelectorAll('[data-wp]').forEach(b => b.onclick = () => { const m = ms[+b.dataset.wp]; setWaypoint(m.at.x, m.at.z, m.at.name); toast(m.at.name); closePhone(); });
@@ -4688,7 +4720,7 @@ function saveGame() {
   store.set('bc_save', save); store.set('bc_arsenal', arsenal); store.set('bc_cars', garage);
 }
 // auto-update: bookmarks and home-screen apps can hold on to an old copy. Check version.json (never cached) and reload once if newer.
-const BUILD = 71;
+const BUILD = 72;
 function checkUpdate() {
   fetch('version.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(j => {
     if (!(j.v > BUILD)) return;

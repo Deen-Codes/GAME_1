@@ -1,8 +1,8 @@
 // Conversations staged like a Pokémon battle: they stand on a platform facing you,
 // you see the back of your own head in the foreground, subtitles type out, you pick replies.
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject } from './character.js?v=71';
-import { sfx, audio } from './audio.js?v=71';
+import { buildCharacter, poseCharacter, disposeObject } from './character.js?v=72';
+import { sfx, audio } from './audio.js?v=72';
 
 const $ = id => document.getElementById(id);
 const BG = {
@@ -105,8 +105,8 @@ export class Talk {
     for (const p of [this.pNpc, this.pYou]) { p.top.material.color.set(RP ? RP[0] : b.plat); p.rim.material.color.set(RP ? RP[1] : b.rim); p.rim.material.emissive?.set(room === 'club' ? '#ff3bd2' : '#000000'); }
     this.hemi.intensity = N ? 0.8 : 1.3; this.sun.intensity = N ? 1 : 2; this.sun.color.set(N ? '#b0b8ff' : '#fff3e0');
   }
-  begin({ npcCfg, youCfg, name, tag, pitch = 300, bg = 'city', night = 0, wall = null, floor = null, pet = null, pose = null, think = false, seat = false, phone = false, car = false, room = null }) {
-    this.pose = pose; this.think = think; this.seat = seat; this.phone = phone; this.car = car; this.actK = null; this.actT = 0;
+  begin({ npcCfg, youCfg, name, tag, pitch = 300, bg = 'city', night = 0, wall = null, floor = null, pet = null, pose = null, think = false, seat = false, phone = false, car = false, room = null, bed = null }) {
+    this.pose = pose; this.think = think; this.seat = seat; this.phone = phone; this.car = car; this.bed = bed; this.actK = null; this.actT = 0;
     audio();
     this.clear();
     this.active = true; this.t = 0; this.intro = 0; this.t0 = performance.now(); this.blipPitch = pitch;
@@ -126,6 +126,16 @@ export class Talk {
       this.bubbles = g; this.scene.add(g);
     }
     $('talkBox').classList.toggle('think', think);
+    if (bed) { // lying in your own bed (same colour duvet as the one at home)
+      const [col, kind] = bed.split('|'), dbl = kind !== 'single', g = new THREE.Group(), m = c => new THREE.MeshStandardMaterial({ color: c, roughness: 0.8 });
+      const W2 = dbl ? 1.7 : 1.0, frame = new THREE.Mesh(new THREE.BoxGeometry(W2 + 0.1, 0.35, 2.2), m('#7a5230')); frame.position.y = 0.18; g.add(frame);
+      const mat2 = new THREE.Mesh(new THREE.BoxGeometry(W2, 0.22, 2.05), m('#f2f2f2')); mat2.position.y = 0.46; g.add(mat2);
+      const head = new THREE.Mesh(new THREE.BoxGeometry(W2 + 0.1, 0.9, 0.12), m('#7a5230')); head.position.set(0, 0.6, -1.1); g.add(head);
+      const pil = new THREE.Mesh(new THREE.BoxGeometry(dbl ? 0.6 : 0.55, 0.14, 0.38), m('#ffffff')); pil.position.set(dbl ? -0.38 : 0, 0.64, -0.78); g.add(pil);
+      if (dbl) { const p2 = pil.clone(); p2.position.x = 0.38; g.add(p2); }
+      const duv = new THREE.Mesh(new THREE.BoxGeometry(W2 + 0.04, 0.3, 1.32), m(col)); duv.position.set(0, 0.73, 0.4); g.add(duv); this.duvet = duv;
+      this.bedG = g; this.scene.add(g);
+    }
     if (phone) for (const c of [this.npc, this.you]) { // phone pressed to the right ear, hand cupped round it
       const ph = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.2, 0.1), new THREE.MeshStandardMaterial({ color: '#16161b', roughness: 0.3 }));
       ph.position.set(0, -0.02, 0.06); ph.rotation.set(0, 0, 0); c.armR.hand.add(ph);
@@ -152,12 +162,16 @@ export class Talk {
       const well = new THREE.Mesh(new THREE.BoxGeometry(1.9, 0.5, 0.1), m('#22242a')); well.position.set(0, 0.26, 1.2); g.add(well);
       const col = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.42, 8), m('#16161a')); col.position.set(0.45, 0.85, 0.85); col.rotation.x = -1.1; g.add(col);
       const wheel = new THREE.Mesh(new THREE.TorusGeometry(0.2, 0.035, 8, 22), m('#16161a')); wheel.position.set(0.45, 1.0, 0.62); wheel.rotation.x = 0.45; g.add(wheel); this.wheel = wheel;
-      const roof = new THREE.Mesh(new THREE.BoxGeometry(2.0, 0.08, 1.6), m('#30323a')); roof.position.set(0, 2.05, 0.1); g.add(roof);
-      for (const sx of [-0.98, 0.98]) { const pil = new THREE.Mesh(new THREE.BoxGeometry(0.09, 1.15, 0.09), m('#30323a')); pil.position.set(sx, 1.5, 1.05); pil.rotation.x = 0.35; g.add(pil); }
+      const body = car.color || '#30323a';
+      const roof = new THREE.Mesh(new THREE.BoxGeometry(2.0, 0.08, 1.6), m(body)); roof.position.set(0, 2.05, 0.1); g.add(roof);
+      const hood = new THREE.Mesh(new THREE.BoxGeometry(2.1, 0.12, 0.7), m(body)); hood.position.set(0, 0.76, 1.55); g.add(hood); // bonnet in your car's paint
+      for (const sx of [-1.02, 1.02]) { const door = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.6, 1.3), m(body)); door.position.set(sx, 0.7, 0.2); g.add(door); }
+      if (car.trim) { const stripe = new THREE.Mesh(new THREE.BoxGeometry(1.9, 0.03, 0.46), m(car.trim)); stripe.position.set(0, 0.745, 1.05); g.add(stripe); }
+      for (const sx of [-0.98, 0.98]) { const pil = new THREE.Mesh(new THREE.BoxGeometry(0.09, 1.15, 0.09), m(body)); pil.position.set(sx, 1.5, 1.05); pil.rotation.x = 0.35; g.add(pil); }
       const mirror = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.08, 0.04), m('#16161a')); mirror.position.set(0, 1.86, 0.75); g.add(mirror);
       this.carG = g; this.scene.add(g);
     }
-    for (const p of [this.pNpc, this.pYou]) p.g.visible = !car;
+    for (const p of [this.pNpc, this.pYou]) p.g.visible = !car && !bed;
     for (const c of [this.npc, this.you]) c.root.traverse(o => { if (o.isMesh) o.castShadow = true; });
     $('talkName').textContent = name; $('talkTag').textContent = tag || '';
     $('talkText').textContent = ''; $('talkOpts').innerHTML = ''; $('talkOpts').classList.add('hidden');
@@ -172,6 +186,7 @@ export class Talk {
     if (this.bubbles) { this.scene.remove(this.bubbles); this.bubbles = null; }
     if (this.seatG) { this.scene.remove(this.seatG); this.seatG = null; }
     if (this.carG) { this.scene.remove(this.carG); this.carG = null; }
+    if (this.bedG) { this.scene.remove(this.bedG); this.bedG = null; }
   }
   // a little bit of acting: kiss, hug, hold hands, a hand on the knee
   act(kind, dur = 1.8) { this.actK = kind; this.actT = 0; this.actDur = dur; return new Promise(res => setTimeout(() => { this.actK = null; res(); }, dur * 1000)); }
@@ -233,7 +248,13 @@ export class Talk {
     if (this.phone && n && y) for (const c of [n, y]) { c.armR.pivot.rotation.set(-0.85, 0.15, -0.42); c.armR.elbow.rotation.set(-2.6, 0, 0); c.head.rotation.z = -0.12; } // hand up at the ear holding the phone
     if (this.think && n) { // you, alone, hand on chin, mulling it over
       n.root.position.x = 0;
-      if (this.seat && this.seatG) { // sat at the wheel, both hands on it, glancing down at the dash
+      if (this.bedG) { // tucked in, staring at the ceiling
+        this.bedG.position.set(0, 0, -0.4); this.bedG.rotation.y = 0.5;
+        n.root.rotation.order = 'YXZ'; n.root.rotation.set(-Math.PI / 2, 0.5, 0); const xo = this.bed.includes('single') ? 0 : -0.38; n.root.position.set(this.bedG.position.x + xo * Math.cos(0.5) + Math.sin(0.5) * 0.85, 0.66, this.bedG.position.z - xo * Math.sin(0.5) + Math.cos(0.5) * 0.85);
+        n.armR.pivot.rotation.set(-0.5, 0, 0.5); n.armL.pivot.rotation.set(-0.5, 0, -0.5); n.head.rotation.x = 0; // arms on top of the covers n.head.rotation.y = Math.sin(this.t * 0.6) * 0.3;
+        this.cam.position.set(0, 3.6, 3.4); this.cam.lookAt(0, 0.5, -0.4);
+        if (this.duvet) this.duvet.scale.y = 1 + Math.sin(this.t * 1.6) * 0.04;
+      } else if (this.seat && this.seatG) { // sat at the wheel, both hands on it, glancing down at the dash
         this.seatG.position.copy(n.root.position); this.seatG.rotation.y = -1.05;
         n.root.rotation.y = -1.05; n.root.position.y -= 0.42;
         n.legL.pivot.rotation.x = -1.45; n.legR.pivot.rotation.x = -1.45; n.legL.knee.rotation.x = 1.3; n.legR.knee.rotation.x = 1.3;

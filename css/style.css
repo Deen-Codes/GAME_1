@@ -455,3 +455,11 @@ input[type=text] { width: 100%; padding: 10px 12px; border-radius: 10px; border:
 .speedo .lim.hidden { display: none; }
 .speedo.over b, .speedo.over span { color: #ff5a5a; animation: spdFlash .45s steps(1) infinite; }
 @keyframes spdFlash { 50% { opacity: .25; } }
+
+/* swipe-to-delete rows in Messages */
+.swr { position: relative; border-radius: 16px; overflow: hidden; margin-bottom: 8px; }
+.swr-del { position: absolute; inset: 0; background: #e23b3b; color: #fff; font-weight: 900; font-size: 13px; display: flex; align-items: center; justify-content: flex-end; padding-right: 18px; border-radius: 16px; }
+.swr > :last-child { position: relative; touch-action: pan-y; margin: 0 !important; }
+.swr .ph-msg { background: #3a3f52; }
+.swr .ph-row { background: #3a3f52; border-radius: 12px; }
+.ph-list .swr { margin-bottom: 0; }

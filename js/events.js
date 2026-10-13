@@ -212,7 +212,7 @@ export const EVENTS = [
       { label: 'Lean into the fame', go: () => { a.lvlUp('charm', 50); a.give(600); a.flag('famous', 1); return 'Eeee! Thank you! (Sponsors start messaging you. $600 already.)'; } },
       { label: 'Please, no photos', go: () => { a.mood(-4); return 'Oh... okay. Sorry.'; } },
     ] },
-  { id: 'neighbour', via: 'thought', when: a => a.atHome() && a.night() ? 4 : 0,
+  { id: 'neighbour', via: 'thought', when: a => a.atHome() && a.night() && a.neighbours() ? 4 : 0,
     text: () => ['It\'s 1am and next door\'s party is SHAKING the walls.'],
     choices: a => [
       { label: 'Go join in', go: () => { a.mood(12); a.drunk(0.6); if (roll(0.4)) { a.lvlUp('charm', 20); return 'Best night in ages. I know half the street now.'; } return 'Woke up on their sofa. No regrets.'; } },
