@@ -170,7 +170,13 @@ function clearRect(x0, z0, x1, z1) {
 export function addStructure(p) {
   const S = { gas1: [14, 11], gas2: [14, 11], gas3: [14, 11], wash1: [12, 9], g_taco: [9, 5], g_gallery: [7, 3], g_surf: [7, 5], g_gym: [14, 9], g_hoops: [15, 26], v_anchor: [12, 9], p_shack: [6, 5], p_beach: [13, 10], chop: [16, 12], race: [16, 2] }[p.id];
   if (!S) return;
-  const [w, d] = S, cx = p.x, cz = p.z - d / 2 - (p.id === 'race' ? 0 : 2.4), y = p.id === 'g_gallery' ? 0.28 : 0;
+  const [w, d] = S, y = p.id === 'g_gallery' ? 0.28 : 0; let cx = p.x, cz = p.z - d / 2 - (p.id === 'race' ? 0 : 2.4);
+  // never build on a road: slide the footprint off any road it overlaps
+  for (let k = 0; k < 60; k++) {
+    const r = ROADS.find(q => cx + w / 2 > q.x0 && cx - w / 2 < q.x1 && cz + d / 2 > q.z0 && cz - d / 2 < q.z1); if (!r) break;
+    if (r.axis === 'x') cz += cz >= (r.z0 + r.z1) / 2 ? 0.5 : -0.5; else cx += cx >= (r.x0 + r.x1) / 2 ? 0.5 : -0.5;
+  }
+  if (cx !== p.x) p.x = cx; // keep the marker with the structure if it had to move
   clearRect(cx - w / 2 - 1, cz - d / 2 - 1, cx + w / 2 + 1, cz + d / 2 + 1);
   for (const o of objsNear(cx - w / 2 - 16, cz - d / 2 - 16, cx + w / 2 + 16, cz + d / 2 + 16)) // knock down anything built where this goes
     if (o.t === 'bld' && !o.y && Math.abs(o.x - cx) < (o.w + w) / 2 && Math.abs(o.z - cz) < (o.d + d) / 2) { removeObj(o); if (o.cc) removeCollider(o.cc); }
