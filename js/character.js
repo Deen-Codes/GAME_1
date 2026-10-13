@@ -117,6 +117,7 @@ export function buildCharacter(cfg) {
   const chestW = c.top === 'tank' ? torsoW * 0.92 : torsoW;
   const swim = c.top === 'shirtless' || c.top === 'swimtop';
   torso.add(box(chestW, torsoH, torsoD, swim ? skin : topM, 0, torsoH / 2, 0));
+  if (c.belly > 0) { const bd = 0.06 + 0.22 * c.belly; torso.add(box(chestW * (0.7 + 0.15 * c.belly), torsoH * (0.35 + 0.2 * c.belly), bd, swim ? skin : topM, 0, torsoH * 0.18, torsoD / 2 + bd / 2 - 0.01)); }
   if (c.top === 'swimtop') torso.add(box(chestW * 1.02, torsoH * 0.16, torsoD * 1.04, topM, 0, torsoH * 0.72, 0)); // swim top band
   if (c.pants !== 'swim') { torso.add(box(torsoW * 1.01, 0.06, torsoD * 1.01, dark, 0, 0.02, 0)); // belt
   torso.add(box(0.08, 0.05, 0.02, metal, 0, 0.02, torsoD / 2 + 0.01)); } // buckle

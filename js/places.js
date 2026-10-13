@@ -48,6 +48,7 @@ export const PLACES = [
   { id: 'j_courier', kind: 'job', job: 'courier', name: 'Speedy Couriers', icon: 'box', desc: 'Deliver parcels across town before the timer runs out.', ...S('main', 2, 2, 's') },
 
   // ---- car activities
+  { id: 'v_hospital', kind: 'venue', interior: 'hospital', name: 'Bay General Hospital', icon: 'cross', desc: 'Get patched up, have a check-up, or have a baby.', ...S('main', 3, -1, 's') },
   { id: 'v_church', kind: 'venue', interior: 'church', name: 'Bay Chapel', icon: 'church', desc: 'A quiet place. Sit, reflect, talk to Father Gabe.', ...S('main', -4, 0, 's'), church: true },
   { id: 'mods', kind: 'mods', name: 'Bay Customs', icon: 'wrench', desc: 'Drive your own car in to buy upgrades, paint and wheels.', ...S('main', -3, -2, 's'), car: true },
   { id: 'chop', kind: 'chop', name: "Lucky's Chop Shop", icon: 'wrench', x: 744, z: 70, car: true },
@@ -157,6 +158,6 @@ export const RACE = {
 export const CHOP_VALUE = { hatch: 350, sedan: 500, coupe: 700, sports: 1400, muscle: 950, pickup: 650, van: 450, buggy: 400, limo: 1600, suv: 800, convertible: 1100, wagon: 450, lowrider: 900, classic: 1000, boxtruck: 600, hyper: 2600 };
 
 // Shops, venues and homes get a real front door on their building; the marker moves to stand in front of it.
-const DOOR_COL = { clothes: '#ff6fb5', barber: '#2f80ed', guns: '#e23b3b', diner: '#ffd23f', mart: '#4cd964', gym: '#ff8a2a', casino: '#d4af37', motors: '#38e8ff', casa: '#c98a4a', bar: '#1fb5a8', club: '#9b51e0', church: '#c9a24a' };
+const DOOR_COL = { clothes: '#ff6fb5', barber: '#2f80ed', guns: '#e23b3b', diner: '#ffd23f', mart: '#4cd964', gym: '#ff8a2a', casino: '#d4af37', motors: '#38e8ff', casa: '#c98a4a', bar: '#1fb5a8', club: '#9b51e0', church: '#c9a24a', hospital: '#e23b3b' };
 for (const p of PLACES) if (p.interior && p.door) attachDoor(p, DOOR_COL[p.interior] || '#ff8a2a', null, p.church ? 'church' : null);
 for (const p of PROPERTIES) if (p.door) attachDoor(p, '#4cd964');

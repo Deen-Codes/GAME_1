@@ -344,7 +344,7 @@ function updateNeeds(dtHours, dt) {
   stats.energy = Math.max(0, stats.energy - dtHours * (2.6 + (running ? 2 / (1 + lvl('stamina') * 0.15) : 0)));
   stats.mood = clamp(stats.mood + (55 - stats.mood) * dtHours * 0.05 - (stats.hunger < 20 ? dtHours * 3 : 0) - (stats.energy < 15 ? dtHours * 2 : 0), 0, 100);
   needWarnT -= dt;
-  if (stats.hunger <= 0) { P.hp -= dt * 0.8; if (P.hp <= 0) die(); }
+  if (stats.hunger <= 0) { stats.starveT = (stats.starveT || 0) + dt; P.hp -= dt * 0.6; if (stats.starveT > 90 || P.hp <= 0) { stats.starveT = 0; toast('You collapsed from hunger...', 3); die(); } } else stats.starveT = 0;
   if (needWarnT <= 0) {
     if (stats.hunger < 15) { toast('You are starving. Eat something! (diner, taco truck, or your fridge)', 3); needWarnT = 40; }
     else if (stats.energy < 10) { toast('You are exhausted. Sleep in a bed at home.', 3); needWarnT = 40; }
@@ -580,7 +580,7 @@ function die() {
   if (P.dead) return;
   P.dead = true; P.deadT = 3.2; if (ride) exitCar(); if (inside) exitInterior(true);
   const lost = Math.floor(money * 0.1); money -= lost; stats.mood = Math.max(0, stats.mood - 20);
-  $('deathScreen').querySelector('span').textContent = `Hospital bill: ${fmt(lost)}. Waking up…`;
+  $('deathScreen').querySelector('span').textContent = `Hospital bill: ${fmt(lost)}. Waking up at Bay General...`;
   $('deathScreen').classList.add('on'); if (job) endJob('You blacked out. Shift over.');
 }
 function homeSpot() {
@@ -589,11 +589,13 @@ function homeSpot() {
   return best ? { x: best.x, z: best.z, name: best.name } : { x: SPAWN.x, z: SPAWN.z, name: 'Downtown Clinic' };
 }
 function respawn() {
-  const h = homeSpot();
-  P.dead = false; P.hp = maxHP(); P.hurtT = 99; P.kx = P.kz = 0; stats.hunger = Math.max(stats.hunger, 40); stats.energy = Math.max(stats.energy, 40);
-  Object.assign(P, { x: h.x, z: h.z, face: Math.PI }); P.y = baseY(P.x, P.z);
+  P.dead = false; P.hp = maxHP() * 0.8; P.hurtT = 99; P.kx = P.kz = 0; const starved = stats.hunger <= 1; stats.hunger = Math.max(stats.hunger, 45); stats.energy = Math.max(stats.energy, 40);
   heroRoot.visible = true; hero.root.rotation.x = 0;
-  $('deathScreen').classList.remove('on'); updateCamera(0, true); toast(`You woke up at ${h.name}`);
+  $('deathScreen').classList.remove('on');
+  const h = PLACES.find(q => q.id === 'v_hospital');
+  Object.assign(P, { x: h.x, z: h.z, face: 0 }); P.y = baseY(P.x, P.z);
+  enterInterior(h);
+  setTimeout(() => { if (inside?.id !== 'hospital') return; const w = inside.h.toWorld(0.5, -3.8); P.x = w.x; P.z = w.z; P.face = Math.PI; toast(starved ? 'You collapsed from hunger. The hospital put you on a drip. Eat properly!' : 'You woke up in Bay General Hospital.', 4); }, 400);
 }
 function updateHealth(dt) {
   P.hurtT += dt; P.hitCd -= dt;
@@ -902,6 +904,8 @@ function npcCfg(role, seed, style) {
     case 'sales': return { ...base, top: 'suit', topColor: '#3a3fbf', accent: '#ffffff', pants: 'jeans', pantsColor: '#3a3d45', shoes: 'boots', shoeColor: '#16161b', eyewear: 'glasses' };
     case 'bartender': return { ...base, top: 'long', topColor: '#ffffff', pants: 'jeans', pantsColor: '#16161b', shoes: 'boots', shoeColor: '#16161b', facialHair: 'moustache' };
     case 'dj': return { ...base, top: 'jacket', topColor: '#9b51e0', accent: '#38e8ff', pants: 'jeans', pantsColor: '#16161b', shoes: 'sneakers', shoeColor: '#ffffff', eyewear: 'visor', hat: 'none', hair: 'mohawk' };
+    case 'nurse': return { ...base, top: 'tshirt', topColor: '#7ad1c9', pants: 'jeans', pantsColor: '#7ad1c9', shoes: 'sneakers', shoeColor: '#ffffff', hat: 'none' };
+    case 'doctor': return { ...base, top: 'long', topColor: '#ffffff', pants: 'jeans', pantsColor: '#3a5fa0', shoes: 'boots', shoeColor: '#16161b', eyewear: 'glasses', hat: 'none' };
     case 'pastor': return { ...base, top: 'suit', topColor: '#16161b', accent: '#ffffff', pants: 'jeans', pantsColor: '#16161b', shoes: 'boots', shoeColor: '#16161b', hair: 'short', hairColor: '#9a9a9a', eyewear: 'glasses', facialHair: 'none' };
     case 'dispatcher': return { ...base, top: 'jacket', topColor: '#ffd23f', accent: '#16161b', pants: 'jeans', pantsColor: '#3a3d45', shoes: 'boots', shoeColor: '#7a5230', hat: 'cap', hatColor: '#ffd23f' };
     case 'clerk': { const o = OUTFITS[style || 'street']; const out = o ? o[Math.floor(r() * o.length)].cfg : {}; return { ...base, ...out }; }
@@ -979,6 +983,8 @@ function enterInterior(place, prop) {
       const cfg = (n.role === 'clerk' || n.role === 'gun' || n.role === 'barber') ? npcCfg(n.role, [...place.id].reduce((a, c) => a + c.charCodeAt(0), 0) + i, place.style) : npcCfg(n.role, [...(place?.id || id)].reduce((a, c) => a + c.charCodeAt(0), 0) * 3 + i);
       inside.npcs.push({ x: w.x, z: w.z, role: n.role, cfg, fig: null, face: 0, homeFace: 0, t: Math.random() * 5, parent: dyn, name: nameFor((place?.id || id) + n.role + i), relId: (place?.id || id) + ':' + n.role, dance: false });
     });
+    if (prop) addFamilyNpcs(prop);
+    if (id === 'hospital' && fam().preg?.labour === 'hospital' && date) setTimeout(() => { if (inside?.id === 'hospital') { toast('Nurses rush her to maternity!', 3); giveBirth('hospital'); } }, 1500);
     if (id === 'club') for (let i = 0; i < 6; i++) { const w = h.toWorld(-2 + (i % 3) * 2, -0.8 + Math.floor(i / 3) * 2.4); inside.npcs.push({ x: w.x, z: w.z, role: 'guest', cfg: npcCfg('guest', 900 + i), fig: null, face: rand(0, 6), homeFace: rand(0, 6), t: rand(0, 6), parent: dyn, name: 'Clubber', dance: true }); }
     for (const s of tpl.spots) { const w = h.toWorld(s.x, s.z); inside.marks.push({ ...makeMarker(w.x, w.z, s.icon, '#ffd23f', { interior: true, small: true }, G.scene), spot: s }); }
     const door = h.toWorld(0, h.d / 2 - 1.3);
@@ -1069,6 +1075,7 @@ function findAction() {
     let best = null, bd = 1.9;
     for (const m of inside.marks) { const d = Math.hypot(m.x - P.x, m.z - P.z); if (d < bd) { bd = d; best = { kind: 'spot', spot: m.spot, icon: m.spot.icon === 'chat' ? 'chat' : 'door', label: SPOT_VERB(m.spot) }; } }
     if (inside.prop) for (const f of inside.h.furn) { const a = FURN[f.t].act; if (!a) continue; const w = inside.h.toWorld(f.x, f.z), d = Math.hypot(w.x - P.x, w.z - P.z) - Math.max(FURN[f.t].w, FURN[f.t].d) / 2 + 0.3; if (d < bd) { bd = d; best = { kind: 'furn', item: f, icon: 'chat', label: FURN_VERB[a] }; } }
+    for (const n of inside.npcs) if (n.fam) { const d = Math.hypot(n.x - P.x, n.z - P.z); if (d < bd) { bd = d; best = { kind: 'fam', n, icon: 'chat', label: n.role === 'spouse' ? 'Talk' : (kidStage(n.fam) === 'Baby' ? 'Hold' : 'Talk') }; } }
     if (P.z > ORIGIN.z + inside.h.d / 2 - 1.6 && Math.abs(P.x - ORIGIN.x) < 1.6) return { kind: 'exit', icon: 'exit', label: 'Leave' };
     return best;
   }
@@ -1102,12 +1109,13 @@ function doAction(a) {
   else if (a.kind === 'spot') doSpot(a.spot);
   else if (a.kind === 'furn') useFurn(a.item);
   else if (a.kind === 'exit') exitInterior();
+  else if (a.kind === 'fam') talkFamily(a.n);
 }
 function openPlace(p) {
   sfx.click();
   if (p.kind === 'dealer') talkDealer(p);
   else if (p.interior) enterInterior(p);
-  else if (p.kind === 'property') { const prop = PROPERTIES.find(q => q.id === p.id); owned.has(p.id) ? enterInterior(null, prop) : openProperty(prop); }
+  else if (p.kind === 'property') { const prop = PROPERTIES.find(q => q.id === p.id); owned.has(p.id) ? (propMode(p.id) === 'rent' ? toast(`Tenants live at ${prop.name}. Switch it to Live or Vacant in the Homes app.`, 3.5) : enterInterior(null, prop)) : openProperty(prop); }
   else if (p.kind === 'game') openGame(p);
   else if (p.kind === 'job') talkJob(p);
   else if (p.kind === 'chop') openChop(p);
@@ -1128,6 +1136,7 @@ async function doSpot(s) {
   if (s.kind === 'tread') { if (money < 10) { toast('Gym sessions cost $10'); return; } spend(10); const r = await mini('tread'); gainXP('stamina', Math.round(r.score * 0.7)); gainXP('health', Math.round(r.score * 0.35)); feed({ energy: -12, mood: 5 }); }
   if (s.kind === 'blackjack' || s.kind === 'slots') { if (money < 10) { toast('You need at least $10 to play'); return; } const r = await mini(s.kind, { money }); if (r.money) addMoney(r.money); feed({ mood: r.money > 0 ? 8 : -3 }); }
   if (s.kind === 'dj') { const r = await mini('beat', { title: 'Neon Room DJ set' }); if (r.money) addMoney(r.money); gainXP('charm', r.score); feed({ mood: 10, energy: -6 }); }
+  if (s.kind === 'rest') { if (money < 150) { toast('A bed costs $150. Talk to reception if you are hurt.'); return; } spend(150); fade(() => { advanceTime(2); P.hp = maxHP(); feed({ energy: 30, hunger: 20, mood: 5 }); toast('You rested in the ward. Fully healed.', 3); }); }
   if (s.kind === 'pray') { const first = !stats.relDay['pray:' + dayN]; stats.relDay['pray:' + dayN] = 1; fade(() => { advanceTime(0.5); feed({ mood: first ? 22 : 5, energy: 4 }); P.hp = Math.min(maxHP(), P.hp + 20); toast(first ? 'You sit in silence for a while. You feel lighter. Mood up.' : 'You sit quietly for a bit.', 3); }); }
   if (s.kind === 'dance') { fade(() => { advanceTime(0.5); feed({ mood: 14, energy: -8 }); gainXP('charm', 12); gainXP('stamina', 8); toast('You owned the dance floor. Mood up, Charm up.'); }); }
   saveGame();
@@ -1216,6 +1225,7 @@ async function talkVenue() {
   if (id === 'motors') return talkSales(n, place);
   if (id === 'casa') return talkCasa(n, place);
   if (id === 'church') return talkPastor(n, place);
+  if (id === 'hospital') return talkHospital(n, place);
 }
 function nearestNpc() { let best = null, bd = 1e9; for (const n of inside.npcs) { if (n.role === 'guest') continue; const d = Math.hypot(n.x - P.x, n.z - P.z); if (d < bd) { bd = d; best = n; } } return best; }
 async function talkShop(p, n) {
@@ -1275,6 +1285,7 @@ async function talkPastor(n, place) {
   beginTalk(n.cfg, 'Father Gabe', place.name, 170, n.relId); relNames[n.relId] = 'Father Gabe';
   const r = rel(n.relId);
   await talk.say(r >= 40 ? "Good to see you again, my friend. How is your heart today?" : pick(["Welcome, friend. Everyone is welcome here.", "Peace be with you. Sit as long as you like."]));
+  if (partner()?.status === 'engaged') { const w = await talk.choose([I('heart', `We want to get married <small>(${partner().name})</small>`), I('chat', 'Something else')]); if (w === 0) { await weddingAtChapel(n); if (state === 'talk') endTalk(); return; } }
   const c = await talk.choose([I('chat', 'Just looking for some peace'), I('heart', `Donate <small>$50</small>`), I('hand', 'I need to get something off my chest'), r >= 60 ? I('food', 'Is the food bank open?') : I('book', 'Any advice?'), I('x', 'Goodbye')]);
   if (c === 0) { await talk.say(pick(["The city is loud. In here, it's quiet. Stay a while.", "Peace isn't found, it's made. One choice at a time."])); bumpRel(n.relId, 4); feed({ mood: 6 }); gainXP('charm', 5); }
   else if (c === 1) { if (money < 50) await talk.say("Keep your money, friend. Your presence is enough."); else { spend(50); bumpRel(n.relId, 8, false); feed({ mood: 12 }); gainXP('charm', 15); await talk.say("Thank you. This will feed a lot of families on the south side."); } }
@@ -1358,6 +1369,161 @@ async function talkHomeless(p) {
   }
   endTalk(); peds.release(p);
 }
+// ================================================================ FAMILY: partner, engagement, marriage, pregnancy, kids that grow up
+const BOY_NAMES = ['Leo', 'Max', 'Noah', 'Eli', 'Jayden', 'Marcus', 'Theo', 'Ezra', 'Kai', 'Luca'], GIRL_NAMES = ['Ava', 'Lily', 'Mila', 'Zara', 'Ruby', 'Isla', 'Nova', 'Ellie', 'Aria', 'Skye'];
+function fam() { stats.fam ||= { partner: null, kids: [], preg: null, home: null, seen: 0 }; stats.texts ||= {}; stats.propMode ||= {}; return stats.fam; }
+const AGES = [[0, 'Baby'], [1, 'Toddler'], [3, 'Child'], [7, 'Teen'], [12, 'Adult']];
+const kidAge = k => dayN - k.born, kidStage = k => [...AGES].reverse().find(([d]) => kidAge(k) >= d)[1];
+function kidCfg(k) {
+  const st = kidStage(k), h = { Baby: 0.3, Toddler: 0.45, Child: 0.62, Teen: 0.85, Adult: 1 }[st];
+  const r = seeded(k.seed), c = a => a[Math.floor(r() * a.length)];
+  const cols = ['#e23b3b', '#2f80ed', '#4cd964', '#ffd23f', '#ff8a2a', '#9b51e0', '#ff6fb5', '#1fb5a8'];
+  return { ...DEFAULT_CHAR, skin: k.skin, hairColor: k.hairColor, hair: k.girl ? c(['long', 'ponytail', 'bob', 'bun']) : c(['short', 'buzz', 'afro', 'spiky']), facialHair: 'none', mask: 'none', back: 'none', eyewear: 'none', hat: 'none', mouth: 'smile', eyes: 'normal',
+    top: st === 'Baby' ? 'tshirt' : c(['tshirt', 'hoodie', 'tank']), topColor: c(cols), accent: c(cols), pants: st === 'Baby' || st === 'Toddler' ? 'shorts' : c(['jeans', 'shorts']), pantsColor: c(['#2f80ed', '#16161b', '#c2b280']), shoes: 'sneakers', shoeColor: '#ffffff',
+    height: h, headSize: st === 'Baby' ? 1.5 : st === 'Toddler' ? 1.35 : st === 'Child' ? 1.15 : 1, build: st === 'Adult' ? 1 : 0.85 };
+}
+function partner() { return fam().partner; }
+function famHome() { const f = fam(); if (f.home && owned.has(f.home)) return PROPERTIES.find(p => p.id === f.home); return null; }
+function propMode(id) { const f = fam(); return stats.propMode[id] || (id === f.home || id === 'p_studio' ? 'live' : 'rent'); }
+function textMe(id, from, text, me = false) { const T = stats.texts; (T[id] ||= []).push({ me, t: text, d: dayN }); if (T[id].length > 40) T[id].shift(); if (!me) { phoneBadge++; toast(`Text from ${from}: "${text.length > 46 ? text.slice(0, 44) + '...' : text}"`, 3.2); sfx.coin(); } }
+function nameOf(id) { if (stats.dates?.[id]) return stats.dates[id].name; const k = fam().kids.find(k => k.id === id); return k ? k.name : id; }
+// called from WooHoo
+function maybePregnant(withId, tryForBaby) {
+  const f = fam(); if (!tryForBaby || f.preg) return;
+  if (Math.random() < 0.6) { const d = stats.dates[withId]; f.preg = { due: dayN + PREG_DAYS, start: dayN + clockH / 24, mom: withId, told: false }; f.pregName = d?.name; }
+}
+const PREG_DAYS = 90;
+function bellyFor(id) { const p = fam().preg; if (!p || p.mom !== id) return 0; const st = p.start ?? p.due - PREG_DAYS; return clamp((dayN + clockH / 24 - st) / (p.due - st), 0.08, 1); }
+function makeOfficial(id) { const d = stats.dates[id]; const f = fam(); f.seen = dayN; f.partner = { id, name: d.name, cfg: d.cfg, status: 'partner', since: dayN, livesIn: false }; bumpRel(id, 10, false); }
+function cheatCheck(withId) {
+  const P2 = partner(); if (!P2 || P2.id === withId) return;
+  if (Math.random() < 0.45) { stats.rel[P2.id] = Math.max(0, rel(P2.id) - 35); setTimeout(() => textMe(P2.id, P2.name, pick(["Who is she?! Someone saw you two together.", "I can't believe you. We need to talk.", "Don't bother coming home tonight."])), 6000); }
+}
+function famNewDay() {
+  const f = fam();
+  if (f.preg && !f.preg.told) { f.preg.told = true; textMe(f.preg.mom, nameOf(f.preg.mom), "Okay... sit down. I'm pregnant. And it's yours."); if (!f.partner) makeOfficial(f.preg.mom); if (f.partner?.id === f.preg.mom) { f.partner.livesIn = true; if (!famHome()) f.home = owned.has('p_studio') ? 'p_studio' : [...owned][0]; } }
+  else if (f.preg && dayN >= f.preg.due && !f.preg.labour) startLabour();
+  else if (f.preg?.labour && dayN > f.preg.due + 1) giveBirth('home');
+  // kids growing up
+  for (const k of f.kids) { const st = kidStage(k); if (k.stage && k.stage !== st) toast(`${k.name} is now a ${st.toLowerCase()}!`, 3); k.stage = st; }
+  // neglect
+  if (f.partner && dayN - (f.seen || 0) > 2) { stats.rel[f.partner.id] = Math.max(0, rel(f.partner.id) - 6); textMe(f.partner.id, f.partner.name, pick(["Do you even live here anymore?", "The kids keep asking where you are.", "We need to talk about us."])); }
+}
+let famTextT = 120;
+function famTexts(dt) { // random incoming texts from people who care about you
+  famTextT -= dt; if (famTextT > 0) return; famTextT = rand(90, 200);
+  const f = fam(), cands = [];
+  if (f.partner && rel(f.partner.id) > 15) cands.push([f.partner.id, f.partner.name, f.partner.status === 'married' ? ["Miss you. Coming home soon?", "Can you grab groceries on the way back?", "Love you.", "Dinner's ready when you are."] : ["Thinking about you.", "What are you up to?", "Last night was fun.", "Come see me later?"]]);
+  for (const id of Object.keys(stats.dates || {})) if (id !== f.partner?.id && rel(id) > 25 && Math.random() < 0.3) cands.push([id, nameOf(id), ["Hey stranger.", "You still alive?", "Bored. Entertain me.", "Saw you drive past earlier ;)"]]);
+  for (const k of f.kids) if (['Teen', 'Adult'].includes(kidStage(k))) cands.push([k.id, k.name, kidStage(k) === 'Teen' ? ["Can I borrow $50?", "Can you drive me to the beach later?", "Mom says you have to come home for dinner.", "I got an A on my test!"] : ["Hey, how are you doing?", "Got a job interview tomorrow, wish me luck.", "Miss you, call me sometime."]]);
+  if (!cands.length || inside?.prop?.id === f.home) return;
+  const [id, name, lines] = pick(cands); textMe(id, name, pick(lines));
+}
+// your family appears in your family home
+function addFamilyNpcs(prop) {
+  const f = fam(); if (!f.home || prop.id !== f.home) return;
+  const add = (cfg, name, role, ref, i) => { const w = inside.h.toWorld(-2 + i * 1.6, 0.5 + (i % 2) * 1.2); inside.npcs.push({ x: w.x, z: w.z, role, cfg, fig: null, face: 0, homeFace: Math.PI, t: Math.random() * 5, parent: dyn, name, relId: ref.id, fam: ref }); };
+  let i = 0;
+  if (f.partner && (f.partner.livesIn || f.preg?.mom === f.partner.id) && !(date && date.id === f.partner.id)) add({ ...f.partner.cfg, belly: bellyFor(f.partner.id) }, f.partner.name, 'spouse', f.partner, i++);
+  for (const k of f.kids) if (kidStage(k) !== 'Adult') add(kidCfg(k), k.name, 'kid', k, i++);
+  if (f.partner?.livesIn || f.kids.length) f.seen = dayN;
+}
+const KID_LINES = { Baby: ['*giggles*', '*babbles happily*', 'Ba-ba!', '*grabs your finger*'], Toddler: ['Daddy! Up! Up!', 'I drawed a dog!', 'Why is the sky blue?', 'Can we get ice cream?'], Child: ['Dad, can we go to the beach?', 'I scored a goal at school today!', 'Can I have a puppy?', 'Mom says I have to do my homework.'], Teen: ['Ugh, Dad. You\'re so embarrassing.', 'Can I borrow the car?', 'Everyone else is going to the party.', 'I need new sneakers.'], Adult: ['Thanks for everything, Dad.'] };
+async function talkFamily(n) {
+  const ref = n.fam, f = fam();
+  if (n.role === 'spouse') {
+    const P2 = f.partner;
+    beginTalk(n.cfg, P2.name, P2.status === 'married' ? 'Your wife' : P2.status === 'engaged' ? 'Your fiancée' : 'Your girlfriend', 330, P2.id);
+    await talk.say(rel(P2.id) < 25 ? pick(["Oh. You're back.", "We need to talk."]) : pick(["Hey you. Missed you.", "There you are! How was your day?", "The kids were asking about you."]));
+    const o = [{ label: I('heart', 'Kiss'), k: 'kiss' }, { label: I('chat', 'How was your day?'), k: 'chat' }, { label: I('cash', 'Give housekeeping money <small>$200</small>'), k: 'money' }];
+    if (P2.status === 'partner' && rel(P2.id) >= 65) o.push({ label: I('star', 'Propose <small>ring $2,500</small>'), k: 'propose' });
+    if (inside.h.furn.some(x => FURN[x.t].act === 'sleep')) o.push({ label: I('heart', 'WooHoo'), k: 'woo' });
+    o.push({ label: I('star', "Let's go out"), k: 'out' }, { label: I('x', 'Later'), k: 'bye' });
+    const c = o[await talk.choose(o)].k;
+    if (c === 'kiss') { bumpRel(P2.id, 5); feed({ mood: 6 }); hearts(n.x, n.z, 8); await talk.say('*mwah* Love you.'); }
+    else if (c === 'chat') { bumpRel(P2.id, 4); gainXP('charm', 4); await talk.say(pick(["Long day. The baby didn't sleep at all.", "I'm thinking of starting a little business. Nails, maybe.", "Your mom called. Just kidding.", "Honestly? I'm happy. Just us. This."])); }
+    else if (c === 'money') { if (money < 200) await talk.say("Babe, you don't have it. It's fine."); else { spend(200); bumpRel(P2.id, 8, false); stats.groceries += 4; await talk.say("Thank you. I'll stock the fridge."); } }
+    else if (c === 'propose') {
+      if (money < 2500) await talk.say("...Were you about to propose with no ring? Ha!", 'npc');
+      else { spend(2500); await talk.say('Will you marry me?', 'you'); if (rel(P2.id) >= 65) { P2.status = 'engaged'; bumpRel(P2.id, 15, false); hearts(n.x, n.z, 20); feed({ mood: 30 }); await talk.say('YES! Oh my god, yes!'); toast('Engaged! Book the wedding with Father Gabe at Bay Chapel.', 4); } else await talk.say("I... need more time."); }
+    }
+    else if (c === 'woo') { endTalk(); const bed = inside.h.furn.find(x => FURN[x.t].act === 'sleep'); const tb = await askBaby(); inside.npcs.splice(inside.npcs.indexOf(n), 1); dyn.remove(n.fig?.root); startDate({ name: P2.name, look: { ...bakeCfg(P2.cfg), fem: true }, x: n.x, z: n.z, face: 0, interest: 90, root: new THREE.Group() }); date.tryBaby = tb; return startWoo('bed', bed); }
+    else if (c === 'out') { endTalk(); inside.npcs.splice(inside.npcs.indexOf(n), 1); dyn.remove(n.fig?.root); startDate({ name: P2.name, look: { ...bakeCfg(P2.cfg), fem: true }, x: n.x, z: n.z, face: 0, interest: 80, root: new THREE.Group() }); return; }
+    f.seen = dayN; endTalk(); return;
+  }
+  const k = ref, st = kidStage(k);
+  beginTalk(n.cfg, k.name, `Your ${k.girl ? 'daughter' : 'son'} · ${st}`, k.girl ? 420 : 360, k.id);
+  await talk.say(pick(KID_LINES[st]));
+  const o = st === 'Baby' ? [I('heart', 'Cuddle'), I('food', 'Feed'), I('x', 'Put down')] : st === 'Toddler' ? [I('play', 'Play'), I('book', 'Read a story'), I('x', 'Later')] : st === 'Child' ? [I('book', 'Help with homework'), I('ball', 'Play catch'), I('cash', 'Pocket money $20'), I('x', 'Later')] : [I('chat', 'Talk'), I('steer', 'Teach them to drive'), I('cash', 'Give $50'), I('x', 'Later')];
+  const c = await talk.choose(o);
+  if (c === o.length - 1) { endTalk(); return; }
+  const cost = (st === 'Child' && c === 2) ? 20 : (st === 'Teen' && c === 2) ? 50 : 0;
+  if (cost && money < cost) { await talk.say("You're broke? Seriously?"); endTalk(); return; }
+  if (cost) spend(cost);
+  bumpRel(k.id, 8); feed({ mood: 8 }); fam().seen = dayN;
+  if (st === 'Teen' && c === 1) gainXP('driving', 20); if (st === 'Child' && c === 0) gainXP('charm', 8);
+  await talk.say(pick(st === 'Baby' ? ['*coos*', '*falls asleep on your shoulder*'] : st === 'Toddler' ? ['Again! Again!', 'You\'re the best daddy!'] : st === 'Child' ? ['Thanks Dad!', 'You\'re the coolest.'] : ['...Thanks, Dad. Actually.', 'Okay that was kind of fun.']));
+  if (st !== 'Baby') hearts(n.x, n.z, 5);
+  endTalk();
+}
+async function askBaby() {
+  const c = await talk.choose([I('shield', 'Play it safe'), I('heart', 'Try for a baby')]);
+  return c === 1;
+}
+async function weddingAtChapel(n) {
+  const P2 = partner();
+  await talk.say(`A wedding! For you and ${P2.name}? The ceremony, flowers and party come to $5,000.`);
+  const c = await talk.choose([I('heart', 'Book it <small>$5,000</small>'), I('x', 'Not yet')]);
+  if (c !== 0) return;
+  if (money < 5000) { await talk.say("Save up a little more, my friend. Love can wait a week."); return; }
+  spend(5000); await talk.say('Then let us begin. Dearly beloved...'); endTalk();
+  // ceremony: bride appears at the altar, confetti, bells
+  const look = bakeCfg({ ...P2.cfg, top: 'long', topColor: '#ffffff', pants: 'jeans', pantsColor: '#ffffff', shoes: 'boots', shoeColor: '#ffffff', hat: 'none' }), fig = figure(look);
+  const a = inside.h.toWorld(0.7, -6.2); fig.root.position.set(a.x, 0, a.z); fig.root.rotation.y = Math.PI / 2; dyn.add(fig.root);
+  const b = inside.h.toWorld(-0.7, -6.2); P.x = b.x; P.z = b.z; P.face = -Math.PI / 2;
+  const A = audio(); if (A) [0, 4, 7, 12, 7, 12, 16].forEach((m, i) => sfx.note(523 * Math.pow(2, m / 12), A.currentTime + i * 0.35, 0.6, 'sine', 0.05, 3000));
+  for (let i = 0; i < 12; i++) setTimeout(() => { spawnParticles(a.x - 0.7, 3, a.z, ['#ffffff', '#ff6fb5', '#ffd23f', '#38e8ff'], 14, 3, 1.6, 0.12, 2); hearts(a.x - 0.7, a.z, 4, 2.2); }, i * 300);
+  setTimeout(() => fade(() => { dyn.remove(fig.root); P2.status = 'married'; P2.livesIn = true; P2.wed = dayN; const f = fam(); if (!famHome()) f.home = owned.has('p_studio') ? 'p_studio' : [...owned][0]; bumpRel(P2.id, 30, false); feed({ mood: 60 }); gainXP('charm', 60); saveGame(); toast(`You married ${P2.name}! She's moved into ${famHome()?.name || 'your home'}.`, 4.5); }), 4200);
+}
+async function talkHospital(n, place) {
+  const doc = n.role === 'doctor';
+  beginTalk(n.cfg, doc ? 'Dr. ' + n.name : n.name, doc ? 'Doctor · Bay General' : 'Reception · Bay General', doc ? 180 : 320, n.relId);
+  const f = fam();
+  if (f.preg?.labour === 'hospital' && date && date.id === f.preg.mom) { await talk.say(doc ? "She's in labour? Get her to the maternity ward, now!" : 'Oh! Maternity is straight through, the doctor is on his way!'); endTalk(); return giveBirth('hospital'); }
+  await talk.say(doc ? pick(["Let's take a look at you.", 'Busy night. What can I do for you?']) : pick(['Welcome to Bay General. How can I help?', 'Take a seat, or tell me what\'s wrong.']));
+  const o = [I('cross', `Patch me up <small>$${Math.max(40, Math.round((maxHP() - P.hp) * 3))}</small>`), I('chart', 'Check-up'), ...(f.preg ? [I('heart', 'Pregnancy scan')] : []), I('x', 'Leave')];
+  const c = await talk.choose(o), k = o[c];
+  if (c === 0) { const cost = Math.max(40, Math.round((maxHP() - P.hp) * 3)); if (money < cost) await talk.say("You can't cover it. We'll stop the bleeding at least."), P.hp = Math.max(P.hp, maxHP() * 0.5); else { spend(cost); P.hp = maxHP(); await talk.say('All fixed up. Try to stay out of trouble.'); } }
+  else if (c === 1) await talk.say(`Health ${Math.round(P.hp)}/${maxHP()}. ${stats.hunger < 25 ? 'You are seriously underfed. Eat a proper meal today.' : 'Eating fine.'} ${stats.energy < 25 ? 'And you need sleep.' : ''}`);
+  else if (f.preg && c === 2) { const left = Math.max(0, f.preg.due - dayN); await talk.say(`Everything looks healthy. About ${left} day${left === 1 ? '' : 's'} to go. ${Math.random() < 0.5 ? 'Want to know? ...Actually, let it be a surprise.' : ''}`); feed({ mood: 10 }); }
+  endTalk();
+}
+// labour: choose a home birth or drive her to Bay General
+function startLabour() {
+  const f = fam(), p = f.preg; if (!p || p.labour) return;
+  p.labour = 'waiting'; const name = nameOf(p.mom);
+  textMe(p.mom, name, 'My water just broke!! Where are you?!');
+  modal(`<div class="big-ico">${svg('heart', 'big')}</div><h3>${name} is in labour!</h3><p>Deliver at home, or rush her to Bay General Hospital? The hospital costs $800 but it's safer and she'll love you for it.</p>`, [
+    { label: 'Rush to the hospital', cls: 'big', fn: () => { closeModal(); p.labour = 'hospital'; const h = PLACES.find(q => q.id === 'v_hospital'); setWaypoint(h.x, h.z, 'Bay General Hospital'); if (!date) { const d = stats.dates[p.mom]; const a = rand(0, 6.28); startDate({ name: d.name, look: { ...bakeCfg(d.cfg), fem: true }, x: P.x + Math.sin(a) * 3, z: P.z + Math.cos(a) * 3, face: 0, interest: 90, root: new THREE.Group() }); } toast('She is with you. Get to the hospital, fast! Drive!', 4); } },
+    { label: 'Home birth', fn: () => { closeModal(); giveBirth('home'); } },
+  ]);
+}
+function giveBirth(where) {
+  const f = fam(); if (!f.preg) return;
+  fade(() => {
+    const girl = Math.random() < 0.5, mom = stats.dates[f.preg.mom];
+    const kid = { id: 'kid:' + Date.now(), name: pick(girl ? GIRL_NAMES : BOY_NAMES), girl, born: dayN, seed: Math.floor(Math.random() * 1e6), skin: pick([charCfg.skin, mom?.cfg.skin || charCfg.skin]), hairColor: pick([charCfg.hairColor, mom?.cfg.hairColor || charCfg.hairColor]), mom: f.preg.mom };
+    f.kids.push(kid); stats.rel[kid.id] = 50;
+    if (where === 'hospital') { spend(Math.min(money, 800)); bumpRel(f.preg.mom, 20, false); advanceTime(3); }
+    else { advanceTime(2); if (Math.random() < 0.3) { stats.rel[f.preg.mom] = Math.max(0, rel(f.preg.mom) - 10); } }
+    f.preg = null;
+    if (!famHome()) f.home = owned.has('p_studio') ? 'p_studio' : [...owned][0];
+    if (f.partner && f.partner.id === kid.mom) f.partner.livesIn = true;
+    if (date && date.id === kid.mom) endDate();
+    feed({ mood: 40 }); gainXP('charm', 30); saveGame();
+    modal(`<div class="big-ico">${svg('smile', 'big')}</div><h3>It's a ${girl ? 'girl' : 'boy'}!</h3><p>Say hello to <b>${kid.name}</b>${where === 'hospital' ? ', born at Bay General' : ', born at home'}. Mother and baby are heading to ${famHome()?.name || 'home'}.</p>`, [{ label: 'Amazing', cls: 'big', fn: closeModal }]);
+  });
+}
 // ================================================================ ROMANCE (Sims style: flirt, get a number, go on a date, woohoo under the duvet)
 const FEM_NAMES = ['Jade', 'Mia', 'Sofia', 'Chloe', 'Lexi', 'Nina', 'Ava', 'Zoe', 'Maya', 'Bella', 'Kira', 'Luna', 'Rosa', 'Tasha', 'Gabi', 'Leah'];
 const FLIRT = {
@@ -1397,7 +1563,8 @@ function addDateContact(p) { stats.dates ||= {}; const id = 'date:' + p.name; st
 function startDate(p) {
   peds.release(p); const i = peds.list.indexOf(p); if (i >= 0) peds.list.splice(i, 1); dyn.remove(p.root);
   if (p.dog) p.dog.owner = null;
-  const look = p.look, fig = figure(look); dyn.add(fig.root);
+  const bl = bellyFor('date:' + p.name); let look = p.look; if (bl) look = { ...bakeCfg({ ...look.cfg, belly: bl }), fem: true };
+  const fig = figure(look); dyn.add(fig.root);
   date = { name: p.name, look, cfg: look.cfg, fig, x: p.x, z: p.z, face: p.face, phase: 0, interest: p.interest, since: gameHours(), id: 'date:' + p.name };
   addDateContact(p); bumpRel(date.id, 10, false);
   $('loveBtn').classList.remove('hidden');
@@ -1440,6 +1607,7 @@ async function talkDate() {
   const opts = [{ label: I('heart', 'Kiss her'), k: 'kiss' }];
   if (atBar) opts.push({ label: I('drink', `Buy her a drink <small>$18</small>`), k: 'drink' });
   opts.push({ label: I('chat', 'Talk'), k: 'talk' });
+  if (!partner() && rel(D.id) >= 45) opts.push({ label: I('star', 'Be my girlfriend?'), k: 'official' });
   if (bed || parked) opts.push({ label: I('heart', bed ? 'WooHoo (bed)' : 'WooHoo (in the car)'), k: 'woo' });
   else { const h = nearestHome(); if (h) opts.push({ label: I('house', 'Come back to my place?'), k: 'home', h }); }
   opts.push({ label: I('x', 'Call it a night'), k: 'bye' });
@@ -1450,8 +1618,9 @@ async function talkDate() {
   else if (o.k === 'home') { setWaypoint(o.h.x, o.h.z, 'Home'); await talk.say(D.interest >= 55 ? pick(['Mmm, okay. Lead the way.', 'I thought you\'d never ask.']) : 'Maybe... let\'s see how the night goes.'); }
   else if (o.k === 'woo') {
     if (D.interest < 65) { await talk.say(pick(['Ha! Not yet, tiger.', 'I don\'t know you well enough for that.'])); D.interest -= 5; }
-    else { await talk.say(pick(['I was hoping you\'d say that.', 'Come here, you.', '*giggles* Okay...'])); endTalk(); return startWoo(bed ? 'bed' : 'car', bed); }
+    else { await talk.say(pick(['I was hoping you\'d say that.', 'Come here, you.', '*giggles* Okay...'])); D.tryBaby = await askBaby(); endTalk(); return startWoo(bed ? 'bed' : 'car', bed); }
   }
+  else if (o.k === 'official') { if (D.interest >= 60) { makeOfficial(D.id); hearts(P.x, P.z, 14); await talk.say(pick(['Yes! Finally. I thought you\'d never ask.', 'Okay... yes. You\'re mine now.'])); toast(`You and ${D.name} are official!`, 3); } else await talk.say('Let\'s not rush it. Take me out a few more times.'); }
   else if (o.k === 'bye') { endTalk(); bumpRel(D.id, 4); return endDate(`${D.name}: "Tonight was fun. Text me."`); }
   endTalk();
 }
@@ -1495,7 +1664,7 @@ function updateWoo(dt) {
       advanceTime(1); feed({ mood: 40, energy: -12 }); P.hp = maxHP(); gainXP('charm', 25); gainXP('stamina', 15);
       if (W.kind === 'bed') { dyn.remove(W.g); if (W.bedMesh) W.bedMesh.position.y = 0; const w = inside.h.toWorld(W.bed.x + 1.6, W.bed.z); P.x = w.x; P.z = w.z; heroRoot.visible = true; date.x = w.x + 0.8; date.z = w.z + 0.6; date.fig.root.visible = true; }
       else { W.car.b.group.rotation.z = 0; for (const [m, c] of W.glass) m.color.setHex(c); }
-      bumpRel(date.id, 25, false); date.interest += 20; stats.woohoo = (stats.woohoo || 0) + 1;
+      bumpRel(date.id, 25, false); date.interest += 20; stats.woohoo = (stats.woohoo || 0) + 1; maybePregnant(date.id, date.tryBaby); cheatCheck(date.id);
       const n = date.name; saveGame();
       setTimeout(() => endDate(`${n}: "Wow. Call me, okay?" (Mood maxed, Charm up)`), 1600);
     });
@@ -1623,7 +1792,7 @@ function modal(html, buttons) {
 function closeModal() { $('modal').classList.add('hidden'); if (state === 'ui') setState('play'); }
 function openProperty(p) {
   modal(`<div class="big-ico">${svg('house', 'big')}</div><h3>${p.name}</h3>
-    <p>A ${INTERIORS[p.home].name.toLowerCase()} you can furnish and live in. Pays <b>${fmt(p.income)}</b> every morning, adds <b>+20</b> stash space, and becomes a place to wake up.</p>
+    <p>A ${INTERIORS[p.home].name.toLowerCase()} you can furnish and live in. Rent it out for <b>${fmt(p.income)}</b> every morning, or live in it and move your family in. Adds <b>+20</b> stash space.</p>
     <div class="price">${fmt(p.price)}</div>`, [
     { label: `Buy for ${fmt(p.price)}`, cls: 'big', disabled: money < p.price, fn: () => { spend(p.price); owned.add(p.id); refreshPropertyMarkers(); saveGame(); closeModal(); toast(`${p.name} is yours! Walk in to move in.`, 3); feed({ mood: 20 }); } },
     { label: money < p.price ? `Need ${fmt(p.price - money)} more` : 'Not now', fn: closeModal },
@@ -1945,12 +2114,13 @@ function openPhone(app = 'home') {
   phoneGo(app);
 }
 function closePhone() { $('phone').classList.remove('open'); setTimeout(() => { $('phone').classList.add('hidden'); if (state === 'phone') setState('play'); }, 260); }
+let phoneThread = null;
 function phoneGo(app) { phoneApp = app; if (app === 'msgs') phoneBadge = 0; renderPhone(); }
 function messages() {
   const out = [{ from: 'Uncle Ray', av: 'user', text: "Welcome to Bay City, kid. I got you a little studio downtown (the purple key on your map). Eat, sleep, keep your energy up. Dealers buy low and sell high, and they'll treat you better once they know you. Customers will text you here too. Make money, buy property, live large. Need honest work? The Work app lists taxi and courier jobs." }];
   for (const c of customers) { const g = GOODS.find(x => x.id === c.good); out.push({ from: c.name, av: 'deal', text: `Need ${c.qty} ${g.name} near ${c.area}. Paying ${fmt(c.pay)}. Don't keep me waiting (${Math.max(0, Math.ceil(c.exp - gameHours()))}h).`, at: { x: c.x, z: c.z, name: `${c.name}'s order` } }); }
   for (const p of PLACES) if (p.kind === 'dealer' && rel(p.id) >= 20) { const pr = dealerPricesFor(p); for (const g of GOODS) if (pr[g.id].hot) out.push({ from: p.npc, av: 'deal', text: pr[g.id].hot === 'cheap' ? `Got ${g.name} going cheap today. ${fmt(pr[g.id].buy)} each. Come thru.` : `Paying top dollar for ${g.name} today: ${fmt(pr[g.id].sell)}. Bring what you got.`, at: p }); }
-  const inc = PROPERTIES.filter(p => owned.has(p.id)).reduce((a, p) => a + p.income, 0);
+  const inc = PROPERTIES.filter(p => owned.has(p.id) && propMode(p.id) === 'rent').reduce((a, p) => a + p.income, 0);
   if (inc) out.push({ from: 'Bay Realty', av: 'house', text: `Your properties earn ${fmt(inc)} every morning at 6am.` });
   if (stats.groceries <= 0) out.push({ from: 'Fridge', av: 'fridge', text: 'Your fridge is empty. QuickMart sells groceries.' });
   return out;
@@ -1979,9 +2149,29 @@ function renderPhone() {
       renderPhone();
     };
     $('phClear') && ($('phClear').onclick = () => { clearWaypoint(); renderPhone(); });
+  } else if (phoneApp === 'thread') {
+    const id = phoneThread, name = nameOf(id), T = stats.texts[id] || [];
+    const f = fam(), isKid = id.startsWith('kid:'), isP = f.partner?.id === id;
+    const opts = isKid ? ['How was school?', 'Love you, kiddo.', 'Need anything?', 'Be home by 10.'] : isP ? ['Love you.', 'On my way home.', 'Want to go out tonight?', 'Thinking about you.', 'Sorry, busy day.'] : ['Hey you.', 'Want to hang out?', 'Thinking about you...', 'You looked amazing the other day.'];
+    el.innerHTML = `<button class="ph-back" data-go="msgs">‹ Messages</button><h4>${name}</h4><div class="ph-thread" id="phThr">${T.map(m => `<div class="bub ${m.me ? 'me' : ''}">${m.t}</div>`).join('') || '<p class="ph-hint">No messages yet. Say hi.</p>'}</div><div class="ph-replies">${opts.map((o, i) => `<button class="ph-mini" data-rep="${i}">${o}</button>`).join('')}</div>`;
+    const thr = $('phThr'); thr.scrollTop = 1e6;
+    el.querySelectorAll('[data-rep]').forEach(b => b.onclick = () => {
+      const msg = opts[+b.dataset.rep]; textMe(id, 'You', msg, true); renderPhone();
+      const r = rel(id), cold = r < 15;
+      setTimeout(() => {
+        let rep;
+        if (/hang out|go out/.test(msg)) { if (!date && !cold && Math.random() < 0.75) { rep = pick(["Yes! Come get me.", "Omw, where are you?", "Finally. See you soon."]); setTimeout(() => { if (date || inside) return; const d = stats.dates[id]; const a = rand(0, 6.28); startDate({ name: d.name, look: { ...bakeCfg(d.cfg), fem: true }, x: P.x + Math.sin(a) * 20, z: P.z + Math.cos(a) * 20, face: 0, interest: 40 + r * 0.6, root: new THREE.Group() }); }, 4000); } else rep = pick(["Can't tonight, sorry!", "Maybe another time."]); }
+        else if (isKid) rep = pick(["Fine.", "Love you too, Dad.", "Can I get $20?", "lol ok", "School was boring."]);
+        else rep = cold ? pick(["k.", "Who is this?", "..."]) : pick(["Aww. You're sweet.", "Miss you too.", "Haha stop it.", "Come see me later?", "Love you too."]);
+        bumpRel(id, cold ? 1 : 3); textMe(id, name, rep); if (phoneApp === 'thread' && phoneThread === id) renderPhone();
+      }, rand(1800, 3500));
+    });
   } else if (phoneApp === 'msgs') {
     const ms = messages();
-    el.innerHTML = `${back}<h4>Messages</h4><div class="ph-list">${ms.map((m, i) => `<div class="ph-msg"><div class="av">${svg(m.av)}</div><div><b>${m.from}</b><p>${m.text}</p>${m.at ? `<button class="ph-mini" data-wp="${i}">${svg('pin', 'sm')} Set waypoint</button>` : ''}</div></div>`).join('')}</div>`;
+    const chatIds = [...new Set([...(fam().partner ? [fam().partner.id] : []), ...Object.keys(stats.texts || {}), ...Object.keys(stats.dates || {}), ...fam().kids.filter(k => ['Teen', 'Adult'].includes(kidStage(k))).map(k => k.id)])];
+    const chats = chatIds.map(id => { const T = stats.texts?.[id] || [], last = T[T.length - 1]; return `<button class="ph-row" data-thr="${id}"><span>${svg(id.startsWith('kid:') ? 'smile' : 'heart', 'sm')} <b>${nameOf(id)}</b> <small style="white-space:normal">${last ? (last.me ? 'You: ' : '') + last.t : 'Tap to text'}</small></span></button>`; }).join('');
+    el.innerHTML = `${back}<h4>Messages</h4>${chats ? `<div class="ph-sec">Chats</div>${chats}<div class="ph-sec">Inbox</div>` : ''}<div class="ph-list">${ms.map((m, i) => `<div class="ph-msg"><div class="av">${svg(m.av)}</div><div><b>${m.from}</b><p>${m.text}</p>${m.at ? `<button class="ph-mini" data-wp="${i}">${svg('pin', 'sm')} Set waypoint</button>` : ''}</div></div>`).join('')}</div>`;
+    el.querySelectorAll('[data-thr]').forEach(b => b.onclick = () => { phoneThread = b.dataset.thr; phoneGo('thread'); });
     el.querySelectorAll('[data-wp]').forEach(b => b.onclick = () => { const m = ms[+b.dataset.wp]; setWaypoint(m.at.x, m.at.z, m.at.name); toast(m.at.name); closePhone(); });
   } else if (phoneApp === 'contacts') {
     const people = Object.entries(stats.rel).filter(([, v]) => v > 0).sort((a, b) => b[1] - a[1]);
@@ -1990,7 +2180,9 @@ function renderPhone() {
     el.querySelectorAll('[data-call]').forEach(b => b.onclick = () => { const id = b.dataset.call, d = stats.dates[id], r = rel(id); closePhone(); if (r < 30 && Math.random() < 0.5) { toast(`${d.name}: "Sorry, busy tonight!"`, 3); bumpRel(id, 2); return; } toast(`${d.name}: "Omw! Where are you?"`, 3); setTimeout(() => { if (date || inside) return; const look = { ...bakeCfg(d.cfg), fem: true }, a = rand(0, 6.28); startDate({ name: d.name, look, x: P.x + Math.sin(a) * 20, z: P.z + Math.cos(a) * 20, face: 0, interest: 40 + r * 0.6, root: new THREE.Group() }); }, 4000); });
   } else if (phoneApp === 'me') {
     const sk = s => { const L = lvl(s), xp = stats.xp[s] || 0, need = xpFor(L); return `<div class="ph-row col"><span><b>${skillName(s)}</b> <small>Level ${L}${L >= MAX_LVL ? ' · MAX' : ''}</small></span>${bar(L >= MAX_LVL ? 100 : xp / need * 100, '#38e8ff')}</div>`; };
-    el.innerHTML = `${back}<h4>Me</h4>
+    const F = fam(), P2 = F.partner;
+    const famHtml = `<div class="ph-sec">Family</div>${P2 ? `<div class="ph-row col"><span><b>${svg('heart', 'sm')} ${P2.name}</b><small>${{ partner: 'Girlfriend', engaged: 'Fiancée', married: 'Wife' }[P2.status] || ''}</small></span>${bar(rel(P2.id), '#ff6fb5')}</div>` : '<p class="ph-hint">Single. Go flirt with someone.</p>'}${F.preg ? `<div class="ph-row"><span>${svg('star', 'sm')} Baby on the way</span><small>${Math.max(0, F.preg.due - dayN)} days</small></div>` : ''}${F.kids.map(k => `<div class="ph-row col"><span><b>${svg('smile', 'sm')} ${k.name}</b><small>${k.girl ? 'Daughter' : 'Son'} · ${kidStage(k)} · ${kidAge(k)} days old</small></span>${bar(rel(k.id), '#ffd23f')}</div>`).join('')}${famHome() ? `<p class="ph-hint">Family home: ${famHome().name}</p>` : ''}`;
+    el.innerHTML = `${back}<h4>Me</h4>${famHtml}
       <div class="ph-sec">Needs</div>
       <div class="ph-row col"><span><b>Hunger</b> <small>${Math.round(stats.hunger)}%</small></span>${bar(stats.hunger, '#ff8a2a')}</div>
       <div class="ph-row col"><span><b>Energy</b> <small>${Math.round(stats.energy)}%</small></span>${bar(stats.energy, '#ffd23f')}</div>
@@ -2021,7 +2213,7 @@ function renderPhone() {
     el.querySelectorAll('[data-w]').forEach(b => b.onclick = () => { const w = W[+b.dataset.w]; setWaypoint(w.p.x, w.p.z, w.p.name); toast(`GPS set: ${w.p.name}`); closePhone(); });
     if ($('phQuitJob')) $('phQuitJob').onclick = () => { endJob('Shift ended.'); renderPhone(); };
   } else if (phoneApp === 'wallet') {
-    const inc = PROPERTIES.filter(p => owned.has(p.id)).reduce((a, p) => a + p.income, 0);
+    const inc = PROPERTIES.filter(p => owned.has(p.id) && propMode(p.id) === 'rent').reduce((a, p) => a + p.income, 0);
     const items = GOODS.filter(g => stash[g.id]).map(g => `<div class="ph-row"><span style="color:${g.col}">${svg(g.icon, 'sm')} <b style="color:#fff">${g.name}</b></span><b>×${stash[g.id]}</b></div>`).join('') || '<p class="ph-hint">Stash is empty.</p>';
     el.innerHTML = `${back}<h4>Wallet</h4><div class="ph-cash">${fmt(money)}</div><p class="ph-hint">Daily income ${fmt(inc)} · Stash ${stashCount()}/${stashCap()} · Groceries ${stats.groceries} meals</p><div class="ph-sec">Stash</div>${items}`;
   } else if (phoneApp === 'garage') {
@@ -2032,8 +2224,12 @@ function renderPhone() {
     $('phBring').onclick = () => { if (inside) { toast('Step outside first'); return; } if (ride) exitCar(); bringCar(); closePhone(); };
     $('phFind').onclick = () => { setWaypoint(myCar.s.x, myCar.s.z, 'My car'); closePhone(); };
   } else if (phoneApp === 'homes') {
-    el.innerHTML = `${back}<h4>Homes</h4><p class="ph-hint">Walk into any home you own. Use the edit button inside to arrange furniture. Storage: ${storage.length} item${storage.length === 1 ? '' : 's'}.</p>${PROPERTIES.filter(p => owned.has(p.id)).map(p => `<button class="ph-row" data-h="${p.id}"><span>${svg('house', 'sm')} ${p.name} <small>${INTERIORS[p.home].name} · ${(homes[p.id] || []).length} items</small></span><small>${svg('pin', 'sm')}</small></button>`).join('')}`;
-    el.querySelectorAll('[data-h]').forEach(b => b.onclick = () => { const p = PROPERTIES.find(q => q.id === b.dataset.h); setWaypoint(p.x, p.z, p.name); closePhone(); });
+    const f = fam(), hasFam = !!(f.partner?.livesIn || f.kids.length);
+    el.innerHTML = `${back}<h4>Homes</h4><p class="ph-hint">Live in a home, rent it out for daily income, or sell it. Your family lives in your family home. Storage: ${storage.length} item${storage.length === 1 ? '' : 's'}.</p>${PROPERTIES.filter(p => owned.has(p.id)).map(p => { const m = propMode(p.id), isFam = f.home === p.id, sell = p.price ? Math.round(p.price * 0.75) : 2000; return `<div class="ph-row col ${isFam ? 'on' : ''}"><span><b>${svg('house', 'sm')} ${p.name}</b><small>${isFam ? 'Family home' : m === 'rent' ? `Rented · +${fmt(p.income)}/day` : 'Vacant'}</small></span><small>${INTERIORS[p.home].name} · ${(homes[p.id] || []).length} items</small><span class="rowbtns">${!isFam ? `<button class="ph-mini" data-fam="${p.id}">Make family home</button>` : ''}${!isFam && p.income ? `<button class="ph-mini" data-rent="${p.id}">${m === 'rent' ? 'Stop renting' : 'Rent out'}</button>` : ''}<button class="ph-mini" data-go2="${p.id}">GPS</button>${!(isFam && hasFam) ? `<button class="ph-mini" data-sell="${p.id}">Sell ${fmt(sell)}</button>` : ''}</span></div>`; }).join('')}`;
+    el.querySelectorAll('[data-go2]').forEach(b => b.onclick = () => { const p = PROPERTIES.find(q => q.id === b.dataset.go2); setWaypoint(p.x, p.z, p.name); closePhone(); });
+    el.querySelectorAll('[data-fam]').forEach(b => b.onclick = () => { const id = b.dataset.fam; if (inside?.prop?.id === id || inside?.prop?.id === f.home) { toast('Step outside first'); return; } f.home = id; stats.propMode[id] = 'live'; if (hasFam) toast(`Your family moved into ${PROPERTIES.find(q => q.id === id).name}.`, 3); saveGame(); renderPhone(); });
+    el.querySelectorAll('[data-rent]').forEach(b => b.onclick = () => { const id = b.dataset.rent; if (inside?.prop?.id === id) { toast('Step outside first'); return; } stats.propMode[id] = propMode(id) === 'rent' ? 'vacant' : 'rent'; saveGame(); renderPhone(); });
+    el.querySelectorAll('[data-sell]').forEach(b => b.onclick = () => { const id = b.dataset.sell, p = PROPERTIES.find(q => q.id === id); if (inside?.prop?.id === id) { toast('Step outside first'); return; } if ([...owned].length <= 1) { toast("You can't sell your only home."); return; } const sell = p.price ? Math.round(p.price * 0.75) : 2000; owned.delete(id); if (f.home === id) f.home = null; delete stats.propMode[id]; addMoney(sell); refreshPropertyMarkers(); saveGame(); toast(`Sold ${p.name} for ${fmt(sell)}.`, 3); renderPhone(); });
   } else if (phoneApp === 'style') {
     el.innerHTML = `${back}<h4>Style</h4><p class="ph-hint">Body and face are free to change. Hair is done at barbers, clothes at clothing stores.</p><button class="ph-btn" id="phBody">${svg('user', 'sm')} Edit body & face</button>`;
     $('phBody').onclick = () => { $('phone').classList.remove('open'); $('phone').classList.add('hidden'); openCustom('char'); };
@@ -2098,7 +2294,8 @@ function updateAmbience() {
 // ---------------- step
 function newDay() {
   dayN++;
-  const inc = PROPERTIES.filter(p => owned.has(p.id)).reduce((a, p) => a + p.income, 0);
+  const inc = PROPERTIES.filter(p => owned.has(p.id) && propMode(p.id) === 'rent').reduce((a, p) => a + p.income, 0);
+  famNewDay();
   if (inc) { money += inc; floatMoney(inc); toast(`New day · property income +${fmt(inc)}`, 3.5); } else toast('New day · dealer prices changed', 3);
   phoneBadge++;
 }
@@ -2119,7 +2316,7 @@ function step(dt) {
     updateAngry(dt);
     updateNpcList(npcs, dt); updateFlyer(dt);
   } else updateNpcList(inside.npcs, dt);
-  updateDate(dt);
+  updateDate(dt); famTexts(dt);
   updateBullets(dt); updateProjectiles(dt); updateParticles(dt); updateCash(dt); updateMarkers(); updateRace(dt); updateRoute(dt); updateCustomers(dt); updateJob(dt);
   if (input.consume('map') || input.consume('pause')) openPhone('maps');
   for (let i = 1; i <= 9; i++) if (input.keys.has('Digit' + i)) { input.keys.delete('Digit' + i); selectWeapon(SLOTS[i - 1].id); }
@@ -2284,4 +2481,4 @@ function frame(now) {
 }
 startGame();
 requestAnimationFrame(frame);
-window.__game = { get animals() { return animals; }, scene: G.scene, cam: G.cam, snap: () => updateCamera(0, true), get state() { return state; }, P, input, get ride() { return ride; }, get myCar() { return myCar; }, get traffic() { return traffic; }, peds, setTime: h => { clockH = h; }, openCustom, enterVehicle, exitCar, get money() { return money; }, set money(v) { money = v; }, openPlace, PLACES, PROPERTIES, runMinigame, get action() { return action; }, arsenal, selectWeapon, openPhone, setWaypoint, get route() { return route; }, talkToPed, talk, doAction, stats, get inside() { return inside; }, enterInterior, exitInterior, get customers() { return customers; }, newCustomer, startEdit, endEdit, get job() { return job; }, gainXP, storage, doSpot, useFurn, phoneGo, talkVenue, talkJob, openPlace, talkCustomer, startJob, openCarShop };
+window.__game = { get animals() { return animals; }, fam, famNewDay, makeOfficial, talkFamily, get dayN() { return dayN; }, set dayN(v) { dayN = v; }, scene: G.scene, cam: G.cam, snap: () => updateCamera(0, true), get state() { return state; }, P, input, get ride() { return ride; }, get myCar() { return myCar; }, get traffic() { return traffic; }, peds, setTime: h => { clockH = h; }, openCustom, enterVehicle, exitCar, get money() { return money; }, set money(v) { money = v; }, openPlace, PLACES, PROPERTIES, runMinigame, get action() { return action; }, arsenal, selectWeapon, openPhone, setWaypoint, get route() { return route; }, talkToPed, talk, doAction, stats, get inside() { return inside; }, enterInterior, exitInterior, get customers() { return customers; }, newCustomer, startEdit, endEdit, get job() { return job; }, gainXP, storage, doSpot, useFurn, phoneGo, talkVenue, talkJob, openPlace, talkCustomer, startJob, openCarShop };
