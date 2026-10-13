@@ -1,25 +1,25 @@
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA } from './character.js?v=44';
-import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=44';
-import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=44';
-import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide } from './world.js?v=44';
-import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=44';
-import { buildPanel, renderStats } from './ui.js?v=44';
-import { Input } from './input.js?v=44';
-import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime } from './audio.js?v=44';
-import { runMinigame } from './minigames.js?v=44';
-import { Peds, bakeCfg, figure, setWalk } from './peds.js?v=44';
-import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=44';
-import { findRoute } from './nav.js?v=44';
-import { COURSES, CAREERS, QUIZ } from './careers.js?v=44';
-import { EVENTS, EVENT_BY_ID } from './events.js?v=44';
-import { attachWheel } from './wheel.js?v=44';
-import { Animals } from './animals.js?v=44';
-import { Talk } from './talk.js?v=44';
-import { svg, drawIcon } from './icons.js?v=44';
-import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=44';
-import { FURN, CATALOG } from './furniture.js?v=44';
-import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE } from './interiors.js?v=44';
+import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA } from './character.js?v=45';
+import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=45';
+import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=45';
+import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide } from './world.js?v=45';
+import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=45';
+import { buildPanel, renderStats } from './ui.js?v=45';
+import { Input } from './input.js?v=45';
+import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime } from './audio.js?v=45';
+import { runMinigame } from './minigames.js?v=45';
+import { Peds, bakeCfg, figure, setWalk } from './peds.js?v=45';
+import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=45';
+import { findRoute } from './nav.js?v=45';
+import { COURSES, CAREERS, QUIZ } from './careers.js?v=45';
+import { EVENTS, EVENT_BY_ID } from './events.js?v=45';
+import { attachWheel } from './wheel.js?v=45';
+import { Animals } from './animals.js?v=45';
+import { Talk } from './talk.js?v=45';
+import { svg, drawIcon } from './icons.js?v=45';
+import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=45';
+import { FURN, CATALOG } from './furniture.js?v=45';
+import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE } from './interiors.js?v=45';
 
 const $ = id => document.getElementById(id);
 let inside = null, editMode = false, held = null, pendingCar = false, homeMusic = false, phoneBadge = 0;
@@ -750,10 +750,11 @@ function updateFoot(dt) {
   const tired = stats.energy < 10 ? 0.7 : 1, runMul = 1 + (lvl('stamina') - 1) * 0.035;
   const swim = inWater(P.x, P.z) && P.y < WATER_Y + 0.2;
   if (P.ladder) return updateLadder(dt, st);
-  const sp = (swim ? 2.6 : st.m > 0.85 ? 7.2 * runMul : 4.6) * st.m * (swim ? 1 : ws.mob || 1) * tired * (inside ? 0.8 : 1), ox = P.x, oz = P.z;
+  const sp = (swim ? 2.6 : st.m > 0.85 ? 7.2 * runMul : 4.6) * st.m * (swim ? 1 : ws.mob || 1) * tired * (inside ? 0.8 : 1) * (P.leap ? 1.55 : 1) * (1 - body().fat * 0.15), ox = P.x, oz = P.z; // running jumps carry you further; extra weight slows you
   if (st.m > 0.1) { const wob = Math.sin(time * 1.4) * Math.min(1, FX.drunk) * 0.7, mx0 = st.x / st.m, mz0 = -st.y / st.m, mx = mx0 * Math.cos(wob) - mz0 * Math.sin(wob), mz = mx0 * Math.sin(wob) + mz0 * Math.cos(wob); P.x += mx * sp * fxSpeed() * dt; P.z += mz * sp * fxSpeed() * dt; P.face += wrapA(Math.atan2(mx, mz) - P.face) * (1 - Math.exp(-14 * dt)); }
   resolve(P, 0.4, Math.max(0, P.y - baseY(P.x, P.z)));
-  if (!inside) for (const v of vehicles) { if ((v.s.x - P.x) ** 2 + (v.s.z - P.z) ** 2 > 36) continue; for (const [cx, cz, r] of carCircles(v)) { const dx = P.x - cx, dz = P.z - cz, d = Math.hypot(dx, dz), m = r + 0.35; if (d < m && d > 1e-3 && P.y < baseY(P.x, P.z) + 1.2) { P.x = cx + dx / d * m; P.z = cz + dz / d * m; } } }
+  if (!inside) for (const v of vehicles) { if ((v.s.x - P.x) ** 2 + (v.s.z - P.z) ** 2 > 36) continue; for (const [cx, cz, r] of carCircles(v)) { const dx = P.x - cx, dz = P.z - cz, d = Math.hypot(dx, dz), m = r + 0.35; if (d < m && d > 1e-3 && P.y < baseY(P.x, P.z) + 1.2) { if (input.stick.m > 0.85 && P.vy <= 0 && P.y <= baseY(P.x, P.z) + 0.05 && !P.dead) { P.vy = 6.4; P.leap = true; P.fallFrom = P.y; P.vault = 0.5; sfx.whoosh(); } else { P.x = cx + dx / d * m; P.z = cz + dz / d * m; } } } // run at a car to vault over it
+  }
   for (const p of peds.list) { const dx = P.x - p.x, dz = P.z - p.z, d = Math.hypot(dx, dz); if (d < 0.7 && d > 0.01 && p.state !== 'down') { p.x -= dx / d * (0.7 - d); p.z -= dz / d * (0.7 - d); } }
   for (const n of allNpcs()) { if (n.hidden || (n.y || 0) > P.y + 1.5 || (n.y || 0) < P.y - 1.5) continue; const dx = P.x - n.x, dz = P.z - n.z, d = Math.hypot(dx, dz); if (d < 0.75 && d > 0.01) { P.x = n.x + dx / d * 0.75; P.z = n.z + dz / d * 0.75; } }
   if (!canWalk(P.x, P.z)) { P.x = ox; P.z = oz; }
@@ -762,7 +763,7 @@ function updateFoot(dt) {
   const gy = swim ? WATER_Y - 1.05 : inside ? (inside.h.floorY ? inside.h.floorY(P.x, P.z, P.y) : 0) : Math.max(baseY(P.x, P.z), roofAt(P.x, P.z, P.y));
   if (editMode) { updateEdit(dt); }
   else {
-    if (input.consume('b') && P.y <= gy + 0.01 && !P.dead && !swim) { P.vy = fxJump(); P.fallFrom = P.y; }
+    if (input.consume('b') && P.y <= gy + 0.01 && !P.dead && !swim) { P.vy = fxJump() * (input.stick.m > 0.85 ? 1.12 : 1); P.fallFrom = P.y; P.leap = input.stick.m > 0.85 && !inside; if (P.leap) sfx.whoosh(); } // sprint + jump = long jump (rooftop gaps)
     // grab a ledge: jumping into a wall whose top is within reach pulls you up onto it
     if (!inside && P.y > gy + 0.2 && !P.climb) { const fx = Math.sin(P.face), fz = Math.cos(P.face), t = wallTop(P.x + fx * 0.75, P.z + fz * 0.75); if (t !== null && t - P.y > 0.2 && t - P.y < 2.4) { P.climb = { t: 0, x0: P.x, z0: P.z, y0: P.y, x1: P.x + fx * 1.0, z1: P.z + fz * 1.0, y1: t }; P.vy = 0; sfx.click(); } }
     // ---- weapon use (holstered indoors)
@@ -814,13 +815,17 @@ function updateFoot(dt) {
   if (swim) { P.vy = 0; P.y = damp(P.y, gy, 6, dt); stats.energy = Math.max(0, stats.energy - dt * 0.04); if (stats.energy <= 0) hurt(dt * 3); }
   else { P.vy -= fxGrav() * dt; P.y += P.vy * dt; }
   if (P.y <= gy && !swim) {
-    if (P.fallFrom !== undefined) { const fall = P.fallFrom - gy; if (fall > 5.5 && !inWater(P.x, P.z)) { hurt((fall - 5.5) * 8); sfx.thud(); shake = 0.3; } }
+    if (P.fallFrom !== undefined) { const fall = P.fallFrom - gy, roll = input.stick.m > 0.6 && fall < 9; if (roll && fall > 2.5) { P.roll = 0.45; sfx.whoosh(); } if (fall > (roll ? 9 : 5.5) && !inWater(P.x, P.z)) { hurt((fall - (roll ? 9 : 5.5)) * 8); sfx.thud(); shake = 0.3; } }
+    P.leap = false;
     P.y = gy; P.vy = 0; P.fallFrom = undefined;
   }
   if (swim && P.fallFrom !== undefined) { if (P.fallFrom - P.y > 1.2) { spawnParticles(P.x, WATER_Y + 0.2, P.z, ['#ffffff', '#bfe8ff'], 18, 4, 0.6, 0.12, 8); sfx.whoosh(); } P.fallFrom = undefined; }
   heroRoot.position.set(P.x, P.y, P.z); hero.root.rotation.y = P.face;
   const diving = P.y > gy + 1.5 && P.vy < -2 && (inWater(P.x, P.z) || swimmable(P.x, P.z) && !walkable(P.x, P.z));
   hero.root.rotation.x = P.dead ? damp(hero.root.rotation.x, -Math.PI / 2, 8, dt) : swim ? damp(hero.root.rotation.x, 1.25, 6, dt) : diving ? damp(hero.root.rotation.x, 2.6, 5, dt) : 0;
+  hero.root.rotation.order = 'YXZ';
+  if (P.roll > 0) { P.roll -= dt; const k = 1 - Math.max(0, P.roll) / 0.45; hero.root.rotation.x = k * Math.PI * 2; heroRoot.position.y += Math.sin(k * Math.PI) * 0.35; } // forward roll on landing
+  else if (P.leap && P.y > gy + 0.3) hero.root.rotation.x = 0.35; // lean into a long jump / vault
   const kind = inside ? 'none' : ws.kind, firing = input.held('x');
   const gunReady = (kind === 'gun' || kind === 'rpg') && (firing || P.fireCd > -0.6);
   if (heroW) heroW.group.visible = !inside;
@@ -3833,7 +3838,7 @@ function saveGame() {
   store.set('bc_save', save); store.set('bc_arsenal', arsenal); store.set('bc_cars', garage);
 }
 // auto-update: bookmarks and home-screen apps can hold on to an old copy. Check version.json (never cached) and reload once if newer.
-const BUILD = 44;
+const BUILD = 45;
 function checkUpdate() {
   fetch('version.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(j => {
     if (!(j.v > BUILD)) return;

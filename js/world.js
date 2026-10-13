@@ -144,7 +144,12 @@ export const PARKED = []; // {x,z,rot,seed}
 export const LAMPS = [];
 export const LADDERS = []; // {x,z,top,nx,nz} climbable ladders on building walls
 // highest roof you can stand on at (x,z) given your current height y
-export function roofAt(x, z, y) { let t = -99; for (const c of collidersNear(x, z)) if (c.top && !c.r && x > c.x0 && x < c.x1 && z > c.z0 && z < c.z1 && y >= c.top - 0.6 && c.top > t) t = c.top; return t; }
+export const STAIRS = []; // fire-escape flights: { x0, x1, z0, z1, y0, y1 } rising along z from z0 (y0) to z1 (y1) or reversed
+export function roofAt(x, z, y) {
+  let t = -99; for (const c of collidersNear(x, z)) if (c.top && !c.r && x > c.x0 && x < c.x1 && z > c.z0 && z < c.z1 && y >= c.top - 0.6 && c.top > t) t = c.top;
+  for (const S of STAIRS) if (x > S.x0 && x < S.x1 && z > S.zmin - 0.2 && z < S.zmax + 0.2) { const k = Math.min(1, Math.max(0, (z - S.z0) / (S.z1 - S.z0))), sy = S.y0 + (S.y1 - S.y0) * k; if (y >= sy - 0.75 && sy > t) t = sy; }
+  return t;
+}
 export function wallTop(x, z) { for (const c of collidersNear(x, z)) if (c.top && !c.r && x > c.x0 && x < c.x1 && z > c.z0 && z < c.z1) return c.top; return null; }
 
 function building(x, z, w, d, h, color, opts = {}) {
@@ -152,6 +157,14 @@ function building(x, z, w, d, h, color, opts = {}) {
   o.cc = { x0: x - w / 2, x1: x + w / 2, z0: z - d / 2, z1: z + d / 2, h: h + (opts.roofH || 0), top: 0.15 + (opts.y || 0) + h + (opts.roof === 'pitch' ? (opts.roofH || 2) * 0.55 : opts.glass ? 0 : 0.5) }; addCollider(o.cc);
   if (!opts.roof && !opts.glass && !opts.y && h < 34 && w > 8 && d > 8 && hash(x | 0, z | 0, 77) < 0.35) { // fire-escape ladder on the back
     const L = { x: x + w * 0.3, z: z - d / 2 - 0.25, top: o.cc.top, nx: 0, nz: -1 }; LADDERS.push(L); addObj({ t: 'ladder', x: L.x, z: L.z, top: L.top });
+  } else if (!opts.roof && !opts.glass && !opts.y && h < 24 && h > 5 && d > 11 && w > 8 && hash(x | 0, z | 0, 91) < 0.3) { // zig-zag fire-escape stairs up the side to the roof
+    const top = o.cc.top, n = Math.max(2, Math.round(top / 3.6)), hs = top / n, X0 = x + w / 2, Lf = Math.min(d - 4.4, 6.5), zs = z - Lf / 2, fl = [];
+    for (let k = 0; k < n; k++) {
+      const up = k % 2 === 0, za = up ? zs : zs + Lf, zb = up ? zs + Lf : zs, S = { x0: X0 + 0.05, x1: X0 + 1.5, z0: za, z1: zb, zmin: Math.min(za, zb), zmax: Math.max(za, zb), y0: 0.17 + k * hs, y1: 0.17 + (k + 1) * hs };
+      STAIRS.push(S); fl.push(S);
+      if (k < n - 1) { const lz0 = up ? zs + Lf : zs - 1.5, land = { x0: X0 + 0.05, x1: X0 + 1.5, z0: lz0, z1: lz0 + 1.5, h: S.y1 - 0.5, top: S.y1 }; addCollider(land); fl.push({ land: true, ...land }); }
+    }
+    addObj({ t: 'fstairs', x: X0 + 0.8, z, fl });
   }
   return o;
 }
@@ -866,6 +879,14 @@ function drawObj(o, B) {
     case 'bench': B.box(o.x, 0.2, o.z, o.rot ? 0.6 : 2, 0.45, o.rot ? 2 : 0.6, '#8a5a35'); break;
     case 'rock': B.box(o.x, -2, o.z, o.w, o.h + 2, o.d, o.col, { rot: r() * 0.6 }); B.box(o.x + 2, o.h - 1, o.z - 1, o.w * 0.6, 3, o.d * 0.6, '#3f6b35', { rot: r() }); break;
     case 'struct': drawStruct(o, B); break;
+    case 'fstairs': { // black iron fire escape: flights of steps, landings and railings
+      const iron = '#2a2b30', step = '#4a4d54';
+      for (const f of o.fl) {
+        if (f.land) { B.box((f.x0 + f.x1) / 2, f.top - 0.12, (f.z0 + f.z1) / 2, f.x1 - f.x0, 0.1, f.z1 - f.z0, step); B.box(f.x1 - 0.03, f.top, (f.z0 + f.z1) / 2, 0.05, 1.0, f.z1 - f.z0, iron); B.box((f.x0 + f.x1) / 2, 0, f.z0 + 0.03, 0.06, f.top, 0.06, iron); continue; }
+        const steps = Math.max(6, Math.round(Math.abs(f.z1 - f.z0) / 0.35));
+        for (let i = 0; i < steps; i++) { const k = (i + 0.5) / steps, sy = f.y0 + (f.y1 - f.y0) * k, sz = f.z0 + (f.z1 - f.z0) * k, sl = Math.abs(f.z1 - f.z0) / steps + 0.03; B.box((f.x0 + f.x1) / 2, sy - 0.06, sz, f.x1 - f.x0, 0.06, sl, step); B.box(f.x1 - 0.03, sy + 0.85, sz, 0.05, 0.05, sl, iron); if (i % 3 === 0) B.box(f.x1 - 0.03, sy, sz, 0.04, 0.85, 0.04, iron); }
+      }
+      break; }
     case 'ladder': { for (const sx of [-0.28, 0.28]) B.box(o.x + sx, 0.15, o.z, 0.06, o.top - 0.15 + 0.9, 0.06, '#5a5d64'); for (let y = 0.5; y < o.top + 0.6; y += 0.35) B.box(o.x, y, o.z, 0.56, 0.04, 0.05, '#7a7d84'); break; }
     case 'umbrella': B.box(o.x, 0, o.z, 0.1, 2.2, 0.1, '#ddd'); B.cone(o.x, 2.0, o.z, 1.6, 0.7, o.col, 8); break;
     case 'lifeguard':

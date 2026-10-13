@@ -2,7 +2,9 @@
 // stray cats, dogs out on walks with their owners, squirrels, deer in the hills by day, and raccoons,
 // possums, coyotes and owls at night. All low-poly, baked into a few meshes each so they're cheap to draw.
 import * as THREE from '../lib/three.module.min.js';
-import { CITIES, LAMPS, FIELDS, sandLine, shoreLine, walkable, groundH, cityAt, roadAt } from './world.js?v=44';
+import { CITIES, LAMPS, FIELDS, sandLine, shoreLine, walkable, groundH, cityAt, roadAt, wallTop } from './world.js?v=45';
+// a spot on a nearby rooftop (roof edge-ish), or null
+function roofSpot(x, z, rMin = 8, rMax = 45) { for (let i = 0; i < 10; i++) { const a = Math.random() * 6.28, d = rMin + Math.random() * (rMax - rMin), px = x + Math.sin(a) * d, pz = z + Math.cos(a) * d, t = wallTop(px, pz); if (t != null && t > 3 && t < 40) return { x: px, z: pz, y: t + 0.02 }; } return null; }
 
 const rand = (a, b) => a + Math.random() * (b - a), pick = a => a[Math.floor(Math.random() * a.length)];
 const MAT = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.85, flatShading: true });
@@ -96,7 +98,9 @@ export class Animals {
     // fly to a nearby lamp post if there's one, otherwise away into the sky
     let best = null, bd = 1e9;
     if (a.kind !== 'seagull') for (const l of LAMPS) { const d = Math.hypot(l.x - a.x, l.z - a.z); if (d > 6 && d < 40 && d < bd && Math.hypot(l.x - x, l.z - z) > 10 && !this.list.some(b => b.perch === l)) { bd = d; best = l; } }
-    if (best && Math.random() < 0.75) { a.perch = best; a.tx = best.x + rand(-0.2, 0.2); a.tz = best.z + rand(-0.2, 0.2); a.ty = 5.42; }
+    const roof = a.kind !== 'seagull' || Math.random() < 0.5 ? (Math.random() < 0.45 ? roofSpot(a.x, a.z) : null) : roofSpot(a.x, a.z);
+    if (roof) { a.perch = { roof: true }; a.tx = roof.x; a.tz = roof.z; a.ty = roof.y; }
+    else if (best && Math.random() < 0.75) { a.perch = best; a.tx = best.x + rand(-0.2, 0.2); a.tz = best.z + rand(-0.2, 0.2); a.ty = 5.42; }
     else { const ang = Math.atan2(a.x - x, a.z - z) + rand(-0.8, 0.8); a.perch = null; a.tx = a.x + Math.sin(ang) * 120; a.tz = a.z + Math.cos(ang) * 120; a.ty = 26; }
   }
   // ---------------- spawning by place & time
@@ -105,7 +109,7 @@ export class Animals {
     const night = hour < 6 || hour >= 20, dusk = hour >= 18 && hour < 20, c = cityAt(px, pz, 30);
     const beach = pz > sandLine(px) - 70 && px > -330, hills = px < -300;
     const want = {};
-    if (c) Object.assign(want, night ? { cat: 3, raccoon: 2, possum: 1, owl: 2, coyote: Math.random() < 0.5 ? 1 : 0, pigeonPerch: 2 } : { pigeonFlock: 3, pigeonPerch: 3, crow: dusk ? 3 : 1, cat: 2, dog: 3, squirrel: 1 });
+    if (c) Object.assign(want, night ? { cat: 3, raccoon: 2, possum: 1, owl: 2, coyote: Math.random() < 0.5 ? 1 : 0, pigeonPerch: 2, roofFlock: 1 } : { pigeonFlock: 3, pigeonPerch: 3, roofFlock: 3, crow: dusk ? 3 : 1, cat: 2, dog: 3, squirrel: 1 });
     if (beach) Object.assign(want, night ? { seagull: 1, raccoon: 1 } : { seagullFlock: 3, dog: 2 });
     if (hills) Object.assign(want, night ? { coyote: 3, owl: 2, raccoon: 1, possum: 1 } : { deer: 3, squirrel: 3, crow: 2 });
     // farms: livestock in the fields, chickens pecking near the barns
@@ -128,6 +132,11 @@ export class Animals {
     return null;
   }
   spawnOne(tag, px, pz, c, night) {
+    if (tag === 'roofFlock') { // pigeons (or gulls near the beach) sitting along a rooftop
+      const r = roofSpot(px, pz, 25, 90); if (!r) return; const kind = pz > sandLine(px) - 120 && Math.random() < 0.6 ? 'seagull' : night ? 'crow' : 'pigeon', n = Math.floor(rand(2, 6));
+      for (let i = 0; i < n; i++) this.add(kind, r.x + rand(-1.6, 1.6), r.z + rand(-1.6, 1.6), { tag, state: 'perch', y: r.y, perch: { roof: true } });
+      return;
+    }
     if (tag === 'pigeonFlock' || tag === 'seagullFlock') {
       const kind = tag === 'pigeonFlock' ? 'pigeon' : 'seagull', s = this.spot(px, pz, kind === 'pigeon' ? 'sidewalk' : 'beach', c); if (!s) return;
       const n = Math.floor(rand(3, 7)); for (let i = 0; i < n; i++) this.add(kind, s.x + rand(-1.5, 1.5), s.z + rand(-1.5, 1.5), { tag });

@@ -127,6 +127,13 @@ Walk into shops, venues and homes:
 - Swim in the sea and fountains. Some pedestrians swim too.
 - Jump at a wall to grab the ledge and climb up. Fire-escape ladders lead to rooftops. Dive off into water; long falls on land hurt.
 
+## Parkour and rooftops
+- Zig-zag iron fire escapes on the sides of many buildings: walk up the stairs to the roof.
+- Sprint and jump for a long jump that clears gaps between rooftops.
+- Run at a parked car to vault over it.
+- Land while moving to roll and take less fall damage.
+- Pigeons, crows and gulls sit on rooftops and fly between roofs and lamp posts.
+
 ## Emergency services
 - Explosions start fires. Fire engines come to put them out, and ambulances come to collect the injured.
 
