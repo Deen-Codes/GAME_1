@@ -1,25 +1,25 @@
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA } from './character.js?v=42';
-import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=42';
-import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=42';
-import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide } from './world.js?v=42';
-import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=42';
-import { buildPanel, renderStats } from './ui.js?v=42';
-import { Input } from './input.js?v=42';
-import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime } from './audio.js?v=42';
-import { runMinigame } from './minigames.js?v=42';
-import { Peds, bakeCfg, figure, setWalk } from './peds.js?v=42';
-import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=42';
-import { findRoute } from './nav.js?v=42';
-import { COURSES, CAREERS, QUIZ } from './careers.js?v=42';
-import { EVENTS, EVENT_BY_ID } from './events.js?v=42';
-import { attachWheel } from './wheel.js?v=42';
-import { Animals } from './animals.js?v=42';
-import { Talk } from './talk.js?v=42';
-import { svg, drawIcon } from './icons.js?v=42';
-import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=42';
-import { FURN, CATALOG } from './furniture.js?v=42';
-import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE } from './interiors.js?v=42';
+import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA } from './character.js?v=43';
+import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=43';
+import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=43';
+import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide } from './world.js?v=43';
+import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=43';
+import { buildPanel, renderStats } from './ui.js?v=43';
+import { Input } from './input.js?v=43';
+import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime } from './audio.js?v=43';
+import { runMinigame } from './minigames.js?v=43';
+import { Peds, bakeCfg, figure, setWalk } from './peds.js?v=43';
+import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=43';
+import { findRoute } from './nav.js?v=43';
+import { COURSES, CAREERS, QUIZ } from './careers.js?v=43';
+import { EVENTS, EVENT_BY_ID } from './events.js?v=43';
+import { attachWheel } from './wheel.js?v=43';
+import { Animals } from './animals.js?v=43';
+import { Talk } from './talk.js?v=43';
+import { svg, drawIcon } from './icons.js?v=43';
+import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=43';
+import { FURN, CATALOG } from './furniture.js?v=43';
+import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE } from './interiors.js?v=43';
 
 const $ = id => document.getElementById(id);
 let inside = null, editMode = false, held = null, pendingCar = false, homeMusic = false, phoneBadge = 0;
@@ -483,10 +483,14 @@ function updateTraffic(dt) {
     t.rx = damp(t.rx, t.x, 7, dt); t.rz = damp(t.rz, t.z, 7, dt); t.rh += wrapA(t.h - t.rh) * (1 - Math.exp(-7 * dt));
     t.mesh.position.set(t.rx, 0.04, t.rz); t.mesh.rotation.y = t.rh;
     if (t.speed > 3) for (const p of peds.list) if (Math.hypot(p.x - t.rx, p.z - t.rz) < 1.8 && peds.knock(p, t.fx, t.fz, t.speed * 0.7)) { sfx.thud(); t.stun = 2; }
-    for (const v of vehicles) if (v !== ride) { const dx = v.s.x - t.rx, dz = v.s.z - t.rz, d = Math.hypot(dx, dz); if (d < 3.4 && d > 0.01) { const k = 3.4 - d; v.s.x += dx / d * k; v.s.z += dz / d * k; if (t.speed > 4) { v.s.vx += dx / d * t.speed * 0.5; v.s.vz += dz / d * t.speed * 0.5; v.coast = 0.8; sfx.thud(); t.stun = 2; } t.speed = 0; placeVehicle(v); } }
+    for (const v of vehicles) if (v !== ride && (v.s.x - t.rx) ** 2 + (v.s.z - t.rz) ** 2 < 49) { const h = carVsTraffic(v, t); if (h) { v.s.x += h.nx * h.pen; v.s.z += h.nz * h.pen; if (t.speed > 4) { v.s.vx += h.nx * t.speed * 0.5; v.s.vz += h.nz * t.speed * 0.5; v.coast = 0.8; sfx.thud(); t.stun = 2; } t.speed = 0; placeVehicle(v); } }
     if (ride) {
-      const s = ride.s, dx = s.x - t.rx, dz = s.z - t.rz, d = Math.hypot(dx, dz);
-      if (d < 3.2 && d > 0.01) { s.x += dx / d * (3.2 - d); s.z += dz / d * (3.2 - d); if (Math.abs(s.v) > 6) { spawnParticles(t.rx + dx / 2, 0.8, t.rz + dz / 2, ['#ffd23f', '#ffffff'], 6, 4, 0.3, 0.1); shake = 0.3; t.stun = 2; sfx.thud(); } s.v *= 0.6; s.vx *= 0.6; s.vz *= 0.6; }
+      const s = ride.s, h = (s.x - t.rx) ** 2 + (s.z - t.rz) ** 2 < 49 ? carVsTraffic(ride, t) : null;
+      if (h) {
+        s.x += h.nx * h.pen; s.z += h.nz * h.pen;
+        const into = s.vx * h.nx + s.vz * h.nz; // only kill the speed heading INTO the other car, so you can always reverse away
+        if (into < 0) { if (-into > 6) { spawnParticles(h.cx, 0.8, h.cz, ['#ffd23f', '#ffffff'], 6, 4, 0.3, 0.1); shake = 0.3; t.stun = 2; sfx.thud(); damageCar(ride, -into * 1.1, h.cx, h.cz); } s.vx -= h.nx * into; s.vz -= h.nz * into; const fwd = s.vx * Math.sin(s.h) + s.vz * Math.cos(s.h); if (Math.sign(fwd) !== Math.sign(s.v) || Math.abs(fwd) < Math.abs(s.v)) s.v = fwd; }
+      }
     } else {
       const dx = P.x - t.rx, dz = P.z - t.rz, d = Math.hypot(dx, dz);
       if (d < 2.0 && d > 0.01 && !P.dead) { P.x = t.rx + dx / d * 2.0; P.z = t.rz + dz / d * 2.0; if (t.speed > 4 && P.hitCd <= 0) { hurt(t.speed * 2.6); sfx.thud(); P.hitCd = 1; P.kx = dx / d * t.speed * 0.9; P.kz = dz / d * t.speed * 0.9; P.vy = 5; t.stun = 2.5; t.speed = 0; } }
@@ -1058,7 +1062,14 @@ function riderPose(v, dt) {
   else { hero.legL.pivot.rotation.x = 0.15; hero.legR.pivot.rotation.x = -0.25; }
 }
 // car-vs-car: two circles per car (front & back). The moving car gets pushed back, the other one gets shoved.
-function carCircles(v) { const s = v.s, fx = Math.sin(s.h), fz = Math.cos(s.h), o = v.b.length * 0.27, r = v.b.width * 0.56; return [[s.x + fx * o, s.z + fz * o, r], [s.x - fx * o, s.z - fz * o, r]]; }
+// traffic cars collide as two circles along their length, just like other cars (no more invisible bubble)
+function trafCircles(t) { const fx = Math.sin(t.rh), fz = Math.cos(t.rh), o = (t.lib.len || 4.4) * 0.27, r = 1.0; return [[t.rx + fx * o, t.rz + fz * o, r], [t.rx - fx * o, t.rz - fz * o, r]]; }
+function carVsTraffic(v, t) {
+  let best = null;
+  for (const a of carCircles(v)) for (const b of trafCircles(t)) { const dx = a[0] - b[0], dz = a[1] - b[1], d = Math.hypot(dx, dz), pen = a[2] + b[2] - d; if (pen > 0 && d > 1e-3 && (!best || pen > best.pen)) best = { pen, nx: dx / d, nz: dz / d, cx: (a[0] + b[0]) / 2, cz: (a[1] + b[1]) / 2 }; }
+  return best;
+}
+function carCircles(v) { const s = v.s, fx = Math.sin(s.h), fz = Math.cos(s.h), o = v.b.length * 0.28, r = v.b.width * 0.5; return [[s.x + fx * o, s.z + fz * o, r], [s.x - fx * o, s.z - fz * o, r]]; }
 function collideCars(v, o, spd) {
   if (v.towed || o.towed || v.towing === o || o.towing === v) return false;
   const A = carCircles(v), B = carCircles(o); let hit = false;
@@ -1870,7 +1881,7 @@ function setTalkRel(id) { const el = $('talkRel'); if (!id) { el.classList.add('
 // ================================================================ CONVERSATIONS
 function zoneBg(x, z) { if (inside) return 'interior'; if (onPier(x, z)) return 'pier'; const n = zoneName(x, z); return n === 'Bay Beach' ? 'beach' : n === 'Hidden Hills' || n === 'Countryside' || n === 'Farmland' ? 'hills' : n.includes('Airport') ? 'airport' : n === 'Eastport' || n === 'Northfield' ? 'suburb' : 'city'; }
 function beginTalk(cfg, name, tag, pitch, relId, pet = null, pose = null, think = false, seat = false) { talk.layout(W, H); talk.begin({ npcCfg: cfg, youCfg: charCfg, name, tag, pitch, bg: zoneBg(P.x, P.z), night, pet, pose, think, seat, wall: inside ? INTERIORS[inside.id].wall : null, floor: inside ? INTERIORS[inside.id].floor : null }); if (relId) relNames[relId] = name; setTalkRel(relId); setState('talk'); }
-function endTalk() { talk.end(); setState('play'); }
+function endTalk() { talkNeeds(false); talk.end(); setState('play'); }
 const I = (n, t) => `${svg(n, 'sm')} ${t}`;
 const DEALER_HI = { Stranger: ["Do I know you? ...What you need.", "Keep it quick, cops roll through here.", "New face. Prices are prices."], Known: ["You again. What you need?", "Ayy, back for more?"], Friendly: ["My guy! What we doing today?", "Good to see you. Fresh stock in."], Trusted: ["There's my best customer. I got you.", "For you? Always open."], Family: ["Family! Sit down, sit down.", "Anything you need, it's yours."] };
 const DEALER_WHO = ["Name's {n}. I run this corner. That's all you need to know.", "{n}. Been here since before the tourists.", "They call me {n}. Don't ask why."];
@@ -1969,14 +1980,14 @@ async function talkGuns(p, n) {
   endTalk();
 }
 async function talkFood(n, menu, place) {
-  beginTalk(n.cfg, n.name, place.name, 260, n.relId);
+  beginTalk(n.cfg, n.name, place.name, 260, n.relId); talkNeeds(true);
   await talk.say(menu === 'mart' ? pick(["Find everything okay?", "Groceries are in the back. Snacks up front."]) : menu === 'bar' || menu === 'club' ? pick(["What are you drinking?", "Long day? I got you."]) : pick(["Welcome in! What can I get you, hon?", "Coffee's fresh. What'll it be?"]));
   for (;;) {
     const items = MENUS[menu].map(k => ({ k, f: FOODS[k] }));
     const opts = [...items.map(({ f }) => ({ label: `${f.name} <small>${fmt(f.price)}</small>`, disabled: money < f.price })), I('x', 'That\'s all')];
     const c = await talk.choose(opts);
     if (c >= items.length) break;
-    const { k, f } = items[c]; spend(f.price); feed(f); bumpRel(n.relId, 1);
+    const { k, f } = items[c]; spend(f.price); feed(f); bumpRel(n.relId, 1); talkNeeds(true);
     if (k === 'groceries') await talk.say(`Here you go. That's ${stats.groceries} meals in your fridge at home.`);
     else await talk.say(pick(['Enjoy!', 'Coming right up.', 'There you go.', 'Good choice.']));
   }
@@ -3549,6 +3560,12 @@ function setBtn(id, icon, label) {
   const inner = BTN_SVG[icon] ? `<svg viewBox="0 0 24 24">${BTN_SVG[icon]}</svg>` : icon && icon !== 'none' ? svg(ICONS[icon] || icon, 'btn') : '<svg viewBox="0 0 24 24"></svg>';
   $(id).innerHTML = `${inner}<span>${label}</span>`;
 }
+// needs rings shown inside a conversation (food, drinks), so you can see what you're filling up
+function talkNeeds(on) {
+  const el = $('talkNeeds'); if (!on) { el.classList.add('hidden'); return; }
+  const ring = (cls, ic, v) => `<div class="need ${cls}${v < 25 ? ' low' : ''}" style="--v:${Math.round(v)}%">${$(ic).querySelector('svg').outerHTML}</div>`;
+  el.innerHTML = ring('tn-h', 'nHunger', stats.hunger) + ring('tn-e', 'nEnergy', stats.energy) + ring('tn-m', 'nMood', stats.mood); el.classList.remove('hidden');
+}
 function needBar(id, v) { const el = $(id); el.style.setProperty('--v', v + '%'); el.classList.toggle('low', v < 25); }
 function updateHUD(dt) {
   const hh = Math.floor(clockH), m10 = Math.floor((clockH - hh) * 6) * 10;
@@ -3816,7 +3833,7 @@ function saveGame() {
   store.set('bc_save', save); store.set('bc_arsenal', arsenal); store.set('bc_cars', garage);
 }
 // auto-update: bookmarks and home-screen apps can hold on to an old copy. Check version.json (never cached) and reload once if newer.
-const BUILD = 42;
+const BUILD = 43;
 function checkUpdate() {
   fetch('version.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(j => {
     if (!(j.v > BUILD)) return;

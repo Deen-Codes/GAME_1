@@ -317,13 +317,16 @@ input[type=text] { width: 100%; padding: 10px 12px; border-radius: 10px; border:
 #phoneBtn.badge::after { content: ''; position: absolute; top: -3px; right: -3px; width: 12px; height: 12px; border-radius: 50%; background: #ff3b30; border: 2px solid #fff; animation: bob .6s infinite alternate; }
 .clock { display: flex; align-items: center; gap: 5px; }
 #clockIco { display: grid; color: #ffd23f; }
-.needs { display: flex; gap: 5px; margin-top: 5px; }
-.need { --v: 50%; display: flex; align-items: center; gap: 4px; background: rgba(10,10,24,.45); border: 1px solid rgba(255,255,255,.15); border-radius: 999px; padding: 3px 7px 3px 5px; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
-.need i { display: block; width: 26px; height: 5px; border-radius: 3px; background: linear-gradient(90deg, var(--c) var(--v), rgba(255,255,255,.18) var(--v)); }
-#nHunger { --c: #ff8a2a; } #nEnergy { --c: #ffd23f; } #nMood { --c: #ff6fb5; }
-.need .ic { width: 13px; height: 13px; margin: 0; color: var(--c); }
-.need.low { border-color: #ff3b30; animation: lowPulse 1s infinite alternate; }
-@keyframes lowPulse { to { background: rgba(255,59,48,.45); } }
+.needs { display: flex; gap: 6px; margin-top: 6px; }
+.need { --v: 50%; position: relative; width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; background: conic-gradient(var(--c) var(--v), rgba(255,255,255,.16) 0); box-shadow: 0 2px 6px rgba(0,0,0,.35); }
+.need::before { content: ''; position: absolute; inset: 4px; border-radius: 50%; background: rgba(14,14,30,.88); }
+.need i { display: none; }
+#nHunger, .tn-h { --c: #ff8a2a; } #nEnergy, .tn-e { --c: #ffd23f; } #nMood, .tn-m { --c: #ff6fb5; }
+.need .ic { position: relative; z-index: 1; width: 14px; height: 14px; margin: 0; color: var(--c); }
+.need.low { animation: lowPulse .8s infinite alternate; }
+.talk-needs { display: flex; gap: 6px; margin-top: 6px; }
+.talk-needs .need { width: 30px; height: 30px; }
+@keyframes lowPulse { to { box-shadow: 0 0 0 3px rgba(255,59,48,.7), 0 2px 6px rgba(0,0,0,.35); } }
 #fade { position: fixed; inset: 0; background: #000; opacity: 0; pointer-events: none; z-index: 60; transition: opacity .2s; }
 #fade.on { opacity: 1; }
 #editBar { position: absolute; left: 50%; transform: translateX(-50%); top: calc(var(--sat) + 120px); display: flex; gap: 8px; pointer-events: auto; z-index: 5; }

@@ -172,7 +172,7 @@ export function addStructure(p) {
   if (!S) return;
   const [w, d] = S, y = p.id === 'g_gallery' ? 0.28 : 0; let cx = p.x, cz = p.z - d / 2 - (p.id === 'race' ? 0 : 2.4);
   // never build on a road: slide the footprint off any road it overlaps
-  for (let k = 0; k < 60; k++) {
+  for (let k = 0; k < 60 && p.id !== 'race'; k++) { // (the race gantry belongs over the road)
     const r = ROADS.find(q => cx + w / 2 > q.x0 && cx - w / 2 < q.x1 && cz + d / 2 > q.z0 && cz - d / 2 < q.z1); if (!r) break;
     if (r.axis === 'x') cz += cz >= (r.z0 + r.z1) / 2 ? 0.5 : -0.5; else cx += cx >= (r.x0 + r.x1) / 2 ? 0.5 : -0.5;
   }
@@ -258,7 +258,14 @@ function drawStruct(o, B) {
       b(0, 4.6, 4.55, 7, 1, 0.2, '#38e8ff', { key: 'sign' }); break; }
     case 'race': { // start/finish gantry + checkered line
       for (let i = 0; i < 16; i++) for (let j = 0; j < 2; j++) B.flat(X - 7.5 + i, Y + 0.08, Z - 0.5 + j, 1, 1, (i + j) % 2 ? '#111111' : '#ffffff');
-      for (const x of [-7.9, 7.9]) b(x, 0, 0, 0.6, 6, 0.6, '#c9ccd2'); b(0, 5.4, 0, 16.4, 1.2, 0.5, '#e23b3b', { key: 'sign' }); b(0, 5.6, 0.26, 8, 0.8, 0.02, '#ffffff', { key: 'sign' }); break; }
+      for (const x of [-7.9, 7.9]) b(x, 0, 0, 0.6, 6, 0.6, '#c9ccd2'); b(0, 5.4, 0, 16.4, 1.2, 0.5, '#e23b3b', { key: 'sign' });
+      for (let i = 0; i < 12; i++) b(-6.6 + i * 1.2, 5.45, 0.27, 0.6, 0.55, 0.02, i % 2 ? '#111111' : '#ffffff', { key: 'sign' }); // checkered banner
+      for (const [ly, lc] of [[4.6, '#ff2a2a'], [4.2, '#ffd23f'], [3.8, '#2aff6a']]) for (const x of [-2.2, -1.4, 1.4, 2.2]) b(x, ly, 0.3, 0.32, 0.32, 0.1, lc, { key: 'glow' }); // start lights
+      b(0, 3.65, 0.26, 5.2, 1.25, 0.12, '#16161b');
+      for (const s2 of [-1, 1]) { for (let i = 0; i < 4; i++) { b(s2 * 9.6, 0, -3 + i * 3, 0.4, 0.7, 0.4, '#ff6a1a'); b(s2 * 9.6, 0.7, -3 + i * 3, 0.24, 0.1, 0.24, '#ffffff'); } // cones
+        for (let i = 0; i < 3; i++) B.cyl(X + s2 * 10.6, Y + i * 0.32, Z + 4, 0.45, 0.3, '#16161b', 10); // tyre stack
+        b(s2 * 10.6, 0, -4.5, 0.08, 3.4, 0.08, '#c9ccd2'); b(s2 * 10.9, 2.6, -4.5, 0.6, 0.9, 0.04, s2 < 0 ? '#38e8ff' : '#ff3b8a', { key: 'glow' }); } // flags
+      break; }
   }
 }
 // Put a real front door on the building facing a place's sidewalk, and move the place marker to stand in front of it.
