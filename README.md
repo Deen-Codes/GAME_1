@@ -127,6 +127,10 @@ Walk into shops, venues and homes:
 - Swim in the sea and fountains. Some pedestrians swim too.
 - Jump at a wall to grab the ledge and climb up. Fire-escape ladders lead to rooftops. Dive off into water; long falls on land hurt.
 
+## Hills, underpass and bridge
+- The countryside between the districts rolls with hills, and the highways climb and dip with it. Cars tilt as they go up and down.
+- The north highway dips under the railway through a cutting with retaining walls and a concrete rail bridge overhead. You can walk across the bridge too.
+
 ## The Bay Line (trains)
 - A railway runs along the north edge of downtown with three stations: Baywood Hills, Downtown North and Farmland. The train shuttles between them on a timetable.
 - Stand on a platform while it's stopped to board ($3). Get off at any stop.
@@ -144,6 +148,7 @@ Walk into shops, venues and homes:
 - Explosions start fires. Fire engines come to put them out, and ambulances come to collect the injured.
 
 ## Police (reworked)
+- Wanted level is shown as police badges, not stars.
 - A crime someone calls in puts a red search circle on the minimap. Get out of it and stay unseen for about 3 seconds and you're clear. Hiding inside the circle works too, just slowly.
 - If a cop sees you, the chase is on. Every cop and police car has a vision cone, always shown on the minimap. Buildings block their view, and it's shorter at night.
 - Stars climb one at a time. Five stars needs a real rampage. Reinforcements come from behind you.

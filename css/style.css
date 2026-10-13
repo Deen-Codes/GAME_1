@@ -379,7 +379,9 @@ input[type=text] { width: 100%; padding: 10px 12px; border-radius: 10px; border:
 .wanted u s { display: block; height: 100%; width: 0; background: #4cd964; text-decoration: none; }
 .wanted.seen u { visibility: hidden; }
 .wanted:empty { display: none; }
-.wanted i { width: 20px; height: 20px; display: block; background: #ffd23f; clip-path: polygon(50% 0, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%); filter: drop-shadow(0 1px 1px #000); }
+.wanted i { position: relative; width: 19px; height: 22px; display: block; background: linear-gradient(#ffe27a, #d9a520); clip-path: polygon(50% 0, 96% 14%, 92% 58%, 50% 100%, 8% 58%, 4% 14%); filter: drop-shadow(0 1px 1px #000); } /* police badges, not stars */
+.wanted i::after { content: ''; position: absolute; inset: 5px 5px 7px; background: #1d2b52; clip-path: polygon(50% 0, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%); }
+.wanted i.off::after { background: rgba(0,0,0,.25); }
 .wanted i.off { background: rgba(255,255,255,.18); }
 .wanted.flash i:not(.off) { animation: starFlash .5s infinite alternate; }
 @keyframes starFlash { to { opacity: .3; } }

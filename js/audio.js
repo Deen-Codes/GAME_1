@@ -70,7 +70,8 @@ export function ambience(mix) { // mix: { city, waves, birds, crickets } 0..1
   amb.city.g.gain.setTargetAtTime(mix.city * 0.05, t, 0.5);
   const swell = 0.5 + 0.5 * Math.sin(t * 0.9) * Math.sin(t * 0.37);
   amb.waves.g.gain.setTargetAtTime(mix.waves * (0.03 + swell * 0.06), t, 0.3);
-  if (mix.birds > 0.1 && t > amb.nextBird) { amb.nextBird = t + 0.6 + Math.random() * 2.5; const f = 2200 + Math.random() * 1800; for (let i = 0; i < 2 + Math.random() * 3; i++) tone(f + Math.random() * 400, 0.07, 'sine', 0.012 * mix.birds, i * 0.09, f * 1.3); }
+  if (mix.birds > 0.1 && t > amb.nextBird) { amb.nextBird = t + 4 + Math.random() * 9; // occasional, quiet birdsong
+ const f = 2200 + Math.random() * 1800; for (let i = 0; i < 2 + Math.random() * 3; i++) tone(f + Math.random() * 400, 0.07, 'sine', 0.0035 * mix.birds, i * 0.09, f * 1.3); }
   if (mix.crickets > 0.1 && t > amb.nextCricket) { amb.nextCricket = t + 0.35 + Math.random() * 0.5; for (let i = 0; i < 3; i++) tone(4300, 0.03, 'sine', 0.008 * mix.crickets, i * 0.05); }
 }
 

@@ -16,7 +16,7 @@ for (const c of CITIES) {
 }
 export const SIGN = { x: -446, z: -268, text: 'BAYWOOD' };
 // the Bay Line railway: north of downtown, from the Hidden Hills to the farmland, with three stations
-export const RAIL = { z: -303, x0: -284, x1: 444, stations: [{ name: 'Baywood Hills', x: -252 }, { name: 'Downtown North', x: 72 }, { name: 'Farmland', x: 412 }] };
+export const RAIL = { z: -318, x0: -284, x1: 444, stations: [{ name: 'Baywood Hills', x: -252 }, { name: 'Downtown North', x: 72 }, { name: 'Farmland', x: 412 }] };
 export const onRail = (x, z, m = 0) => x > RAIL.x0 - m && x < RAIL.x1 + m && Math.abs(z - RAIL.z) < 2.2 + m;
 export const AIRPORT = { x0: -240, x1: 280, z0: -780, z1: -575 };
 export const sandLine = x => 352 + 6 * Math.sin(x / 41) + 3 * Math.sin(x / 13);
@@ -39,10 +39,32 @@ export const PADS = [
   { id: 'mansion4', x: -410, z: 120, r: 17 },
 ];
 for (const p of PADS) p.h = rawHills(p.x, p.z);
+// ---- rolling countryside between the districts (flat in towns, at the airport, on the beach and along the railway)
+const sm = t => t <= 0 ? 0 : t >= 1 ? 1 : t * t * (3 - 2 * t);
+function rectDist(x, z, r) { return Math.hypot(Math.max(r.x0 - x, 0, x - r.x1), Math.max(r.z0 - z, 0, z - r.z1)); }
+export function rolling(x, z) {
+  if (x < -300) return 0;
+  let w = 1;
+  for (const c of CITIES) w = Math.min(w, sm((rectDist(x, z, c) - 14) / 70));
+  w = Math.min(w, sm((rectDist(x, z, AIRPORT) - 10) / 60), sm((sandLine(x) - 70 - z) / 70), sm((-300 - x) * -1 / 40 + 0)); // towns, airport, beach, hills seam
+  if (x > RAIL.x0 - 30 && x < RAIL.x1 + 30) w = Math.min(w, sm((Math.abs(z - RAIL.z) - 7) / 30));
+  for (const f of FIELDS) { const bx = f.x1 - 10, bz = f.z0 + 9; w = Math.min(w, sm((Math.hypot(x - bx, z - bz) - 16) / 26), sm((Math.hypot(x - bx + 9.5, z - bz + 2) - 6) / 16)); } // flat barn yards
+  if (w <= 0) return 0;
+  const h = 4.2 * Math.sin(x / 61 + 0.7) * Math.cos(z / 73 - 0.4) + 2.6 * Math.sin(z / 37 + x / 89) + 1.4 * Math.cos(x / 23 - z / 41);
+  return Math.max(0, h + 3.2) * w;
+}
+// ---- the north highway dips under the railway: a cutting with retaining walls and a rail bridge overhead
+export const UNDERPASS = { x: 0, z: RAIL.z, half: 8.2, depth: 5.4, z0: -296, z1: -352 };
+export function dip(x, z) {
+  const U = UNDERPASS; if (z > U.z0 || z < U.z1 || Math.abs(x - U.x) > U.half + 5) return 0;
+  const along = z > U.z - 6 ? sm((U.z0 - z) / (U.z0 - (U.z - 6))) : z < U.z - 14 ? sm((z - U.z1) / ((U.z - 14) - U.z1)) : 1;
+  const across = sm((U.half + 4 - Math.abs(x - U.x)) / 4);
+  return -U.depth * along * across;
+}
 export function groundH(x, z) {
   const s = shoreLine(x) - 22;
   if (z >= s) return Math.max(-5, -(z - s) * 0.08);
-  if (x >= -300) return 0;
+  if (x >= -300) return rolling(x, z) + dip(x, z);
   let h = rawHills(x, z);
   for (const p of PADS) {
     const d = Math.hypot(x - p.x, z - p.z);
@@ -52,7 +74,7 @@ export function groundH(x, z) {
 }
 export const FIELDS = [
   { x0: 312, x1: 432, z0: 30, z1: 300 }, { x0: 312, x1: 432, z0: -300, z1: -30 },
-  { x0: 30, x1: 270, z0: -450, z1: -312 }, { x0: -270, x1: -30, z0: -450, z1: -312 },
+  { x0: 30, x1: 270, z0: -450, z1: -338 }, { x0: -270, x1: -30, z0: -450, z1: -338 },
   { x0: 460, x1: 740, z0: -420, z1: -190 },
 ];
 const PIER = { x0: 88, x1: 100, z0: 368, z1: 505 };
@@ -76,6 +98,7 @@ ROADS.push({ x0: -340, x1: -288, z0: 336 - HR, z1: 336 + HR, axis: 'x', hwy: tru
 ROADS.push({ x0: 600 - HR, x1: 600 + HR, z0: 144, z1: 336, axis: 'z', hwy: true }); // eastport to coast
 ROADS.push({ x0: -HR, x1: HR, z0: -620, z1: -568, axis: 'z', hwy: true });         // airport access
 ROADS.push({ x0: -540, x1: -288 - HR - 0.2, z0: -3.5, z1: 3.5, axis: 'x', dirt: true }); // forest trail (stops at the city road so the surfaces don't z-fight)
+export function roadY(x, z) { return Math.max(groundH(x, z), -6) + 0.1; }
 export function roadAt(x, z) { for (const r of ROADS) if (inR(r, x, z)) return r; return null; }
 function nearRoad(x, z, m) { for (const r of ROADS) if (inR(r, x, z, m)) return true; return false; }
 export function cityAt(x, z, m = 0) { for (const c of CITIES) if (inR(c, x, z, m)) return c; return null; }
@@ -150,6 +173,7 @@ export const LADDERS = []; // {x,z,top,nx,nz} climbable ladders on building wall
 export const STAIRS = []; // fire-escape flights: { x0, x1, z0, z1, y0, y1 } rising along z from z0 (y0) to z1 (y1) or reversed
 export function roofAt(x, z, y) {
   let t = -99; for (const c of collidersNear(x, z)) if (c.top && !c.r && x > c.x0 && x < c.x1 && z > c.z0 && z < c.z1 && y >= c.top - 0.6 && c.top > t) t = c.top;
+  { const U = UNDERPASS; if (Math.abs(x - U.x) < U.half + 3 && Math.abs(z - U.z) < 3.4 && y >= -0.6) t = Math.max(t, 0.17); } // walking over the rail bridge
   for (const S of STAIRS) if (x > S.x0 && x < S.x1 && z > S.zmin - 0.2 && z < S.zmax + 0.2) { const k = Math.min(1, Math.max(0, (z - S.z0) / (S.z1 - S.z0))), sy = S.y0 + (S.y1 - S.y0) * k; if (y >= sy - 0.75 && sy > t) t = sy; }
   return t;
 }
@@ -409,6 +433,8 @@ function genBlock(city, bx0, bz0, r) {
 
 function genWorld() {
   for (let x = RAIL.x0; x < RAIL.x1; x += 8) addObj({ t: 'rail', x: x + 4, z: RAIL.z });
+  { const U = UNDERPASS; addObj({ t: 'ubridge', x: U.x, z: U.z });
+    for (const sx of [-1, 1]) addCollider({ x0: U.x + sx * (U.half + 0.2) - 0.4, x1: U.x + sx * (U.half + 0.2) + 0.4, z0: U.z1 + 6, z1: U.z0 - 4, h: 1.2 }); } // retaining walls keep cars in the cutting
   for (const st of RAIL.stations) { addObj({ t: 'platform', x: st.x, z: RAIL.z + 4.4, name: st.name }); addCollider({ x0: st.x - 15, x1: st.x + 15, z0: RAIL.z + 2.4, z1: RAIL.z + 6.4, h: 0.45, top: 0.48 }); }
   // city blocks + street lamps
   for (const city of CITIES) {
@@ -516,7 +542,7 @@ export function parkedIn(cx, cz) { return (chunks.get(ckey(cx, cz))?.objs || [])
 export function walkable(x, z, onFoot = true) {
   if (x < WORLD.x0 + 20 || x > WORLD.x1 - 6 || z < WORLD.z0 + 8 || z > WORLD.z1) return false;
   if (inR(PIER, x, z)) return true;
-  return groundH(x, z) > (onFoot ? -1.7 : -1.2);
+  return groundH(x, z) - dip(x, z) > (onFoot ? -1.7 : -1.2); // the highway cutting is dry land, not sea
 }
 export function onPier(x, z) { return inR(PIER, x, z); }
 // Push a circle out of static colliders. Returns true if it hit something.
@@ -728,6 +754,7 @@ class GB {
   }
   // box with bottom at y. rot about Y. sideKey/topCol let buildings use window walls.
   box(x, y, z, w, h, d, color, o = {}) {
+    y += this.oy || 0;
     const k = o.key || 'solid', sideKey = o.sideKey || k, topCol = o.topCol || color, topKey = o.topKey || k;
     const cs = Math.cos(o.rot || 0), sn = Math.sin(o.rot || 0);
     const P = (lx, ly, lz) => [x + lx * cs + lz * sn, y + ly, z - lx * sn + lz * cs];
@@ -741,6 +768,7 @@ class GB {
     this.quad(topKey, c[4], c[5], c[6], c[7], topCol, ctr);
   }
   prism(x, y, z, w, h, d, color, rot = 0) { // ridge along the longer side
+    y += this.oy || 0;
     const along = w >= d;
     const cs = Math.cos(rot), sn = Math.sin(rot);
     const P = (lx, ly, lz) => [x + lx * cs + lz * sn, y + ly, z - lx * sn + lz * cs];
@@ -756,6 +784,7 @@ class GB {
     }
   }
   cone(x, y, z, r, h, color, seg = 6, k = 'solid') {
+    y += this.oy || 0;
     const apex = [x, y + h, z], ctr = [x, y + h * 0.3, z];
     for (let i = 0; i < seg; i++) {
       const a0 = i / seg * Math.PI * 2, a1 = (i + 1) / seg * Math.PI * 2;
@@ -763,6 +792,7 @@ class GB {
     }
   }
   cyl(x, y, z, r, h, color, seg = 8, k = 'solid', topCol) {
+    y += this.oy || 0;
     const ctr = [x, y + h / 2, z];
     for (let i = 0; i < seg; i++) {
       const a0 = i / seg * Math.PI * 2, a1 = (i + 1) / seg * Math.PI * 2;
@@ -773,6 +803,7 @@ class GB {
     }
   }
   flat(x, y, z, w, d, color, k = 'solid', rot = 0) {
+    y += this.oy || 0;
     const cs = Math.cos(rot), sn = Math.sin(rot), P = (lx, lz) => [x + lx * cs + lz * sn, y, z - lx * sn + lz * cs];
     this.quad(k, P(-w / 2, -d / 2), P(w / 2, -d / 2), P(w / 2, d / 2), P(-w / 2, d / 2), color, [x, y - 1, z]);
   }
@@ -910,6 +941,16 @@ function drawObj(o, B) {
       for (let i = 0; i < 8; i++) B.box(o.x - 3.5 + i, 0.12, o.z, 0.35, 0.1, 3.0, '#5a4030');
       for (const s of [-0.75, 0.75]) B.box(o.x, 0.22, o.z + s, 8.05, 0.12, 0.12, '#9aa0aa');
       break; }
+    case 'ubridge': { // concrete rail bridge over the highway cutting + retaining walls down each side
+      const U = UNDERPASS, wz0 = U.z1 + 6, wz1 = U.z0 - 4;
+      B.box(o.x, -1.0, o.z, 2 * U.half + 6, 1.0, 7, '#9a9590'); B.box(o.x, 0, o.z - 3.4, 2 * U.half + 6, 0.9, 0.3, '#b8b4ad'); B.box(o.x, 0, o.z + 3.4, 2 * U.half + 6, 0.9, 0.3, '#b8b4ad');
+      B.box(o.x, -1.0, o.z + 3.52, 9, 0.6, 0.06, '#2f80ed'); // bridge plate
+      for (const sx of [-1, 1]) {
+        for (let z = wz0; z < wz1; z += 4) { const zz = z + 2, gy = dip(o.x + sx * (U.half + 0.2), zz); if (gy > -0.3) continue; B.box(o.x + sx * (U.half + 0.2), gy, zz, 0.7, -gy + 0.4, 4.05, '#a8a39b'); B.box(o.x + sx * (U.half + 0.2), 0.4, zz, 0.9, 0.12, 4.05, '#8a857e'); }
+        B.box(o.x + sx * (U.half + 1.5), -U.depth, o.z, 2.2, U.depth - 1.0, 7, '#8a857e'); // abutments
+      }
+      for (let z = U.z - 3; z <= U.z + 3; z += 1.5) B.box(o.x, -1.05, z, 2 * U.half, 0.02, 0.6, '#2a2a30'); // underside shadow strips
+      break; }
     case 'platform': { // concrete platform, yellow safety line, canopy, benches and a lit name sign
       B.box(o.x, 0, o.z, 30, 0.45, 4, '#b8b4ad'); B.box(o.x, 0.45, o.z - 1.75, 30, 0.02, 0.3, '#ffd23f');
       for (const sx of [-10, 0, 10]) { B.box(o.x + sx, 0.45, o.z + 1.5, 0.18, 3.2, 0.18, '#3a3d45'); }
@@ -954,14 +995,28 @@ function buildTerrain(cx, cz, B) {
   for (const r of ROADS) {
     const ax0 = Math.max(r.x0, x0), ax1 = Math.min(r.x1, cx1), az0 = Math.max(r.z0, z0), az1 = Math.min(r.z1, cz1);
     if (ax0 >= ax1 || az0 >= az1) continue;
-    B.flat((ax0 + ax1) / 2, 0.04, (az0 + az1) / 2, ax1 - ax0, az1 - az0, r.dirt ? '#a8865a' : '#4b4b53');
+    const col2 = r.dirt ? '#a8865a' : '#4b4b53';
+    if (r.city) { B.flat((ax0 + ax1) / 2, 0.04, (az0 + az1) / 2, ax1 - ax0, az1 - az0, col2); continue; }
+    // country roads follow the hills: a strip of quads with per-corner heights
+    const along = r.axis === 'z', L0 = along ? az0 : ax0, L1 = along ? az1 : ax1, step = 4;
+    const C0 = along ? ax0 : az0, C1 = along ? ax1 : az1, nAc = Math.max(1, Math.ceil((C1 - C0) / 3));
+    const pt = (u, v) => { const x = along ? u : v, z = along ? v : u; return [x, roadY(x, z) + 0.08, z]; }; // u = across, v = along
+    for (let t = L0; t < L1 - 1e-6; t += step) {
+      const t2 = Math.min(L1, t + step);
+      for (let k = 0; k < nAc; k++) {
+        const u0 = C0 + (C1 - C0) * k / nAc, u1 = C0 + (C1 - C0) * (k + 1) / nAc;
+        const A = pt(u0, t), Bq = pt(u1, t), C2 = pt(u1, t2), D2 = pt(u0, t2);
+        B.quad('solid', A, Bq, C2, D2, col2, [(A[0] + C2[0]) / 2, -100, (A[2] + C2[2]) / 2]);
+      }
+    }
   }
 }
 
 export function buildChunk(cx, cz) {
   const B = new GB();
   buildTerrain(cx, cz, B);
-  for (const o of chunks.get(ckey(cx, cz))?.objs || []) drawObj(o, B);
+  for (const o of chunks.get(ckey(cx, cz))?.objs || []) { B.oy = o.t === 'rail' || o.t === 'platform' || o.t === 'ubridge' ? 0 : rolling(o.x, o.z) + (o.t === 'paint' ? dip(o.x, o.z) : 0); if (o.t === 'paint' && B.oy) B.oy += 0.08; drawObj(o, B); }
+  B.oy = 0;
   const g = new THREE.Group();
   for (const m of B.meshes()) g.add(m);
   return g;

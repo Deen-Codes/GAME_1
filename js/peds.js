@@ -1,7 +1,7 @@
 // Pedestrians: baked low-poly people who stroll sidewalks, wander the beach, flee from trouble.
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, randomChar, disposeObject } from './character.js?v=48';
-import { CITIES, sandLine, shoreLine, groundH, walkable as worldWalkable, resolve } from './world.js?v=48';
+import { buildCharacter, randomChar, disposeObject } from './character.js?v=50';
+import { CITIES, sandLine, shoreLine, groundH, walkable as worldWalkable, resolve } from './world.js?v=50';
 // interiors swap in their own floor test so brawlers can move around inside
 let walkable = worldWalkable; export function setWalk(fn) { walkable = fn || worldWalkable; }
 
@@ -54,6 +54,9 @@ function makeLook(beach, fem = Math.random() < 0.5) {
   if (beach) Object.assign(cfg, { top: fem ? pick(['swimtop', 'swimtop', 'tank']) : pick(['shirtless', 'shirtless', 'tank', 'tshirt']), pants: fem ? pick(['swim', 'swim', 'shorts']) : pick(['swim', 'shorts']), shoes: 'bare', eyewear: Math.random() < 0.5 ? 'shades' : 'none', hat: Math.random() < 0.3 ? (fem ? 'none' : 'cap') : 'none' });
   else { if (['armor', 'shirtless', 'swimtop'].includes(cfg.top)) cfg.top = 'tshirt'; if (cfg.pants === 'swim') cfg.pants = 'jeans'; }
   if (!fem) { if (cfg.top === 'crop') cfg.top = 'tshirt'; if (cfg.pants === 'skirt') cfg.pants = 'jeans'; }
+  if (!fem && Math.random() < 0.22) cfg.muscle = rand(0.3, 0.95); // gym rats, dad bods, all sorts
+  if (Math.random() < 0.22) cfg.fat = rand(0.2, 0.8);
+  cfg.height = (cfg.height || 1) * rand(0.94, 1.08);
   return { ...bakeCfg(cfg), beach, fem };
 }
 // Bake any character config into 5 meshes (body + 4 limbs) so lots of people are cheap to draw.
@@ -80,6 +83,12 @@ function homelessLook() {
 }
 function ensureLooks() { if (LOOKS.length) return; for (let i = 0; i < 12; i++) LOOKS.push(makeLook(false, i % 2 === 0)); for (let i = 0; i < 8; i++) LOOKS.push(makeLook(true, i % 2 === 0)); for (let i = 0; i < 3; i++) LOOKS.push(homelessLook()); }
 const cityLooks = () => LOOKS.filter(l => !l.beach && !l.homeless);
+// keep inventing new people: most spawns get a brand-new look (face, body, hair, clothes) until there are 200 of them
+function freshLook(beach) {
+  const pool = LOOKS.filter(l => !l.homeless && !!l.beach === beach);
+  if (LOOKS.length < 200 && (Math.random() < 0.7 || pool.length < 6)) { const l = makeLook(beach, Math.random() < 0.5); LOOKS.push(l); return l; }
+  return pick(pool);
+}
 const PROP = new THREE.MeshStandardMaterial({ vertexColors: false, color: '#ffffff', roughness: 0.9 });
 const pm = c => new THREE.MeshStandardMaterial({ color: c, roughness: 0.9 });
 const BAG_M = [pm('#3a5f7a'), pm('#7a3a3a'), pm('#55602f')], CARD_M = pm('#b89a6a'), CART_M = new THREE.MeshStandardMaterial({ color: '#c9ccd2', metalness: 0.6, roughness: 0.4 });
@@ -109,7 +118,7 @@ export class Peds {
       const i = c.kx[0] + Math.floor(Math.random() * (c.kx[1] - c.kx[0])), j = c.kz[0] + Math.floor(Math.random() * (c.kz[1] - c.kz[0]));
       const bx = c.cx + (i + 0.5) * 48, bz = c.cz + (j + 0.5) * 48, d = Math.hypot(bx - px, bz - pz);
       if (d < 30 || d > 100) continue;
-      const p = this.makePed(pick(cityLooks()));
+      const p = this.makePed(freshLook(false));
       Object.assign(p, { kind: 'city', c, bi: i, bj: j, bx, bz, s: Math.random() * 8 * R, dir: Math.random() < 0.5 ? 1 : -1 });
       const [x, z] = perim(p.s); p.x = bx + x; p.z = bz + z;
       this.list.push(p); return;
@@ -119,14 +128,14 @@ export class Peds {
     for (let k = 0; k < 10; k++) {
       const x = px + rand(-80, 80), sl = sandLine(x), z = Math.random() < 0.3 ? rand(shoreLine(x) - 9, shoreLine(x) - 2) : rand(sl + 6, shoreLine(x) - 26);
       if (Math.hypot(x - px, z - pz) < 25 || !walkable(x, z)) continue;
-      const p = this.makePed(pick(LOOKS.filter(l => l.beach)));
+      const p = this.makePed(freshLook(true));
       Object.assign(p, { kind: 'beach', x, z, hx: x, hz: z, tx: x, tz: z, state: 'idle', t: rand(0, 4) });
       this.list.push(p); return;
     }
   }
   spawnLoose(x, z, fromX, fromZ) {
     ensureLooks();
-    const p = this.makePed(pick(cityLooks()));
+    const p = this.makePed(freshLook(false));
     Object.assign(p, { kind: 'loose', x, z, hx: x, hz: z });
     this.list.push(p); this.flee(p, fromX, fromZ); return p;
   }
@@ -166,7 +175,7 @@ export class Peds {
   knock(p, fx, fz, power = 6) { if (p.state === 'down') return false; p.state = 'down'; p.t = rand(3.5, 5); p.kx = fx * power; p.kz = fz * power; return true; }
   update(dt, px, pz, nearCity, nearBeach) {
     ensureLooks();
-    const cityTarget = nearCity ? 18 : 0, beachTarget = nearBeach ? 12 : 0;
+    const cityTarget = nearCity ? (nearCity.style === 'downtown' ? 28 : 20) : 0, beachTarget = nearBeach ? 16 : 0;
     const nCity = this.list.filter(p => p.kind === 'city').length, nBeach = this.list.filter(p => p.kind === 'beach').length;
     if (nCity < cityTarget) this.spawnCity(nearCity, px, pz);
     if (nBeach < beachTarget) this.spawnBeach(px, pz);
