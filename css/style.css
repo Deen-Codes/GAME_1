@@ -441,9 +441,9 @@ input[type=text] { width: 100%; padding: 10px 12px; border-radius: 10px; border:
 .sidebtn.open .peek { opacity: 1; transition-delay: .12s; }
 #hud:has(.sidebtn.open) .toast { top: calc(var(--sat) + 262px); }
 
-#carLabel { position: absolute; left: calc(80px + var(--sal)); bottom: 40px; transform: translateX(-50%); white-space: nowrap; font-size: 12px; font-weight: 900; letter-spacing: .04em; text-transform: uppercase; color: rgba(255,255,255,.85); text-shadow: 0 1px 3px rgba(0,0,0,.6); pointer-events: none; opacity: 0; transition: opacity .3s; }
+#carLabel { position: absolute; left: calc(14px + var(--sal)); bottom: calc(10px + var(--sab)); transform: none; white-space: nowrap; font-size: 12px; font-weight: 900; letter-spacing: .04em; text-transform: uppercase; color: rgba(255,255,255,.85); text-shadow: 0 1px 3px rgba(0,0,0,.6); pointer-events: none; opacity: 0; transition: opacity .3s; }
 #carLabel.on { opacity: 1; }
-#pad.righty #carLabel { left: auto; right: calc(80px + var(--sar)); transform: translateX(50%); }
+#pad.righty #carLabel { left: auto; right: calc(14px + var(--sar)); }
 
 /* speedometer sits above the stick you drive with, with the local speed limit sign */
 .speedo { left: calc(14px + var(--sal)); transform: none; bottom: calc(6px + var(--sab)); display: flex; align-items: center; gap: 2px; padding: 2px 8px; background: rgba(10,10,24,.35); border-radius: 10px; }

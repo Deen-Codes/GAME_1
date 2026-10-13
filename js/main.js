@@ -1,25 +1,25 @@
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA } from './character.js?v=64';
-import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=64';
-import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=64';
-import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, onBridge, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=64';
-import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=64';
-import { buildPanel, renderStats } from './ui.js?v=64';
-import { Input } from './input.js?v=64';
-import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime } from './audio.js?v=64';
-import { runMinigame } from './minigames.js?v=64';
-import { Peds, bakeCfg, figure, setWalk, setTownSource } from './peds.js?v=64';
-import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=64';
-import { findRoute } from './nav.js?v=64';
-import { COURSES, CAREERS, QUIZ } from './careers.js?v=64';
-import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=64';
-import { attachWheel } from './wheel.js?v=64';
-import { Animals } from './animals.js?v=64';
-import { Talk } from './talk.js?v=64';
-import { svg, drawIcon } from './icons.js?v=64';
-import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=64';
-import { FURN, CATALOG } from './furniture.js?v=64';
-import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE } from './interiors.js?v=64';
+import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA } from './character.js?v=65';
+import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=65';
+import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=65';
+import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, onBridge, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=65';
+import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=65';
+import { buildPanel, renderStats } from './ui.js?v=65';
+import { Input } from './input.js?v=65';
+import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime } from './audio.js?v=65';
+import { runMinigame } from './minigames.js?v=65';
+import { Peds, bakeCfg, figure, setWalk, setTownSource } from './peds.js?v=65';
+import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=65';
+import { findRoute } from './nav.js?v=65';
+import { COURSES, CAREERS, QUIZ } from './careers.js?v=65';
+import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=65';
+import { attachWheel } from './wheel.js?v=65';
+import { Animals } from './animals.js?v=65';
+import { Talk } from './talk.js?v=65';
+import { svg, drawIcon } from './icons.js?v=65';
+import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=65';
+import { FURN, CATALOG } from './furniture.js?v=65';
+import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE } from './interiors.js?v=65';
 
 const $ = id => document.getElementById(id);
 let inside = null, editMode = false, held = null, pendingCar = false, homeMusic = false, phoneBadge = 0;
@@ -4379,7 +4379,7 @@ function updateHUD(dt) {
   $('editBtn').classList.toggle('hidden', !(inside && inside.prop) || editMode);
   $('radioBtn').classList.toggle('hidden', !ride);
   $('carLabel').classList.toggle('on', !!ride && time < carLabelT);
-  $('speedo').classList.toggle('hidden', !ride || !!ride.b.two && ride.cfg?.body === 'bike');
+  $('speedo').classList.toggle('hidden', !ride || time < carLabelT || !!ride.b.two && ride.cfg?.body === 'bike'); // car name first, then the speed
   $('phoneBtn').classList.toggle('badge', phoneBadge > 0); $('phoneBtn').classList.toggle('hidden', !!stats.jail);
   if (ride) { const mph = Math.round(Math.abs(ride.s.v) * 2.237), lim = speedLimit(ride.s.x, ride.s.z); setText('speedTxt', String(mph)); $('speedo').classList.toggle('over', !!lim && mph > lim + 4); } // the number flashes red when you're over the limit
   const jt = race ? `Race ${race.i}/${RACE.points.length} · ${Math.ceil(race.t)}s` : job ? (job.type === 'bins' ? (job.stage === 'return' ? 'Bins · return the lorry' : `Bins · ${8 - job.bins.length}/8 · ${fmt(job.earned)}`) : job.type === 'taxi' ? (job.stage === 'pickup' ? `Cab · pick up fare · ${fmt(job.earned)}` : `Cab · drop off · ${Math.ceil(job.t)}s · ${fmt(job.pay)}`) : `Courier · ${Math.ceil(job.t)}s · ${fmt(job.pay)}`) : '';
@@ -4639,7 +4639,7 @@ function saveGame() {
   store.set('bc_save', save); store.set('bc_arsenal', arsenal); store.set('bc_cars', garage);
 }
 // auto-update: bookmarks and home-screen apps can hold on to an old copy. Check version.json (never cached) and reload once if newer.
-const BUILD = 64;
+const BUILD = 65;
 function checkUpdate() {
   fetch('version.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(j => {
     if (!(j.v > BUILD)) return;
