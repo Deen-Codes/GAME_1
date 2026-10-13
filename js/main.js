@@ -1,24 +1,24 @@
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA } from './character.js?v=34';
-import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=34';
-import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=34';
-import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide } from './world.js?v=34';
-import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=34';
-import { buildPanel, renderStats } from './ui.js?v=34';
-import { Input } from './input.js?v=34';
-import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime } from './audio.js?v=34';
-import { runMinigame } from './minigames.js?v=34';
-import { Peds, bakeCfg, figure, setWalk } from './peds.js?v=34';
-import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=34';
-import { findRoute } from './nav.js?v=34';
-import { COURSES, CAREERS, QUIZ } from './careers.js?v=34';
-import { attachWheel } from './wheel.js?v=34';
-import { Animals } from './animals.js?v=34';
-import { Talk } from './talk.js?v=34';
-import { svg, drawIcon } from './icons.js?v=34';
-import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=34';
-import { FURN, CATALOG } from './furniture.js?v=34';
-import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE } from './interiors.js?v=34';
+import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA } from './character.js?v=35';
+import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=35';
+import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=35';
+import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide } from './world.js?v=35';
+import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=35';
+import { buildPanel, renderStats } from './ui.js?v=35';
+import { Input } from './input.js?v=35';
+import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime } from './audio.js?v=35';
+import { runMinigame } from './minigames.js?v=35';
+import { Peds, bakeCfg, figure, setWalk } from './peds.js?v=35';
+import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=35';
+import { findRoute } from './nav.js?v=35';
+import { COURSES, CAREERS, QUIZ } from './careers.js?v=35';
+import { attachWheel } from './wheel.js?v=35';
+import { Animals } from './animals.js?v=35';
+import { Talk } from './talk.js?v=35';
+import { svg, drawIcon } from './icons.js?v=35';
+import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=35';
+import { FURN, CATALOG } from './furniture.js?v=35';
+import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE } from './interiors.js?v=35';
 
 const $ = id => document.getElementById(id);
 let inside = null, editMode = false, held = null, pendingCar = false, homeMusic = false, phoneBadge = 0;
@@ -3453,7 +3453,13 @@ function closePhone() { $('phone').classList.remove('open'); setTimeout(() => { 
 let phoneThread = null;
 function phoneGo(app) { phoneApp = app; if (app === 'msgs') phoneBadge = 0; renderPhone(); }
 function messages() {
-  const out = [{ from: 'Uncle Ray', av: 'user', text: "Welcome to Bay City, kid. I got you a little studio downtown (the purple key on your map). Eat, sleep, keep your energy up. Dealers buy low and sell high, and they'll treat you better once they know you. Customers will text you here too. Make money, buy property, live large. Need honest work? The Work app lists taxi and courier jobs." }];
+  const intro = { rich: { from: "Dad's Lawyer", av: 'case', text: "Your father has instructed me to inform you that this is the last of it: $25,000 and the deeds to the Eastport Bungalow. He suggests you 'get a job'. Bay City College is a fine place to start." },
+    excon: { from: 'Big Carlos', av: 'lock', text: "You're out. Don't come back in here. Slim downtown remembers you, go see him. And watch yourself, the cops know your face. Cheap food at the taco truck. Now go make some money." },
+    hustler: { from: 'Slim', av: 'deal', text: "Ayy, you got the pack? Sell it to the customers who text you or flip it to another dealer. Prices change every day, so ask around. Don't get caught, the cops are watching the deals now." },
+    grad: { from: 'Bay Corp HR', av: 'case', text: "Welcome to Bay Corp! You start as Office Assistant. Clock in at the Tower reception between 7am and 7pm. Strong performance leads to promotion. We're proud to have you." },
+    parent: { from: 'Eastport Elementary', av: 'people', text: "Reminder: school pick-up is at 3pm. Your little one has been talking about you all week. Spend time together, it keeps their spirits up. Groceries are at the QuickMart." } }[stats.story];
+  const out = intro ? [intro] : [];
+  if (!intro) out.push({ from: 'Uncle Ray', av: 'user', text: "Welcome to Bay City, kid. I got you a little studio downtown (the purple key on your map). Eat, sleep, keep your energy up. Dealers buy low and sell high, and they'll treat you better once they know you. Customers will text you here too. Make money, buy property, live large. Need honest work? The Work app lists taxi and courier jobs." });
   for (const c of customers) { const g = GOODS.find(x => x.id === c.good); out.push({ from: c.name, av: 'deal', text: `Need ${c.qty} ${g.name} near ${c.area}. Paying ${fmt(c.pay)}. Don't keep me waiting (${Math.max(0, Math.ceil(c.exp - gameHours()))}h).`, at: { x: c.x, z: c.z, name: `${c.name}'s order` } }); }
   for (const p of PLACES) if (p.kind === 'dealer' && rel(p.id) >= 20) { const pr = dealerPricesFor(p); for (const g of GOODS) if (pr[g.id].hot) out.push({ from: p.npc, av: 'deal', text: pr[g.id].hot === 'cheap' ? `Got ${g.name} going cheap today. ${fmt(pr[g.id].buy)} each. Come thru.` : `Paying top dollar for ${g.name} today: ${fmt(pr[g.id].sell)}. Bring what you got.`, at: p }); }
   const inc = PROPERTIES.filter(p => owned.has(p.id) && propMode(p.id) === 'rent').reduce((a, p) => a + p.income, 0);
@@ -3621,7 +3627,7 @@ function saveGame() {
   store.set('bc_save', save); store.set('bc_arsenal', arsenal); store.set('bc_cars', garage);
 }
 // auto-update: bookmarks and home-screen apps can hold on to an old copy. Check version.json (never cached) and reload once if newer.
-const BUILD = 34;
+const BUILD = 35;
 function checkUpdate() {
   fetch('version.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(j => {
     if (!(j.v > BUILD)) return;
@@ -3633,6 +3639,30 @@ function checkUpdate() {
 }
 setTimeout(checkUpdate, 3000); setInterval(checkUpdate, 5 * 60 * 1000);
 document.addEventListener('visibilitychange', () => { if (!document.hidden) checkUpdate(); });
+// ---------------- starting stories: every new life can begin somewhere different
+const STORIES = [
+  { id: 'ray', title: 'Fresh Start', icon: 'house', blurb: 'Uncle Ray set you up with a little studio downtown and $500. Make something of yourself.' },
+  { id: 'rich', title: 'Trust Fund Kid', icon: 'cash', blurb: 'Your dad just cut you off. $25,000 and the Eastport Bungalow is all you get. You have never worked a day.' },
+  { id: 'excon', title: 'Fresh Out', icon: 'lock', blurb: 'Released from Bay County Correctional with $40 and a bad reputation. The street remembers you. So do the cops.' },
+  { id: 'hustler', title: 'Corner Hustler', icon: 'deal', blurb: 'You know every dealer in town. A small stash, $1,200 and a studio over a laundromat.' },
+  { id: 'grad', title: 'College Grad', icon: 'book', blurb: 'Fresh Business Diploma, a junior office job at Bay Corp Tower and $300 left after rent.' },
+  { id: 'parent', title: 'Single Parent', icon: 'people', blurb: 'Just you and your 6-year-old in the Eastport Bungalow. $2,000 in the bank. Every dollar counts.' },
+];
+function applyStory(id) {
+  stats.story = id; fam();
+  const at = (x, z) => { Object.assign(P, { x, z }); P.y = baseY(x, z); Object.assign(myCar.s, { x: x + 5, z: z + 3 }); placeVehicle(myCar); updateCamera(0, true); };
+  if (id === 'rich') { money = 25000; owned.add('p_bung'); fam().home = 'p_bung'; stats.mood = 80; const p = PROPERTIES.find(q => q.id === 'p_bung'); at(p.x, p.z + 4); }
+  if (id === 'excon') { money = 40; owned.delete('p_studio'); stats.jailRecord = dayN; for (const p of PLACES) if (p.kind === 'dealer') stats.rel[p.id] = 22; stats.rel['pr:tony'] = 40; addXP(stats, 'strength', 400); const p = PLACES.find(q => q.id === 'v_police'); at(p.x + 3, p.z + 4); }
+  if (id === 'hustler') { money = 1200; for (const p of PLACES) if (p.kind === 'dealer') stats.rel[p.id] = 32; addXP(stats, 'dealing', 500); stash.haze = (stash.haze || 0) + 8; stash.pills = (stash.pills || 0) + 4; }
+  if (id === 'grad') { money = 300; edu().done.push('business'); stats.career = { id: 'office', lvl: 0, perf: 55, shifts: 0, lastDay: 0 }; addXP(stats, 'smarts', 450); }
+  if (id === 'parent') { money = 2000; owned.add('p_bung'); fam().home = 'p_bung'; fam().kids.push({ id: 'kid:' + Date.now(), name: pick(Math.random() < 0.5 ? GIRL_NAMES : BOY_NAMES), girl: Math.random() < 0.5, born: dayN - 6, seed: Math.floor(Math.random() * 1e6), skin: charCfg.skin, hairColor: charCfg.hairColor }); const k = fam().kids[0]; k.girl = GIRL_NAMES.includes(k.name); stats.rel[k.id] = 70; const p = PROPERTIES.find(q => q.id === 'p_bung'); at(p.x, p.z + 4); }
+  refreshPropertyMarkers(); saveGame();
+  const S2 = STORIES.find(s => s.id === id); phoneBadge = 1; toast(`${S2.title}. Check your phone.`, 3.5);
+}
+function storyPicker() {
+  modal(`<h3>Choose your story</h3><p>How does this life begin?</p><div class="story-list"><button class="story" data-story="random">${svg('star', 'sm')}<span><b>Random life</b><small>Let fate decide, BitLife style.</small></span></button>${STORIES.map(st => `<button class="story" data-story="${st.id}">${svg(st.icon, 'sm')}<span><b>${st.title}</b><small>${st.blurb}</small></span></button>`).join('')}</div>`, []);
+  document.querySelectorAll('[data-story]').forEach(b => b.onclick = () => { closeModal(); applyStory(b.dataset.story === 'random' ? pick(STORIES).id : b.dataset.story); });
+}
 function startGame() {
   if (save) { Object.assign(P, { x: save.x, z: save.z, face: save.face || 0 }); clockH = save.h ?? 8; dayN = save.day ?? 1; }
   P.hp = save?.hp > 0 ? Math.min(save.hp, maxHP()) : maxHP();
@@ -3652,7 +3682,7 @@ function startGame() {
   setState('play');
   if (stats.escaped) { charCfg = { ...stats.escaped }; stats.escaped = null; buildHero(); }
   if (stats.jail) { wearJumpsuit(true); enterPrison(false); }
-  if (!save) { phoneBadge = 1; toast('Check your phone. Uncle Ray left you a message.', 4); }
+  if (!save) setTimeout(storyPicker, 300);
   else if (!save.stats) { phoneBadge = 1; toast('New: needs, skills, homes and interiors. Check your phone!', 4); }
   else if (!store.get('bc_seen7')) { store.set('bc_seen7', 1); phoneBadge = 1; toast('New: the Work app on your phone lists every job. Upgrade cars at Bay Customs.', 4.5); }
 }
