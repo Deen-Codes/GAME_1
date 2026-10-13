@@ -1,5 +1,5 @@
 // Everything you can walk or drive up to: shops, barbers, property, dealers, minigames, chop shop, race.
-import { blockSide, attachDoor, addStructure } from './world.js?v=85';
+import { blockSide, attachDoor, addStructure } from './world.js?v=86';
 
 const S = (city, i, j, side) => blockSide(city, i, j, side);
 
@@ -44,10 +44,10 @@ export const PLACES = [
   { id: 'l_carousel', kind: 'ride', ride: 'carousel', name: 'Carousel', icon: 'star', desc: 'Painted horses and organ music. $5.', x: 64, z: 380 },
   { id: 'l_stalls', kind: 'carny', name: 'Fairground Stalls', icon: 'target', desc: 'Hook-a-duck, ring toss, win a giant teddy.', x: 52, z: 414 },
   { id: 'l_marina', kind: 'marina', name: 'Bay Marina', icon: 'wave', desc: 'Harbour cruises and boats for sale.', x: -239.5, z: 421 },
-  { id: 't_rose', kind: 'tattoo', name: 'Needle & Rose Tattoo', icon: 'edit', desc: 'Tattoos, cover-ups and laser removal.', ...S('main', 2, 0, 's') },
-  { id: 't_east', kind: 'tattoo', name: 'Eastport Ink', icon: 'edit', desc: 'Walk-ins welcome. Laser removal too.', ...S('east', 2, 0, 's') },
-  { id: 'z_burger', kind: 'biz', biz: 'burger', name: 'Bay Burger', icon: 'food', desc: 'A burger joint. For sale.', ...S('main', 1, 2, 's') },
-  { id: 'z_laundry', kind: 'biz', biz: 'laundry', name: 'Suds Laundromat', icon: 'wave', desc: 'Coin laundry. For sale.', ...S('east', -1, 1, 's') },
+  { id: 't_rose', kind: 'venue', interior: 'tattoo', name: 'Needle & Rose Tattoo', icon: 'edit', desc: 'Tattoos, cover-ups and laser removal.', ...S('main', 2, 0, 's') },
+  { id: 't_east', kind: 'venue', interior: 'tattoo', name: 'Eastport Ink', icon: 'edit', desc: 'Walk-ins welcome. Laser removal too.', ...S('east', 2, 0, 's') },
+  { id: 'z_burger', kind: 'biz', interior: 'burgershop', biz: 'burger', name: 'Bay Burger', icon: 'food', desc: 'A burger joint. For sale.', ...S('main', 1, 2, 's') },
+  { id: 'z_laundry', kind: 'biz', interior: 'laundry', biz: 'laundry', name: 'Suds Laundromat', icon: 'wave', desc: 'Coin laundry. For sale.', ...S('east', -1, 1, 's') },
   { id: 'z_carwash', kind: 'biz', biz: 'carwash', name: 'Shine Hand Car Wash', icon: 'car', desc: 'Hand car wash. For sale.', ...S('north', 1, 1, 's') },
   { id: 'g_club', kind: 'venue', interior: 'club', name: 'Neon Room Club', icon: 'music', ...S('main', -2, -1, 's') },
 
@@ -178,7 +178,7 @@ export const RACE = {
 export const CHOP_VALUE = { moto: 900, bike: 60, scooter: 80, hatch: 350, sedan: 500, coupe: 700, sports: 1400, muscle: 950, pickup: 650, van: 450, buggy: 400, limo: 1600, suv: 800, convertible: 1100, wagon: 450, lowrider: 900, classic: 1000, boxtruck: 600, hyper: 2600 };
 
 // Shops, venues and homes get a real front door on their building; the marker moves to stand in front of it.
-const DOOR_COL = { clothes: '#ff6fb5', barber: '#2f80ed', guns: '#e23b3b', diner: '#ffd23f', mart: '#4cd964', gym: '#ff8a2a', casino: '#d4af37', motors: '#38e8ff', casa: '#c98a4a', bar: '#1fb5a8', club: '#9b51e0', church: '#c9a24a', hospital: '#e23b3b', police: '#2a6aff', pit: '#ff3b3b', college: '#2f80ed', office: '#38e8ff' };
+const DOOR_COL = { tattoo: '#ff5a8a', burgershop: '#ffd23f', laundry: '#38e8ff', clothes: '#ff6fb5', barber: '#2f80ed', guns: '#e23b3b', diner: '#ffd23f', mart: '#4cd964', gym: '#ff8a2a', casino: '#d4af37', motors: '#38e8ff', casa: '#c98a4a', bar: '#1fb5a8', club: '#9b51e0', church: '#c9a24a', hospital: '#e23b3b', police: '#2a6aff', pit: '#ff3b3b', college: '#2f80ed', office: '#38e8ff' };
 for (const p of PLACES) if (p.interior && p.door) attachDoor(p, DOOR_COL[p.interior] || '#ff8a2a', null, p.church ? 'church' : null);
 for (const p of PROPERTIES) if (p.door) attachDoor(p, '#4cd964');
 for (const p of [...PLACES, ...PROPERTIES]) if (!p.door || p.kind === 'service') addStructure(p);

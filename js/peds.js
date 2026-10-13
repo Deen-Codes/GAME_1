@@ -1,7 +1,7 @@
 // Pedestrians: baked low-poly people who stroll sidewalks, wander the beach, flee from trouble.
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, randomChar, disposeObject } from './character.js?v=85';
-import { CITIES, sandLine, shoreLine, groundH, walkable as worldWalkable, resolve } from './world.js?v=85';
+import { buildCharacter, randomChar, disposeObject } from './character.js?v=86';
+import { CITIES, sandLine, shoreLine, groundH, walkable as worldWalkable, resolve } from './world.js?v=86';
 // interiors swap in their own floor test so brawlers can move around inside
 let walkable = worldWalkable; export function setWalk(fn) { walkable = fn || worldWalkable; }
 
@@ -225,7 +225,7 @@ export class Peds {
             Object.assign(p, { state: 'cross', fx0: p.bx + cx, fz0: p.bz + cz, tx, tz, bi: ni, bj: nj, bx: nbx, bz: nbz, ns: cornerS(alongX ? -sx : sx, alongX ? sz : -sz) });
           }
         }
-        if (p.state === 'walk') { const [x, z, dx, dz] = perim(p.s); p.x = p.bx + x; p.z = p.bz + z; p.face = Math.atan2(dx * p.dir, dz * p.dir); mv = p.speed; }
+        if (p.state === 'walk') { const [x, z, dx, dz] = perim(p.s); p.x = p.bx + x + (p.offx || 0); p.z = p.bz + z + (p.offz || 0); p.face = Math.atan2(dx * p.dir, dz * p.dir); mv = p.speed; }
       }
       if (p.state === 'cross') {
         const dx = p.tx - p.x, dz = p.tz - p.z, d = Math.hypot(dx, dz);
@@ -247,6 +247,11 @@ export class Peds {
         if (!walkable(p.x, p.z)) { p.x = ox; p.z = oz; p.fx = -p.fx; p.fz = -p.fz; }
         p.face = Math.atan2(p.fx, p.fz); mv = 4.6;
         if (p.t <= 0) this.settle(p);
+      }
+      if (this.carPush && (p.state === 'walk' || p.state === 'cross' || p.state === 'wander' || p.state === 'return' || p.state === 'march' || p.state === 'chase')) { // step round parked cars instead of walking through them
+        const ox = p.x, oz = p.z; this.carPush(p); const ddx = p.x - ox, ddz = p.z - oz;
+        if (ddx || ddz) { if (p.state === 'walk') { p.offx = (p.offx || 0) + ddx; p.offz = (p.offz || 0) + ddz; } }
+        else if (p.offx || p.offz) { const k = Math.exp(-dt * 0.7); p.offx *= k; p.offz *= k; if (Math.abs(p.offx) + Math.abs(p.offz) < 0.02) p.offx = p.offz = 0; }
       }
       if (p.hitT > 0 && p.state !== 'down') { p.hitT -= dt; const ox = p.x, oz = p.z; p.x += p.hkx * dt * 2; p.z += p.hkz * dt * 2; resolve(p, 0.35, 0); if (!walkable(p.x, p.z)) { p.x = ox; p.z = oz; } }
       if (p.state === 'down') {
