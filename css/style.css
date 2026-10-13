@@ -75,7 +75,7 @@ input[type=text] { width: 100%; padding: 10px 12px; border-radius: 10px; border:
 #minimap { position: absolute; top: calc(6px + var(--sat)); right: calc(6px + var(--sar)); width: 132px; height: 132px; border-radius: 50%; pointer-events: auto; filter: drop-shadow(0 4px 10px rgba(0,0,0,.35)); }
 .speedo { position: absolute; left: 50%; transform: translateX(-50%); bottom: calc(var(--pad) + 6px); background: rgba(10,10,24,.45); border-radius: 14px; padding: 4px 14px; text-align: center; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
 .speedo b { font-size: 26px; font-weight: 900; font-variant-numeric: tabular-nums; } .speedo span { font-size: 11px; color: var(--dim); margin-left: 4px; font-weight: 800; }
-.toast { position: absolute; left: 50%; bottom: calc(var(--pad) + 64px + var(--sab)); transform: translateX(-50%); background: rgba(10,10,24,.6); padding: 8px 16px; border-radius: 999px; font-weight: 800; font-size: 14px; opacity: 0; transition: opacity .3s; max-width: 88vw; text-align: center; }
+.toast { position: absolute; left: 50%; top: calc(var(--sat) + 158px); transform: translateX(-50%); font-size: 13px; background: rgba(10,10,24,.6); padding: 8px 16px; border-radius: 999px; font-weight: 800; opacity: 0; transition: opacity .3s; max-width: 88vw; text-align: center; }
 .toast.on { opacity: 1; }
 
 /* ---------- controller ---------- */

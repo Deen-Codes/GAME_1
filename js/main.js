@@ -1,23 +1,23 @@
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA } from './character.js?v=26';
-import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=26';
-import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=26';
-import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide } from './world.js?v=26';
-import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=26';
-import { buildPanel, renderStats } from './ui.js?v=26';
-import { Input } from './input.js?v=26';
-import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted } from './audio.js?v=26';
-import { runMinigame } from './minigames.js?v=26';
-import { Peds, bakeCfg, figure } from './peds.js?v=26';
-import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=26';
-import { findRoute } from './nav.js?v=26';
-import { attachWheel } from './wheel.js?v=26';
-import { Animals } from './animals.js?v=26';
-import { Talk } from './talk.js?v=26';
-import { svg, drawIcon } from './icons.js?v=26';
-import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=26';
-import { FURN, CATALOG } from './furniture.js?v=26';
-import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE } from './interiors.js?v=26';
+import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA } from './character.js?v=27';
+import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=27';
+import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=27';
+import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide } from './world.js?v=27';
+import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=27';
+import { buildPanel, renderStats } from './ui.js?v=27';
+import { Input } from './input.js?v=27';
+import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted } from './audio.js?v=27';
+import { runMinigame } from './minigames.js?v=27';
+import { Peds, bakeCfg, figure } from './peds.js?v=27';
+import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=27';
+import { findRoute } from './nav.js?v=27';
+import { attachWheel } from './wheel.js?v=27';
+import { Animals } from './animals.js?v=27';
+import { Talk } from './talk.js?v=27';
+import { svg, drawIcon } from './icons.js?v=27';
+import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=27';
+import { FURN, CATALOG } from './furniture.js?v=27';
+import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE } from './interiors.js?v=27';
 
 const $ = id => document.getElementById(id);
 let inside = null, editMode = false, held = null, pendingCar = false, homeMusic = false, phoneBadge = 0;
@@ -1091,9 +1091,9 @@ function updateVehicles(dt) {
         else { c.v = 0; v.donut = false; }
         for (const w of b.wheels) if (!w.front) w.spin.rotation.x += 40 * dt;
         if (Math.random() < dt * (10 + v.launch * 30)) spawnParticles(c.x - Math.sin(c.h) * b.length * 0.45, 0.25, c.z - Math.cos(c.h) * b.length * 0.45, ['#e8e8e8', '#bdbdbd'], 1, 1.5, 0.9, 0.4, -1);
-        if (v.launch >= 1 && !v.launchReady && !v.donut) { v.launchReady = true; toast('Launch control ready. Let go of the brake!', 1.2); navigator.vibrate?.(15); }
+        if (v.launch >= 1 && !v.launchReady && !v.donut) { v.launchReady = true; navigator.vibrate?.(15); }
       } else if (gas && !brk && v.launch > 0.25 && !v.donut) {
-        c.v = Math.max(c.v, s.top * 0.42 * v.launch); shake = Math.max(shake, 0.25 * v.launch); if (v.launch >= 1) toast('LAUNCH!', 0.8);
+        c.v = Math.max(c.v, s.top * 0.42 * v.launch); shake = Math.max(shake, 0.25 * v.launch);
         spawnParticles(c.x - Math.sin(c.h) * b.length * 0.45, 0.25, c.z - Math.cos(c.h) * b.length * 0.45, ['#e8e8e8', '#bdbdbd'], 14, 3, 1.2, 0.5, -1);
         v.launch = 0; v.launchReady = false;
       } else { v.launch = 0; v.launchReady = false; v.donut = false; }
@@ -3340,6 +3340,19 @@ function saveGame() {
   save = { hp: P.hp, x: inside ? inside.back.x : P.x, z: inside ? inside.back.z + 1.2 : P.z, face: P.face, inCar: ride === myCar, cx: myCar?.s.x, cz: myCar?.s.z, ch: myCar?.s.h, h: clockH, day: dayN, money, stash, owned: [...owned], waypoint, stats, homes, storage, customers: customers.map(({ npc, marker, ...c }) => c) };
   store.set('bc_save', save); store.set('bc_arsenal', arsenal); store.set('bc_cars', garage);
 }
+// auto-update: bookmarks and home-screen apps can hold on to an old copy. Check version.json (never cached) and reload once if newer.
+const BUILD = 27;
+function checkUpdate() {
+  fetch('version.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(j => {
+    if (!(j.v > BUILD)) return;
+    let tried = 0; try { tried = +sessionStorage.getItem('bc_upd') || 0; } catch (_) {}
+    if (tried >= j.v) { toast(`Update ${j.v} is out. Close and reopen the app to get it.`, 4); return; }
+    try { sessionStorage.setItem('bc_upd', j.v); } catch (_) {}
+    saveGame(); toast('Updating Bay City...', 2); setTimeout(() => location.replace(location.pathname + '?u=' + j.v), 900);
+  }).catch(() => {});
+}
+setTimeout(checkUpdate, 3000); setInterval(checkUpdate, 5 * 60 * 1000);
+document.addEventListener('visibilitychange', () => { if (!document.hidden) checkUpdate(); });
 function startGame() {
   if (save) { Object.assign(P, { x: save.x, z: save.z, face: save.face || 0 }); clockH = save.h ?? 8; dayN = save.day ?? 1; }
   P.hp = save?.hp > 0 ? Math.min(save.hp, maxHP()) : maxHP();

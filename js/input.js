@@ -43,7 +43,7 @@ export class Input {
     zone.addEventListener('pointerdown', e => {
       // a new touch always takes the stick: if the old finger's 'up' got lost (pad hidden mid-drag, iOS gesture), don't stay jammed
       if (id !== null) { try { zone.releasePointerCapture(id); } catch (_) {} id = null; }
-      this.touch = true; id = e.pointerId; zone.setPointerCapture(id);
+      this.touch = true; id = e.pointerId; try { zone.setPointerCapture(id); } catch (_) {}
       const zr = zone.getBoundingClientRect();
       ox = Math.max(zr.left + 70, e.clientX); oy = Math.min(zr.bottom - 66, Math.max(zr.top + 66, e.clientY)); // keep the whole stick on screen
       base.style.left = (ox - zr.left) + 'px'; base.style.top = (oy - zr.top) + 'px'; base.classList.add('live');
@@ -62,7 +62,7 @@ export class Input {
     addEventListener('blur', () => this.resetStick()); document.addEventListener('visibilitychange', () => this.resetStick());
     for (const [name, el] of Object.entries(buttons)) {
       el.addEventListener('pointerdown', e => {
-        e.preventDefault(); e.stopPropagation(); this.touch = true; el.setPointerCapture(e.pointerId);
+        e.preventDefault(); e.stopPropagation(); this.touch = true; try { el.setPointerCapture(e.pointerId); } catch (_) {}
         if (name in this.btn) this.btn[name] = true;
         this.pressed[name] = true; el.classList.add('down');
         if (navigator.vibrate) navigator.vibrate(6);
