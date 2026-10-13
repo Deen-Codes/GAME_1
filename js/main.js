@@ -1,25 +1,25 @@
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA } from './character.js?v=56';
-import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=56';
-import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=56';
-import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=56';
-import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=56';
-import { buildPanel, renderStats } from './ui.js?v=56';
-import { Input } from './input.js?v=56';
-import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime } from './audio.js?v=56';
-import { runMinigame } from './minigames.js?v=56';
-import { Peds, bakeCfg, figure, setWalk, setTownSource } from './peds.js?v=56';
-import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=56';
-import { findRoute } from './nav.js?v=56';
-import { COURSES, CAREERS, QUIZ } from './careers.js?v=56';
-import { EVENTS, EVENT_BY_ID } from './events.js?v=56';
-import { attachWheel } from './wheel.js?v=56';
-import { Animals } from './animals.js?v=56';
-import { Talk } from './talk.js?v=56';
-import { svg, drawIcon } from './icons.js?v=56';
-import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=56';
-import { FURN, CATALOG } from './furniture.js?v=56';
-import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE } from './interiors.js?v=56';
+import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA } from './character.js?v=57';
+import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=57';
+import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=57';
+import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=57';
+import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=57';
+import { buildPanel, renderStats } from './ui.js?v=57';
+import { Input } from './input.js?v=57';
+import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime } from './audio.js?v=57';
+import { runMinigame } from './minigames.js?v=57';
+import { Peds, bakeCfg, figure, setWalk, setTownSource } from './peds.js?v=57';
+import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=57';
+import { findRoute } from './nav.js?v=57';
+import { COURSES, CAREERS, QUIZ } from './careers.js?v=57';
+import { EVENTS, EVENT_BY_ID } from './events.js?v=57';
+import { attachWheel } from './wheel.js?v=57';
+import { Animals } from './animals.js?v=57';
+import { Talk } from './talk.js?v=57';
+import { svg, drawIcon } from './icons.js?v=57';
+import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=57';
+import { FURN, CATALOG } from './furniture.js?v=57';
+import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE } from './interiors.js?v=57';
 
 const $ = id => document.getElementById(id);
 let inside = null, editMode = false, held = null, pendingCar = false, homeMusic = false, phoneBadge = 0;
@@ -892,6 +892,15 @@ function updateFoot(dt) {
 
 // ---------------- getting in and out of cars (animated: walk to the door, climb in / step out, or bail out at speed)
 let carAnim = null;
+const DRIVER = -1; // right-hand drive: the driver's door is on the right of the car
+// walk to the driver's door; from the passenger side you go round the front of the car first
+function planIn(v, spd = 6) {
+  const side = v.b.two ? sideOf(v, P.x, P.z) : DRIVER, door = doorSpot(v, side), h = v.s.h;
+  let via = null;
+  if (!v.b.two && sideOf(v, P.x, P.z) !== side) { const f = v.b.length / 2 + 1.3; via = { x: v.s.x + Math.sin(h) * f, z: v.s.z + Math.cos(h) * f }; }
+  const dist = via ? Math.hypot(via.x - P.x, via.z - P.z) + Math.hypot(door.x - via.x, door.z - via.z) : Math.hypot(door.x - P.x, door.z - P.z);
+  return { side, door, via, d1: clamp(dist / spd, 0.12, via ? 1.1 : 0.6) };
+}
 const sideOf = (v, x, z) => { const h = v.s.h; return ((x - v.s.x) * Math.cos(h) - (z - v.s.z) * Math.sin(h)) >= 0 ? 1 : -1; };
 function doorSpot(v, side) { const s = v.s, h = s.h, o = v.b.width / 2 + (v.b.doors ? 0.7 : 0.55), f = v.b.doors ? -0.45 : 0.25; return { x: s.x + Math.cos(h) * o * side + Math.sin(h) * f, z: s.z - Math.sin(h) * o * side + Math.cos(h) * f }; }
 // doors swing on their front hinge: open while someone climbs in or out, then shut behind them
@@ -913,9 +922,9 @@ function sitIn(v) {
 }
 function enterVehicle(v, anim = true) {
   if (!anim || P.dead || carAnim) { if (!carAnim) sitIn(v); return; }
-  const side = sideOf(v, P.x, P.z), door = doorSpot(v, side);
+  const pl = planIn(v);
   v.s.v = 0; v.s.vx = v.s.vz = 0;
-  carAnim = { type: 'in', v, side, t: 0, from: { x: P.x, z: P.z }, door, d1: clamp(Math.hypot(door.x - P.x, door.z - P.z) / 6, 0.12, 0.6), d2: 0.5 };
+  carAnim = { type: 'in', v, ...pl, t: 0, from: { x: P.x, z: P.z }, d2: 0.5 };
   sfx.click();
 }
 function exitCar() {
@@ -926,7 +935,7 @@ function exitCar() {
   if (ride) { ride.radio = radioIndex(); if (ride === myCar) stats.carRadio = ride.radio; }
   ride = null; radioOn(false);
   if (spd > 7) { // bail out: tumble out the side, the car rolls on without you
-    const side = 1, rx = Math.cos(h) * side, rz = -Math.sin(h) * side, fx = Math.sin(h), fz = Math.cos(h);
+    const side = DRIVER, rx = Math.cos(h) * side, rz = -Math.sin(h) * side, fx = Math.sin(h), fz = Math.cos(h);
     const seat = seatSpot(v, side); Object.assign(P, { x: seat.x + rx * 1.4, z: seat.z + rz * 1.4, face: h + Math.PI / 2 * side });
     P.kx = fx * s.v * 0.55 + rx * 6; P.kz = fz * s.v * 0.55 + rz * 6; P.vy = 4.5; P.y = baseY(P.x, P.z) + 0.6;
     v.coast = 3; heroRoot.visible = true;
@@ -936,14 +945,20 @@ function exitCar() {
   }
   s.v = 0; s.vx = s.vz = 0;
   const lx = Math.cos(h), lz = -Math.sin(h);
-  const spots = [[1, lx * 2.4, lz * 2.4], [-1, -lx * 2.4, -lz * 2.4], [1, -Math.sin(h) * 3.8, -Math.cos(h) * 3.8], [1, Math.sin(h) * 3.8, Math.cos(h) * 3.8]];
-  let to = null, side = 1;
+  const spots = [[DRIVER, lx * 2.4 * DRIVER, lz * 2.4 * DRIVER], [-DRIVER, -lx * 2.4 * DRIVER, -lz * 2.4 * DRIVER], [DRIVER, -Math.sin(h) * 3.8, -Math.cos(h) * 3.8], [DRIVER, Math.sin(h) * 3.8, Math.cos(h) * 3.8]];
+  let to = null, side = DRIVER;
   for (const [sd, dx, dz] of spots) { const p = { x: s.x + dx, z: s.z + dz }; if (!walkable(p.x, p.z)) continue; const bx = p.x, bz = p.z; resolve(p, 0.4, 0); if (Math.hypot(p.x - bx, p.z - bz) < 0.6) { to = p; side = sd; break; } }
-  if (!to) to = { x: s.x + lx * 2.4, z: s.z + lz * 2.4 };
+  if (!to) to = { x: s.x + lx * 2.4 * DRIVER, z: s.z + lz * 2.4 * DRIVER };
   const seat = seatSpot(v, side);
   Object.assign(P, { x: seat.x, z: seat.z, face: Math.atan2(to.x - seat.x, to.z - seat.z) });
   heroRoot.visible = !P.dead;
   carAnim = { type: 'out', v, side, t: 0, from: seat, to, dur: 0.5 };
+}
+function walkTo(A) {
+  const k = A.t / A.d1, legs = A.via ? [[A.from, A.via], [A.via, A.door]] : [[A.from, A.door]];
+  const i = Math.min(legs.length - 1, Math.floor(k * legs.length)), kk = k * legs.length - i, [a, b] = legs[i];
+  const e = legs.length > 1 ? kk : kk * kk * (3 - 2 * kk);
+  P.x = a.x + (b.x - a.x) * e; P.z = a.z + (b.z - a.z) * e; P.face = Math.atan2(b.x - a.x, b.z - a.z);
 }
 function updateCarAnim(dt) {
   const A = carAnim; A.t += dt;
@@ -952,7 +967,7 @@ function updateCarAnim(dt) {
   let speed = 0, y = baseY(P.x, P.z), tumble = 0;
   if (A.type === 'jack') {
     const v = A.v, dr = A.driver, seat = seatSpot(v, A.side);
-    if (A.t < A.d1) { const k = ease(A.t / A.d1); P.x = lerp(A.from.x, A.door.x, k); P.z = lerp(A.from.z, A.door.z, k); P.face = Math.atan2(A.door.x - A.from.x, A.door.z - A.from.z); speed = 1; }
+    if (A.t < A.d1) { walkTo(A); speed = 1; }
     else if (A.t < A.d1 + A.d2) { // grab the driver and drag them out onto the street
       const k = (A.t - A.d1) / A.d2, out = { x: A.door.x + (A.door.x - seat.x) * 1.4, z: A.door.z + (A.door.z - seat.z) * 1.4 };
       P.face = Math.atan2(seat.x - P.x, seat.z - P.z);
@@ -971,7 +986,7 @@ function updateCarAnim(dt) {
   let arms = 'walk';
   if (A.type === 'in') {
     const v = A.v; A.d0 ??= v.b.doors && !(v.door && v.door.side === A.side && v.door.target) ? 0.32 : 0;
-    if (A.t < A.d1) { const k = ease(A.t / A.d1), ox = P.x, oz = P.z; P.x = lerp(A.from.x, A.door.x, k); P.z = lerp(A.from.z, A.door.z, k); P.face = Math.atan2(A.door.x - A.from.x, A.door.z - A.from.z); speed = 1; }
+    if (A.t < A.d1) { walkTo(A); speed = 1; }
     else if (A.t < A.d1 + A.d0) { // reach for the handle and pull the door open
       const seat = seatSpot(v, A.side); P.face += wrapA(Math.atan2(seat.x - P.x, seat.z - P.z) - P.face) * Math.min(1, dt * 14); arms = 'reach';
       if (!A.opened) { A.opened = 1; setDoor(v, A.side, true); sfx.click(); }
@@ -1018,11 +1033,11 @@ function jackTraffic(t) {
   if (carAnim) return;
   traffic.splice(traffic.indexOf(t), 1); dyn.remove(t.mesh);
   const v = makeVehicle(t.lib.cfg, t.rx, t.rz, t.rh, false);
-  const side = sideOf(v, P.x, P.z), door = doorSpot(v, side);
+  const pl = planIn(v, 6.5), side = pl.side;
   const driver = peds.spawnLoose(t.rx, t.rz, P.x, P.z);
   driver.state = 'held'; driver.root.visible = false; driver.name = pick(NPC_NAMES);
   driver.brave = Math.random() < 0.4 + (night > 0.5 ? 0.1 : 0) - (ws.kind === 'gun' && !holstered() ? 0.3 : 0);
-  carAnim = { type: 'jack', v, side, t: 0, from: { x: P.x, z: P.z }, door, d1: clamp(Math.hypot(door.x - P.x, door.z - P.z) / 6.5, 0.12, 0.5), d2: 0.75, d3: 0.5, driver };
+  carAnim = { type: 'jack', v, ...pl, t: 0, from: { x: P.x, z: P.z }, d2: 0.75, d3: 0.5, driver };
   witness('jack', t.rx, t.rz, driver); peds.scare(t.rx, t.rz, 15); sfx.click(); gainXP('strength', 3); crime(0.8);
 }
 function holstered() { return arsenal.cur === 'fist' || !!P.holster; }
@@ -1166,10 +1181,15 @@ function updateVehicles(dt) {
       let gas = !dead && (input.held('a') || input.keys.has('KeyW') || input.keys.has('ArrowUp'));
       let brk = !dead && (input.held('x') || input.keys.has('KeyS') || input.keys.has('ArrowDown'));
       // full stick driving: push where you want to go and the car drives there; pull back against it to brake, then reverse
-      let thr = 1;
+      let thr = 1, stickDrive = false;
       if ((settings.steer || 'screen') === 'screen' && !gas && !brk && !dead && st.m > 0.3) {
         const fwd = Math.cos(wrapA(Math.atan2(st.x, -st.y) - c.h)); thr = clamp((st.m - 0.2) / 0.6, 0.25, 1);
-        if (c.v >= -0.3) { if (fwd > -0.85) gas = true; else brk = true; } else { if (fwd > 0.3) gas = true; else brk = true; }
+        // moving forward: pull back (more than ~110° from where you're going) to brake; once slow, the same pull reverses.
+        // reversing: you keep reversing until you push clearly forward again
+        if (c.v > 2) { if (fwd > -0.35) gas = true; else brk = true; }
+        else if (c.v >= -0.3) { if (fwd > -0.6) gas = true; else brk = true; }
+        else { if (fwd > 0.35) gas = true; else brk = true; }
+        stickDrive = true;
       }
       const onRoad = !!roadAt(c.x, c.z), sand = c.z > sandLine(c.x), hill = c.x < -300 && !onRoad;
       const top = s.top * dk * (onRoad ? 1 : Math.min(1, (sand ? 0.45 : hill ? 0.55 : 0.65) * s.off));
@@ -1189,14 +1209,14 @@ function updateVehicles(dt) {
         v.launch = 0; v.launchReady = false;
       } else { v.launch = 0; v.launchReady = false; v.donut = false; }
       if (v.launch > 0) { /* revving on the spot */ }
-      else if (gas && !brk) { const topT = top * (0.4 + 0.6 * thr); if (c.v < -0.3) c.v = Math.min(0, c.v + 16 * dt); else if (c.v < topT) c.v = Math.min(topT, c.v + s.acc * dt * (1 - Math.max(0, c.v) / (s.top * 1.15))); else c.v = damp(c.v, topT, 1.2, dt); }
+      else if (gas && !brk) { const topT = top * (0.4 + 0.6 * thr); if (c.v < -0.3) c.v = Math.min(0, c.v + 16 * dt); else if (c.v < topT) c.v = Math.min(topT, c.v + s.acc * dt * (1 - Math.max(0, c.v) / (s.top * 1.15))); else c.v = damp(c.v, topT, stickDrive ? 2.5 : 1.2, dt); }
       else if (brk) { if (c.v > 0.3) { c.v = Math.max(0, c.v - 18 * dt); c.braking = true; } else c.v = Math.max(-s.top * 0.32, c.v - s.acc * 0.6 * dt); }
-      else c.v = damp(c.v, 0, 0.8, dt);
+      else c.v = damp(c.v, 0, (settings.steer || 'screen') === 'screen' ? 1.6 : 0.8, dt); // let go of the stick and the car slows down properly
       if (c.v > top + 0.5) c.v = damp(c.v, top, 1.5, dt);
       let want = -st.x;
       if ((settings.steer || 'screen') === 'screen') {
         // point the stick where you want the car to go on screen; the car turns to face it (reversing: the back of the car follows the stick)
-        if (st.m > 0.3) { const rev = c.v < -0.3 || (brk && !gas && c.v < 0.5), face = rev ? c.h + Math.PI : c.h, err = wrapA(Math.atan2(st.x, -st.y) - face); want = clamp(err * 2.2, -1, 1) * (rev ? -1 : 1) * Math.min(1, st.m * 1.3); }
+        if (st.m > 0.3) { const rev = c.v < -0.3 || (brk && !gas && c.v < 0.5), face = rev ? c.h + Math.PI : c.h, err = wrapA(Math.atan2(st.x, -st.y) - face); want = clamp(err * 1.5, -1, 1) * (rev ? -1 : 1) * Math.min(1, st.m * 1.3); }
         else want = 0;
       }
       c.steer = damp(c.steer, clamp(want + Math.sin(time * 1.1) * Math.min(1, FX.drunk) * 0.45, -1, 1), 9, dt);
@@ -4279,7 +4299,7 @@ function saveGame() {
   store.set('bc_save', save); store.set('bc_arsenal', arsenal); store.set('bc_cars', garage);
 }
 // auto-update: bookmarks and home-screen apps can hold on to an old copy. Check version.json (never cached) and reload once if newer.
-const BUILD = 56;
+const BUILD = 57;
 function checkUpdate() {
   fetch('version.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(j => {
     if (!(j.v > BUILD)) return;
