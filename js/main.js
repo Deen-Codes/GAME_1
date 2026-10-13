@@ -2,7 +2,7 @@ import * as THREE from '../lib/three.module.min.js';
 import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA } from './character.js';
 import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js';
 import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js';
-import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, windowShader, parkedIn, resolve, walkable, onPier, roadAt, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, blockSide } from './world.js';
+import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, blockSide } from './world.js';
 import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js';
 import { buildPanel, renderStats } from './ui.js';
 import { Input } from './input.js';
@@ -182,7 +182,7 @@ G.scene.add(sun, sun.target);
 const lantern = new THREE.PointLight('#ffd9a0', 0, 14, 1.6); G.scene.add(lantern);
 const muzzleLight = new THREE.PointLight('#ffd080', 0, 9, 1.6); G.scene.add(muzzleLight);
 const boomLight = new THREE.PointLight('#ffa040', 0, 30, 1.4); G.scene.add(boomLight);
-const water = new THREE.Mesh(new THREE.PlaneGeometry(1600, 700), new THREE.MeshStandardMaterial({ color: '#3e94d4', roughness: 0.15, metalness: 0.15, transparent: true, opacity: 0.88 }));
+const water = new THREE.Mesh(new THREE.PlaneGeometry(1600, 700), makeOceanMaterial());
 water.rotation.x = -Math.PI / 2; water.position.set(120, WATER_Y, 700); water.receiveShadow = true; G.scene.add(water);
 const world = new THREE.Group(); G.scene.add(world);
 const dyn = new THREE.Group(); G.scene.add(dyn);
@@ -283,7 +283,7 @@ function applyTime(h, px, pz) {
   sun.position.set(px + Math.cos(a) * 70, 90 * Math.max(0.4, Math.sin(a)) + 25, pz + 40); sun.target.position.set(px, 0, pz);
   MATS.win.emissiveIntensity = night * 1.1; MATS.sign.emissiveIntensity = 0.15 + night * 0.9; MATS.glow.emissiveIntensity = 0.15 + night * 1.6; MATS.pool.opacity = night * 0.28;
   lantern.intensity = night * 14;
-  water.material.color.lerpColors(cA.set('#3e94d4'), cB.set('#173a66'), night);
+  WATER_U.uNight.value = night;
 }
 
 // ---------------- particles
@@ -1358,6 +1358,149 @@ async function talkHomeless(p) {
   }
   endTalk(); peds.release(p);
 }
+// ================================================================ ROMANCE (Sims style: flirt, get a number, go on a date, woohoo under the duvet)
+const FEM_NAMES = ['Jade', 'Mia', 'Sofia', 'Chloe', 'Lexi', 'Nina', 'Ava', 'Zoe', 'Maya', 'Bella', 'Kira', 'Luna', 'Rosa', 'Tasha', 'Gabi', 'Leah'];
+const FLIRT = {
+  compliment: { label: 'Compliment', you: ['You have a seriously nice smile.', 'I like your style. You put that together yourself?', 'Your eyes are kind of distracting, you know that?'], risk: 0.1, gain: 14 },
+  cheesy: { label: 'Cheesy line', you: ['Are you a parking ticket? Because you\'ve got FINE written all over you.', 'Do you have a map? I keep getting lost in your eyes.', 'Is your name Wi-Fi? Because I\'m feeling a connection.'], risk: 0.35, gain: 20 },
+  bold: { label: 'Bold move', you: ['I\'ll be honest, I walked over here because you\'re the best-looking person in Bay City.', 'Let\'s skip the small talk. Drink with me tonight.', 'You and me. Sunset. Think about it.'], risk: 0.5, gain: 30 },
+  beach: { label: 'Beach flirt', you: ['That swimsuit should come with a warning sign.', 'Need someone to do your sunscreen? Purely professional.', 'Careful, the lifeguard\'s gonna think you\'re a hazard. Too hot.'], risk: 0.4, gain: 26 },
+};
+const FLIRT_YES = ['Haha, okay, smooth. Go on...', 'Stop it! ...No, actually, keep going.', 'Well, aren\'t you confident. I like that.', 'You\'re kind of cute, you know.', '*laughs* That actually worked a little.'];
+const FLIRT_NO = ['Wow. Does that ever work?', 'Ew. No.', 'I have a boyfriend. He\'s huge.', 'Not even a little bit.', 'Try that on someone else.'];
+let date = null, woo = null;
+function lookIsFem(look) { return !!look?.fem; }
+async function flirtLoop(p, bg) {
+  p.interest ??= Math.floor(rand(0, 15)) + (bg === 'beach' ? 10 : 0) + (night > 0.5 ? 8 : 0);
+  p.name ??= pick(FEM_NAMES);
+  $('talkName').textContent = p.name;
+  while (true) {
+    const styles = ['compliment', 'cheesy', 'bold', ...(bg === 'beach' ? ['beach'] : [])];
+    const opts = styles.map(k => ({ label: I('heart', FLIRT[k].label), k }));
+    if (p.interest >= 35 && !p.gotNumber) opts.push({ label: I('phone', 'Can I get your number?'), k: 'number' });
+    if (p.interest >= 60) opts.push({ label: I('star', 'Want to get out of here?'), k: 'date' });
+    opts.push({ label: I('x', 'Back'), k: 'back' });
+    const c = opts[await talk.choose(opts)].k;
+    if (c === 'back') return;
+    if (c === 'number') { p.gotNumber = true; addDateContact(p); await talk.say(pick(['Sure. Don\'t be weird with it.', 'Here. Text me sometime.', 'Okay... but you better actually call.'])); gainXP('charm', 15); continue; }
+    if (c === 'date') {
+      if (date) { await talk.say("Aren't you already with someone right now? Wow."); p.interest -= 30; continue; }
+      await talk.say(pick(['Ha. Okay, yeah. Let\'s go.', 'I thought you\'d never ask.', 'Sure, why not. Lead the way.'])); startDate(p); return 'date';
+    }
+    const F = FLIRT[c]; await talk.say(pick(F.you), 'you');
+    const chance = 0.42 + (lvl('charm') - 1) * 0.05 + (stats.mood - 50) / 300 + p.interest / 250 - F.risk * 0.5 + (bg === 'beach' && c === 'beach' ? 0.1 : 0);
+    if (Math.random() < chance) { p.interest += F.gain + lvl('charm'); gainXP('charm', Math.round(F.gain / 3)); feed({ mood: 3 }); await talk.say(c === 'beach' || (c === 'bold' && bg === 'beach') ? pick(['Mmm, maybe I do need help with the sunscreen...', 'Keep talking like that and I might let you buy me a drink.', '*bites lip* You\'re trouble, aren\'t you?']) : pick(FLIRT_YES)); }
+    else { p.interest -= 12 + F.risk * 20; feed({ mood: -3 }); await talk.say(pick(FLIRT_NO)); if (p.interest < -25) { await talk.say('Okay, I\'m done here.'); if (c === 'bold' || c === 'beach') { hurt(2); sfx.punch?.(); toast('Slapped!'); } return 'left'; } }
+  }
+}
+function addDateContact(p) { stats.dates ||= {}; const id = 'date:' + p.name; stats.dates[id] = { name: p.name, cfg: p.look.cfg }; stats.rel[id] = Math.max(stats.rel[id] || 0, 20); relNames[id] = p.name; saveGame(); }
+function startDate(p) {
+  peds.release(p); const i = peds.list.indexOf(p); if (i >= 0) peds.list.splice(i, 1); dyn.remove(p.root);
+  if (p.dog) p.dog.owner = null;
+  const look = p.look, fig = figure(look); dyn.add(fig.root);
+  date = { name: p.name, look, cfg: look.cfg, fig, x: p.x, z: p.z, face: p.face, phase: 0, interest: p.interest, since: gameHours(), id: 'date:' + p.name };
+  addDateContact(p); bumpRel(date.id, 10, false);
+  $('loveBtn').classList.remove('hidden');
+  toast(`${p.name} is hanging out with you. Tap the heart to talk. Take her home or find somewhere private...`, 4);
+}
+function endDate(msg) {
+  if (!date) return; const d = date; date = null; $('loveBtn').classList.add('hidden');
+  if (msg) toast(msg, 3);
+  // she walks off and fades away
+  const leave = { fig: d.fig, t: 0, fx: Math.sin(d.face + 2.5), fz: Math.cos(d.face + 2.5) };
+  leaving.push(leave);
+}
+const leaving = [];
+function placeDateNear(x, z) { if (!date) return; date.x = x + 0.9; date.z = z + 0.6; date.fig.root.visible = true; date.inCar = false; }
+function updateDate(dt) {
+  for (let i = leaving.length - 1; i >= 0; i--) { const l = leaving[i]; l.t += dt; l.fig.root.position.x += l.fx * 1.6 * dt; l.fig.root.position.z += l.fz * 1.6 * dt; l.fig.root.rotation.y = Math.atan2(l.fx, l.fz); const ph = l.t * 9; l.fig.limbs[0].rotation.x = -Math.sin(ph) * 0.5; l.fig.limbs[1].rotation.x = Math.sin(ph) * 0.5; if (l.t > 6) { dyn.remove(l.fig.root); leaving.splice(i, 1); } }
+  if (!date || woo) return;
+  if (gameHours() - date.since > 7) { endDate(`${date.name} had to head home. "Text me!"`); return; }
+  if (ride) { date.inCar = true; date.fig.root.visible = false; date.x = ride.s.x; date.z = ride.s.z; return; }
+  if (date.inCar) placeDateNear(P.x, P.z);
+  const tx = P.x - Math.sin(P.face) * 1.3 + Math.sin(P.face + 1.57) * 0.8, tz = P.z - Math.cos(P.face) * 1.3 + Math.cos(P.face + 1.57) * 0.8;
+  const dx = tx - date.x, dz = tz - date.z, d = Math.hypot(dx, dz);
+  let mv = 0;
+  if (d > 25) { date.x = tx; date.z = tz; }
+  else if (d > 0.3) { const sp = Math.min(d * 2.5, 7.5); date.x += dx / d * sp * dt; date.z += dz / d * sp * dt; date.face = Math.atan2(dx, dz); mv = sp; if (!inside) resolve(date, 0.35, 0); }
+  else date.face += wrapA(P.face - date.face) * Math.min(1, dt * 4);
+  date.phase += dt * mv * 2.6;
+  const sw = Math.min(1, mv / 1.5) * (mv > 3 ? 0.9 : 0.55), l = date.fig.limbs;
+  l[0].rotation.x = -Math.sin(date.phase) * sw; l[1].rotation.x = Math.sin(date.phase) * sw; l[2].rotation.x = Math.sin(date.phase) * sw * 0.8; l[3].rotation.x = -Math.sin(date.phase) * sw * 0.8;
+  date.fig.root.position.set(date.x, baseY(date.x, date.z), date.z); date.fig.root.rotation.y = date.face; date.fig.root.visible = !P.dead;
+}
+async function talkDate() {
+  if (!date || woo || state !== 'play') return;
+  const D = date;
+  beginTalk(D.cfg, D.name, `${relName(rel(D.id))} · on a date`, 330, D.id);
+  await talk.say(pick(D.interest > 80 ? ['I like being around you.', 'So... what now?', 'You\'re fun, you know that?'] : ['Where are we going?', 'This is nice.', 'So, tell me something about you.']));
+  const bed = inside?.prop ? inside.h.furn.find(f => FURN[f.t].act === 'sleep') : null;
+  const parked = ride && Math.abs(ride.s.v) < 1;
+  const atBar = inside && ['bar', 'club', 'diner'].includes(inside.id);
+  const opts = [{ label: I('heart', 'Kiss her'), k: 'kiss' }];
+  if (atBar) opts.push({ label: I('drink', `Buy her a drink <small>$18</small>`), k: 'drink' });
+  opts.push({ label: I('chat', 'Talk'), k: 'talk' });
+  if (bed || parked) opts.push({ label: I('heart', bed ? 'WooHoo (bed)' : 'WooHoo (in the car)'), k: 'woo' });
+  else { const h = nearestHome(); if (h) opts.push({ label: I('house', 'Come back to my place?'), k: 'home', h }); }
+  opts.push({ label: I('x', 'Call it a night'), k: 'bye' });
+  const o = opts[await talk.choose(opts)];
+  if (o.k === 'kiss') { if (D.interest >= 50 || Math.random() < 0.4) { D.interest += 10; bumpRel(D.id, 6); feed({ mood: 8 }); await talk.say('*mwah*'); hearts(P.x, P.z, 12); } else { D.interest -= 8; await talk.say('Whoa, slow down. Buy me a drink first.'); } }
+  else if (o.k === 'drink') { if (money < 18) await talk.say('...You can\'t afford a drink? Wow.'); else { spend(18); D.interest += 14; bumpRel(D.id, 5); await talk.say(pick(['Ooh, thank you. Cheers!', 'You\'re sweet.'])); } }
+  else if (o.k === 'talk') { gainXP('charm', 6); D.interest += 5; bumpRel(D.id, 3); await talk.say(pick(['I work at a nail salon on the south side. It\'s fine. I want to open my own place one day.', 'I moved here from Ohio. Never going back.', 'Honestly? I came out today hoping something interesting would happen.', 'My ex was a total loser. You\'re... different.'])); }
+  else if (o.k === 'home') { setWaypoint(o.h.x, o.h.z, 'Home'); await talk.say(D.interest >= 55 ? pick(['Mmm, okay. Lead the way.', 'I thought you\'d never ask.']) : 'Maybe... let\'s see how the night goes.'); }
+  else if (o.k === 'woo') {
+    if (D.interest < 65) { await talk.say(pick(['Ha! Not yet, tiger.', 'I don\'t know you well enough for that.'])); D.interest -= 5; }
+    else { await talk.say(pick(['I was hoping you\'d say that.', 'Come here, you.', '*giggles* Okay...'])); endTalk(); return startWoo(bed ? 'bed' : 'car', bed); }
+  }
+  else if (o.k === 'bye') { endTalk(); bumpRel(D.id, 4); return endDate(`${D.name}: "Tonight was fun. Text me."`); }
+  endTalk();
+}
+function nearestHome() { let best = null, bd = 1e9; for (const p of PROPERTIES) if (owned.has(p.id)) { const d = Math.hypot(p.x - P.x, p.z - P.z); if (d < bd) { bd = d; best = p; } } return best; }
+function hearts(x, z, n = 6, y = 1.8) { spawnParticles(x, y, z, ['#ff6fb5', '#ff3b8a', '#ffd1e8'], n, 1.6, 1.4, 0.22, -1.5); }
+// WooHoo: under the duvet with the bed bouncing, or in a parked car with steamy windows
+function startWoo(kind, bed) {
+  woo = { kind, t: 0, dur: 5.5, bed };
+  if (kind === 'bed') {
+    const w = inside.h.toWorld(bed.x, bed.z), F = FURN[bed.t];
+    const g = new THREE.Group(); g.position.set(w.x, 0, w.z); g.rotation.y = bed.r || 0; dyn.add(g);
+    const duvet = new THREE.Mesh(new THREE.BoxGeometry(F.w * 0.96, 0.38, F.d * 0.68), new THREE.MeshStandardMaterial({ color: bed.c || '#3a5fa0', roughness: 0.9 })); duvet.position.set(0, 0.72, F.d * 0.14); duvet.castShadow = true; g.add(duvet);
+    const lump = new THREE.Mesh(new THREE.SphereGeometry(0.42, 10, 8), duvet.material); lump.scale.set(1.3, 0.55, 1.1); lump.position.set(0, 0.9, 0.1); g.add(lump);
+    const head = (c, x) => { const h = new THREE.Mesh(new THREE.BoxGeometry(0.26, 0.24, 0.24), new THREE.MeshStandardMaterial({ color: c })); h.position.set(x, 0.86, -F.d * 0.36); g.add(h); return h; };
+    woo.heads = [head(charCfg.skin, -0.18), head(date.cfg.skin, 0.18)];
+    woo.g = g; woo.duvet = duvet; woo.lump = lump; woo.bedMesh = bed.mesh;
+    heroRoot.visible = false; date.fig.root.visible = false;
+  } else {
+    woo.car = ride; woo.glass = [];
+    ride.b.group.traverse(m => { if (m.isMesh && m.material.transparent && m.material.opacity > 0.5) { woo.glass.push([m.material, m.material.color.getHex()]); m.material.color.set('#eef3f6'); } });
+  }
+  sfx.whoosh?.(); toast('WooHoo!', 1.5);
+}
+function updateWoo(dt) {
+  const W = woo; W.t += dt; const k = W.t;
+  for (const key of ['a', 'b', 'x', 'y']) input.consume(key);
+  const bounce = Math.abs(Math.sin(k * 7.5));
+  if (W.kind === 'bed') {
+    W.g.position.y = bounce * 0.08; W.duvet.scale.y = 1 + Math.sin(k * 15) * 0.1; W.lump.position.y = 0.9 + bounce * 0.12; W.lump.rotation.z = Math.sin(k * 5) * 0.15;
+    W.heads.forEach((h, i) => { h.position.y = 0.86 + Math.sin(k * 7.5 + i) * 0.04; h.visible = k < 1.2 || k > 4.6; });
+    if (W.bedMesh) W.bedMesh.position.y = bounce * 0.06;
+    if (Math.random() < dt * 6) hearts(W.g.position.x, W.g.position.z, 2, 1.6);
+  } else {
+    W.car.b.group.position.y += bounce * 0.14; W.car.b.group.rotation.z = Math.sin(k * 7.5) * 0.04;
+    if (Math.random() < dt * 6) hearts(W.car.s.x, W.car.s.z, 2, 2.4);
+  }
+  if (Math.random() < dt * 4) { const A = audio(); if (A) sfx.note(rand(160, 230), A.currentTime, 0.12, 'square', 0.015, 900); } // bed springs
+  if (k >= W.dur) {
+    woo = null;
+    fade(() => {
+      advanceTime(1); feed({ mood: 40, energy: -12 }); P.hp = maxHP(); gainXP('charm', 25); gainXP('stamina', 15);
+      if (W.kind === 'bed') { dyn.remove(W.g); if (W.bedMesh) W.bedMesh.position.y = 0; const w = inside.h.toWorld(W.bed.x + 1.6, W.bed.z); P.x = w.x; P.z = w.z; heroRoot.visible = true; date.x = w.x + 0.8; date.z = w.z + 0.6; date.fig.root.visible = true; }
+      else { W.car.b.group.rotation.z = 0; for (const [m, c] of W.glass) m.color.setHex(c); }
+      bumpRel(date.id, 25, false); date.interest += 20; stats.woohoo = (stats.woohoo || 0) + 1;
+      const n = date.name; saveGame();
+      setTimeout(() => endDate(`${n}: "Wow. Call me, okay?" (Mood maxed, Charm up)`), 1600);
+    });
+  }
+}
 async function talkToPed(p) {
   if (p.kind === 'homeless') return talkHomeless(p);
   if (p.angry) { toast(`${p.name || 'They'} want their car back!`); return; }
@@ -1365,15 +1508,17 @@ async function talkToPed(p) {
   p.buyer ??= Math.random() < (night > 0.5 ? 0.55 : 0.32) + (lvl('dealing') - 1) * 0.03;
   p.chats ??= 0;
   const bg = zoneBg(p.x, p.z);
-  beginTalk(p.look.cfg, pick(['Local', 'Stranger', 'Passer-by']), zoneName(p.x, p.z), 160 + Math.random() * 280);
+  beginTalk(p.look.cfg, p.name || (lookIsFem(p.look) ? 'Woman' : pick(['Local', 'Stranger', 'Passer-by'])), zoneName(p.x, p.z), lookIsFem(p.look) ? 300 + Math.random() * 120 : 140 + Math.random() * 120);
   await talk.say(pick(night > 0.5 && Math.random() < 0.5 ? PED_LINES.night : PED_LINES[bg] || PED_LINES.city));
   let done = false;
   while (!done) {
     const have = GOODS.filter(g => stash[g.id] > 0);
     const opts = [{ label: I('chat', 'Chat'), id: 'chat' }];
+    if (lookIsFem(p.look)) opts.push({ label: I('heart', p.interest >= 35 ? 'Flirt <small>(she\'s into you)</small>' : 'Flirt'), id: 'flirt' });
     if (have.length) opts.push({ label: I('deal', 'Offer something'), id: 'sell' });
     opts.push({ label: I('cash', 'Rob them'), id: 'rob' }, { label: I('x', 'Bye'), id: 'bye' });
     const c = opts[await talk.choose(opts)].id;
+    if (c === 'flirt') { const r = await flirtLoop(p, bg); if (r === 'date') { endTalk(); return; } if (r === 'left') { endTalk(); peds.release(p); peds.flee(p, P.x, P.z); return; } continue; }
     if (c === 'chat') { p.chats++; gainXP('charm', 3); await talk.say(p.chats > 3 ? "Okay, I really have to go." : pick([...(PED_LINES[bg] || []), ...PED_LINES.city])); if (p.chats > 3) done = true; }
     else if (c === 'sell') {
       await talk.say("Psst. You looking for something?", 'you');
@@ -1674,7 +1819,7 @@ function drawMinimap() {
     const edgeDot = (wx, wz, col, r) => { let [a, b] = toS(wx, wz); const dd = Math.hypot(a - S / 2, b - S / 2); if (dd > R - 10) { a = S / 2 + (a - S / 2) / dd * (R - 10); b = S / 2 + (b - S / 2) / dd * (R - 10); } mctx.fillStyle = col; mctx.strokeStyle = '#fff'; mctx.lineWidth = 3; mctx.beginPath(); mctx.arc(a, b, r, 0, 7); mctx.fill(); mctx.stroke(); };
     if (waypoint) edgeDot(waypoint.x, waypoint.z, '#ffd23f', 11);
     if (race) edgeDot(...RACE.points[race.i], '#ff3b4a', 11);
-    mctx.translate(S / 2, S / 2); mctx.rotate(face + Math.PI);
+    mctx.translate(S / 2, S / 2); mctx.rotate(Math.PI - face);
     mctx.fillStyle = '#ffd23f'; mctx.strokeStyle = '#1a1a2a'; mctx.lineWidth = 4;
     mctx.beginPath(); mctx.moveTo(0, -16); mctx.lineTo(11, 11); mctx.lineTo(0, 5); mctx.lineTo(-11, 11); mctx.closePath(); mctx.stroke(); mctx.fill();
     mctx.restore();
@@ -1772,6 +1917,7 @@ attachWheel($('radioBtn'), {
   onOpen: () => { timeScale = 0.2; }, onClose: () => { timeScale = 1; },
 });
 $('editBtn').addEventListener('pointerdown', e => { e.stopPropagation(); startEdit(); });
+$('loveBtn').addEventListener('pointerdown', e => { e.stopPropagation(); e.preventDefault(); talkDate(); });
 $('editAdd').onclick = () => { openStorage(); };
 $('editDone').onclick = () => endEdit();
 
@@ -1839,8 +1985,9 @@ function renderPhone() {
     el.querySelectorAll('[data-wp]').forEach(b => b.onclick = () => { const m = ms[+b.dataset.wp]; setWaypoint(m.at.x, m.at.z, m.at.name); toast(m.at.name); closePhone(); });
   } else if (phoneApp === 'contacts') {
     const people = Object.entries(stats.rel).filter(([, v]) => v > 0).sort((a, b) => b[1] - a[1]);
-    el.innerHTML = `${back}<h4>Contacts</h4><p class="ph-hint">Relationships grow when you trade, chat and spend time with people. Friends give better prices, tips and texts.</p>${people.length ? people.map(([id, v]) => { const p = PLACES.find(q => q.id === id); return `<div class="ph-row col"><span><b>${relNames[id] || p?.npcName || (id === 'street' ? 'Street rep' : nameFor(id))}</b> <small>${p ? p.name : id === 'street' ? 'Your customers' : id.split(':')[0].replace(/^[a-z]_/, '')}</small></span>${bar(v, '#ff6fb5')}<small>${relName(v)} · ${Math.round(v)}</small>${p ? `<button class="ph-mini" data-wp="${id}">${svg('pin', 'sm')} Find</button>` : ''}</div>`; }).join('') : '<p class="ph-hint">No contacts yet. Go talk to people!</p>'}`;
+    el.innerHTML = `${back}<h4>Contacts</h4><p class="ph-hint">Relationships grow when you trade, chat and spend time with people. Friends give better prices, tips and texts.</p>${people.length ? people.map(([id, v]) => { const p = PLACES.find(q => q.id === id); const dt8 = stats.dates?.[id]; return `<div class="ph-row col"><span><b>${dt8?.name || relNames[id] || p?.npcName || (id === 'street' ? 'Street rep' : nameFor(id))}</b> <small>${p ? p.name : id === 'street' ? 'Your customers' : (dt8 ? 'Dating' : id.split(':')[0].replace(/^[a-z]_/, ''))}</small></span>${bar(v, '#ff6fb5')}<small>${relName(v)} · ${Math.round(v)}</small>${p ? `<button class="ph-mini" data-wp="${id}">${svg('pin', 'sm')} Find</button>` : ''}${dt8 && !date ? `<button class="ph-mini" data-call="${id}">${svg('heart', 'sm')} Ask her out</button>` : ''}</div>`; }).join('') : '<p class="ph-hint">No contacts yet. Go talk to people!</p>'}`;
     el.querySelectorAll('[data-wp]').forEach(b => b.onclick = () => { const p = PLACES.find(q => q.id === b.dataset.wp); setWaypoint(p.x, p.z, p.name); closePhone(); });
+    el.querySelectorAll('[data-call]').forEach(b => b.onclick = () => { const id = b.dataset.call, d = stats.dates[id], r = rel(id); closePhone(); if (r < 30 && Math.random() < 0.5) { toast(`${d.name}: "Sorry, busy tonight!"`, 3); bumpRel(id, 2); return; } toast(`${d.name}: "Omw! Where are you?"`, 3); setTimeout(() => { if (date || inside) return; const look = { ...bakeCfg(d.cfg), fem: true }, a = rand(0, 6.28); startDate({ name: d.name, look, x: P.x + Math.sin(a) * 20, z: P.z + Math.cos(a) * 20, face: 0, interest: 40 + r * 0.6, root: new THREE.Group() }); }, 4000); });
   } else if (phoneApp === 'me') {
     const sk = s => { const L = lvl(s), xp = stats.xp[s] || 0, need = xpFor(L); return `<div class="ph-row col"><span><b>${skillName(s)}</b> <small>Level ${L}${L >= MAX_LVL ? ' · MAX' : ''}</small></span>${bar(L >= MAX_LVL ? 100 : xp / need * 100, '#38e8ff')}</div>`; };
     el.innerHTML = `${back}<h4>Me</h4>
@@ -1956,13 +2103,13 @@ function newDay() {
   phoneBadge++;
 }
 function step(dt) {
-  time += dt;
+  time += dt; WATER_U.uTime.value = time;
   const before = clockH, dh = dt / 30; clockH += dh; if (clockH >= 24) clockH -= 24;
   if (before < 6 && clockH >= 6) newDay();
   updateNeeds(dh, dt);
   updateHealth(dt);
   action = findAction();
-  if (ride) { updateVehicles(dt); P.x = ride.s.x; P.z = ride.s.z; } else if (carAnim) { updateCarAnim(dt); updateVehicles(dt); } else { updateFoot(dt); if (!inside) updateVehicles(dt); }
+  if (woo) { for (const k of ['a', 'b', 'x', 'y']) input.consume(k); if (ride) { ride.s.v = 0; updateVehicles(dt); } updateWoo(dt); } else if (ride) { updateVehicles(dt); P.x = ride.s.x; P.z = ride.s.z; } else if (carAnim) { updateCarAnim(dt); updateVehicles(dt); } else { updateFoot(dt); if (!inside) updateVehicles(dt); }
   if (!inside) {
     updateTraffic(dt);
     const f = focusPos(), nc = cityNear(f.x, f.z, 30), nb = f.z > sandLine(f.x) - 60 && f.x > -330;
@@ -1972,6 +2119,7 @@ function step(dt) {
     updateAngry(dt);
     updateNpcList(npcs, dt); updateFlyer(dt);
   } else updateNpcList(inside.npcs, dt);
+  updateDate(dt);
   updateBullets(dt); updateProjectiles(dt); updateParticles(dt); updateCash(dt); updateMarkers(); updateRace(dt); updateRoute(dt); updateCustomers(dt); updateJob(dt);
   if (input.consume('map') || input.consume('pause')) openPhone('maps');
   for (let i = 1; i <= 9; i++) if (input.keys.has('Digit' + i)) { input.keys.delete('Digit' + i); selectWeapon(SLOTS[i - 1].id); }

@@ -27,12 +27,16 @@ function bake(meshes, inv) {
 function underAny(o, roots) { for (let p = o; p; p = p.parent) if (roots.includes(p)) return true; return false; }
 
 const LOOKS = [];
-function makeLook(beach) {
+const FEM_HAIR = ['long', 'bob', 'ponytail', 'bun', 'long', 'afro'], MASC_HAIR = ['short', 'buzz', 'quiff', 'spiky', 'afro', 'none', 'short'];
+function makeLook(beach, fem = Math.random() < 0.5) {
   const cfg = { ...randomChar(), mask: 'none', skin: pick(SKINS), hairColor: pick(HAIRS), eyewear: Math.random() < 0.25 ? 'shades' : 'none', back: Math.random() < 0.15 ? 'backpack' : 'none', eyes: 'normal', headSize: rand(0.95, 1.1), height: rand(0.88, 1.12) };
   cfg.hat = Math.random() < 0.3 ? pick(['cap', 'beanie', 'cowboy', 'headband']) : 'none';
-  if (beach) Object.assign(cfg, { top: pick(['tank', 'tshirt', 'shirtless', 'swimtop', 'swimtop', 'shirtless']), pants: pick(['shorts', 'swim', 'swim']), shoes: 'bare', eyewear: Math.random() < 0.5 ? 'shades' : 'none', hat: Math.random() < 0.3 ? 'cap' : 'none' });
+  cfg.hair = pick(fem ? FEM_HAIR : MASC_HAIR);
+  if (fem) { cfg.facialHair = 'none'; cfg.height = rand(0.88, 1.02); cfg.build = rand(0.85, 1.0); cfg.mouth = 'smile'; }
+  else if (cfg.facialHair === undefined) cfg.facialHair = 'none';
+  if (beach) Object.assign(cfg, { top: fem ? pick(['swimtop', 'swimtop', 'tank']) : pick(['shirtless', 'shirtless', 'tank', 'tshirt']), pants: fem ? pick(['swim', 'swim', 'shorts']) : pick(['swim', 'shorts']), shoes: 'bare', eyewear: Math.random() < 0.5 ? 'shades' : 'none', hat: Math.random() < 0.3 ? (fem ? 'none' : 'cap') : 'none' });
   else { if (['armor', 'shirtless', 'swimtop'].includes(cfg.top)) cfg.top = 'tshirt'; if (cfg.pants === 'swim') cfg.pants = 'jeans'; }
-  return { ...bakeCfg(cfg), beach };
+  return { ...bakeCfg(cfg), beach, fem };
 }
 // Bake any character config into 5 meshes (body + 4 limbs) so lots of people are cheap to draw.
 export function bakeCfg(cfg) {
@@ -56,7 +60,7 @@ function homelessLook() {
     top: pick(['hoodie', 'jacket', 'long']), topColor: pick(dull), accent: pick(dull), pants: pick(['cargo', 'jeans']), pantsColor: pick(dull), shoes: 'boots', shoeColor: '#3a2a1a', hat: Math.random() < 0.6 ? 'beanie' : 'none', hatColor: pick(dull), facialHair: pick(['bigbeard', 'beard', 'stubble']), hair: pick(['long', 'short', 'afro']) };
   return { ...bakeCfg(cfg), homeless: true };
 }
-function ensureLooks() { if (LOOKS.length) return; for (let i = 0; i < 10; i++) LOOKS.push(makeLook(false)); for (let i = 0; i < 6; i++) LOOKS.push(makeLook(true)); for (let i = 0; i < 3; i++) LOOKS.push(homelessLook()); }
+function ensureLooks() { if (LOOKS.length) return; for (let i = 0; i < 12; i++) LOOKS.push(makeLook(false, i % 2 === 0)); for (let i = 0; i < 8; i++) LOOKS.push(makeLook(true, i % 2 === 0)); for (let i = 0; i < 3; i++) LOOKS.push(homelessLook()); }
 const cityLooks = () => LOOKS.filter(l => !l.beach && !l.homeless);
 const PROP = new THREE.MeshStandardMaterial({ vertexColors: false, color: '#ffffff', roughness: 0.9 });
 const pm = c => new THREE.MeshStandardMaterial({ color: c, roughness: 0.9 });

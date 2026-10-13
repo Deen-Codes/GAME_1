@@ -441,6 +441,51 @@ export const MATS = {
 // Interior-mapped windows: each window pane ray-casts into a fake room (walls, floor, ceiling, furniture,
 // people, curtains), so you see into it with real parallax as the camera moves. Every room is different and
 // about half light up at night. Called from the material's onBeforeCompile (needs vWP = world position).
+// ---------------- water: animated ocean with shallows, wave crests and foam on the shore; rippling fountain/pool water
+export const WATER_U = { uTime: { value: 0 }, uNight: { value: 0 } };
+const WAVES = `
+  float wh(vec2 p, float t) { return sin(p.x * 0.21 + t * 1.1) * 0.5 + sin(p.y * 0.17 - t * 1.4) * 0.6 + sin((p.x + p.y) * 0.37 + t * 1.9) * 0.25 + sin((p.x * 0.8 - p.y) * 0.9 - t * 2.6) * 0.12; }
+  vec3 waveN(vec2 p, float t, float k) { float e = 0.35; float h = wh(p, t); return normalize(vec3(-(wh(p + vec2(e, 0.0), t) - h) / e * k, 1.0, -(wh(p + vec2(0.0, e), t) - h) / e * k)); }`;
+export function makeOceanMaterial() {
+  const m = new THREE.MeshStandardMaterial({ color: '#ffffff', roughness: 0.28, metalness: 0.05, transparent: true, opacity: 1 });
+  m.onBeforeCompile = sh => {
+    Object.assign(sh.uniforms, WATER_U);
+    sh.vertexShader = 'varying vec3 vWW;\n' + sh.vertexShader.replace('#include <project_vertex>', '#include <project_vertex>\nvWW = (modelMatrix * vec4(transformed, 1.0)).xyz;');
+    sh.fragmentShader = 'varying vec3 vWW;\nuniform float uTime;\nuniform float uNight;\n' + WAVES + '\n' + sh.fragmentShader
+      .replace('#include <color_fragment>', `#include <color_fragment>
+        float shore = 420.0 + 8.0 * sin(vWW.x / 53.0) + 4.0 * sin(vWW.x / 19.0); // where the sand dips under the water
+        float d = vWW.z - shore;                                 // metres out to sea
+        vec3 shallow = vec3(0.27, 0.86, 0.84), mid = vec3(0.12, 0.6, 0.82), deep = vec3(0.05, 0.3, 0.6);
+        vec3 wc = mix(shallow, mid, smoothstep(0.0, 22.0, d)); wc = mix(wc, deep, smoothstep(20.0, 140.0, d));
+        // rolling wave crests heading for the beach + foam where they break
+        float crest = pow(max(0.0, sin(d * 0.42 + uTime * 1.6 + sin(vWW.x * 0.05) * 2.0)), 14.0) * (1.0 - smoothstep(6.0, 60.0, d));
+        float surf = smoothstep(5.0, 0.0, d) * max(0.0, sin(vWW.x * 0.3 + uTime * 2.2 + d * 1.5)) * 0.5;
+        float edge = smoothstep(1.4, 0.0, abs(d - 0.6 + sin(vWW.x * 0.2 + uTime * 1.3) * 0.8));
+        float foam = clamp(crest * 0.55 + surf + edge * 0.85, 0.0, 1.0);
+        float sparkle = pow(max(0.0, wh(vWW.xz * 2.3, uTime * 1.7) - 1.0), 6.0) * 0.4;
+        wc = mix(wc, vec3(0.97, 0.99, 1.0), foam) + sparkle;
+        wc *= mix(vec3(1.0), vec3(0.22, 0.28, 0.48), uNight);
+        diffuseColor.rgb = wc;
+        diffuseColor.a = mix(0.55, 0.94, smoothstep(0.0, 14.0, d)) + foam * 0.3;`)
+      .replace('#include <normal_fragment_begin>', `#include <normal_fragment_begin>
+        { vec3 nW = waveN(vWW.xz, uTime, 0.12); normal = normalize((viewMatrix * vec4(nW, 0.0)).xyz); }`);
+  };
+  return m;
+}
+const waterMat = new THREE.MeshStandardMaterial({ color: '#ffffff', roughness: 0.08, metalness: 0.05, transparent: true, opacity: 0.88 });
+waterMat.onBeforeCompile = sh => {
+  Object.assign(sh.uniforms, WATER_U);
+  sh.vertexShader = 'varying vec3 vWW;\n' + sh.vertexShader.replace('#include <project_vertex>', '#include <project_vertex>\nvWW = (modelMatrix * vec4(transformed, 1.0)).xyz;');
+  sh.fragmentShader = 'varying vec3 vWW;\nuniform float uTime;\nuniform float uNight;\n' + WAVES + '\n' + sh.fragmentShader
+    .replace('#include <color_fragment>', `#include <color_fragment>
+      float rip = sin(length(fract(vWW.xz * 0.25) - 0.5) * 40.0 - uTime * 5.0) * 0.5 + 0.5;
+      vec3 wc = mix(vec3(0.2, 0.62, 0.86), vec3(0.45, 0.85, 0.98), rip * 0.35) + pow(max(0.0, wh(vWW.xz * 6.0, uTime * 3.0) - 0.9), 5.0) * 0.6;
+      wc *= mix(vec3(1.0), vec3(0.3, 0.36, 0.6), uNight);
+      diffuseColor.rgb = wc;`)
+    .replace('#include <normal_fragment_begin>', `#include <normal_fragment_begin>
+      { vec3 nW = waveN(vWW.xz * 5.0, uTime * 2.5, 0.06); normal = normalize((viewMatrix * vec4(nW, 0.0)).xyz); }`);
+};
+MATS.water = waterMat;
 MATS.sign.onBeforeCompile = sh => { sh.fragmentShader = sh.fragmentShader.replace('#include <emissivemap_fragment>', '#include <emissivemap_fragment>\n totalEmissiveRadiance *= vColor;'); };
 export function windowShader(sh) {
   sh.fragmentShader = sh.fragmentShader.replace('#include <emissivemap_fragment>', `#include <emissivemap_fragment>
@@ -661,7 +706,7 @@ function drawObj(o, B) {
     }
     case 'pool':
       B.box(o.x, o.y, o.z, o.w + 2, 0.3, o.d + 2, '#ece6da');
-      B.flat(o.x, o.y + 0.32, o.z, o.w, o.d, '#3fb4ea');
+      B.flat(o.x, o.y + 0.32, o.z, o.w, o.d, '#ffffff', 'water');
       break;
     case 'lamp':
       B.box(o.x, 0.15, o.z, 0.18, 5, 0.18, '#3a3d45');
@@ -670,9 +715,12 @@ function drawObj(o, B) {
       break;
     case 'fountain':
       B.cyl(o.x, 0.2, o.z, 3, 0.6, '#c9c2b8', 12);
-      B.disc(o.x, 0.82, o.z, 2.6, '#5fb8e0', 'solid', 12);
+      B.disc(o.x, 0.82, o.z, 2.6, '#ffffff', 'water', 16);
       B.cyl(o.x, 0.8, o.z, 0.5, 1.6, '#c9c2b8', 8);
       B.cyl(o.x, 2.4, o.z, 1.0, 0.25, '#c9c2b8', 8);
+      B.disc(o.x, 2.66, o.z, 0.85, '#ffffff', 'water', 12);
+      B.cone(o.x, 2.4, o.z, 1.05, -1.5, '#ffffff', 12, 'water');   // water sheet spilling from the top bowl
+      B.cyl(o.x, 2.6, o.z, 0.08, 1.1, '#ffffff', 6, 'water');       // jet
       break;
     case 'cross': { const rot = o.nx ? Math.PI / 2 : 0, x = o.x + o.nx * 0.1, z = o.z + o.nz * 0.1; B.box(x, 10.5, z, 0.45, 3, 0.25, '#e8c55a', { rot, key: 'sign' }); B.box(x, 11.6, z, 1.8, 0.45, 0.25, '#e8c55a', { rot, key: 'sign' }); B.box(o.x + o.nx * 0.05, 3.6, o.z + o.nz * 0.05, 1.6, 2.2, 0.2, '#5a8ad0', { rot, key: 'glow' }); break; }
     case 'door': {

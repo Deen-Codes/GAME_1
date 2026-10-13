@@ -55,12 +55,19 @@ Walk into shops, venues and homes:
 - Casa Bay Furniture
 
 ## Living city
+- Animated ocean with shallow turquoise water, rolling waves and foam on the shore. Fountains and pools ripple.
 - Every window looks into a real room with depth (walls, floors, furniture, people, curtains) that shifts as you move. About half the rooms light up at night.
 - Shops, venues and homes have proper front doors with lit signs. The marker sits at the door.
 - Pigeons, crows and seagulls peck around and fly up to lamp posts when you get close. There are also stray cats, people walking their dogs, and squirrels. Deer graze in the hills by day. At night raccoons, possums, coyotes and owls come out.
 - Homeless people sleep rough on the pavements. Talk to them, give money or food, and they may share tips or a hidden stash.
 - Beachgoers wear swimwear, which you can also buy at Venice Surf Co.
 - Bay Chapel: sit and reflect, talk to Father Gabe, donate, and use the food bank once he trusts you.
+
+## Romance
+- Flirt with women around the city. Compliments are safe, cheesy lines and bold moves are risky, and beach flirts work best at the beach. Charm, mood and night-time all help.
+- Get her number, or ask her to hang out. She follows you around and the heart button opens your date chat: kiss, talk, buy her a drink, invite her back to yours.
+- WooHoo Sims-style, under the duvet with a bouncing bed, or in a parked car with steamy windows. It fades to black.
+- Women you've dated are in Contacts. Ask them out again from your phone.
 
 ## Cars, jacking and crashes
 - Climb in and out of cars with an animation. Exit at speed to bail out and roll, while the car keeps going.
