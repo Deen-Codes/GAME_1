@@ -6,6 +6,7 @@ export const SKILLS = [
   { id: 'charm', name: 'Charm', icon: 'smile', desc: 'Better dialogue options, haggling and faster friendships.' },
   { id: 'driving', name: 'Driving', icon: 'steer', desc: 'Faster cars, better grip.' },
   { id: 'dealing', name: 'Dealing', icon: 'deal', desc: 'Better prices and bigger customer orders.' },
+  { id: 'smarts', name: 'Smarts', icon: 'brain', desc: 'Pass classes, earn more per shift, get promoted.' },
 ];
 export const GUN_SKILL_SLOTS = ['pistol', 'smg', 'shotgun', 'ar', 'sniper', 'rpg'];
 export const MAX_LVL = 10;

@@ -1,0 +1,118 @@
+// Bay City College courses and the careers they unlock (BitLife-style education → job ladder).
+// Each class is a short quiz; pass enough classes to graduate. Careers pay per shift and promote with performance.
+
+export const COURSES = {
+  business: { name: 'Business Diploma', classes: 5, fee: 800, icon: 'chart', desc: 'Money, management and how companies work.', unlocks: 'Office career at Bay Corp Tower' },
+  mechanics: { name: 'Auto Mechanics Certificate', classes: 4, fee: 500, icon: 'wrench', desc: 'Engines, brakes and body work.', unlocks: 'Mechanic at Bay Customs, 20% off upgrades' },
+  culinary: { name: 'Culinary Arts', classes: 4, fee: 600, icon: 'food', desc: 'Knife skills, flavour and running a kitchen.', unlocks: 'Chef at the Diner, better home cooking' },
+  nursing: { name: 'Nursing Degree', classes: 8, fee: 2000, icon: 'cross', desc: 'Patient care, anatomy and medicine.', unlocks: 'Nurse at Bay General' },
+  medicine: { name: 'Medical School', classes: 12, fee: 9000, icon: 'cross', desc: 'Become a doctor. Needs the Nursing Degree.', needs: 'nursing', unlocks: 'Doctor and Surgeon at Bay General' },
+  compsci: { name: 'Computer Science', classes: 6, fee: 1500, icon: 'chart', desc: 'Code, networks and keeping systems running.', unlocks: 'Software career at Bay Corp Tower' },
+  law: { name: 'Law Degree', classes: 10, fee: 4500, icon: 'case', desc: 'Contracts, courts and criminal law. Needs the Business Diploma.', needs: 'business', unlocks: 'Lawyer career, and you defend yourself: half sentences' },
+  realestate: { name: 'Real Estate License', classes: 3, fee: 700, icon: 'house', desc: 'Buying, selling and the property market.', unlocks: 'Realtor career, 10% off homes' },
+  police: { name: 'Police Academy', classes: 6, fee: 0, icon: 'shield', desc: 'Law, fitness and patrol work. Clean record needed.', clean: true, unlocks: 'Police officer career' },
+};
+
+export const CAREERS = {
+  retail: { name: 'Retail', place: 'mart', ladder: [['Store Clerk', 90], ['Supervisor', 140], ['Store Manager', 230]], subject: 'retail' },
+  office: { name: 'Business', place: 'office', needs: 'business', ladder: [['Office Assistant', 160], ['Analyst', 260], ['Manager', 420], ['Director', 700], ['CEO', 1200]], subject: 'business' },
+  software: { name: 'Software', place: 'office', needs: 'compsci', ladder: [['Junior Developer', 240], ['Developer', 380], ['Lead Engineer', 600], ['CTO', 950]], subject: 'compsci' },
+  lawyer: { name: 'Law', place: 'office', needs: 'law', ladder: [['Paralegal', 250], ['Associate', 450], ['Senior Associate', 650], ['Partner', 1000]], subject: 'law' },
+  mechanic: { name: 'Mechanic', place: 'mods', needs: 'mechanics', ladder: [['Apprentice', 120], ['Mechanic', 200], ['Master Tech', 320]], subject: 'mechanics' },
+  chef: { name: 'Kitchen', place: 'diner', needs: 'culinary', ladder: [['Line Cook', 110], ['Sous Chef', 180], ['Head Chef', 300]], subject: 'culinary' },
+  nurse: { name: 'Nursing', place: 'hospital', needs: 'nursing', ladder: [['Nurse', 220], ['Senior Nurse', 320], ['Head Nurse', 450]], subject: 'nursing' },
+  doctor: { name: 'Medicine', place: 'hospital', needs: 'medicine', ladder: [['Resident', 450], ['Doctor', 650], ['Surgeon', 1000], ['Chief of Medicine', 1500]], subject: 'medicine' },
+  realtor: { name: 'Real Estate', place: 'office', needs: 'realestate', ladder: [['Agent', 150], ['Senior Agent', 280], ['Broker', 500]], subject: 'realestate' },
+  cop: { name: 'Police', place: 'police', needs: 'police', ladder: [['Officer', 200], ['Sergeant', 320], ['Detective', 460], ['Captain', 700]], subject: 'police' },
+};
+
+// [question, right answer, wrong, wrong]
+export const QUIZ = {
+  business: [
+    ['Profit is…', 'Revenue minus costs', 'Revenue plus costs', 'Total sales'],
+    ['A company sells a $10 item that costs $6 to make. Margin per item?', '$4', '$16', '$6'],
+    ['Who owns a public company?', 'Its shareholders', 'The CEO only', 'The government'],
+    ['"B2B" means selling to…', 'Other businesses', 'Babies', 'Banks only'],
+    ['Cash flow problems mean…', 'Money is not coming in fast enough', 'Too many customers', 'Prices are too low to notice'],
+    ['A budget is…', 'A plan for spending', 'A type of loan', 'A tax form'],
+    ['Supply goes down, demand stays the same. Prices usually…', 'Go up', 'Go down', 'Stay exactly the same'],
+    ['Marketing is mostly about…', 'Getting customers to want your product', 'Fixing machines', 'Paying staff'],
+  ],
+  mechanics: [
+    ['What stops the car?', 'Brake pads squeezing the discs', 'The exhaust', 'The radiator'],
+    ['Engine overheating? Check the…', 'Coolant level', 'Windscreen wipers', 'Tyre tread'],
+    ['How often should you change engine oil (roughly)?', 'Every 5,000–10,000 miles', 'Every 100 miles', 'Never'],
+    ['Low tyre pressure causes…', 'Worse grip and fuel economy', 'More speed', 'Brighter headlights'],
+    ['The battery is charged while driving by the…', 'Alternator', 'Muffler', 'Gearstick'],
+    ['A squealing noise when braking usually means…', 'Worn brake pads', 'Too much fuel', 'A flat battery'],
+    ['Torque is a measure of…', 'Twisting force', 'Top speed', 'Fuel tank size'],
+  ],
+  culinary: [
+    ['Safest way to defrost meat?', 'In the fridge', 'On the counter all day', 'In the sun'],
+    ['"Sauté" means…', 'Cook quickly in a little hot fat', 'Boil for hours', 'Freeze'],
+    ['Chicken is safe when the inside reaches about…', '75°C / 165°F', '40°C / 104°F', '20°C / 68°F'],
+    ['Which knife for chopping onions?', "Chef's knife", 'Bread knife', 'Butter knife'],
+    ['Mise en place means…', 'Everything prepped and in its place', 'A French dessert', 'Washing up'],
+    ['Salt in pasta water is for…', 'Flavour', 'Making it boil instantly', 'Colour'],
+    ['A roux is flour cooked with…', 'Butter or fat', 'Water only', 'Sugar'],
+  ],
+  nursing: [
+    ['Normal adult resting heart rate?', '60–100 beats per minute', '10–20', '180–220'],
+    ['First thing to check on an unresponsive person?', 'Airway and breathing', 'Their shoes', 'Their phone'],
+    ['Hand washing should last at least…', '20 seconds', '2 seconds', '5 minutes'],
+    ['Which organ pumps blood?', 'Heart', 'Liver', 'Lungs'],
+    ['Normal body temperature is about…', '37°C / 98.6°F', '30°C / 86°F', '42°C / 108°F'],
+    ['Blood pressure is written as…', 'Systolic over diastolic', 'Weight over height', 'Pulse over age'],
+    ['Dehydration signs include…', 'Dizziness and dark urine', 'Sneezing', 'Hiccups only'],
+  ],
+  medicine: [
+    ['Antibiotics treat…', 'Bacterial infections', 'Viral colds', 'Broken bones'],
+    ['Insulin is made by the…', 'Pancreas', 'Kidneys', 'Spleen'],
+    ['Which blood type is the universal donor (red cells)?', 'O negative', 'AB positive', 'A positive'],
+    ['The femur is in the…', 'Thigh', 'Arm', 'Skull'],
+    ['CPR compressions per minute?', '100–120', '20–30', '200–250'],
+    ['A stroke affects blood flow to the…', 'Brain', 'Stomach', 'Feet'],
+    ['Which vitamin comes from sunlight on skin?', 'Vitamin D', 'Vitamin C', 'Vitamin B12'],
+  ],
+  compsci: [
+    ['A "bug" is…', 'A mistake in code', 'A fast computer', 'A type of cable'],
+    ['Binary uses which digits?', '0 and 1', '1 to 10', 'A to Z'],
+    ['What does RAM do?', 'Short-term working memory', 'Stores files forever', 'Cools the CPU'],
+    ['A loop in code…', 'Repeats instructions', 'Deletes the program', 'Draws a circle'],
+    ['Strong password tip?', 'Long and unique', 'Your birthday', '"password123"'],
+    ['HTML is used to…', 'Structure web pages', 'Cook pasta', 'Fly drones only'],
+    ['Version control (like git) helps you…', 'Track changes to code', 'Speed up the internet', 'Print faster'],
+  ],
+  law: [
+    ['"Innocent until proven…"', 'Guilty', 'Rich', 'Famous'],
+    ['A contract needs offer, acceptance and…', 'Consideration (something of value)', 'A lawyer present', 'A handshake on camera'],
+    ['A jury decides…', 'The facts / the verdict', 'The judge\'s salary', 'Parking fines'],
+    ['Perjury is…', 'Lying under oath', 'Stealing a car', 'Losing a case'],
+    ['A misdemeanour is…', 'A less serious crime than a felony', 'A type of contract', 'Always a life sentence'],
+    ['Right to remain silent protects you from…', 'Incriminating yourself', 'Paying taxes', 'Jury duty'],
+    ['Bail is…', 'Money paid so you can leave jail before trial', 'A prison sentence', 'A fine you can never get back'],
+  ],
+  realestate: [
+    ['A mortgage is…', 'A loan to buy property', 'A rental contract', 'A house insurance'],
+    ['Location matters because…', 'It drives value', 'It doesn\'t', 'Only for parking'],
+    ['Rental yield is…', 'Yearly rent ÷ property price', 'Price × 2', 'The number of rooms'],
+    ['A "fixer-upper" is…', 'A home that needs work', 'A brand new build', 'A type of loan'],
+    ['Agents usually earn…', 'Commission on the sale', 'Nothing', 'Rent forever'],
+    ['Curb appeal means…', 'How the home looks from outside', 'Kerb height', 'Parking fines'],
+  ],
+  police: [
+    ['First priority at any scene?', 'Safety of everyone', 'Writing tickets', 'Calling the news'],
+    ['De-escalation means…', 'Calming a situation down', 'Making it louder', 'Chasing faster'],
+    ['Evidence should be…', 'Collected and logged carefully', 'Thrown away', 'Taken home'],
+    ['You need probable cause to…', 'Make an arrest', 'Say hello', 'Drive a patrol car'],
+    ['A suspect has the right to…', 'A lawyer', 'Choose their officer', 'Skip court'],
+    ['Radio code for "I understand" is usually…', '10-4', '99-1', '0-0'],
+  ],
+  retail: [
+    ['A customer pays $20 for a $13.50 item. Change?', '$6.50', '$7.50', '$5.50'],
+    ['Stock rotation means…', 'Old stock to the front, new to the back', 'Throwing stock away', 'Spinning shelves'],
+    ['An angry customer… you should…', 'Stay calm and help', 'Shout back', 'Ignore them'],
+    ['3 items at $4 each?', '$12', '$7', '$16'],
+    ['Shoplifter spotted. Best move?', 'Tell the manager / security', 'Tackle them', 'Join in'],
+  ],
+};

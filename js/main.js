@@ -1,23 +1,24 @@
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA } from './character.js?v=33';
-import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=33';
-import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=33';
-import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide } from './world.js?v=33';
-import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=33';
-import { buildPanel, renderStats } from './ui.js?v=33';
-import { Input } from './input.js?v=33';
-import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime } from './audio.js?v=33';
-import { runMinigame } from './minigames.js?v=33';
-import { Peds, bakeCfg, figure, setWalk } from './peds.js?v=33';
-import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=33';
-import { findRoute } from './nav.js?v=33';
-import { attachWheel } from './wheel.js?v=33';
-import { Animals } from './animals.js?v=33';
-import { Talk } from './talk.js?v=33';
-import { svg, drawIcon } from './icons.js?v=33';
-import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=33';
-import { FURN, CATALOG } from './furniture.js?v=33';
-import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE } from './interiors.js?v=33';
+import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA } from './character.js?v=34';
+import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=34';
+import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=34';
+import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide } from './world.js?v=34';
+import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=34';
+import { buildPanel, renderStats } from './ui.js?v=34';
+import { Input } from './input.js?v=34';
+import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime } from './audio.js?v=34';
+import { runMinigame } from './minigames.js?v=34';
+import { Peds, bakeCfg, figure, setWalk } from './peds.js?v=34';
+import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=34';
+import { findRoute } from './nav.js?v=34';
+import { COURSES, CAREERS, QUIZ } from './careers.js?v=34';
+import { attachWheel } from './wheel.js?v=34';
+import { Animals } from './animals.js?v=34';
+import { Talk } from './talk.js?v=34';
+import { svg, drawIcon } from './icons.js?v=34';
+import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=34';
+import { FURN, CATALOG } from './furniture.js?v=34';
+import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE } from './interiors.js?v=34';
 
 const $ = id => document.getElementById(id);
 let inside = null, editMode = false, held = null, pendingCar = false, homeMusic = false, phoneBadge = 0;
@@ -685,10 +686,11 @@ function hurt(d) { if (P.dead || d <= 0) return; P.hp = Math.max(0, P.hp - d);
 function die() {
   if (P.dead) return;
   P.dead = true; P.deadT = 3.2; if (ride) exitCar(); if (inside && !stats.jail) exitInterior(true); if (WANT.stars) clearWanted();
-  const lost = Math.floor(money * 0.1); money -= lost; stats.mood = Math.max(0, stats.mood - 20);
+  const medic = hasDegree('nursing') || ['nurse', 'doctor'].includes(career()?.id), lost = medic ? 0 : Math.floor(money * 0.1); money -= lost; stats.mood = Math.max(0, stats.mood - 20);
   $('deathScreen').querySelector('span').textContent = stats.jail ? 'Waking up in the prison infirmary...' : `Hospital bill: ${fmt(lost)}. Waking up at Bay General...`;
   $('deathScreen').classList.add('on'); if (job) endJob('You blacked out. Shift over.');
 }
+const homePrice = p => Math.round(p.price * (hasDegree('realestate') ? 0.9 : 1));
 function homeSpot() {
   let best = null, bd = 1e9;
   for (const p of PROPERTIES) if (owned.has(p.id)) { const d = Math.hypot(p.x - P.x, p.z - P.z); if (d < bd) { bd = d; best = p; } }
@@ -1226,6 +1228,7 @@ function npcCfg(role, seed, style) {
     case 'bookie': return { ...base, top: 'suit', topColor: '#3a3d45', accent: '#d4af37', pants: 'jeans', pantsColor: '#16161b', shoes: 'boots', shoeColor: '#16161b', eyewear: 'shades', hat: 'none', facialHair: 'goatee' };
     case 'nurse': return { ...base, top: 'tshirt', topColor: '#7ad1c9', pants: 'jeans', pantsColor: '#7ad1c9', shoes: 'sneakers', shoeColor: '#ffffff', hat: 'none' };
     case 'doctor': return { ...base, top: 'long', topColor: '#ffffff', pants: 'jeans', pantsColor: '#3a5fa0', shoes: 'boots', shoeColor: '#16161b', eyewear: 'glasses', hat: 'none' };
+    case 'professor': return { ...base, top: 'suit', topColor: '#6b4a33', accent: '#e8e2d6', pants: 'jeans', pantsColor: '#3a3d45', shoes: 'boots', shoeColor: '#5a3a20', eyewear: 'glasses', hair: 'short', hairColor: '#9a9a9a', facialHair: 'beard' };
     case 'pastor': return { ...base, top: 'suit', topColor: '#16161b', accent: '#ffffff', pants: 'jeans', pantsColor: '#16161b', shoes: 'boots', shoeColor: '#16161b', hair: 'short', hairColor: '#9a9a9a', eyewear: 'glasses', facialHair: 'none' };
     case 'dispatcher': return { ...base, top: 'jacket', topColor: '#ffd23f', accent: '#16161b', pants: 'jeans', pantsColor: '#3a3d45', shoes: 'boots', shoeColor: '#7a5230', hat: 'cap', hatColor: '#ffd23f' };
     case 'clerk': { const o = OUTFITS[style || 'street']; const out = o ? o[Math.floor(r() * o.length)].cfg : {}; return { ...base, ...out }; }
@@ -1352,7 +1355,7 @@ async function useFurn(item) {
     fade(() => { advanceTime(hrs); stats.energy = 100; stats.mood = clamp(stats.mood + 6, 0, 100); P.hp = maxHP(); saveGame(); toast(hrs > 4 ? 'Good morning! Fully rested.' : 'You took a nap. Energy restored.', 3); });
   } else if (act === 'eat' || act === 'cook') {
     if (stats.groceries <= 0) { toast('The fridge is empty. Buy groceries at QuickMart.'); sfx.fail(); return; }
-    stats.groceries--; feed(FOODS.meal); if (act === 'cook') feed({ mood: 6 }); sfx.coin(); toast(`Ate a home-cooked meal. ${stats.groceries} meals left.`);
+    stats.groceries--; feed(FOODS.meal); if (act === 'cook') feed({ mood: hasDegree('culinary') ? 14 : 6 }); sfx.coin(); toast(`Ate a home-cooked meal. ${stats.groceries} meals left.`);
   } else if (act === 'sit') { feed({ mood: 3, energy: 4 }); toast('You kick back for a minute.'); }
   else if (act === 'tv') { fade(() => { advanceTime(1); feed({ mood: 10, energy: 4 }); toast('You watched an episode of "Bay Housewives". Mood up.'); }); }
   else if (act === 'read') { if ((useCd.read || 0) > gameHours()) { toast('You already read today. Try tomorrow.'); return; } useCd.read = gameHours() + 12; fade(() => { advanceTime(1); feed({ energy: -4, mood: 3 }); gainXP('charm', 40); toast('You read "How to Talk to Anyone". Charm up.'); }); }
@@ -1458,6 +1461,10 @@ function openPlace(p) {
 async function doSpot(s) {
   const place = inside.place, id = inside.id;
   if (id === 'prison') return prisonSpot(s);
+  if (s.kind === 'admissions') return talkAdmissions();
+  if (s.kind === 'class') return attendClass();
+  if (s.kind === 'study') { if (stats.relDay['study:' + dayN]) { toast('You already studied today. Your brain is full.'); return; } stats.relDay['study:' + dayN] = 1; fade(() => { advanceTime(1.5); gainXP('smarts', 30); feed({ energy: -6, mood: 2 }); edu().studied = dayN; toast('You studied for an hour and a half. Smarts +, and your next class will be easier.', 3); }); return; }
+  if (s.kind === 'staff') return talkCareer(id);
   if (s.kind === 'talk') return talkVenue();
   if (s.kind === 'mirror') return openShop('clothes', place);
   if (s.kind === 'range') {
@@ -1577,6 +1584,102 @@ function endDance(quit) {
   saveGame();
 }
 
+// ================================================================ COLLEGE & CAREERS (BitLife-style: study → degree → job ladder)
+const edu = () => stats.edu ||= { enrolled: null, progress: {}, done: [], studied: 0, attended: 0 };
+const hasDegree = id => edu().done.includes(id);
+const career = () => stats.career || null;
+function careerTitle() { const c = career(); return c ? CAREERS[c.id].ladder[c.lvl][0] : null; }
+function shuffle(a) { return a.map(v => [Math.random(), v]).sort((x, y) => x[0] - y[0]).map(x => x[1]); }
+async function quiz(subject, n = 3, who = null) {
+  const qs = shuffle(QUIZ[subject] || QUIZ.retail).slice(0, n); let right = 0;
+  for (const [q, a, ...wrong] of qs) {
+    await talk.say(q);
+    const opts = shuffle([a, ...wrong]), k = await talk.choose(opts.map(o => I('chat', o)));
+    if (opts[k] === a) { right++; await talk.say(pick(['Correct.', 'Exactly right.', 'Good.', 'Yes!'])); }
+    else await talk.say(`Not quite. It's "${a}".`);
+  }
+  return right;
+}
+async function talkAdmissions() {
+  const n = inside.npcs.find(q => q.role === 'sales'), E = edu();
+  beginTalk(n.cfg, 'Ms. Adeyemi', 'Admissions', 230, n.relId);
+  await talk.say(E.enrolled ? `You're enrolled in ${COURSES[E.enrolled].name}: ${E.progress[E.enrolled] || 0} of ${COURSES[E.enrolled].classes} classes done.` : 'Welcome to Bay City College! Adult education, evenings and weekends. What would you like to study?');
+  const opts = [], ids = [];
+  if (!E.enrolled) for (const [id, C] of Object.entries(COURSES)) {
+    if (hasDegree(id)) continue;
+    const locked = C.needs && !hasDegree(C.needs);
+    opts.push({ label: I(C.icon, `${C.name} <small>${C.fee ? fmt(C.fee) : 'free'} · ${C.classes} classes${locked ? ` · needs ${COURSES[C.needs].name}` : ''}</small>`), disabled: locked || money < C.fee }); ids.push(id);
+  }
+  if (E.enrolled) { opts.push(I('x', `Drop ${COURSES[E.enrolled].name} (no refund)`)); ids.push('drop'); }
+  if (E.done.length) { opts.push(I('star', 'My qualifications')); ids.push('quals'); }
+  opts.push(I('x', 'Just looking')); ids.push('bye');
+  const k = ids[await talk.choose(opts)];
+  if (k === 'drop') { E.enrolled = null; await talk.say('Done. You can come back any time.'); }
+  else if (k === 'quals') await talk.say(`You hold: ${E.done.map(d => COURSES[d].name).join(', ')}.`);
+  else if (k !== 'bye') {
+    const C = COURSES[k];
+    if (C.clean && (stats.jailRecord || 0) > dayN - 30) await talk.say('The Academy needs a clean record for the last 30 days. Come back when you\'ve stayed out of trouble.');
+    else { if (C.fee) spend(C.fee); E.enrolled = k; E.progress[k] ||= 0; await talk.say(`You're in! ${C.name}. ${C.desc} One class a day, between 8am and 8pm. It unlocks: ${C.unlocks}.`); feed({ mood: 6 }); }
+  }
+  endTalk(); saveGame();
+}
+async function attendClass() {
+  const E = edu(), n = inside.npcs.find(q => q.role === 'professor');
+  if (!E.enrolled) { toast('Enrol at Admissions first.'); return; }
+  if (E.attended === dayN) { toast('One class a day. Come back tomorrow.'); return; }
+  if (clockH < 8 || clockH >= 20) { toast('Classes run from 8am to 8pm.'); return; }
+  const C = COURSES[E.enrolled];
+  beginTalk(n.cfg, 'Professor Lindqvist', C.name, 150, n.relId);
+  await talk.say(pick(['Take a seat. Pop quiz, three questions.', 'Good to see you. Let\'s test what you remember.', 'Phones away. Three questions.']));
+  const right = await quiz(E.enrolled, 3), need = E.studied === dayN - 1 || E.studied === dayN ? 1 : 2;
+  E.attended = dayN; advanceTime(2); feed({ energy: -8 });
+  gainXP('smarts', 20 + right * 10);
+  if (right >= need || (right === need - 1 && Math.random() < lvl('smarts') * 0.08)) {
+    E.progress[E.enrolled] = (E.progress[E.enrolled] || 0) + 1;
+    if (E.progress[E.enrolled] >= C.classes) { E.done.push(E.enrolled); const d = E.enrolled; E.enrolled = null; await talk.say(`That's the last one. Congratulations, you've graduated: ${C.name}!`); endTalk(); feed({ mood: 30 }); spawnParticles(P.x, 2, P.z, ['#ffd23f', '#2f80ed', '#ffffff'], 30, 5, 1, 0.12); toast(`Graduated: ${C.name}. Unlocked: ${C.unlocks}`, 5); saveGame(); return; }
+    await talk.say(`Well done. That's ${E.progress[E.enrolled]} of ${C.classes}.`);
+  } else await talk.say(`Only ${right} right. That class doesn't count. Study in the library and try again tomorrow.`);
+  endTalk(); saveGame();
+}
+async function talkCareer(placeId) {
+  const here = Object.entries(CAREERS).filter(([, c]) => c.place === placeId), cur = career();
+  const n = inside.npcs[0];
+  beginTalk(n.cfg, n.name || 'Manager', inside.tpl.name + ' · Staff', 160, n.relId);
+  if (cur && CAREERS[cur.id].place === placeId) {
+    const CR = CAREERS[cur.id], [title, pay] = CR.ladder[cur.lvl];
+    await talk.say(`Hey ${title.toLowerCase()}. Performance: ${Math.round(cur.perf)}%.`);
+    const k = await talk.choose([I('case', `Start a shift <small>${fmt(pay)}</small>`), I('star', 'Ask for a promotion'), I('x', 'Quit this job'), I('x', 'Later')]);
+    if (k === 0) {
+      if (cur.lastDay === dayN) await talk.say('You already worked today. Go home and rest.');
+      else if (clockH < 7 || clockH >= 19) await talk.say('Shifts start between 7am and 7pm.');
+      else {
+        await talk.say(pick(['Right, here\'s what I need from you today.', 'Busy day. Let\'s see what you\'ve got.', 'Clock in. Three things to handle.']));
+        const right = await quiz(CR.subject, 3);
+        const earned = Math.round(pay * (0.7 + right * 0.15) * (1 + lvl('smarts') * 0.02));
+        cur.perf = clamp(cur.perf + right * 9 - 8, 0, 100); cur.shifts++; cur.lastDay = dayN; addMoney(earned); gainXP('smarts', 10 + right * 5); advanceTime(6); feed({ energy: -25, hunger: -15, mood: right >= 2 ? 4 : -4 });
+        await talk.say(right === 3 ? `Excellent shift! Here's ${fmt(earned)}.` : right ? `Good enough. ${fmt(earned)} for today.` : `Rough day. Here's ${fmt(earned)}. Do better.`);
+        if (cur.perf >= 80 && cur.shifts >= 4 * (cur.lvl + 1) && cur.lvl < CR.ladder.length - 1) { cur.lvl++; cur.perf = 55; await talk.say(`You know what? You've earned it. You're now ${CR.ladder[cur.lvl][0]}, on ${fmt(CR.ladder[cur.lvl][1])} a shift!`); feed({ mood: 25 }); }
+      }
+    } else if (k === 1) {
+      if (cur.lvl >= CR.ladder.length - 1) await talk.say('You\'re already at the top. Congratulations.');
+      else if (cur.perf >= 70 && cur.shifts >= 3 * (cur.lvl + 1)) { cur.lvl++; cur.perf = 50; await talk.say(`Alright. Promoted to ${CR.ladder[cur.lvl][0]}.`); feed({ mood: 20 }); }
+      else { cur.perf = Math.max(0, cur.perf - 5); await talk.say(`Not yet. Keep your performance up (${Math.round(cur.perf)}%) and put in more shifts.`); }
+    } else if (k === 2) { stats.career = null; await talk.say('Sorry to see you go.'); }
+  } else {
+    await talk.say(here.length ? 'We\'re hiring. Interested?' : 'Nothing going here right now.');
+    const opts = [], ids = [];
+    for (const [id, c] of here) { const ok = !c.needs || hasDegree(c.needs); opts.push({ label: I('case', `${c.ladder[0][0]} <small>${fmt(c.ladder[0][1])} / shift${ok ? '' : ` · needs ${COURSES[c.needs].name}`}</small>`), disabled: !ok }); ids.push(id); }
+    opts.push(I('x', 'No thanks')); ids.push('bye');
+    const k = ids[await talk.choose(opts)];
+    if (k !== 'bye') {
+      if (cur) { await talk.say(`You'll have to quit your job as ${careerTitle()} first.`); const q = await talk.choose([I('check', 'Quit and take this one'), I('x', 'Never mind')]); if (q) { endTalk(); return; } }
+      if (k === 'cop' && (stats.jailRecord || 0) > dayN - 30) await talk.say('Background check failed. Come back with a clean record.');
+      else { stats.career = { id: k, lvl: 0, perf: 50, shifts: 0, lastDay: 0 }; await talk.say(`Welcome aboard, ${CAREERS[k].ladder[0][0]}! One shift a day, 7am to 7pm. Do well and you'll move up.`); feed({ mood: 12 }); }
+    }
+  }
+  endTalk(); saveGame();
+}
+
 // ================================================================ RELATIONSHIPS
 const rel = id => stats.rel[id] || 0;
 function bumpRel(id, amt, daily = true) {
@@ -1662,6 +1765,8 @@ async function talkVenue() {
   if (id === 'church') return talkPastor(n, place);
   if (id === 'hospital') return talkHospital(n, place);
   if (id === 'police') return talkPolice(n, place);
+  if (id === 'college') return n.role === 'professor' ? attendClass() : talkAdmissions();
+  if (id === 'office') return talkCareer('office');
   if (id === 'pit') return n.role === 'bookie' ? talkBookie(n, place) : talkFood(n, 'bar', place);
 }
 function nearestNpc() { let best = null, bd = 1e9; for (const n of inside.npcs) { if (n.role === 'guest') continue; const d = Math.hypot(n.x - P.x, n.z - P.z); if (d < bd) { bd = d; best = n; } } return best; }
@@ -2685,7 +2790,7 @@ function openProperty(p) {
   modal(`<div class="big-ico">${svg('house', 'big')}</div><h3>${p.name}</h3>
     <p>A ${INTERIORS[p.home].name.toLowerCase()} you can furnish and live in. Rent it out for <b>${fmt(p.income)}</b> every morning, or live in it and move your family in. Adds <b>+20</b> stash space.</p>
     <div class="price">${fmt(p.price)}</div>`, [
-    { label: `Buy for ${fmt(p.price)}`, cls: 'big', disabled: money < p.price, fn: () => { spend(p.price); owned.add(p.id); refreshPropertyMarkers(); saveGame(); closeModal(); toast(`${p.name} is yours! Walk in to move in.`, 3); feed({ mood: 20 }); } },
+    { label: `Buy for ${fmt(homePrice(p))}${hasDegree('realestate') ? ' <small>(realtor discount)</small>' : ''}`, cls: 'big', disabled: money < homePrice(p), fn: () => { spend(homePrice(p)); owned.add(p.id); refreshPropertyMarkers(); saveGame(); closeModal(); toast(`${p.name} is yours! Walk in to move in.`, 3); feed({ mood: 20 }); } },
     { label: money < p.price ? `Need ${fmt(p.price - money)} more` : 'Not now', fn: closeModal },
   ]);
 }
@@ -2889,7 +2994,7 @@ const PRISONERS = {
   grimes: { name: 'Officer Grimes', tag: 'Guard', pitch: 120 }, guard2: { name: 'Officer Pike', tag: 'Guard', pitch: 130 },
   joy: { name: 'Mama Joy', tag: 'Canteen', pitch: 210 }, nurse: { name: 'Nurse Ortega', tag: 'Infirmary', pitch: 220 },
   walsh: { name: 'Agent Walsh', tag: 'Federal agent', pitch: 140 },
-  tony: { name: 'Big Tony', tag: 'Shot caller · lifer', pitch: 95, look: { build: 1.5, hair: 'buzz', hairColor: '#141414', facialHair: 'goatee', height: 1.05 } },
+  tony: { name: 'Big Carlos', tag: 'Shot caller · lifer', pitch: 95, look: { build: 1.5, hair: 'buzz', hairColor: '#141414', facialHair: 'goatee', height: 1.05 } },
   dre: { name: 'Dre "Hands"', tag: 'Inmate · fighter', pitch: 130, look: { build: 1.35, hair: 'afro', facialHair: 'stubble', top: 'tank' } },
   pops: { name: 'Pops', tag: 'Lifer · 31 years in', pitch: 100, look: { hair: 'short', hairColor: '#d8d8d8', facialHair: 'bigbeard', eyewear: 'glasses', build: 0.95 } },
   rico: { name: 'Rico', tag: 'Inmate · talks a lot', pitch: 175, look: { hair: 'quiff', build: 0.9, facialHair: 'moustache' } },
@@ -2908,7 +3013,9 @@ function wearJumpsuit(on) {
   buildHero();
 }
 function goToPrison(stars, coop) {
-  const h = (PRISON_SENT[Math.min(5, stars)] || 12) * (coop ? 0.5 : 1);
+  stats.jailRecord = dayN; if (career()?.id === 'cop') { stats.career = null; setTimeout(() => toast('You were fired from the police force.', 3), 6000); }
+  const lawyer = hasDegree('law'), h = (PRISON_SENT[Math.min(5, stars)] || 12) * (coop ? 0.5 : 1) * (lawyer ? 0.5 : 1);
+  if (lawyer) setTimeout(() => toast('You defended yourself in court. Sentence halved.', 3.5), 4000);
   stats.jail = { until: gameHours() + h, total: h, outfit: { ...charCfg }, shiv: false, spoon: false, dig: 0, plan: false, snitch: false, fights: 0, debt: 0, meals: {}, lawyer: false, csAsked: false };
   if (arsenal.cur !== 'fist') { arsenal.last = arsenal.cur; arsenal.cur = 'fist'; }
   wearJumpsuit(true); enterPrison(true);
@@ -3056,7 +3163,7 @@ async function talkPrisoner(n) {
   beginTalk(n.cfg, P2.name, P2.tag, P2.pitch, rid);
   if (!J) { await talk.say('You don\'t belong in here any more.'); return endTalk(); }
   if (J.snitch && (id === 'tony' || id === 'dre' || id === 'moose') && !J.snitchFought) {
-    await talk.say(id === 'tony' ? 'Heard you had a nice chat with the feds. Snitches get stitches.' : 'Tony says you a rat.'); J.snitchFought = true;
+    await talk.say(id === 'tony' ? 'Heard you had a nice chat with the feds. Snitches get stitches.' : 'Carlos says you a rat.'); J.snitchFought = true;
     endTalk(); return prisonFight(id, true);
   }
   for (;;) {
@@ -3066,7 +3173,7 @@ async function talkPrisoner(n) {
     if (id === 'grimes' || id === 'guard2') { add('lock', `How long have I got?`, 'time'); add('cash', `Post bail <small>${fmt(bailCost())}</small>`, 'bail'); if (!J.csAsked && J.total <= 24 && !J.fights) add('trash', 'Can I do community service?', 'cs'); add('cash', `Bribe <small>${fmt(1000)}</small>`, 'bribe'); add('fist', 'Mouth off', 'mouth'); }
     if (id === 'tony') { add('bag', 'Need a shiv', 'shiv'); if (!J.debt) add('star', 'Got any work?', 'work'); if (J.debt === 2) add('cash', 'Rico paid up', 'paid'); add('bolt', 'Start a riot', 'riot'); }
     if (id === 'dre' || id === 'moose') add('fist', 'Square up', 'fight');
-    if (id === 'rico' && J.debt === 1) add('cash', 'Tony wants his money', 'collect');
+    if (id === 'rico' && J.debt === 1) add('cash', 'Carlos wants his money', 'collect');
     if (id === 'pops' && rel(rid) >= 25 && !J.plan) add('key', 'How do I get out of here?', 'plan');
     if (id === 'walsh') add('shield', 'What do the feds want?', 'deal');
     if (id === 'joy') add('food', `Extra portion <small>${fmt(5)}</small>`, 'food');
@@ -3100,11 +3207,11 @@ async function talkPrisoner(n) {
     }
     else if (c === 'fight') { endTalk(); return prisonFight(id, false); }
     else if (c === 'collect') {
-      await talk.say('Tony wants his two hundred.', 'you');
+      await talk.say('Carlos wants his two hundred.', 'you');
       const k = await talk.choose([I('fist', 'Pay up or else'), I('chat', 'Talk him into it')]);
-      if (k === 1 && Math.random() < 0.3 + lvl('charm') * 0.06) { await talk.say('Fine, fine! Here. Tell Tony we\'re good.'); J.debt = 2; }
-      else if (k === 1) await talk.say('Nice try. Tell Tony he can come get it himself.');
-      else { endTalk(); const won = await prisonFight('rico', false); if (won) { J.debt = 2; toast('Rico paid up. Go see Tony.', 3); } return; }
+      if (k === 1 && Math.random() < 0.3 + lvl('charm') * 0.06) { await talk.say('Fine, fine! Here. Tell Carlos we\'re good.'); J.debt = 2; }
+      else if (k === 1) await talk.say('Nice try. Tell Carlos he can come get it himself.');
+      else { endTalk(); const won = await prisonFight('rico', false); if (won) { J.debt = 2; toast('Rico paid up. Go see Carlos.', 3); } return; }
     }
     else if (c === 'plan') { J.plan = true; await talk.say('*whispers* Wall behind cell 5\'s toilet is old brick over a storm drain. Get a spoon from the canteen. Dig at night. Three nights, maybe less.'); await talk.say('And kid? Don\'t tell Rico.'); }
     else if (c === 'deal') {
@@ -3122,7 +3229,7 @@ async function talkPrisoner(n) {
   }
   endTalk(); saveGame();
 }
-const PR_OPP = { dre: { name: 'Dre "Hands"', hp: 80, power: 10, tell: 0.8, col: '#ff7a1a', skin: '#8d5524' }, moose: { name: 'Moose', hp: 110, power: 13, tell: 0.85, col: '#ff7a1a', skin: '#e8b088' }, rico: { name: 'Rico', hp: 45, power: 6, tell: 0.95, col: '#ff7a1a' }, tony: { name: 'Big Tony', hp: 100, power: 12, tell: 0.75, col: '#ff7a1a' }, guard: { name: 'Riot squad', hp: 90, power: 11, tell: 0.8, col: '#1d2b52' } };
+const PR_OPP = { dre: { name: 'Dre "Hands"', hp: 80, power: 10, tell: 0.8, col: '#ff7a1a', skin: '#8d5524' }, moose: { name: 'Moose', hp: 110, power: 13, tell: 0.85, col: '#ff7a1a', skin: '#e8b088' }, rico: { name: 'Rico', hp: 45, power: 6, tell: 0.95, col: '#ff7a1a' }, tony: { name: 'Big Carlos', hp: 100, power: 12, tell: 0.75, col: '#ff7a1a' }, guard: { name: 'Riot squad', hp: 90, power: 11, tell: 0.8, col: '#1d2b52' } };
 // prison fights happen for real on the floor: the inmate steps out as a fighter, the block crowds round to watch
 let brawl = null;
 function startBrawl(id, onEnd, o2) {
@@ -3169,7 +3276,7 @@ async function prisonRiot() {
   startBrawl('guard2', win => {
     for (const n of inside.npcs) n.dance = false;
     if (win && Math.random() < 0.6) {
-      modal('<h3>The gate is jammed open</h3><p>In the chaos the security gate is stuck half open. Nobody is watching it.</p>', [{ label: 'RUN', cls: 'big', fn: () => { closeModal(); escapePrison('You sprint through the jammed gate during the riot.'); } }, { label: 'Stay put', fn: () => { closeModal(); bumpRel('pr:tony', 15, false); toast('You stayed. Tony respects the chaos you caused.', 3); } }]);
+      modal('<h3>The gate is jammed open</h3><p>In the chaos the security gate is stuck half open. Nobody is watching it.</p>', [{ label: 'RUN', cls: 'big', fn: () => { closeModal(); escapePrison('You sprint through the jammed gate during the riot.'); } }, { label: 'Stay put', fn: () => { closeModal(); bumpRel('pr:tony', 15, false); toast('You stayed. Carlos respects the chaos you caused.', 3); } }]);
     } else { J.until += 12; prisonSkip(12, 'Lockdown', 'The riot squad clears the block. Everyone in their cells. +12h on your sentence.', () => { feed({ mood: -10 }); bumpRel('pr:tony', 10, false); }); }
   }, { name: 'Officer Pike', hp: J.shiv ? 50 : 75, power: 11 });
 }
@@ -3451,6 +3558,8 @@ function renderPhone() {
   } else if (phoneApp === 'work') {
     const f = inside ? inside.back : focusPos(), dist = p => `${Math.round(Math.hypot(p.x - f.x, p.z - f.z))} m`;
     const W = [
+      ['v_college', 'Bay City College', 'Study for a diploma or degree: business, mechanics, cooking, nursing, medicine, computer science, law, real estate or the police academy. Each one unlocks a career.', 'Unlocks careers'],
+      ['w_office', 'Bay Corp Tower', 'Office, software, law and real estate careers. Needs the right qualification.', '$150-1,200 a shift'],
       ['j_taxi', 'Taxi driver', 'Bay Cabs gives you a cab. Pick up fares, drive them fast. Pays per fare plus a speed tip. Trains Driving.', '$60-200 a fare'],
       ['j_bins', 'Binman', 'Drive the Bay Waste lorry round town emptying wheelie bins. Paid per bin plus a bonus for bringing it back.', '$35 a bin + $150'],
       ['j_courier', 'Courier', 'Speedy Couriers hands you parcels to deliver before the clock runs out. Trains Stamina.', '$80-260 a drop'],
@@ -3460,7 +3569,8 @@ function renderPhone() {
       ['race', 'Street racing', 'Bring any car to the race start for a checkpoint race.', '$450 a win'],
       ['v_casino', 'Casino', 'Blackjack and slots at Lucky 7.', 'Luck'],
     ].map(([id, t, d, pay]) => ({ p: PLACES.find(q => q.id === id), t, d, pay })).filter(w => w.p);
-    el.innerHTML = `${back}<h4>Work</h4>${job ? `<div class="ph-row col on"><span><b>On shift: ${job.type === 'taxi' ? 'Taxi' : 'Courier'}</b><small>${job.fares} done · ${fmt(job.earned)}</small></span><span class="rowbtns"><button class="ph-mini" id="phQuitJob">End shift</button></span></div>` : ''}<p class="ph-hint">Ways to make money in Bay City. Tap one to set GPS.</p>${W.map((w, i) => `<button class="ph-row col" data-w="${i}"><span><b>${svg(w.p.icon, 'sm')} ${w.t}</b><small>${dist(w.p)}</small></span><small style="white-space:normal;opacity:.8">${w.d}</small><small style="color:#7dff9a">${w.pay}</small></button>`).join('')}`;
+    const C0 = career(), E0 = edu(), carHtml = `<div class="ph-sec">${svg('case', 'sm')} Career</div><div class="ph-row col"><span><b>${C0 ? `${careerTitle()} · ${CAREERS[C0.id].name}` : 'No career yet'}</b><small>${C0 ? `${fmt(CAREERS[C0.id].ladder[C0.lvl][1])} a shift · performance ${Math.round(C0.perf)}% · ${C0.shifts} shifts${C0.lastDay === dayN ? ' · worked today' : ''}` : 'Retail jobs need nothing. Most careers need a qualification from Bay City College.'}</small></span></div><div class="ph-row col"><span><b>Education</b><small>${E0.enrolled ? `Studying ${COURSES[E0.enrolled].name}: ${E0.progress[E0.enrolled] || 0}/${COURSES[E0.enrolled].classes} classes${E0.attended === dayN ? ' · class done today' : ''}` : 'Not enrolled.'}${E0.done.length ? ` · Graduated: ${E0.done.map(d => COURSES[d].name).join(', ')}` : ''}</small></span></div>`;
+    el.innerHTML = `${back}<h4>Work</h4>${carHtml}${job ? `<div class="ph-row col on"><span><b>On shift: ${job.type === 'taxi' ? 'Taxi' : 'Courier'}</b><small>${job.fares} done · ${fmt(job.earned)}</small></span><span class="rowbtns"><button class="ph-mini" id="phQuitJob">End shift</button></span></div>` : ''}<p class="ph-hint">Ways to make money in Bay City. Tap one to set GPS.</p>${W.map((w, i) => `<button class="ph-row col" data-w="${i}"><span><b>${svg(w.p.icon, 'sm')} ${w.t}</b><small>${dist(w.p)}</small></span><small style="white-space:normal;opacity:.8">${w.d}</small><small style="color:#7dff9a">${w.pay}</small></button>`).join('')}`;
     el.querySelectorAll('[data-w]').forEach(b => b.onclick = () => { const w = W[+b.dataset.w]; setWaypoint(w.p.x, w.p.z, w.p.name); toast(`GPS set: ${w.p.name}`); closePhone(); });
     if ($('phQuitJob')) $('phQuitJob').onclick = () => { endJob('Shift ended.'); renderPhone(); };
   } else if (phoneApp === 'wallet') {
@@ -3511,7 +3621,7 @@ function saveGame() {
   store.set('bc_save', save); store.set('bc_arsenal', arsenal); store.set('bc_cars', garage);
 }
 // auto-update: bookmarks and home-screen apps can hold on to an old copy. Check version.json (never cached) and reload once if newer.
-const BUILD = 33;
+const BUILD = 34;
 function checkUpdate() {
   fetch('version.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(j => {
     if (!(j.v > BUILD)) return;
@@ -3647,7 +3757,7 @@ function modPrice(k, v) { return MOD_PRICES[k]?.[v] ?? MOD_BASE[k] ?? 0; }
 function shopPrice() {
   if (!shop) return 0;
   if (shop.kind === 'gun') { let t = 0; for (const k of Object.keys(pvGunCfg)) if (pvGunCfg[k] !== shop.orig[k]) t += SMITH_PRICES[k] ?? 100; return t; }
-  if (shop.kind === 'mods') { let t = 0; for (const k of Object.keys(carCfg)) if (carCfg[k] !== shop.orig[k]) t += modPrice(k, carCfg[k]); return t; }
+  if (shop.kind === 'mods') { let t = 0; for (const k of Object.keys(carCfg)) if (carCfg[k] !== shop.orig[k]) t += modPrice(k, carCfg[k]); return Math.round(t * (hasDegree('mechanics') ? 0.8 : 1)); }
   if (shop.kind === 'carshop') { const p = CAR_PRICES[pvCarCfg.body]; return Math.round(p * (rel(shop.relId) >= 40 ? 0.9 : 1)); }
   let total = shop.outfit ? shop.outfit.price : 0;
   for (const k of Object.keys(previewCfg)) {
@@ -3776,4 +3886,4 @@ function frame(now) {
 }
 startGame();
 requestAnimationFrame(frame);
-window.__game = { get animals() { return animals; }, crime, WANT, copCars, cops, pitFight, busted, fam, famNewDay, makeOfficial, talkFamily, get dayN() { return dayN; }, set dayN(v) { dayN = v; }, scene: G.scene, cam: G.cam, snap: () => updateCamera(0, true), get state() { return state; }, P, input, get ride() { return ride; }, get myCar() { return myCar; }, get traffic() { return traffic; }, peds, setTime: h => { clockH = h; }, openCustom, enterVehicle, exitCar, get money() { return money; }, set money(v) { money = v; }, openPlace, PLACES, PROPERTIES, runMinigame, get action() { return action; }, arsenal, selectWeapon, openPhone, setWaypoint, get route() { return route; }, talkToPed, talk, doAction, stats, get inside() { return inside; }, enterInterior, exitInterior, get customers() { return customers; }, newCustomer, startEdit, endEdit, get job() { return job; }, gainXP, storage, doSpot, useFurn, phoneGo, talkVenue, talkJob, openPlace, talkCustomer, startJob, openCarShop, damageCar, repairCar, addFire, get fires() { return fires; }, get ems() { return ems; }, get vehicles() { return vehicles; }, makeVehicle, makeCop, prisonFight, bodyCheck, startDance, get dance() { return dance; }, radioSet: i => { radioSet(i); radioOn(true); }, get zoom() { return zoom; }, set zoom(z) { zoom = z; }, DEFAULT_CAR, setState: x => setState(x), get jail() { return stats.jail; } };
+window.__game = { get animals() { return animals; }, crime, WANT, copCars, cops, pitFight, busted, fam, famNewDay, makeOfficial, talkFamily, get dayN() { return dayN; }, set dayN(v) { dayN = v; }, scene: G.scene, cam: G.cam, snap: () => updateCamera(0, true), get state() { return state; }, P, input, get ride() { return ride; }, get myCar() { return myCar; }, get traffic() { return traffic; }, peds, setTime: h => { clockH = h; }, openCustom, enterVehicle, exitCar, get money() { return money; }, set money(v) { money = v; }, openPlace, PLACES, PROPERTIES, runMinigame, get action() { return action; }, arsenal, selectWeapon, openPhone, setWaypoint, get route() { return route; }, talkToPed, talk, doAction, stats, get inside() { return inside; }, enterInterior, exitInterior, get customers() { return customers; }, newCustomer, startEdit, endEdit, get job() { return job; }, gainXP, storage, doSpot, useFurn, phoneGo, talkVenue, talkJob, openPlace, talkCustomer, startJob, openCarShop, damageCar, repairCar, addFire, get fires() { return fires; }, get ems() { return ems; }, get vehicles() { return vehicles; }, makeVehicle, makeCop, prisonFight, bodyCheck, attendClass, talkAdmissions, edu, startDance, get dance() { return dance; }, radioSet: i => { radioSet(i); radioOn(true); }, get zoom() { return zoom; }, set zoom(z) { zoom = z; }, DEFAULT_CAR, setState: x => setState(x), get jail() { return stats.jail; } };

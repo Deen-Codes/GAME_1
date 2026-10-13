@@ -1,9 +1,9 @@
 // Enterable interiors. Rooms are built far away from the city (at ORIGIN) and the player is moved
 // there, so the normal movement, camera and collision code keeps working. South wall is cut away.
 import * as THREE from '../lib/three.module.min.js';
-import { FURN, buildFurn } from './furniture.js?v=33';
-import { addCollider, removeCollider } from './world.js?v=33';
-import { buildCar } from './car.js?v=33';
+import { FURN, buildFurn } from './furniture.js?v=34';
+import { addCollider, removeCollider } from './world.js?v=34';
+import { buildCar } from './car.js?v=34';
 
 export const ORIGIN = { x: 0, z: 2600 };
 const T = (name, w, d, floor, wall, items, npcs, spots, extra = {}) => ({ name, w, d, floor, wall, items, npcs, spots, ...extra });
@@ -15,9 +15,9 @@ export const INTERIORS = {
   barber: T('Barbershop', 11, 8, '#2a2a30', '#e8e2d6', [['barberchair', -3, -2.4], ['barberchair', 0, -2.4], ['barberchair', 3, -2.4], ['mirror', -3, -3.85], ['mirror', 0, -3.85], ['mirror', 3, -3.85], ['pole', 4.9, -3.6], ['chair', -4.4, 2.6, Math.PI / 2], ['chair', -4.4, 1.6, Math.PI / 2]],
     [{ role: 'barber', x: 1.1, z: -2.0 }], [{ kind: 'talk', x: 0.6, z: -0.6, label: 'Talk', icon: 'chat' }]),
   diner: T('Diner', 14, 10, '#d8d2c8', '#9fd8e8', [['counter', -3, -3.3, 0, '#c9302c'], ['stool', -4.2, -2.3], ['stool', -3, -2.3], ['stool', -1.8, -2.3], ['booth', 3.8, -2.4], ['booth', 3.8, 1.6], ['sign', 0, -4.9, 0, '#38e8ff']],
-    [{ role: 'waiter', x: -3, z: -4.2 }], [{ kind: 'talk', x: -3, z: -1.4, label: 'Order', icon: 'food' }]),
+    [{ role: 'waiter', x: -3, z: -4.2 }], [{ kind: 'talk', x: -3, z: -1.4, label: 'Order', icon: 'food' }, { kind: 'staff', x: -6, z: 3.8, label: 'Staff door', icon: 'case' }]),
   mart: T('QuickMart', 12, 10, '#e8e8ea', '#f6f6f6', [['shelf', -2.5, -3.9], ['shelf', -2.5, 0.2], ['counter', 3.5, -1.5, 0, '#3a3d45'], ['fridge', 5.3, -4.3, 0, '#e8e8ea'], ['fridge', 4.3, -4.3, 0, '#e8e8ea']],
-    [{ role: 'cashier', x: 3.5, z: -2.4 }], [{ kind: 'talk', x: 3.5, z: -0.3, label: 'Buy', icon: 'cart' }]),
+    [{ role: 'cashier', x: 3.5, z: -2.4 }], [{ kind: 'talk', x: 3.5, z: -0.3, label: 'Buy', icon: 'cart' }, { kind: 'staff', x: -4.5, z: 3.6, label: 'Staff door', icon: 'case' }]),
   gym: T('Iron Temple Gym', 16, 12, '#2f3036', '#5a5d66', [['bench', -5.5, -3.6], ['bench', -2.5, -3.6], ['tread', 3, -3.6], ['tread', 5, -3.6], ['bag', -5.5, 2.6], ['bag', -3.5, 2.6], ['mirror', 0, -5.85], ['sign', 0, -5.9, 0, '#ff8a2a']],
     [{ role: 'trainer', x: 0.5, z: -1 }], [{ kind: 'lift', x: -4, z: -1.7, label: 'Lift', icon: 'dumbbell' }, { kind: 'tread', x: 4, z: -1.6, label: 'Run', icon: 'run' }, { kind: 'bag', x: -4.5, z: 4.2, label: 'Box', icon: 'fist' }, { kind: 'talk', x: 0.5, z: 0.4, label: 'Talk', icon: 'chat' }]),
   casino: T('Lucky 7 Casino', 18, 14, '#5a1a2a', '#2a1020', [['bjtable', -4, -2], ['bjtable', 1, -2], ['slot', 5, -6.3], ['slot', 6, -6.3], ['slot', 7, -6.3], ['counter', -6, -5.6, 0, '#c9a24a'], ['sign', 0, -6.9, 0, '#ffd23f'], ['palm', -8, 6], ['palm', 8, 6]],
@@ -32,10 +32,10 @@ export const INTERIORS = {
     [{ role: 'bookie', x: -6.5, z: -5.6 }, { role: 'bartender', x: -7.5, z: 6.5 }], [{ kind: 'fight', x: 1, z: 2.6, label: 'Enter the cage', icon: 'fist' }, { kind: 'talk', x: -6.5, z: -4.2, label: 'Bookie', icon: 'cash' }, { kind: 'talk', x: -7.5, z: 4.2, label: 'Bar', icon: 'drink' }], { light: '#ff6a3a', dark: true }),
   police: T('Bay City PD', 18, 14, '#7a8090', '#c8ccd4', [['counter', -4, -3.4], ['desk', -6.5, 1.5, 0, '#5a4a3a'], ['desk', -2.5, 1.5, 0, '#5a4a3a'], ['chair', -6.5, 2.4], ['chair', -2.5, 2.4], ['plant', -8, -6], ['sign', -4, -6.9, 0, '#2a6aff'],
     ['cellwall', 2.2, -5.8], ['cellwall', 5.2, -5.8], ['cellwall', 8.2, -5.8], ['cellbars', 3.7, -4.6], ['cellbars', 6.7, -4.6], ['cot', 3.0, -6.2, Math.PI / 2], ['cot', 6.0, -6.2, Math.PI / 2], ['chair', 4.5, 3.8], ['chair', 5.5, 3.8], ['chair', 6.5, 3.8], ['chair', 7.5, 3.8]],
-    [{ role: 'cop', x: -4, z: -4.6 }, { role: 'cop', x: -6.5, z: 2.6 }], [{ kind: 'talk', x: -4, z: -2.2, label: 'Front desk', icon: 'shield' }], { light: '#e8eef8' }),
+    [{ role: 'cop', x: -4, z: -4.6 }, { role: 'cop', x: -6.5, z: 2.6 }], [{ kind: 'talk', x: -4, z: -2.2, label: 'Front desk', icon: 'shield' }, { kind: 'staff', x: 7.8, z: 1.5, label: 'Staff office', icon: 'case' }], { light: '#e8eef8' }),
   hospital: T('Bay General Hospital', 20, 14, '#e4eaee', '#f4f7f9', [['counter', -6, -3.8], ['plant', -9.2, -6.2], ['plant', -9.2, 5.6], ['chair', -8.6, 1.2], ['chair', -7.6, 1.2], ['chair', -6.6, 1.2], ['chair', -8.6, 3], ['chair', -7.6, 3], ['chair', -6.6, 3],
     ['hbed', 0.5, -5.4], ['curtain', 2, -5.3], ['hbed', 3.5, -5.4], ['curtain', 5, -5.3], ['hbed', 6.5, -5.4], ['monitor', 1.4, -6.4], ['monitor', 4.4, -6.4], ['monitor', 7.4, -6.4], ['hbed', 8.4, 2.5, Math.PI / 2], ['curtain', 8.4, 0.6, Math.PI / 2], ['monitor', 9.4, 3.6], ['sign', -6, -6.9, 0, '#e23b3b']],
-    [{ role: 'nurse', x: -6, z: -5 }, { role: 'doctor', x: 3.5, z: -2.6 }], [{ kind: 'talk', x: -6, z: -2.6, label: 'Reception', icon: 'cross' }, { kind: 'rest', x: 0.5, z: -3.6, label: 'Rest ($150)', icon: 'bed' }, { kind: 'talk', x: 3.5, z: -1.4, label: 'Doctor', icon: 'chat' }], { light: '#e8f4ff' }),
+    [{ role: 'nurse', x: -6, z: -5 }, { role: 'doctor', x: 3.5, z: -2.6 }], [{ kind: 'talk', x: -6, z: -2.6, label: 'Reception', icon: 'cross' }, { kind: 'rest', x: 0.5, z: -3.6, label: 'Rest ($150)', icon: 'bed' }, { kind: 'talk', x: 3.5, z: -1.4, label: 'Doctor', icon: 'chat' }, { kind: 'staff', x: 8.5, z: -5.5, label: 'Staff room', icon: 'case' }], { light: '#e8f4ff' }),
   church: T('Bay Chapel', 14, 20, '#9a8a74', '#ece4d0', [['altar', 0, -7.4], ['candles', -2.2, -8.2], ['candles', 2.2, -8.2], ['stained', -3.6, -9.9], ['stained', 0, -9.9], ['stained', 3.6, -9.9], ['rug', 0, -2, 0, '#8b1e3f'], ['rug', 0, 1.6, 0, '#8b1e3f'], ['plant', -6.2, -8.6], ['plant', 6.2, -8.6],
     ['pew', -3.8, -4], ['pew', 3.8, -4], ['pew', -3.8, -2], ['pew', 3.8, -2], ['pew', -3.8, 0], ['pew', 3.8, 0], ['pew', -3.8, 2], ['pew', 3.8, 2], ['pew', -3.8, 4], ['pew', 3.8, 4]],
     [{ role: 'pastor', x: 0, z: -8.6 }], [{ kind: 'talk', x: 0, z: -6.1, label: 'Talk', icon: 'chat' }, { kind: 'pray', x: 0, z: 2.6, label: 'Sit & reflect', icon: 'heart' }], { light: '#ffe2b0' }),
@@ -52,6 +52,11 @@ export const INTERIORS = {
       [-30, -10.15, -20, -9.85], [-17, -10.15, -8, -9.85],
       [-8, -28.3, 14, -28, 6.4],
     ], floors: [[-10, 18, 10, 28, '#cfd3da'], [-30, 18, -10, 28, '#b8a890'], [10, 18, 30, 28, '#e4eaee'], [-30, 12, 30, 18, '#a8acb4'], [-30, -10, -8, 12, '#d8d2c8'], [-8, -28, 14, 12, '#8f939b'], [14, -28, 30, 12, '#4f535a'], [-30, -28, -8, -10, '#9a7a5a']], decks: [{ x0: -8, z0: -28, x1: 14, z1: -22.6, y: 3.2, rail: [[-8, 10.4]], posts: [[-4, -22.8], [2, -22.8], [8, -22.8]] }], ramps: [{ x0: 10.6, z0: -22.6, x1: 13.6, z1: -14, y0: 3.2, y1: 0 }], lights: [[0, 23], [-20, 23], [20, 23], [-15, 15], [15, 15], [-19, -4], [-19, 6], [3, -16], [3, 4], [22, -18], [22, 2], [-19, -19]] }),
+  college: T('Bay City College', 22, 16, '#b89a7a', '#efe6d6', [['board', 3, -7.9], ['desk', 0, -4, 0, '#7a5230'], ['desk', 3, -4, 0, '#7a5230'], ['desk', 6, -4, 0, '#7a5230'], ['desk', 0, -1.2, 0, '#7a5230'], ['desk', 3, -1.2, 0, '#7a5230'], ['desk', 6, -1.2, 0, '#7a5230'], ['chair', 0, -3.1], ['chair', 3, -3.1], ['chair', 6, -3.1], ['chair', 0, -0.3], ['chair', 6, -0.3],
+    ['counter', -7, -2.6, 0, '#3a5fa0'], ['bookshelf', -10.6, 2, Math.PI / 2], ['bookshelf', -10.6, 3.6, Math.PI / 2], ['bookshelf', -10.6, 5.2, Math.PI / 2], ['table', -7, 5, 0, '#7a5230'], ['chair', -8, 5, Math.PI / 2], ['chair', -6, 5, -Math.PI / 2], ['plant', 10, -7], ['plant', -10, -7], ['sign', -7, -7.9, 0, '#2f80ed']],
+    [{ role: 'sales', x: -7, z: -3.6 }, { role: 'professor', x: 3, z: -6.6 }, { role: 'guest', x: 0, z: -3.0 }, { role: 'guest', x: 6, z: -0.2 }], [{ kind: 'admissions', x: -7, z: -1.3, label: 'Admissions', icon: 'book' }, { kind: 'class', x: 3, z: -0.1, label: 'Attend class', icon: 'brain' }, { kind: 'study', x: -7, z: 6.4, label: 'Study', icon: 'book' }], { light: '#fff1dc' }),
+  office: T('Bay Corp Tower', 20, 14, '#3a3d45', '#dfe3ea', [['counter', 0, -4.2, 0, '#e8e2d6'], ['sign', 0, -6.9, 0, '#38e8ff'], ['desk', -6.5, -0.5, 0, '#e8e2d6'], ['desk', -3.5, -0.5, 0, '#e8e2d6'], ['desk', 3.5, -0.5, 0, '#e8e2d6'], ['desk', 6.5, -0.5, 0, '#e8e2d6'], ['desk', -6.5, 3, 0, '#e8e2d6'], ['desk', 6.5, 3, 0, '#e8e2d6'], ['chair', -6.5, 0.4], ['chair', -3.5, 0.4], ['chair', 3.5, 0.4], ['chair', 6.5, 0.4], ['chair', -6.5, 3.9], ['chair', 6.5, 3.9], ['plant', -9, -6], ['plant', 9, -6], ['couch', -6, 6, Math.PI, '#3a3d45']],
+    [{ role: 'sales', x: 0, z: -5.1 }, { role: 'guest', x: -6.5, z: 0.5 }, { role: 'guest', x: 3.5, z: 0.5 }, { role: 'guest', x: 6.5, z: 3.9 }], [{ kind: 'staff', x: 0, z: -2.8, label: 'Reception: jobs', icon: 'case' }], { light: '#eef4ff' }),
   // homes
   studio: T('Studio', 10, 8, '#c9b89a', '#e8e2d6', [], [], [], { home: true }),
   apartment: T('Apartment', 14, 10, '#b89a7a', '#e6e9f0', [], [], [], { home: true }),

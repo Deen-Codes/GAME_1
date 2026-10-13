@@ -1,5 +1,5 @@
 // Everything you can walk or drive up to: shops, barbers, property, dealers, minigames, chop shop, race.
-import { blockSide, attachDoor, addStructure } from './world.js?v=33';
+import { blockSide, attachDoor, addStructure } from './world.js?v=34';
 
 const S = (city, i, j, side) => blockSide(city, i, j, side);
 
@@ -31,6 +31,8 @@ export const PLACES = [
   { id: 'm_mart1', kind: 'venue', interior: 'mart', name: 'QuickMart Downtown', icon: 'cart', ...S('main', 0, 3, 's') },
   { id: 'm_mart2', kind: 'venue', interior: 'mart', name: 'QuickMart Northfield', icon: 'cart', ...S('north', -1, -1, 's') },
   { id: 'm_mart3', kind: 'venue', interior: 'mart', name: 'QuickMart Eastport', icon: 'cart', ...S('east', -3, 0, 's') },
+  { id: 'v_college', kind: 'venue', interior: 'college', name: 'Bay City College', icon: 'book', ...S('main', 3, 3, 's') },
+  { id: 'w_office', kind: 'venue', interior: 'office', name: 'Bay Corp Tower', icon: 'case', ...S('main', 4, 0, 's') },
   { id: 'v_gym', kind: 'venue', interior: 'gym', name: 'Iron Temple Gym', icon: 'dumbbell', ...S('main', -3, 1, 's') },
   { id: 'v_casino', kind: 'venue', interior: 'casino', name: 'Lucky 7 Casino', icon: 'cards', ...S('main', 1, 1, 's') },
   { id: 'v_motors', kind: 'venue', interior: 'motors', name: 'Bay Motors', icon: 'car', ...S('main', 4, -2, 's') },
@@ -165,7 +167,7 @@ export const RACE = {
 export const CHOP_VALUE = { moto: 900, bike: 60, scooter: 80, hatch: 350, sedan: 500, coupe: 700, sports: 1400, muscle: 950, pickup: 650, van: 450, buggy: 400, limo: 1600, suv: 800, convertible: 1100, wagon: 450, lowrider: 900, classic: 1000, boxtruck: 600, hyper: 2600 };
 
 // Shops, venues and homes get a real front door on their building; the marker moves to stand in front of it.
-const DOOR_COL = { clothes: '#ff6fb5', barber: '#2f80ed', guns: '#e23b3b', diner: '#ffd23f', mart: '#4cd964', gym: '#ff8a2a', casino: '#d4af37', motors: '#38e8ff', casa: '#c98a4a', bar: '#1fb5a8', club: '#9b51e0', church: '#c9a24a', hospital: '#e23b3b', police: '#2a6aff', pit: '#ff3b3b' };
+const DOOR_COL = { clothes: '#ff6fb5', barber: '#2f80ed', guns: '#e23b3b', diner: '#ffd23f', mart: '#4cd964', gym: '#ff8a2a', casino: '#d4af37', motors: '#38e8ff', casa: '#c98a4a', bar: '#1fb5a8', club: '#9b51e0', church: '#c9a24a', hospital: '#e23b3b', police: '#2a6aff', pit: '#ff3b3b', college: '#2f80ed', office: '#38e8ff' };
 for (const p of PLACES) if (p.interior && p.door) attachDoor(p, DOOR_COL[p.interior] || '#ff8a2a', null, p.church ? 'church' : null);
 for (const p of PROPERTIES) if (p.door) attachDoor(p, '#4cd964');
 for (const p of [...PLACES, ...PROPERTIES]) if (!p.door || p.kind === 'service') addStructure(p);

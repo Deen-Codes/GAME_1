@@ -151,6 +151,25 @@ Walk into shops, venues and homes:
 - Lifting builds visible muscle (shoulders, arms, chest). Muscle fades if you skip the gym for days.
 - Junk food (burgers, fries, shakes, pancakes) adds visible fat, worse if you eat when already full. Salads, home cooking and cardio burn it off.
 
+## Bay City College and careers
+- Enrol at Admissions:
+
+  | Course | Classes | Fee | Unlocks |
+  |---|---|---|---|
+  | Business | 5 | $800 | Office career |
+  | Mechanics | 4 | $500 | Mechanic, 20% off car upgrades |
+  | Culinary | 4 | $600 | Chef, better home cooking |
+  | Nursing | 8 | $2,000 | Nurse, free hospital bills |
+  | Medicine | 12 | $9,000 (needs Nursing) | Doctor and Surgeon |
+  | Computer Science | 6 | $1,500 | Software career |
+  | Law | 10 | $4,500 (needs Business) | Lawyer, halves your own prison sentences |
+  | Real Estate | 3 | $700 | Realtor, 10% off homes |
+  | Police Academy | 6 | free (clean record) | Police officer |
+
+- One class a day (8am–8pm) is a 3-question quiz. Studying in the library the day before makes it easier. The new Smarts skill helps.
+- Careers: apply at the workplace (staff door or Bay Corp Tower reception). One shift a day, 7am–7pm, paid by how well you handle the 3 tasks. Good performance means promotions up the ladder (for example Office Assistant up to CEO, or Resident up to Chief of Medicine). Retail at QuickMart needs nothing.
+- The Work app shows your career, education and every way to earn.
+
 ## Club dancing
 - On the Neon Room dance floor, arrows fall into a ring in time with a random track. Swipe their direction as they land. Perfect timing builds combos, your character busts the matching move, and great runs earn tips.
 
@@ -165,7 +184,7 @@ Walk into shops, venues and homes:
 - Fights happen for real on the floor (punch combos, kick finisher, auto lock-on to the nearest fighter) while the block crowds round.
 - Busted at 2+ stars means prison (12h to 3 days), in an orange jumpsuit. Your phone and weapons are taken. Free roam: cell block, canteen (3 free meals a day), yard (weights, hoops), visiting room, infirmary.
 - Lights out at 22:00 fast-forwards to morning. Your bunk lets you nap or do your time.
-- Inmates: Big Tony (shot caller: shivs, work, riots), Dre and Moose (fights), Pops (lifer, knows a way out), Rico (talks too much), Lil Mikey (new fish). Guards Grimes and Pike. Mama Joy runs the canteen. Agent Walsh (FBI) offers a deal.
+- Inmates: Big Carlos (shot caller: shivs, work, riots), Dre and Moose (fights), Pops (lifer, knows a way out), Rico (talks too much), Lil Mikey (new fish). Guards Grimes and Pike. Mama Joy runs the canteen. Agent Walsh (FBI) offers a deal.
 - Ways out: serve the time, post bail, bribe, community service (an unpaid bin round), a lawyer or bail bondsman on the pay phone, Pops' spoon tunnel, or a riot.
 - Escaping gives you 4 stars. Change clothes at home or a clothes store.
 - Starving in prison sends you to the prison infirmary, not out the door.
