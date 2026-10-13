@@ -195,6 +195,7 @@ function building(x, z, w, d, h, color, opts = {}) {
     addObj({ t: 'fstairs', x: X0 + 0.8, z, fl });
   }
   return o;
+  return o;
 }
 function removeObj(o) { const c = chunks.get(ckey(...chunkOf(o.x, o.z))); if (c) { const i = c.objs.indexOf(o); if (i >= 0) c.objs.splice(i, 1); } }
 export function objsNear(x0, z0, x1, z1) { const out = []; for (let i = Math.floor(x0 / CHUNK); i <= Math.floor(x1 / CHUNK); i++) for (let j = Math.floor(z0 / CHUNK); j <= Math.floor(z1 / CHUNK); j++) for (const o of chunks.get(ckey(i, j))?.objs || []) if (o.x >= x0 && o.x <= x1 && o.z >= z0 && o.z <= z1) out.push(o); return out; }
@@ -428,7 +429,11 @@ function genBlock(city, bx0, bz0, r) {
   const pal = city.style === 'suburb' ? PAL.beach : PAL.mid;
   for (const [ox, oz, w, d] of parts) {
     if (r() < 0.12) { tree(lx + ox, lz + oz, 'round', 1.1); continue; }
-    building(lx + ox, lz + oz, w - 1 - r() * 2, d - 1 - r() * 2, 6 + r() * (city.style === 'suburb' ? 6 : 12), pal[Math.floor(r() * pal.length)], { top: r() < 0.4 ? 'ac' : r() < 0.25 ? 'tank' : null, awning: r() < 0.4 });
+    const bo = building(lx + ox, lz + oz, w - 1 - r() * 2, d - 1 - r() * 2, 6 + r() * (city.style === 'suburb' ? 6 : 12), pal[Math.floor(r() * pal.length)], { top: r() < 0.4 ? 'ac' : r() < 0.25 ? 'tank' : null, awning: r() < 0.4 });
+    if (city.id === 'east' && bo) { // Eastport: graffiti on the walls, bin bags piled against them
+      for (const sd of [1, -1]) if (r() < 0.55) addObj({ t: 'tag', x: bo.x + (r() - 0.5) * (bo.w - 5), z: bo.z + sd * (bo.d / 2 + 0.03), sd, w: 2 + r() * 2.5, seed: Math.floor(r() * 1e6) });
+      if (r() < 0.5) addObj({ t: 'trash', x: bo.x + (r() - 0.5) * (bo.w - 3), z: bo.z + bo.d / 2 + 0.5, seed: Math.floor(r() * 1e6) });
+    }
   }
 }
 
@@ -541,6 +546,7 @@ for (const c of chunks.values()) for (let i = c.objs.length - 1; i >= 0; i--) {
 {
   const bldAt = (x, z) => objsNear(x - 40, z - 40, x + 40, z + 40).some(b => b.t === 'bld' && Math.abs(x - b.x) < b.w / 2 + 0.05 && Math.abs(z - b.z) < b.d / 2 + 0.05);
   for (let i = LADDERS.length - 1; i >= 0; i--) { const L = LADDERS[i]; if (bldAt(L.x, L.z - L.nz * 0.6)) continue; LADDERS.splice(i, 1); for (const o of objsNear(L.x - 1, L.z - 1, L.x + 1, L.z + 1)) if (o.t === 'ladder' && Math.abs(o.x - L.x) < 0.01 && Math.abs(o.z - L.z) < 0.01) removeObj(o); }
+  for (const o of objsNear(WORLD.x0, WORLD.z0, WORLD.x1, WORLD.z1)) if ((o.t === 'tag' && !bldAt(o.x, o.z - o.sd * 0.6)) || (o.t === 'trash' && !bldAt(o.x, o.z - 1.0))) removeObj(o);
   for (const o of objsNear(WORLD.x0, WORLD.z0, WORLD.x1, WORLD.z1)) if (o.t === 'fstairs' && !bldAt(o.fl[0].x0 - 0.6, (o.fl[0].zmin + o.fl[0].zmax) / 2)) { removeObj(o); for (const S of o.fl) { const k = STAIRS.indexOf(S); if (k >= 0) STAIRS.splice(k, 1); } }
 }
 export function parkedIn(cx, cz) { return (chunks.get(ckey(cx, cz))?.objs || []).filter(o => o.t === 'parked'); }
@@ -894,6 +900,13 @@ function drawObj(o, B) {
       B.box(o.x, o.y, o.z, o.w + 2, 0.3, o.d + 2, '#ece6da');
       B.flat(o.x, o.y + 0.32, o.z, o.w, o.d, '#ffffff', 'water');
       break;
+    case 'tag': { // spray-painted tag: a few chunky colour strokes with a dark outline
+      const R = (a => () => (a = (a * 16807) % 2147483647) / 2147483647)(o.seed || 7), cols = ['#ff3bd2', '#38e8ff', '#ffd23f', '#4cd964', '#ff8a2a', '#9b51e0', '#e23b3b', '#ffffff'], c1 = cols[Math.floor(R() * cols.length)], c2 = cols[Math.floor(R() * cols.length)], zz = o.z + o.sd * 0.02;
+      B.box(o.x, 0.55, o.z, o.w + 0.3, 1.25, 0.03, '#16161b');
+      const n = 3 + Math.floor(R() * 3); for (let i = 0; i < n; i++) { const lx = o.x - o.w / 2 + (i + 0.5) * (o.w / n), hh = 0.6 + R() * 0.45; B.box(lx, 0.7 + R() * 0.2, zz, o.w / n * 0.7, hh, 0.035, i % 2 ? c1 : c2); }
+      if (R() < 0.5) B.box(o.x, 0.62, zz + o.sd * 0.005, o.w * 0.9, 0.08, 0.04, c2); // underline drip
+      break; }
+    case 'trash': { const R = (a => () => (a = (a * 16807) % 2147483647) / 2147483647)(o.seed || 7); for (let i = 0; i < 3; i++) B.box(o.x + (R() - 0.5) * 1.6, 0.17, o.z + (R() - 0.5) * 0.6, 0.55 + R() * 0.3, 0.45 + R() * 0.2, 0.5, R() < 0.6 ? '#1e2a1e' : '#16161b'); break; }
     case 'lamp':
       B.box(o.x, 0.15, o.z, 0.18, 5, 0.18, '#3a3d45');
       B.box(o.x, 5.1, o.z, 0.7, 0.25, 0.7, '#fff6d8', { key: 'glow' });

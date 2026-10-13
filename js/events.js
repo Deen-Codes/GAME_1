@@ -237,6 +237,7 @@ export const ARRIVE = {
   doctor_check: a => { a.take(200); return 'Doctor says early warning signs. Less junk food, less booze, more cardio. Message received.'; },
   brake_fix: a => { a.take(250); return 'Worn brake pads. Fixed. Glad I didn\'t ignore that.'; },
   hot_car_pickup: a => { const hot = roll(0.4); a.hotCar(hot); a.errand('chop', 'hot_car_drop', { hot }, 'Lucky\'s Chop Shop', true); return hot ? 'Keys are in it... wait, is that a police scanner chirping? Just drive.' : 'Keys in the sun visor. Easy. Now get it to Lucky\'s.'; },
+  gang_drop: (a, d) => { a.give(600 + Math.floor(Math.random() * 600)); a.gang(d.g, 15); a.karma(-4); return 'A guy in a parked car takes the package, nods, and hands over an envelope of cash. The crew will hear you came through.'; },
   hot_car_drop: a => { a.give(2000); a.karma(-5); a.dropHotCar(); return 'Lucky looks it over and peels off $2,000. "Vinnie\'s friend? Pleasure."'; },
 };
 export const EVENT_BY_ID = Object.fromEntries(EVENTS.map(e => [e.id, e]));

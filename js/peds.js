@@ -1,7 +1,7 @@
 // Pedestrians: baked low-poly people who stroll sidewalks, wander the beach, flee from trouble.
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, randomChar, disposeObject } from './character.js?v=79';
-import { CITIES, sandLine, shoreLine, groundH, walkable as worldWalkable, resolve } from './world.js?v=79';
+import { buildCharacter, randomChar, disposeObject } from './character.js?v=80';
+import { CITIES, sandLine, shoreLine, groundH, walkable as worldWalkable, resolve } from './world.js?v=80';
 // interiors swap in their own floor test so brawlers can move around inside
 let walkable = worldWalkable; export function setWalk(fn) { walkable = fn || worldWalkable; }
 
@@ -36,7 +36,7 @@ const LAST = ['Johnson', 'Garcia', 'Nguyen', 'Kim', 'Patel', 'Lopez', 'Brown', '
 let nameSeq = Math.floor(Math.random() * 4000);
 export function personName(fem) { nameSeq = (nameSeq * 1103515245 + 12345) % 2147483647; const r = nameSeq; return (fem ? FIRST_F : FIRST_M)[r % 40] + ' ' + LAST[Math.floor(r / 40) % LAST.length]; }
 const FEM_HAIR = ['long', 'bob', 'ponytail', 'bun', 'long', 'afro'], MASC_HAIR = ['short', 'buzz', 'quiff', 'spiky', 'afro', 'none', 'short'];
-function makeLook(beach, fem = Math.random() < 0.5) {
+function makeLook(beach, fem = Math.random() < 0.5, style = 'mid') {
   const cfg = { ...randomChar(), mask: 'none', skin: pick(SKINS), hairColor: pick(HAIRS), eyewear: Math.random() < 0.25 ? 'shades' : 'none', back: Math.random() < 0.15 ? 'backpack' : 'none', eyes: 'normal', headSize: rand(0.95, 1.1), height: rand(0.88, 1.12) };
   cfg.hat = Math.random() < 0.3 ? pick(['cap', 'beanie', 'cowboy', 'headband']) : 'none';
   cfg.hair = pick(fem ? FEM_HAIR : MASC_HAIR);
@@ -57,7 +57,10 @@ function makeLook(beach, fem = Math.random() < 0.5) {
   if (!fem && Math.random() < 0.22) cfg.muscle = rand(0.3, 0.95); // gym rats, dad bods, all sorts
   if (Math.random() < 0.22) cfg.fat = rand(0.2, 0.8);
   cfg.height = (cfg.height || 1) * rand(0.94, 1.08);
-  if (Math.random() < 0.28) { // some people are inked; your designs stay yours
+  // districts dress differently: suits downtown, hoodies and tracksuits in Eastport
+  if (!beach && style === 'downtown' && Math.random() < 0.38) Object.assign(cfg, { top: 'suit', topColor: pick(['#16161b', '#2a3550', '#3a3d45', '#5a5d64']), pants: fem && Math.random() < 0.5 ? 'skirt' : 'jeans', pantsColor: pick(['#16161b', '#2a3550', '#3a3d45']), shoes: 'boots', shoeColor: '#16161b', hat: 'none', back: Math.random() < 0.3 ? 'backpack' : 'none' });
+  if (!beach && style === 'east' && Math.random() < 0.55) Object.assign(cfg, { top: pick(['hoodie', 'hoodie', 'tshirt', 'jacket']), topColor: pick(['#16161b', '#3a3d45', '#55602f', '#5a2a2a', '#2a3550']), pants: pick(['cargo', 'jeans']), pantsColor: pick(['#16161b', '#3a3d45', '#55602f']), hat: pick(['beanie', 'cap', 'none', 'none']) });
+  if (Math.random() < (style === 'east' ? 0.42 : 0.28)) { // some people are inked; your designs stay yours
     const pool = TAT_POOL.filter(d => !playerInk.includes(d)), spots = fem ? ['foreL', 'foreR', 'armL', 'neck', 'handR'] : ['armR', 'armL', 'foreR', 'foreL', 'neck', 'handR', 'handL', 'chest', 'back'];
     cfg.tattoos = Array.from({ length: 1 + Math.floor(Math.random() * 3) }, () => ({ spot: pick(spots), design: pick(pool), ink: Math.random() < 0.8 ? '#1c2333' : pick(['#8b1e3f', '#1f4a8a', '#2f6b3a']) }));
   }
@@ -91,10 +94,10 @@ const cityLooks = () => LOOKS.filter(l => !l.beach && !l.homeless);
 const TAT_POOL = ['rose', 'skull', 'heart', 'anchor', 'dagger', 'snake', 'crown', 'swallow', 'dice', 'flame', 'bolt', 'compass', 'tribal', 'money', 'eye', 'cross', 'web', 'clock', 'seven', 'wings', 'moon'];
 let playerInk = []; export function setPlayerInk(list) { playerInk = list || []; }
 let townSource = null; export function setTownSource(fn) { townSource = fn; }
-function freshLook(beach) {
+function freshLook(beach, style = 'mid') {
   const known = townSource?.(beach); if (known) return known;
-  const pool = LOOKS.filter(l => !l.homeless && !!l.beach === beach);
-  if (LOOKS.length < 200 && (Math.random() < 0.7 || pool.length < 6)) { const l = makeLook(beach, Math.random() < 0.5); LOOKS.push(l); return l; }
+  const pool = LOOKS.filter(l => !l.homeless && !!l.beach === beach && (beach || (l.style || 'mid') === style));
+  if (LOOKS.length < 260 && (Math.random() < 0.7 || pool.length < 6)) { const l = makeLook(beach, Math.random() < 0.5, style); l.style = style; LOOKS.push(l); return l; }
   return pick(pool);
 }
 const UMB_M = ['#16161b', '#c9302c', '#2f80ed', '#ffd23f', '#4cd964', '#ff6fb5'].map(c => new THREE.MeshStandardMaterial({ color: c, roughness: 0.6, side: THREE.DoubleSide }));
@@ -139,7 +142,7 @@ export class Peds {
       const i = c.kx[0] + Math.floor(Math.random() * (c.kx[1] - c.kx[0])), j = c.kz[0] + Math.floor(Math.random() * (c.kz[1] - c.kz[0]));
       const bx = c.cx + (i + 0.5) * 48, bz = c.cz + (j + 0.5) * 48, d = Math.hypot(bx - px, bz - pz);
       if (d < 30 || d > 100) continue;
-      const p = this.makePed(freshLook(false));
+      const p = this.makePed(freshLook(false, c.id === 'main' ? 'downtown' : c.id === 'east' ? 'east' : 'mid'));
       Object.assign(p, { kind: 'city', c, bi: i, bj: j, bx, bz, s: Math.random() * 8 * R, dir: Math.random() < 0.5 ? 1 : -1 });
       const [x, z] = perim(p.s); p.x = bx + x; p.z = bz + z;
       this.list.push(p); return;
