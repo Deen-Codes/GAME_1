@@ -463,3 +463,11 @@ input[type=text] { width: 100%; padding: 10px 12px; border-radius: 10px; border:
 .swr .ph-msg { background: #3a3f52; }
 .swr .ph-row { background: #3a3f52; border-radius: 12px; }
 .ph-list .swr { margin-bottom: 0; }
+/* tattoo parlour */
+.ink-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.ink { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 6px 2px; border-radius: 10px; background: rgba(255,255,255,.07); border: 1px solid transparent; font-size: 10px; font-weight: 800; color: #fff; }
+.ink img { width: 40px; height: 40px; background: #f2d8c4; border-radius: 8px; }
+.ink.on { border-color: var(--hot); background: rgba(255,138,42,.22); }
+.big-btn { display: block; width: 100%; margin-top: 10px; padding: 13px; border-radius: 12px; background: var(--hot, #ff8a2a); color: #141428; font-weight: 900; font-size: 15px; border: 0; }
+.big-btn.alt { background: rgba(255,255,255,.12); color: #fff; }
+.big-btn:disabled { opacity: .4; }

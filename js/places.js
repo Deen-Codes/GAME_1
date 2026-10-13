@@ -1,5 +1,5 @@
 // Everything you can walk or drive up to: shops, barbers, property, dealers, minigames, chop shop, race.
-import { blockSide, attachDoor, addStructure } from './world.js?v=72';
+import { blockSide, attachDoor, addStructure } from './world.js?v=73';
 
 const S = (city, i, j, side) => blockSide(city, i, j, side);
 
@@ -38,6 +38,8 @@ export const PLACES = [
   { id: 'v_motors', kind: 'venue', interior: 'motors', name: 'Bay Motors', icon: 'car', ...S('main', 4, -2, 's') },
   { id: 'v_casa', kind: 'venue', interior: 'casa', name: 'Casa Bay Furniture', icon: 'sofa', ...S('main', -2, 2, 's') },
   { id: 'v_anchor', kind: 'venue', interior: 'bar', name: 'The Anchor Bar', icon: 'drink', x: 160, z: 368 },
+  { id: 't_rose', kind: 'tattoo', name: 'Needle & Rose Tattoo', icon: 'edit', desc: 'Tattoos, cover-ups and laser removal.', ...S('main', 2, 0, 's') },
+  { id: 't_east', kind: 'tattoo', name: 'Eastport Ink', icon: 'edit', desc: 'Walk-ins welcome. Laser removal too.', ...S('east', 2, 0, 's') },
   { id: 'g_club', kind: 'venue', interior: 'club', name: 'Neon Room Club', icon: 'music', ...S('main', -2, -1, 's') },
 
   // ---- outdoor activities & jobs

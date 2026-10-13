@@ -1,7 +1,7 @@
 // Pedestrians: baked low-poly people who stroll sidewalks, wander the beach, flee from trouble.
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, randomChar, disposeObject } from './character.js?v=72';
-import { CITIES, sandLine, shoreLine, groundH, walkable as worldWalkable, resolve } from './world.js?v=72';
+import { buildCharacter, randomChar, disposeObject } from './character.js?v=73';
+import { CITIES, sandLine, shoreLine, groundH, walkable as worldWalkable, resolve } from './world.js?v=73';
 // interiors swap in their own floor test so brawlers can move around inside
 let walkable = worldWalkable; export function setWalk(fn) { walkable = fn || worldWalkable; }
 
@@ -17,7 +17,7 @@ function bake(meshes, inv) {
     if (m.material.transparent && m.material.opacity < 0.5) continue;
     const g = m.geometry.index ? m.geometry.toNonIndexed() : m.geometry;
     m4.multiplyMatrices(inv, m.matrixWorld); nm.getNormalMatrix(m4);
-    c.copy(m.material.color); if (m.material.emissive && m.material.emissiveIntensity > 0.5) c.lerp(m.material.emissive, 0.5);
+    if (m.userData.ink) c.set(m.userData.ink); else { c.copy(m.material.color); if (m.material.emissive && m.material.emissiveIntensity > 0.5) c.lerp(m.material.emissive, 0.5); } // tattoos bake to ink patches
     const p = g.attributes.position, n = g.attributes.normal;
     for (let i = 0; i < p.count; i++) { v.fromBufferAttribute(p, i).applyMatrix4(m4); P.push(v.x, v.y, v.z); v.fromBufferAttribute(n, i).applyMatrix3(nm).normalize(); N.push(v.x, v.y, v.z); C.push(c.r, c.g, c.b); }
   }
@@ -57,6 +57,10 @@ function makeLook(beach, fem = Math.random() < 0.5) {
   if (!fem && Math.random() < 0.22) cfg.muscle = rand(0.3, 0.95); // gym rats, dad bods, all sorts
   if (Math.random() < 0.22) cfg.fat = rand(0.2, 0.8);
   cfg.height = (cfg.height || 1) * rand(0.94, 1.08);
+  if (Math.random() < 0.28) { // some people are inked; your designs stay yours
+    const pool = TAT_POOL.filter(d => !playerInk.includes(d)), spots = fem ? ['foreL', 'foreR', 'armL', 'neck', 'handR'] : ['armR', 'armL', 'foreR', 'foreL', 'neck', 'handR', 'handL', 'chest', 'back'];
+    cfg.tattoos = Array.from({ length: 1 + Math.floor(Math.random() * 3) }, () => ({ spot: pick(spots), design: pick(pool), ink: Math.random() < 0.8 ? '#1c2333' : pick(['#8b1e3f', '#1f4a8a', '#2f6b3a']) }));
+  }
   return { ...bakeCfg(cfg), beach, fem };
 }
 // Bake any character config into 5 meshes (body + 4 limbs) so lots of people are cheap to draw.
@@ -84,6 +88,8 @@ function homelessLook() {
 function ensureLooks() { if (LOOKS.length) return; for (let i = 0; i < 12; i++) LOOKS.push(makeLook(false, i % 2 === 0)); for (let i = 0; i < 8; i++) LOOKS.push(makeLook(true, i % 2 === 0)); for (let i = 0; i < 3; i++) LOOKS.push(homelessLook()); }
 const cityLooks = () => LOOKS.filter(l => !l.beach && !l.homeless);
 // keep inventing new people: most spawns get a brand-new look (face, body, hair, clothes) until there are 200 of them
+const TAT_POOL = ['rose', 'skull', 'heart', 'anchor', 'dagger', 'snake', 'crown', 'swallow', 'dice', 'flame', 'bolt', 'compass', 'tribal', 'money', 'eye', 'cross', 'web', 'clock', 'seven', 'wings', 'moon'];
+let playerInk = []; export function setPlayerInk(list) { playerInk = list || []; }
 let townSource = null; export function setTownSource(fn) { townSource = fn; }
 function freshLook(beach) {
   const known = townSource?.(beach); if (known) return known;

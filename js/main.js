@@ -1,25 +1,25 @@
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA } from './character.js?v=72';
-import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=72';
-import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=72';
-import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=72';
-import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=72';
-import { buildPanel, renderStats } from './ui.js?v=72';
-import { Input } from './input.js?v=72';
-import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime } from './audio.js?v=72';
-import { runMinigame } from './minigames.js?v=72';
-import { Peds, bakeCfg, figure, setWalk, setTownSource } from './peds.js?v=72';
-import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=72';
-import { findRoute } from './nav.js?v=72';
-import { COURSES, CAREERS, QUIZ } from './careers.js?v=72';
-import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=72';
-import { attachWheel } from './wheel.js?v=72';
-import { Animals } from './animals.js?v=72';
-import { Talk } from './talk.js?v=72';
-import { svg, drawIcon } from './icons.js?v=72';
-import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=72';
-import { FURN, CATALOG } from './furniture.js?v=72';
-import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE } from './interiors.js?v=72';
+import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas } from './character.js?v=73';
+import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=73';
+import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=73';
+import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=73';
+import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=73';
+import { buildPanel, renderStats } from './ui.js?v=73';
+import { Input } from './input.js?v=73';
+import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime } from './audio.js?v=73';
+import { runMinigame } from './minigames.js?v=73';
+import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk } from './peds.js?v=73';
+import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=73';
+import { findRoute } from './nav.js?v=73';
+import { COURSES, CAREERS, QUIZ } from './careers.js?v=73';
+import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=73';
+import { attachWheel } from './wheel.js?v=73';
+import { Animals } from './animals.js?v=73';
+import { Talk } from './talk.js?v=73';
+import { svg, drawIcon } from './icons.js?v=73';
+import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=73';
+import { FURN, CATALOG } from './furniture.js?v=73';
+import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE } from './interiors.js?v=73';
 
 const $ = id => document.getElementById(id);
 let inside = null, editMode = false, held = null, pendingCar = false, homeMusic = false, phoneBadge = 0;
@@ -190,6 +190,7 @@ water.rotation.x = -Math.PI / 2; water.position.set(120, WATER_Y, 700); water.re
 const world = new THREE.Group(); G.scene.add(world);
 const dyn = new THREE.Group(); G.scene.add(dyn);
 const peds = new Peds(dyn);
+setPlayerInk((charCfg.tattoos || []).map(t => t.design));
 let animals = null; // created once baseY exists (see below)
 { const sc = peds.scare.bind(peds); peds.scare = (x, z, r = 18) => { sc(x, z, r); animals?.scare(x, z, r * 1.6); }; }
 const talk = new Talk();
@@ -1529,7 +1530,7 @@ function makeMarker(x, z, icon, color, data, parent = G.scene) {
   if (!data.interior) markers.push(m);
   return m;
 }
-const PLACE_COLORS = { dealer: '#4cd964', clothes: '#ff6fb5', barber: '#38e8ff', game: '#ffd23f', chop: '#ff8a2a', race: '#ff3b4a', property: '#b26bff', guns: '#ff5a3c', venue: '#ffb35c', job: '#ffd23f', customer: '#7dff9a' };
+const PLACE_COLORS = { tattoo: '#ff5a8a', dealer: '#4cd964', clothes: '#ff6fb5', barber: '#38e8ff', game: '#ffd23f', chop: '#ff8a2a', race: '#ff3b4a', property: '#b26bff', guns: '#ff5a3c', venue: '#ffb35c', job: '#ffd23f', customer: '#7dff9a' };
 const NPC_ROLE = { dealer: 'dealer', job: 'dispatcher' };
 const npcs = [];
 PLACES.forEach((p, i) => {
@@ -1677,7 +1678,7 @@ function openStorage() {
 
 // ================================================================ ACTIONS (context button)
 let action = null;
-const VERB = { dealer: 'Talk', clothes: 'Enter', barber: 'Enter', guns: 'Enter', venue: 'Enter', game: 'Play', chop: 'Sell car', mods: 'Customise', service: 'Repair', race: 'Race', property: 'View', job: 'Talk', customer: 'Talk' };
+const VERB = { tattoo: 'Get inked', dealer: 'Talk', clothes: 'Enter', barber: 'Enter', guns: 'Enter', venue: 'Enter', game: 'Play', chop: 'Sell car', mods: 'Customise', service: 'Repair', race: 'Race', property: 'View', job: 'Talk', customer: 'Talk' };
 const SPOT_VERB = s => s.label;
 function findAction() {
   if (P.dead) return null;
@@ -1734,7 +1735,7 @@ function doAction(a) {
   else if (a.kind === 'ladder') { P.ladder = a.L; P.y = a.top ? a.L.top - 0.05 : 0.3; sfx.click(); }
 }
 // opening hours (24h clock; close past midnight wraps). Anything not listed is always open.
-const HOURS = { clothes: [9, 21], barber: [9, 19], guns: [10, 20], diner: [6, 23], college: [7, 21], office: [7, 19], gym: [5, 23], motors: [9, 20], casa: [10, 19], bar: [16, 3], club: [21, 5], pit: [20, 4], church: [7, 21], mods: [8, 22], taco: [10, 22], gallery: [10, 23], surf: [7, 19], hoops: [6, 22], taxi: [0, 24], bins: [5, 14], courier: [7, 20] };
+const HOURS = { tattoo: [11, 23], clothes: [9, 21], barber: [9, 19], guns: [10, 20], diner: [6, 23], college: [7, 21], office: [7, 19], gym: [5, 23], motors: [9, 20], casa: [10, 19], bar: [16, 3], club: [21, 5], pit: [20, 4], church: [7, 21], mods: [8, 22], taco: [10, 22], gallery: [10, 23], surf: [7, 19], hoops: [6, 22], taxi: [0, 24], bins: [5, 14], courier: [7, 20] };
 const placeHours = p => HOURS[p.interior] || HOURS[p.kind] || HOURS[p.game] || HOURS[p.job] || null;
 function isOpen(p) { const h = placeHours(p); if (!h) return true; const [o, c] = h, t = clockH; return o < c ? t >= o && t < c : t >= o || t < c; }
 const hh12 = h => { h = ((h % 24) + 24) % 24; return h === 0 ? 'midnight' : h === 12 ? 'noon' : h < 12 ? `${h}am` : `${h - 12}pm`; };
@@ -1750,6 +1751,7 @@ function openPlace(p) {
   else if (p.kind === 'service') { if (!ride) { toast('Drive a car in to get it repaired.'); return; } repairCar(ride, p.svc); }
   else if (p.kind === 'mods') { if (!ride || !ride.personal) { toast('Bay Customs only works on your own cars. Drive one in.'); sfx.fail(); return; } ride.s.v = 0; openCustom('car'); }
   else if (p.kind === 'race') openRace(p);
+  else if (p.kind === 'tattoo') openTattoo(p);
 }
 async function doSpot(s) {
   const place = inside.place, id = inside.id;
@@ -3203,7 +3205,8 @@ function socTag(p) { const s = p.soc; s.rap = clamp(s.rap, -100, 100); if (p.per
 // The more she likes you as a person, the better everything lands.
 function socChance(p, base) {
   const s = p.soc, b = body();
-  return base - ((stats.hygiene ?? 80) < 25 ? 0.15 : 0) + (lvl('charm') - 1) * 0.04 + (stats.mood - 50) / 400 + s.rap * 0.006 + p.interest * 0.002 + (b.muscle || 0) * 0.0008 - (b.fat || 0) * 0.0008;
+  const ink = (charCfg.tattoos || []).filter(t => t.spot === 'face' || t.spot === 'neck').length, att = p.soc?.att; // face & neck ink: street types love it, straight-laced ones don't
+  return base + ink * (att === 'edgy' ? 0.05 : att === 'straight' ? -0.07 : 0) - ((stats.hygiene ?? 80) < 25 ? 0.15 : 0) + (lvl('charm') - 1) * 0.04 + (stats.mood - 50) / 400 + s.rap * 0.006 + p.interest * 0.002 + (b.muscle || 0) * 0.0008 - (b.fat || 0) * 0.0008;
 }
 function reused(p, k) { const n = p.soc.used[k] || 0; p.soc.used[k] = n + 1; return n; }
 
@@ -3517,7 +3520,7 @@ function dateCalls(dt) {
     else if (gameHours() > M.until) { stats.dateMeet = null; bumpRel(M.id, -8, false); textMe(M.id, d.name, pick(['Wow. You stood me up.', 'Guess you\'re not coming then.'])); clearWaypoint(); }
     else if (!inside && Math.hypot(P.x - M.x, P.z - M.z) < 26 && (!ride || Math.abs(ride.s.v) < 3)) { // pull up next to her (or walk up) and she comes over
       stats.dateMeet = null; clearWaypoint();
-      startDate({ name: d.name, look: { ...bakeCfg(d.cfg), fem: true }, x: M.x, z: M.z, face: 0, interest: 40 + rel(M.id) * 0.6, root: new THREE.Group() });
+      startDate({ name: d.name, look: { ...bakeCfg(dateOutfit(M.id) || d.cfg), fem: true }, x: M.x, z: M.z, face: 0, interest: 40 + rel(M.id) * 0.6, root: new THREE.Group() });
       toast(`${d.name}: "${pick(['There you are!', 'Hey you. Let\'s go.', 'Finally! Where are we going?'])}"`, 2.6);
     }
     return;
@@ -3562,6 +3565,7 @@ async function talkDate() {
     if (inCar) top.push({ label: I('radio', 'Put her music on'), k: 'music' });
     if (atBar) top.push({ label: I('drink', `Buy her a drink <small>$18</small>`), k: 'drink' });
     if (atClub && !dance) top.push({ label: I('music', 'Dance with me'), k: 'dance' });
+    if (inside?.id === 'clothes') top.push({ label: I('shirt', 'Buy her an outfit'), k: 'shop' });
     if (!partner() && rel(D.id) >= 45) top.push({ label: I('star', 'Be my girlfriend?'), k: 'official' });
     if (bed || parked) top.push({ label: I('heart', bed ? 'WooHoo (bed)' : 'WooHoo (in the car)'), k: 'woo' });
     else { const h = nearestHome(); if (h) top.push({ label: I('house', 'Come back to my place?'), k: 'home', h }); }
@@ -3623,6 +3627,7 @@ async function talkDate() {
       continue;
     }
     if (o.k === 'dance') { endTalk(); D.dancing = pr.love.includes('nightlife') || pr.love.includes('music') || D.interest > 70; if (!D.dancing) toast(`${D.name}: "I'll watch. Dancing's not really my thing."`, 2.6); return startDance(); }
+    if (o.k === 'shop') { await shopForHer(D); continue; }
     if (o.k === 'drink') { if (money < 18) await talk.say('...You can\'t afford a drink? Wow.'); else { spend(18); D.interest += (D.used.drink = (D.used.drink || 0) + 1) < 3 ? 12 : 2; bumpRel(D.id, 4); await talk.say(D.used.drink < 3 ? pick(['Ooh, thank you. Cheers!', 'You\'re sweet.']) : 'Okay, I think I\'ve had enough.'); } continue; }
     if (o.k === 'home') { setWaypoint(o.h.x, o.h.z, 'Home'); await talk.say(D.interest >= 55 ? pick(['Mmm, okay. Lead the way.', 'I thought you\'d never ask.']) : 'Maybe... let\'s see how the night goes.'); continue; }
     if (o.k === 'woo') {
@@ -3638,6 +3643,90 @@ function dateGo(s) {
   let best = null, bd = 1e9; for (const q of PLACES) if (q.interior === s.interior) { const d = Math.hypot(q.x - P.x, q.z - P.z); if (d < bd) { bd = d; best = q; } }
   if (best) setWaypoint(best.x, best.z, best.name);
 }
+// ================================================================ TATTOO PARLOUR (pick a spot, a design and an ink; laser them off later)
+const INKS = { '#1c2333': 'Black', '#8b1e3f': 'Red', '#1f4a8a': 'Blue', '#2f6b3a': 'Green', '#5a2a8a': 'Purple' };
+const SPOT_PRICE = { armR: 140, armL: 140, foreR: 160, foreL: 160, handR: 220, handL: 220, neck: 260, face: 350, chest: 320, back: 380 };
+const inkPics = {};
+const inkPic = (d, ink = '#1c2333') => inkPics[d + ink] ||= tattooCanvas(d, ink).toDataURL();
+function spotShows(cfg, spot) { const long = ['long', 'hoodie', 'jacket', 'suit'].includes(cfg.top), swim = cfg.top === 'shirtless' || cfg.top === 'swimtop'; return spot.startsWith('arm') ? cfg.top === 'tank' || swim : spot.startsWith('fore') ? !long : spot.startsWith('hand') ? cfg.gloves !== 'gloves' : spot === 'chest' || spot === 'back' ? cfg.top === 'shirtless' : true; }
+async function openTattoo(p) {
+  let spot = 'foreR', design = 'rose', ink = '#1c2333';
+  const herHere = date && !date.inCar && Math.hypot(date.x - P.x, date.z - P.z) < 10;
+  setState('ui');
+  await sheet(p.name, () => {
+    const mine = charCfg.tattoos || [], price = SPOT_PRICE[spot];
+    return `<p class="ph-hint" style="margin:0 0 8px">Pick a spot, a design and an ink. Your ink is yours: nobody in town has the same piece as you.</p>
+      ${mine.length ? `<div class="ph-sec">Your tattoos</div>${mine.map((t, i) => `<div class="ph-row"><span><img src="${inkPic(t.design, t.ink)}" style="width:28px;height:28px;vertical-align:middle;background:#f2d8c4;border-radius:6px"> ${TATTOO_DESIGNS[t.design]} · ${TATTOO_SPOTS[t.spot]}</span><button class="ph-mini" data-rm="${i}">Laser off ${fmt(Math.round(SPOT_PRICE[t.spot] * 1.5))}</button></div>`).join('')}` : ''}
+      <div class="ph-sec">Where</div><div class="chips">${Object.entries(TATTOO_SPOTS).map(([k, n]) => `<button class="chip ${k === spot ? 'on' : ''}" data-spot="${k}">${n}</button>`).join('')}</div>
+      ${spotShows(charCfg, spot) ? '' : '<p class="ph-hint">(Your clothes cover this spot right now. It shows when you wear something that shows skin.)</p>'}
+      <div class="ph-sec">Design</div><div class="ink-grid">${Object.entries(TATTOO_DESIGNS).map(([k, n]) => `<button class="ink ${k === design ? 'on' : ''}" data-des="${k}"><img src="${inkPic(k, ink)}"><span>${n}</span></button>`).join('')}</div>
+      <div class="ph-sec">Ink</div><div class="chips">${Object.entries(INKS).map(([k, n]) => `<button class="chip ${k === ink ? 'on' : ''}" data-ink="${k}"><i style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${k};margin-right:5px"></i>${n}</button>`).join('')}</div>
+      <button class="big-btn" id="inkGo" ${money < price ? 'disabled' : ''}>Get the ${TATTOO_DESIGNS[design]} · ${fmt(price)}</button>
+      ${herHere ? `<button class="big-btn alt" id="inkHer">Get ${date.name} a tattoo · ${fmt(220)}</button>` : ''}
+      <button class="big-btn alt" data-done>Done</button>`;
+  }, (el, close, draw) => {
+    el.querySelectorAll('[data-spot]').forEach(b => b.onclick = () => { spot = b.dataset.spot; draw(); });
+    el.querySelectorAll('[data-des]').forEach(b => b.onclick = () => { design = b.dataset.des; draw(); });
+    el.querySelectorAll('[data-ink]').forEach(b => b.onclick = () => { ink = b.dataset.ink; draw(); });
+    el.querySelectorAll('[data-rm]').forEach(b => b.onclick = () => { const t = charCfg.tattoos[+b.dataset.rm], c = Math.round(SPOT_PRICE[t.spot] * 1.5); if (money < c) { toast('Laser removal costs ' + fmt(c)); return; } spend(c); charCfg.tattoos.splice(+b.dataset.rm, 1); inkSaved(); hurt(3); toast('Zapped off. That stung.'); draw(); });
+    const go = el.querySelector('#inkGo'); if (go) go.onclick = () => {
+      const price = SPOT_PRICE[spot]; if (money < price) return; spend(price);
+      charCfg.tattoos = [...(charCfg.tattoos || []).filter(t => t.spot !== spot), { spot, design, ink }]; inkSaved();
+      sfx.whoosh?.(); feed({ mood: 8 }); advanceTime(1); toast(`Fresh ink: ${TATTOO_DESIGNS[design]} on your ${TATTOO_SPOTS[spot].toLowerCase()}.`, 3); draw();
+    };
+    const her = el.querySelector('#inkHer'); if (her) her.onclick = () => { if (money < 220) { toast('That\'s $220.'); return; } spend(220); close(); dateTattoo(); };
+  });
+  setState('play');
+}
+function inkSaved() { store.set('rr_char', charCfg); buildHero(); setPlayerInk((charCfg.tattoos || []).map(t => t.design)); saveGame(); }
+// she picks her own piece, in her own spot
+function dateTattoo() {
+  const D = date; if (!D) return;
+  const pool = Object.keys(TATTOO_DESIGNS).filter(d => !(charCfg.tattoos || []).some(t => t.design === d) && !['mom', 'loyal', 'tear', 'web', 'skull'].includes(d) || D.prefs.att === 'edgy' && ['skull', 'web'].includes(d));
+  const t = { spot: pick(['foreL', 'foreR', 'handR', 'neck', 'armL']), design: pick(pool), ink: pick(Object.keys(INKS)) };
+  D.cfg = { ...D.cfg, tattoos: [...(D.cfg.tattoos || []).filter(q => q.spot !== t.spot), t] }; redressDate(D);
+  D.interest += 12; bumpRel(D.id, 6, false); hearts(D.x, D.z, 10);
+  toast(`${D.name} got a ${TATTOO_DESIGNS[t.design].toLowerCase()} on her ${TATTOO_SPOTS[t.spot].toLowerCase()}. "I LOVE it!"`, 3.2);
+}
+// rebuild her figure after new clothes or ink, and remember it
+function redressDate(D) {
+  const vis = D.fig.root.visible; dyn.remove(D.fig.root);
+  D.look = { ...bakeCfg(D.cfg), fem: true }; D.fig = figure(D.look); D.fig.root.visible = vis; dyn.add(D.fig.root);
+  const d = stats.dates?.[D.id]; if (d) { d.cfg = D.cfg; }
+  saveGame();
+}
+// ---------------- clothes for her: she has a style; outfits she owns get worn on later dates
+const HER_STYLES = {
+  glam: { tops: ['crop', 'tank', 'crop'], pants: ['skirt', 'skirt', 'jeans'], cols: ['#ff6fb5', '#16161b', '#e23b3b', '#ffffff', '#ffd23f'] },
+  casual: { tops: ['tshirt', 'hoodie', 'long'], pants: ['jeans', 'cargo', 'jeans'], cols: ['#2f80ed', '#ffffff', '#c2b280', '#3a3d45', '#1fb5a8'] },
+  street: { tops: ['hoodie', 'jacket', 'tshirt'], pants: ['cargo', 'jeans', 'shorts'], cols: ['#16161b', '#ff8a2a', '#9b51e0', '#3a3d45', '#ffd23f'] },
+  sporty: { tops: ['tank', 'tshirt', 'crop'], pants: ['shorts', 'shorts', 'jeans'], cols: ['#4cd964', '#2f80ed', '#ffffff', '#ff3b8a', '#16161b'] },
+};
+function herStyle(D) { const pr = D.prefs; return pr.style ||= pr.love.includes('fitness') ? 'sporty' : pr.love.includes('nightlife') ? 'glam' : pr.att === 'edgy' ? 'street' : pick(Object.keys(HER_STYLES)); }
+function outfitIn(style) { const S2 = HER_STYLES[style]; return { top: pick(S2.tops), pants: pick(S2.pants), topColor: pick(S2.cols), pantsColor: pick(['#16161b', '#2f80ed', '#ffffff', '#8b1e3f', '#c2b280', '#3a3d45']), shoes: pick(['sneakers', 'boots']) }; }
+const TOP_N = { crop: 'crop top', tank: 'tank top', tshirt: 'tee', hoodie: 'hoodie', long: 'long-sleeve top', jacket: 'jacket' }, PANT_N = { skirt: 'skirt', jeans: 'jeans', cargo: 'cargos', shorts: 'shorts' };
+const COL_N = { '#ff6fb5': 'pink', '#16161b': 'black', '#e23b3b': 'red', '#ffffff': 'white', '#ffd23f': 'yellow', '#2f80ed': 'blue', '#c2b280': 'beige', '#3a3d45': 'grey', '#1fb5a8': 'teal', '#ff8a2a': 'orange', '#9b51e0': 'purple', '#4cd964': 'green', '#ff3b8a': 'hot pink', '#8b1e3f': 'burgundy' };
+async function shopForHer(D) {
+  const shop = inside.place, mult = shop.style === 'luxe' ? 2.4 : shop.style === 'vintage' ? 0.7 : 1, mine = herStyle(D);
+  const styles = [mine, ...Object.keys(HER_STYLES).filter(s => s !== mine).sort(() => Math.random() - 0.5).slice(0, 2)].sort(() => Math.random() - 0.5);
+  const fits = styles.map(st => ({ st, o: outfitIn(st), price: Math.round((90 + Math.random() * 120) * mult / 5) * 5 }));
+  await talk.say('Ooh, shopping? Okay, what do you think of these?');
+  const opts = fits.map(f => I('shirt', `${COL_N[f.o.topColor] || ''} ${TOP_N[f.o.top]} + ${COL_N[f.o.pantsColor] || ''} ${PANT_N[f.o.pants]} <small>${fmt(f.price)}</small>`)); opts.push(I('x', 'Maybe not today'));
+  const k = await talk.choose(opts); if (k >= fits.length) return;
+  const f = fits[k]; if (money < f.price) { await talk.say('...Your card got declined. Awkward.'); return; }
+  spend(f.price); D.cfg = { ...D.cfg, ...f.o }; redressDate(D);
+  const d = stats.dates?.[D.id]; if (d) (d.wardrobe ||= []).push(f.o);
+  if (f.st === mine) { D.interest += 14; bumpRel(D.id, 6, false); hearts(D.x, D.z, 10); await talk.say(pick(['Oh my god, it\'s SO me. I\'m wearing it now!', 'You actually get my style. I love it.'])); }
+  else { D.interest += 4; await talk.say(pick(['Aww, thank you. It\'s... cute! Not really me, but cute.', 'Ha, okay, something different. Thanks babe.'])); }
+}
+// next time you see her she might be in something else: often what you bought her
+function dateOutfit(id) {
+  const d = stats.dates?.[id]; if (!d?.cfg) return null;
+  const r = Math.random(); if (d.wardrobe?.length && r < 0.5) return { ...d.cfg, ...pick(d.wardrobe) };
+  if (r < 0.8) { const pr = prefsOf(id); const st = pr.style || pick(Object.keys(HER_STYLES)); return { ...d.cfg, ...outfitIn(st) }; }
+  return d.cfg;
+}
+
 function nearestHome() { let best = null, bd = 1e9; for (const p of PROPERTIES) if (owned.has(p.id)) { const d = Math.hypot(p.x - P.x, p.z - P.z); if (d < bd) { bd = d; best = p; } } return best; }
 function hearts(x, z, n = 6, y = 1.8) { spawnParticles(x, y, z, ['#ff6fb5', '#ff3b8a', '#ffd1e8'], n, 1.6, 1.4, 0.22, -1.5); }
 // WooHoo: under the duvet with the bed bouncing, or in a parked car with steamy windows
@@ -4720,7 +4809,7 @@ function saveGame() {
   store.set('bc_save', save); store.set('bc_arsenal', arsenal); store.set('bc_cars', garage);
 }
 // auto-update: bookmarks and home-screen apps can hold on to an old copy. Check version.json (never cached) and reload once if newer.
-const BUILD = 72;
+const BUILD = 73;
 function checkUpdate() {
   fetch('version.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(j => {
     if (!(j.v > BUILD)) return;

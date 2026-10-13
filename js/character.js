@@ -426,12 +426,71 @@ export function buildCharacter(cfg) {
     }
   }
 
+  addTattoos(c, { armR, armL, torso, head, limbW, armLen, torsoH, torsoW, torsoD, sb, hs, headW, headH, faceZ, bareUpper: upperM === skin, bareFore: !longSleeve, bareHands: c.gloves !== 'gloves', bareChest: c.top === 'shirtless' });
   const height = legLen + 0.08 + torsoH + 0.07 + headH;
   return {
     root, hips, torso, head, armL, armR, legL, legR, cape, flame,
     hand: armR.hand, height, legLen, shoulderH: legLen + 0.08 + shoulderY, width: torsoW + limbW * 2,
     back: bk, wings: root.userData.wings || null,
   };
+}
+
+
+// ---- tattoos: small ink decals on bare skin (only show where clothes don't cover) ----
+export const TATTOO_DESIGNS = { rose: 'Rose', skull: 'Skull', heart: 'Heart', anchor: 'Anchor', dagger: 'Dagger', snake: 'Snake', crown: 'Crown', swallow: 'Swallow', dice: 'Dice', flame: 'Flames', bolt: 'Lightning', compass: 'Compass', mom: '"MOM"', loyal: '"LOYAL"', tribal: 'Tribal band', money: 'Money bag', eye: 'Eye', cross: 'Cross', tear: 'Teardrop', web: 'Spider web', clock: 'Clock', seven: 'Lucky 7', wings: 'Wings', moon: 'Moon' };
+export const TATTOO_SPOTS = { armR: 'Right upper arm', armL: 'Left upper arm', foreR: 'Right forearm', foreL: 'Left forearm', handR: 'Right hand', handL: 'Left hand', neck: 'Neck', face: 'Face', chest: 'Chest', back: 'Back' };
+const TAT_TEX = new Map();
+export function tattooCanvas(design, ink = '#1c2333') {
+  const c = document.createElement('canvas'); c.width = c.height = 64; const x = c.getContext('2d');
+  x.strokeStyle = x.fillStyle = ink; x.lineWidth = 4; x.lineCap = x.lineJoin = 'round';
+  const P = (...pts) => { x.beginPath(); x.moveTo(pts[0], pts[1]); for (let i = 2; i < pts.length; i += 2) x.lineTo(pts[i], pts[i + 1]); };
+  const C = (cx, cy, r, f) => { x.beginPath(); x.arc(cx, cy, r, 0, 7); f ? x.fill() : x.stroke(); };
+  const T = (s, sz) => { x.font = `900 ${sz}px Georgia, serif`; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(s, 32, 33); };
+  switch (design) {
+    case 'rose': C(32, 24, 12); C(32, 24, 5); P(32, 36, 32, 58); x.stroke(); P(32, 46, 20, 40); x.stroke(); P(32, 50, 44, 44); x.stroke(); break;
+    case 'skull': C(32, 28, 16); x.fillStyle = ink; C(25, 27, 4, 1); C(39, 27, 4, 1); P(32, 32, 29, 37, 35, 37); x.fill(); P(24, 44, 24, 52, 40, 52, 40, 44); x.stroke(); P(30, 46, 30, 52); x.stroke(); P(34, 46, 34, 52); x.stroke(); break;
+    case 'heart': P(32, 54, 10, 32); x.bezierCurveTo(2, 20, 22, 6, 32, 20); x.bezierCurveTo(42, 6, 62, 20, 54, 32); x.lineTo(32, 54); x.fill(); break;
+    case 'anchor': C(32, 12, 5); P(32, 17, 32, 56); x.stroke(); P(22, 26, 42, 26); x.stroke(); x.beginPath(); x.arc(32, 40, 16, 0.2, Math.PI - 0.2); x.stroke(); break;
+    case 'dagger': P(32, 6, 37, 14, 37, 40, 27, 40, 27, 14); x.closePath(); x.stroke(); P(20, 40, 44, 40); x.stroke(); P(32, 40, 32, 56); x.lineWidth = 7; x.stroke(); break;
+    case 'snake': x.beginPath(); x.moveTo(14, 56); x.bezierCurveTo(60, 50, 4, 30, 46, 18); x.stroke(); C(48, 16, 4, 1); break;
+    case 'crown': P(10, 46, 14, 18, 24, 32, 32, 14, 40, 32, 50, 18, 54, 46); x.closePath(); x.stroke(); P(12, 52, 52, 52); x.stroke(); break;
+    case 'swallow': P(8, 30, 30, 26, 46, 14, 40, 30, 58, 34, 40, 38, 30, 52, 28, 36); x.closePath(); x.fill(); break;
+    case 'dice': x.strokeRect(12, 12, 40, 40); for (const [a, b] of [[22, 22], [42, 42], [32, 32], [42, 22], [22, 42]]) C(a, b, 3.5, 1); break;
+    case 'flame': x.beginPath(); x.moveTo(32, 56); x.bezierCurveTo(8, 50, 14, 24, 28, 8); x.bezierCurveTo(30, 24, 40, 22, 40, 14); x.bezierCurveTo(56, 30, 54, 52, 32, 56); x.stroke(); break;
+    case 'bolt': P(38, 6, 18, 36, 30, 36, 24, 58, 46, 26, 34, 26, 40, 6); x.closePath(); x.fill(); break;
+    case 'compass': C(32, 32, 22); P(32, 12, 37, 32, 32, 52, 27, 32); x.closePath(); x.fill(); break;
+    case 'mom': x.strokeRect(6, 18, 52, 28); T('MOM', 18); break;
+    case 'loyal': T('LOYAL', 15); P(8, 46, 56, 46); x.lineWidth = 2; x.stroke(); break;
+    case 'tribal': x.lineWidth = 6; for (let i = 0; i < 3; i++) { x.beginPath(); x.moveTo(4, 20 + i * 12); x.bezierCurveTo(20, 8 + i * 12, 44, 32 + i * 12, 60, 20 + i * 12); x.stroke(); } break;
+    case 'money': C(32, 38, 17); P(26, 20, 38, 20, 42, 12, 22, 12); x.closePath(); x.stroke(); T('$', 22); x.textBaseline = 'middle'; break;
+    case 'eye': x.beginPath(); x.moveTo(6, 32); x.quadraticCurveTo(32, 8, 58, 32); x.quadraticCurveTo(32, 56, 6, 32); x.stroke(); C(32, 32, 8, 1); break;
+    case 'cross': x.lineWidth = 7; P(32, 8, 32, 58); x.stroke(); P(18, 22, 46, 22); x.stroke(); break;
+    case 'tear': x.beginPath(); x.moveTo(32, 10); x.bezierCurveTo(48, 34, 46, 54, 32, 54); x.bezierCurveTo(18, 54, 16, 34, 32, 10); x.fill(); break;
+    case 'web': for (let a = 0; a < 6; a++) { P(32, 32, 32 + Math.cos(a) * 28, 32 + Math.sin(a) * 28); x.lineWidth = 2; x.stroke(); } for (const r of [9, 17, 25]) C(32, 32, r); break;
+    case 'clock': C(32, 32, 22); P(32, 32, 32, 16); x.stroke(); P(32, 32, 44, 38); x.stroke(); break;
+    case 'seven': x.font = '900 48px Georgia, serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText('7', 32, 34); break;
+    case 'wings': for (const s of [-1, 1]) { x.beginPath(); x.moveTo(32, 34); x.bezierCurveTo(32 + s * 10, 14, 32 + s * 28, 12, 32 + s * 30, 22); x.bezierCurveTo(32 + s * 22, 30, 32 + s * 18, 40, 32, 34); x.fill(); } break;
+    case 'moon': x.beginPath(); x.arc(32, 32, 22, 0.6, Math.PI * 2 - 0.6); x.arc(42, 32, 16, Math.PI * 2 - 1.1, 1.1, true); x.fill(); break;
+  }
+  return c;
+}
+function tattooMat(design, ink) {
+  const k = design + ink; if (!TAT_TEX.has(k)) { const t = new THREE.CanvasTexture(tattooCanvas(design, ink)); t.colorSpace = THREE.SRGBColorSpace; TAT_TEX.set(k, new THREE.MeshStandardMaterial({ map: t, transparent: true, depthWrite: false, roughness: 0.8, polygonOffset: true, polygonOffsetFactor: -2 })); }
+  return TAT_TEX.get(k);
+}
+function addTattoos(c, P) {
+  for (const t of c.tattoos || []) {
+    const s = t.spot, m = tattooMat(t.design, t.ink || '#1c2333'), plane = (w, hh) => new THREE.Mesh(new THREE.PlaneGeometry(w, hh), m);
+    let p = null;
+    if ((s === 'armR' || s === 'armL') && P.bareUpper) { const side = s === 'armR' ? -1 : 1, A = s === 'armR' ? P.armR : P.armL; p = plane(P.limbW * 0.95, P.armLen * 0.34); p.position.set(side * (P.limbW / 2 + 0.004), -P.armLen * 0.25, 0); p.rotation.y = side * Math.PI / 2; A.pivot.add(p); }
+    else if ((s === 'foreR' || s === 'foreL') && P.bareFore) { const A = s === 'foreR' ? P.armR : P.armL; p = plane(P.limbW * 0.85, P.armLen * 0.3); p.position.set(0, -P.armLen * 0.2, P.limbW * 0.46 + 0.004); A.elbow.add(p); }
+    else if ((s === 'handR' || s === 'handL') && P.bareHands) { const A = s === 'handR' ? P.armR : P.armL; p = plane(P.limbW * 0.95, P.armLen * 0.11); p.position.set(0, -P.armLen * 0.46, P.limbW * 1.05 / 2 + 0.004); A.elbow.add(p); }
+    else if (s === 'neck') { p = plane(0.1, 0.09); p.position.set(0, P.torsoH + 0.03, 0.06 * P.sb + 0.004); P.torso.add(p); }
+    else if (s === 'face') { p = plane(P.hs * 0.24, P.hs * 0.24); p.position.set(-P.headW * 0.3, -P.headH * 0.12, P.faceZ + 0.003); P.head.add(p); }
+    else if (s === 'chest' && P.bareChest) { p = plane(P.torsoW * 0.5, P.torsoH * 0.32); p.position.set(0, P.torsoH * 0.68, P.torsoD / 2 + 0.006); P.torso.add(p); }
+    else if (s === 'back' && P.bareChest) { p = plane(P.torsoW * 0.62, P.torsoH * 0.42); p.position.set(0, P.torsoH * 0.6, -P.torsoD / 2 - 0.006); p.rotation.y = Math.PI; P.torso.add(p); }
+    if (p) { p.renderOrder = 2; p.userData.ink = t.ink || '#1c2333'; p.scale.setScalar(1); }
+  }
 }
 
 // state: { phase, speed (0..1), air, vy, aim (rad, + up), recoil (0..1), t }
