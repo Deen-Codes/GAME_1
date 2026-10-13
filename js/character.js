@@ -128,19 +128,19 @@ export function buildCharacter(cfg) {
     if (c.top === 'crop') torso.add(box(torsoW * 0.82, 0.05, torsoD * 0.94, bodyM, 0, torsoH * 0.44, 0));
     torso.add(box(chestW * 0.92, torsoH * 0.56, torsoD * 0.96, bodyM, 0, torsoH * 0.72, 0));
     const chestM = c.top === 'swimtop' ? topM : swim ? skin : topM, bd = 0.05 + 0.08 * bust;
-    // rounded, sits on the chest (never up near the chin)
-    const r = torsoW * (0.15 + 0.035 * bust);
-    for (const sx of [-1, 1]) {
-      const sm = chestM.clone(); sm.flatShading = false;
-      const bm = new THREE.Mesh(new THREE.SphereGeometry(1, 18, 14), sm); bm.castShadow = true;
-      bm.scale.set(r * 1.05, r * 0.85, r * (0.42 + 0.3 * bust));
-      bm.position.set(sx * torsoW * 0.135, torsoH * 0.57, torsoD * 0.44);
-      torso.add(bm);
+    // stepped, blocky chest that matches the voxel style: a main block with bevel steps above and below
+    const fz = torsoD * 0.96 / 2, cy = torsoH * 0.6, ch = torsoH * (0.2 + 0.05 * bust), dz = 0.035 + 0.055 * bust;
+    torso.add(box(chestW * 0.86, ch, dz, chestM, 0, cy, fz + dz / 2 - 0.004));
+    torso.add(box(chestW * 0.8, ch * 0.28, dz * 0.55, chestM, 0, cy + ch / 2 + ch * 0.12, fz + dz * 0.27));
+    torso.add(box(chestW * 0.82, ch * 0.22, dz * 0.7, chestM, 0, cy - ch / 2 - ch * 0.09, fz + dz * 0.35));
+    if (c.top === 'swimtop') { // bikini top: band all the way round at chest height + straps
+      torso.add(box(chestW * 0.94, ch * 0.75, torsoD * 0.98, chestM, 0, cy - ch * 0.05, 0));
+      for (const sx of [-1, 1]) torso.add(box(0.03, torsoH * 0.2, torsoD * 0.9, chestM, sx * chestW * 0.28, torsoH * 0.86, 0));
+      torso.add(box(0.025, ch * 0.9, 0.02, skin, 0, cy, fz + dz + 0.002)); // centre split
     }
-    if (c.top === 'swimtop') { const st = box(torsoW * 0.06, torsoH * 0.18, 0.02, chestM, 0, torsoH * 0.62, torsoD * 0.48); torso.add(st); }
   } else torso.add(box(chestW, torsoH, torsoD, swim ? skin : topM, 0, torsoH / 2, 0));
   if (c.belly > 0) { const bd = 0.06 + 0.22 * c.belly; torso.add(box(chestW * (0.7 + 0.15 * c.belly), torsoH * (0.35 + 0.2 * c.belly), bd, swim ? skin : topM, 0, torsoH * 0.18, torsoD / 2 + bd / 2 - 0.01)); }
-  if (c.top === 'swimtop') torso.add(box(chestW * (adultF ? 0.94 : 1.02), torsoH * (adultF ? 0.06 : 0.16), torsoD * 1.0, topM, 0, torsoH * (adultF ? 0.68 : 0.72), 0)); // swim top strap
+  if (c.top === 'swimtop' && !adultF) torso.add(box(chestW * 1.02, torsoH * 0.16, torsoD * 1.04, topM, 0, torsoH * 0.72, 0)); // swim top band
   if (c.pants !== 'swim') { torso.add(box(torsoW * 1.01, 0.06, torsoD * 1.01, dark, 0, 0.02, 0)); // belt
   torso.add(box(0.08, 0.05, 0.02, metal, 0, 0.02, torsoD / 2 + 0.01)); } // buckle
   const fz = torsoD / 2;
