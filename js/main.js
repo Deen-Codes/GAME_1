@@ -1,25 +1,25 @@
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA } from './character.js?v=52';
-import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=52';
-import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=52';
-import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=52';
-import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=52';
-import { buildPanel, renderStats } from './ui.js?v=52';
-import { Input } from './input.js?v=52';
-import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime } from './audio.js?v=52';
-import { runMinigame } from './minigames.js?v=52';
-import { Peds, bakeCfg, figure, setWalk } from './peds.js?v=52';
-import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=52';
-import { findRoute } from './nav.js?v=52';
-import { COURSES, CAREERS, QUIZ } from './careers.js?v=52';
-import { EVENTS, EVENT_BY_ID } from './events.js?v=52';
-import { attachWheel } from './wheel.js?v=52';
-import { Animals } from './animals.js?v=52';
-import { Talk } from './talk.js?v=52';
-import { svg, drawIcon } from './icons.js?v=52';
-import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=52';
-import { FURN, CATALOG } from './furniture.js?v=52';
-import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE } from './interiors.js?v=52';
+import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA } from './character.js?v=53';
+import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=53';
+import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=53';
+import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=53';
+import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=53';
+import { buildPanel, renderStats } from './ui.js?v=53';
+import { Input } from './input.js?v=53';
+import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime } from './audio.js?v=53';
+import { runMinigame } from './minigames.js?v=53';
+import { Peds, bakeCfg, figure, setWalk } from './peds.js?v=53';
+import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=53';
+import { findRoute } from './nav.js?v=53';
+import { COURSES, CAREERS, QUIZ } from './careers.js?v=53';
+import { EVENTS, EVENT_BY_ID } from './events.js?v=53';
+import { attachWheel } from './wheel.js?v=53';
+import { Animals } from './animals.js?v=53';
+import { Talk } from './talk.js?v=53';
+import { svg, drawIcon } from './icons.js?v=53';
+import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=53';
+import { FURN, CATALOG } from './furniture.js?v=53';
+import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE } from './interiors.js?v=53';
 
 const $ = id => document.getElementById(id);
 let inside = null, editMode = false, held = null, pendingCar = false, homeMusic = false, phoneBadge = 0;
@@ -849,9 +849,10 @@ function updateFoot(dt) {
   hero.root.rotation.order = 'YXZ';
   if (P.roll > 0) { P.roll -= dt; const k = 1 - Math.max(0, P.roll) / 0.45; hero.root.rotation.x = k * Math.PI * 2; heroRoot.position.y += Math.sin(k * Math.PI) * 0.35; } // forward roll on landing
   else if (P.leap && P.y > gy + 0.3) hero.root.rotation.x = 0.35; // lean into a long jump / vault
-  const kind = inside ? 'none' : ws.kind, firing = input.held('x');
+  const kind = inside && inside.id !== 'prison' ? 'none' : ws.kind, firing = input.held('x');
   const gunReady = (kind === 'gun' || kind === 'rpg') && (firing || P.fireCd > -0.6);
   if (heroW) heroW.group.visible = !inside;
+  hero.torso.rotation.set(0, 0, 0); hero.hips.position.y = hero.legLen; hero.legL.knee.rotation.x = 0; hero.legR.knee.rotation.x = 0;
   poseCharacter(hero, { phase: P.phase, speed: Math.min(1, moved / 7), air: P.y > gy + 0.05, aim: gunReady ? 0 : -0.55, recoil: P.recoil, t: time });
   if (swim) { const ph = time * 5; hero.armR.pivot.rotation.set(-ph % (Math.PI * 2), 0, 0.1); hero.armL.pivot.rotation.set(-(ph + Math.PI) % (Math.PI * 2), 0, -0.1); hero.legL.pivot.rotation.x = Math.sin(ph * 2) * 0.4; hero.legR.pivot.rotation.x = -Math.sin(ph * 2) * 0.4; if (moved > 0.5 && Math.random() < dt * 8) spawnParticles(P.x, WATER_Y + 0.1, P.z, '#ffffff', 1, 1, 0.5, 0.1, 2); }
   else if (kind !== 'gun' && kind !== 'rpg') {
@@ -862,14 +863,20 @@ function updateFoot(dt) {
       if (kind === 'grenade') hero.armR.pivot.rotation.set(k < 0.5 ? 0.9 + k * 1.2 : 1.5 - (k - 0.5) * 6.4, 0, 0.1);
       else {
         const kk = 1 - P.swing / (P.swingDur || 0.3), pk = Math.sin(kk * Math.PI), st = P.combo;
-        if (arsenal.cur === 'bat') hero.armR.pivot.rotation.set(st === 2 ? -2.6 + kk * 2.4 : -1.6, st === 2 ? 0 : st === 1 ? -1.2 + kk * 2.6 : 1.2 - kk * 2.6, 0.2);
-        else if (st === 'kick') { hero.legR.pivot.rotation.x = -1.5 * pk; hero.armR.pivot.rotation.set(0.4, 0, 0.5); hero.armL.pivot.rotation.set(0.4, 0, -0.5); }
-        else if (st === 1) { hero.armL.pivot.rotation.set(-1.55 * pk, 0, -0.15); hero.armR.pivot.rotation.set(-0.9, 0, 0.25); }
-        else if (st === 2) hero.armR.pivot.rotation.set(-1.4, 0.9 - kk * 1.8, 0.6);
-        else if (st === 3) hero.armR.pivot.rotation.set(0.3 - kk * 2.9, 0, 0.12);
-        else { hero.armR.pivot.rotation.set(-1.55 * pk, 0, 0.15); hero.armL.pivot.rotation.set(-0.9, 0, -0.25); }
+        // whole-body punches: snap the hips and shoulders round, step into it, bob the head
+        const snap = kk < 0.35 ? kk / 0.35 : 1 - (kk - 0.35) / 0.65, fx = Math.sin(P.face), fz = Math.cos(P.face);
+        const lunge = (st === 2 ? 0.22 : st === 3 ? 0.12 : st === 'kick' ? -0.05 : 0.32) * snap;
+        heroRoot.position.x += fx * lunge; heroRoot.position.z += fz * lunge;
+        hero.legL.pivot.rotation.x = -0.45 * snap; hero.legR.pivot.rotation.x = 0.35 * snap; // stagger: lead leg forward
+        hero.head.rotation.x = 0.12 * snap;
+        if (arsenal.cur === 'bat') { hero.armR.pivot.rotation.set(st === 2 ? -2.6 + kk * 2.4 : -1.6, st === 2 ? 0 : st === 1 ? -1.2 + kk * 2.6 : 1.2 - kk * 2.6, 0.2); hero.armL.pivot.rotation.set(-1.4, 0, -0.4); hero.torso.rotation.y = st === 2 ? 0 : (st === 1 ? -1 : 1) * (0.9 - kk * 1.8); }
+        else if (st === 'kick') { hero.legR.pivot.rotation.x = -1.7 * pk; hero.legR.knee.rotation.x = 0.6 * (1 - pk); hero.legL.pivot.rotation.x = 0.2 * pk; hero.torso.rotation.x = -0.35 * pk; hero.armR.pivot.rotation.set(-0.3, 0, 0.9 * pk); hero.armL.pivot.rotation.set(-0.3, 0, -0.9 * pk); heroRoot.position.y += 0.06 * pk; }
+        else if (st === 1) { hero.armL.pivot.rotation.set(-1.6 * snap, 0, -0.1); hero.armR.pivot.rotation.set(-1.1, 0, 0.3); hero.torso.rotation.y = 0.45 * snap; hero.torso.rotation.x = 0.12 * snap; }
+        else if (st === 2) { hero.armR.pivot.rotation.set(-1.45, 1.1 - kk * 2.2, 0.75); hero.armL.pivot.rotation.set(-1.1, 0, -0.3); hero.torso.rotation.y = 0.7 - kk * 1.5; hero.torso.rotation.x = 0.1; }
+        else if (st === 3) { const crouch = kk < 0.4 ? kk / 0.4 : Math.max(0, 1 - (kk - 0.4) * 3); hero.hips.position.y = hero.legLen - 0.16 * crouch; hero.legL.knee.rotation.x = 0.7 * crouch; hero.legR.knee.rotation.x = 0.7 * crouch; heroRoot.position.y += kk > 0.4 ? 0.14 * pk : 0; hero.armR.pivot.rotation.set(0.5 - kk * 3.1, 0, 0.12); hero.armL.pivot.rotation.set(-1.1, 0, -0.3); hero.torso.rotation.x = kk > 0.4 ? -0.3 * pk : 0.25 * crouch; hero.torso.rotation.y = -0.25 * pk; }
+        else { hero.armR.pivot.rotation.set(-1.6 * snap, 0, 0.1); hero.armL.pivot.rotation.set(-1.1, 0, -0.3); hero.torso.rotation.y = -0.45 * snap; hero.torso.rotation.x = 0.12 * snap; }
       }
-    } else if (kind === 'melee' && time - (P.lastHit || -9) < 1.2) { hero.armR.pivot.rotation.set(-0.9, 0, 0.25); hero.armL.pivot.rotation.set(-0.9, 0, -0.25); } // fighting stance
+    } else if (kind === 'melee' && time - (P.lastHit || -9) < 1.2) { const bob = Math.sin(time * 9) * 0.04; hero.armR.pivot.rotation.set(-1.1 + bob, 0, 0.3); hero.armL.pivot.rotation.set(-1.2 - bob, 0, -0.3); hero.torso.rotation.y = -0.25; hero.legL.pivot.rotation.x = -0.25; hero.legR.pivot.rotation.x = 0.2; heroRoot.position.y += Math.abs(bob); } // fighting stance: guard up, bouncing
     else hero.armR.pivot.rotation.set(-sw, 0, 0.08);
   }
   if (P.reload > 0 && ws.reload) { const k = Math.sin(Math.min(1, 1 - P.reload / ws.reload) * Math.PI); hero.armR.pivot.rotation.x += k * 0.9; hero.armL.pivot.rotation.x += k * 1.2; }
@@ -3189,17 +3196,25 @@ function newCustomer() {
   const name = pick(['Kev', 'Tash', 'Benny', 'Lu', 'Dre', 'Mo', 'Jen', 'Rocco', 'Sky', 'Paz', 'Freddie', 'Gigi']);
   const cust = { id: 'c' + Date.now() + Math.floor(Math.random() * 99), name, good: g.id, qty, pay, x: spot.x, z: spot.z, area: zoneName(spot.x, spot.z), exp: gameHours() + 5, seed: Math.floor(Math.random() * 1e6) };
   customers.push(cust); attachCustomer(cust);
-  toast(`New text from ${name}: needs ${qty} ${g.name}. Check your phone.`, 3.2); sfx.coin(); phoneBadge++;
+  if (custMode() === 'on') { toast(`New text from ${name}: needs ${qty} ${g.name}. Check your phone.`, 3.2); sfx.coin(); }
+  phoneBadge++;
 }
 function attachCustomer(c) {
   c.npc = { x: c.x, z: c.z, cfg: npcCfg('guest', c.seed), fig: null, face: 0, t: 0, name: c.name };
   c.marker = makeMarker(c.x, c.z, 'deal', PLACE_COLORS.customer, { place: { kind: 'customer', name: `${c.name}'s order`, id: c.id }, npc: true });
 }
 function removeCustomer(c) { customers.splice(customers.indexOf(c), 1); if (c.npc?.fig) dyn.remove(c.npc.fig.root); if (c.marker) { G.scene.remove(c.marker.g); markers.splice(markers.indexOf(c.marker), 1); } if (waypoint && waypoint.cust === c.id) clearWaypoint(); }
-let custT = 30;
+let custT = 90;
+const CUST_MODES = { on: 'On', quiet: 'Quiet (no pop-ups)', off: 'Off' };
+const custMode = () => settings.custTexts || 'on';
+function cycleCustMode() {
+  const k = Object.keys(CUST_MODES), m = k[(k.indexOf(custMode()) + 1) % k.length]; settings.custTexts = m; applySettings();
+  if (m === 'off') for (const c of [...customers]) removeCustomer(c);
+  toast(m === 'off' ? 'Phone off the hook. No more customer texts.' : m === 'quiet' ? 'Customer texts go quietly to your inbox.' : 'Customer texts on.', 2.4);
+}
 function updateCustomers(dt) {
   custT -= dt;
-  if (custT <= 0 && !inside) { custT = rand(70, 140); if (customers.length < 3 && (stashCount() > 0 || lvl('dealing') > 1 || dayN > 1)) newCustomer(); }
+  if (custT <= 0 && !inside) { custT = rand(160, 300); if (custMode() !== 'off' && customers.length < 2 && (stashCount() > 0 || lvl('dealing') > 1)) newCustomer(); }
   for (const c of [...customers]) if (gameHours() > c.exp) {
     const near = c.npc && Math.hypot(c.npc.x - P.x, c.npc.z - P.z) < 60;
     if (near && !c.graced) { c.graced = true; c.exp = gameHours() + 1.5; toast(`${c.name}: "I was about to leave! Hurry up."`, 2.5); continue; }
@@ -3212,7 +3227,11 @@ async function talkCustomer(c) {
   beginTalk(c.npc.cfg, c.name, `Wants ${c.qty} ${g.name}`, 220, 'street');
   await talk.say(pick([`You got my ${g.name}?`, "Finally. You got it?", "Yo, over here. You holding?"]));
   const have = stash[g.id] || 0;
-  const c2 = await talk.choose([{ label: I('deal', `Hand over ${c.qty} <small>for ${fmt(c.pay)}</small>`), disabled: have < c.qty }, I('x', have < c.qty ? `I don't have it yet (${have}/${c.qty})` : 'Not yet')]);
+  const c2 = await talk.choose([{ label: I('deal', `Hand over ${c.qty} <small>for ${fmt(c.pay)}</small>`), disabled: have < c.qty }, I('x', have < c.qty ? `I don't have it yet (${have}/${c.qty})` : 'Not yet'), I('phone', 'Lose my number')]);
+  if (c2 === 2) {
+    await talk.say(pick(["Wow. Fine. Plenty of other plugs.", "Your loss, man.", "Seriously? Alright then."])); bumpRel('street', -3, false);
+    endTalk(); removeCustomer(c); return;
+  }
   if (c2 === 0) {
     stash[g.id] -= c.qty; addMoney(c.pay); dealHeat(c.npc.x ?? P.x, c.npc.z ?? P.z, c.pay); gainXP('dealing', Math.round(c.pay / 25)); bumpRel('street', 4, false); relNames.street = 'the streets';
     await talk.say(pick(["Pleasure doing business. I'll tell my friends.", "Good stuff. I'll hit you up again.", "Respect."]));
@@ -3884,7 +3903,8 @@ function renderPhone() {
     const ms = messages();
     const chatIds = [...new Set([...(fam().partner ? [fam().partner.id] : []), ...Object.keys(stats.texts || {}), ...Object.keys(stats.dates || {}), ...fam().kids.filter(k => ['Teen', 'Adult'].includes(kidStage(k))).map(k => k.id)])];
     const chats = chatIds.map(id => { const T = stats.texts?.[id] || [], last = T[T.length - 1]; return `<button class="ph-row" data-thr="${id}"><span>${svg(id.startsWith('kid:') ? 'smile' : 'heart', 'sm')} <b>${nameOf(id)}</b> <small style="white-space:normal">${last ? (last.me ? 'You: ' : '') + last.t : 'Tap to text'}</small></span></button>`; }).join('');
-    el.innerHTML = `${back}<h4>Messages</h4>${chats ? `<div class="ph-sec">Chats</div>${chats}<div class="ph-sec">Inbox</div>` : ''}<div class="ph-list">${ms.map((m, i) => `<div class="ph-msg"><div class="av">${svg(m.av)}</div><div><b>${m.from}</b><p>${m.text}</p>${m.at ? `<button class="ph-mini" data-wp="${i}">${svg('pin', 'sm')} Set waypoint</button>` : ''}</div></div>`).join('')}</div>`;
+    el.innerHTML = `${back}<h4>Messages</h4>${chats ? `<div class="ph-sec">Chats</div>${chats}<div class="ph-sec">Inbox</div>` : ''}<button class="ph-row" id="msCust"><span>${svg('deal', 'sm')} Customer texts</span><b>${CUST_MODES[custMode()]}</b></button><div class="ph-list">${ms.map((m, i) => `<div class="ph-msg"><div class="av">${svg(m.av)}</div><div><b>${m.from}</b><p>${m.text}</p>${m.at ? `<button class="ph-mini" data-wp="${i}">${svg('pin', 'sm')} Set waypoint</button>` : ''}</div></div>`).join('')}</div>`;
+    $('msCust').onclick = () => { cycleCustMode(); renderPhone(); };
     el.querySelectorAll('[data-thr]').forEach(b => b.onclick = () => { phoneThread = b.dataset.thr; phoneGo('thread'); });
     el.querySelectorAll('[data-wp]').forEach(b => b.onclick = () => { const m = ms[+b.dataset.wp]; setWaypoint(m.at.x, m.at.z, m.at.name); toast(m.at.name); closePhone(); });
   } else if (phoneApp === 'contacts') {
@@ -3958,10 +3978,12 @@ function renderPhone() {
   } else if (phoneApp === 'settings') {
     el.innerHTML = `${back}<h4>Settings</h4>
       <button class="ph-row" id="stSound"><span>Sound</span><b>${settings.sound ? 'On' : 'Off'}</b></button>
+      <button class="ph-row" id="stCust"><span>Customer texts</span><b>${CUST_MODES[custMode()]}</b></button>
       <button class="ph-row" id="stShadow"><span>Shadows (off = smoother)</span><b>${settings.shadows ? 'On' : 'Off'}</b></button>
       <div class="ph-sec">Danger zone</div><button class="ph-row danger" id="stReset"><span>Reset all progress</span></button>
       <p class="ph-hint">Bay City ${VERSION}</p>`;
     $('stSound').onclick = () => { settings.sound = !settings.sound; applySettings(); renderPhone(); };
+    $('stCust').onclick = () => { cycleCustMode(); renderPhone(); };
     $('stShadow').onclick = () => { settings.shadows = !settings.shadows; applySettings(); renderPhone(); };
     let armed = false; $('stReset').onclick = () => { if (!armed) { armed = true; $('stReset').querySelector('span').textContent = 'Tap again to wipe everything'; return; } for (const k of ['bc_save', 'bc_arsenal', 'rr_char', 'rr_gun', 'bc_car', 'bc_cars']) localStorage.removeItem(k); location.reload(); };
   }
@@ -3978,7 +4000,7 @@ function saveGame() {
   store.set('bc_save', save); store.set('bc_arsenal', arsenal); store.set('bc_cars', garage);
 }
 // auto-update: bookmarks and home-screen apps can hold on to an old copy. Check version.json (never cached) and reload once if newer.
-const BUILD = 52;
+const BUILD = 53;
 function checkUpdate() {
   fetch('version.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(j => {
     if (!(j.v > BUILD)) return;
