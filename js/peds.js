@@ -1,7 +1,7 @@
 // Pedestrians: baked low-poly people who stroll sidewalks, wander the beach, flee from trouble.
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, randomChar, disposeObject } from './character.js?v=21';
-import { CITIES, sandLine, shoreLine, groundH, walkable, resolve } from './world.js?v=21';
+import { buildCharacter, randomChar, disposeObject } from './character.js?v=22';
+import { CITIES, sandLine, shoreLine, groundH, walkable, resolve } from './world.js?v=22';
 
 const MAT = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.7, metalness: 0.05 }); // boxes keep crisp per-face normals; rounded parts stay smooth
 const SKINS = ['#ffe0cc', '#f6c9a4', '#e8b088', '#d39a6a', '#b77a4b', '#8d5524', '#6b3f22', '#452a1a'];
@@ -149,7 +149,7 @@ export class Peds {
       this.list.push(p); return p;
     }
   }
-  talk(p, x, z) { p.state = 'talk'; p.lookX = x; p.lookZ = z; }
+  talk(p, x, z) { if (p.kind === 'homeless') { p.lookX = x; p.lookZ = z; return; } p.state = 'talk'; p.lookX = x; p.lookZ = z; }
   release(p) { if (p.state === 'talk') this.settle(p); }
   scare(x, z, r = 18) { for (const p of this.list) if (p.state !== 'down' && Math.hypot(p.x - x, p.z - z) < r) this.flee(p, x, z); }
   flee(p, x, z) { p.state = 'flee'; p.t = rand(3.5, 6); const a = Math.atan2(p.x - x, p.z - z) + rand(-0.5, 0.5); p.fx = Math.sin(a); p.fz = Math.cos(a); }

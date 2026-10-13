@@ -366,6 +366,14 @@ function genWorld() {
       for (const [lx, lz] of [[bx0 + 1.2, bz0 + 12], [bx0 + 34.8, bz0 + 24], [bx0 + 12, bz0 + 34.8], [bx0 + 24, bz0 + 1.2]]) { LAMPS.push({ x: lx, z: lz }); addObj({ t: 'lamp', x: lx, z: lz }); }
     }
   }
+  // zebra crossings just outside every junction, where pedestrians cross
+  for (const city of CITIES) for (let i = city.kx[0]; i <= city.kx[1]; i++) for (let j = city.kz[0]; j <= city.kz[1]; j++) {
+    const nx = city.cx + i * P, nz = city.cz + j * P;
+    for (const s of [-1, 1]) {
+      if (roadAt(nx, nz + s * 7.4) && !roadAt(nx + 9, nz + s * 7.4)) for (let k = -5; k <= 5; k += 1.1) addObj({ t: 'paint', x: nx + k, z: nz + s * 7.4, w: 0.55, d: 2.4, col: '#f2f2f2', y: 0.055 });
+      if (roadAt(nx + s * 7.4, nz) && !roadAt(nx + s * 7.4, nz + 9)) for (let k = -5; k <= 5; k += 1.1) addObj({ t: 'paint', x: nx + s * 7.4, z: nz + k, w: 2.4, d: 0.55, col: '#f2f2f2', y: 0.055 });
+    }
+  }
   // highway lamps
   for (const r of ROADS) if (r.hwy) {
     const along = r.axis === 'x', a0 = along ? r.x0 : r.z0, a1 = along ? r.x1 : r.z1;
@@ -442,6 +450,12 @@ function genWorld() {
   for (const [px, pz] of [[-90, -642], [-20, -642], [50, -642]]) { addObj({ t: 'plane', x: px, z: pz, rot: 0, col: '#ffffff', acc: ['#2f80ed', '#e23b3b', '#1fb5a8'][(px + 90) / 70 | 0] }); addCollider({ x0: px - 14, x1: px + 14, z0: pz - 15, z1: pz + 15, h: 6, plane: true }); }
 }
 genWorld();
+// tidy-up: no trees growing through buildings
+for (const c of chunks.values()) for (let i = c.objs.length - 1; i >= 0; i--) {
+  const o = c.objs[i]; if (o.t !== 'tree') continue;
+  const hit = objsNear(o.x - 16, o.z - 16, o.x + 16, o.z + 16).some(b => b.t === 'bld' && Math.abs(o.x - b.x) < b.w / 2 + 1.2 && Math.abs(o.z - b.z) < b.d / 2 + 1.2);
+  if (hit) { c.objs.splice(i, 1); for (const cc of collidersNear(o.x, o.z).slice()) if (cc.r && Math.abs(cc.x - o.x) < 0.01 && Math.abs(cc.z - o.z) < 0.01) removeCollider(cc); }
+}
 export function parkedIn(cx, cz) { return (chunks.get(ckey(cx, cz))?.objs || []).filter(o => o.t === 'parked'); }
 
 // ---------------- collision

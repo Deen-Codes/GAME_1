@@ -1,8 +1,8 @@
 // Conversations staged like a Pokémon battle: they stand on a platform facing you,
 // you see the back of your own head in the foreground, subtitles type out, you pick replies.
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject } from './character.js?v=21';
-import { sfx, audio } from './audio.js?v=21';
+import { buildCharacter, poseCharacter, disposeObject } from './character.js?v=22';
+import { sfx, audio } from './audio.js?v=22';
 
 const $ = id => document.getElementById(id);
 const BG = {
@@ -76,13 +76,20 @@ export class Talk {
     for (const p of [this.pNpc, this.pYou]) { p.top.material.color.set(b.plat); p.rim.material.color.set(b.rim); }
     this.hemi.intensity = N ? 0.8 : 1.3; this.sun.intensity = N ? 1 : 2; this.sun.color.set(N ? '#b0b8ff' : '#fff3e0');
   }
-  begin({ npcCfg, youCfg, name, tag, pitch = 300, bg = 'city', night = 0, wall = null, floor = null, pet = null }) {
+  begin({ npcCfg, youCfg, name, tag, pitch = 300, bg = 'city', night = 0, wall = null, floor = null, pet = null, pose = null }) {
+    this.pose = pose;
     audio();
     this.clear();
     this.active = true; this.t = 0; this.intro = 0; this.t0 = performance.now(); this.blipPitch = pitch;
     this.background(wall ? 'interior' : bg, night, wall, floor);
     this.npc = buildCharacter(npcCfg); this.scene.add(this.npc.root);
     if (pet) { this.pet = pet; pet.scale.setScalar(1.15); this.scene.add(pet); }
+    if (pose) { // homeless: sleeping bag / cardboard on the platform
+      const g = new THREE.Group(), m = c => new THREE.MeshStandardMaterial({ color: c, roughness: 0.9 });
+      const card = new THREE.Mesh(new THREE.BoxGeometry(1.3, 0.04, 2.0), m('#b89a6a')); card.position.y = 0.02; g.add(card);
+      if (pose === 'lie') { const bag = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.42, 1.45), m('#3a5f7a')); bag.position.set(0, 0.21, 0.55); g.add(bag); }
+      this.prop = g; this.scene.add(g);
+    }
     this.you = buildCharacter(youCfg); this.scene.add(this.you.root);
     for (const c of [this.npc, this.you]) c.root.traverse(o => { if (o.isMesh) o.castShadow = true; });
     $('talkName').textContent = name; $('talkTag').textContent = tag || '';
@@ -94,6 +101,7 @@ export class Talk {
   clear() {
     for (const k of ['npc', 'you']) if (this[k]) { this.scene.remove(this[k].root); disposeObject(this[k].root); this[k] = null; }
     if (this.pet) { this.scene.remove(this.pet); this.pet = null; }
+    if (this.prop) { this.scene.remove(this.prop); this.prop = null; }
   }
   end() { this.active = false; this.clear(); $('talkUI').classList.add('hidden'); this._say = null; this._choose = null; }
   say(text, who = 'npc') {
@@ -147,6 +155,11 @@ export class Talk {
       const g = talk ? Math.sin(this.t * 4) * 0.25 : 0;
       c.armR.pivot.rotation.set(-0.15 - Math.max(0, g) * 1.4, 0, 0.12 + Math.max(0, g) * 0.3);
       c.armL.pivot.rotation.set(-0.1 + Math.min(0, g) * 1.2, 0, -0.12);
+    }
+    if (this.pose && n) {
+      this.prop.position.copy(this.pNpc.g.position); this.prop.rotation.y = n.root.rotation.y;
+      if (this.pose === 'lie') { n.root.rotation.order = 'YXZ'; n.root.rotation.x = -1.35; n.root.position.y += 0.22; n.root.position.x -= 0.1; n.head.rotation.x = 0.9; }
+      else { n.root.position.y -= 0.45 * (n.height || 1.7) / 1.7; n.legL.pivot.rotation.x = -1.45; n.legR.pivot.rotation.x = -1.4; n.legL.knee.rotation.x = 0.1; n.legR.knee.rotation.x = 0.1; n.root.position.y += 0.05; }
     }
   }
   render(renderer) { renderer.render(this.scene, this.cam); }
