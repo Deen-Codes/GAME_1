@@ -1,25 +1,25 @@
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas } from './character.js?v=76';
-import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=76';
-import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=76';
-import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=76';
-import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=76';
-import { buildPanel, renderStats } from './ui.js?v=76';
-import { Input } from './input.js?v=76';
-import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime } from './audio.js?v=76';
-import { runMinigame } from './minigames.js?v=76';
-import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk } from './peds.js?v=76';
-import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=76';
-import { findRoute } from './nav.js?v=76';
-import { COURSES, CAREERS, QUIZ } from './careers.js?v=76';
-import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=76';
-import { attachWheel } from './wheel.js?v=76';
-import { Animals } from './animals.js?v=76';
-import { Talk } from './talk.js?v=76';
-import { svg, drawIcon } from './icons.js?v=76';
-import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=76';
-import { FURN, CATALOG } from './furniture.js?v=76';
-import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=76';
+import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas } from './character.js?v=77';
+import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=77';
+import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=77';
+import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=77';
+import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=77';
+import { buildPanel, renderStats } from './ui.js?v=77';
+import { Input } from './input.js?v=77';
+import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime } from './audio.js?v=77';
+import { runMinigame } from './minigames.js?v=77';
+import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk } from './peds.js?v=77';
+import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=77';
+import { findRoute } from './nav.js?v=77';
+import { COURSES, CAREERS, QUIZ } from './careers.js?v=77';
+import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=77';
+import { attachWheel } from './wheel.js?v=77';
+import { Animals } from './animals.js?v=77';
+import { Talk } from './talk.js?v=77';
+import { svg, drawIcon } from './icons.js?v=77';
+import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=77';
+import { FURN, CATALOG } from './furniture.js?v=77';
+import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=77';
 
 const $ = id => document.getElementById(id);
 let inside = null, editMode = false, held = null, pendingCar = false, homeMusic = false, phoneBadge = 0;
@@ -104,7 +104,7 @@ const carLib = [];
 function ensureCarLib() {
   if (carLib.length) return;
   let s = 12345; const r = () => (s = (s * 16807) % 2147483647) / 2147483647;
-  for (let i = 0; i < 18; i++) { const cfg = trafficCar(r), car = buildCar(cfg); carLib.push({ cfg, geo: bakeGroup(car.group), len: car.length }); disposeObject(car.group); }
+  for (let i = 0; i < 18; i++) { const cfg = trafficCar(r), car = buildCar(cfg); carLib.push({ cfg, geo: bakeGroup(car.group), len: car.length, wid: car.width }); disposeObject(car.group); }
 }
 
 // ================================================================ see-through fade
@@ -191,6 +191,8 @@ const world = new THREE.Group(); G.scene.add(world);
 const dyn = new THREE.Group(); G.scene.add(dyn);
 const peds = new Peds(dyn);
 setPlayerInk((charCfg.tattoos || []).map(t => t.design));
+// pedestrians check for moving cars before stepping into the road
+peds.carAt = (x, z, r) => { for (const t of traffic) if (!t.stun && (t.rx - x) ** 2 + (t.rz - z) ** 2 < r * r) return true; for (const v of vehicles) if (Math.abs(v.s.v) > 1.5 && (v.s.x - x) ** 2 + (v.s.z - z) ** 2 < r * r) return true; return false; };
 let animals = null; // created once baseY exists (see below)
 { const sc = peds.scare.bind(peds); peds.scare = (x, z, r = 18) => { sc(x, z, r); animals?.scare(x, z, r * 1.6); }; }
 const talk = new Talk();
@@ -291,6 +293,51 @@ function applyTime(h, px, pz) {
   lantern.intensity = night * 14;
   WATER_U.uNight.value = night;
 }
+
+// ================================================================ WEATHER: clear, rain, storms and fog that roll through
+// Rain darkens the sky, wets the roads (cars slide), thins the crowds and puts up umbrellas. Storms add lightning.
+// Fog sits low, thickest in the hills in the early morning.
+const WX_ICON = { clear: null, rain: 'rain', storm: 'storm', fog: 'fog' };
+let wet = 0, fogK = 0, boltFlash = 0, boltT = 8, rainLines = null;
+const wx = () => stats.wx ||= { k: 'clear', until: gameHours() + 3 };
+function nextWeather() {
+  const W = wx(), r = Math.random(), h = clockH;
+  const k = r < 0.52 ? 'clear' : r < 0.74 ? 'rain' : r < 0.82 ? 'storm' : (h > 3 && h < 11 ? 'fog' : 'clear');
+  if (k !== W.k && !inside) toast({ rain: 'It\'s starting to rain.', storm: 'A storm is rolling in.', fog: 'Fog is rolling in.', clear: W.k === 'fog' ? 'The fog is lifting.' : 'The rain has stopped.' }[k], 2.6);
+  W.k = k; W.until = gameHours() + (k === 'clear' ? rand(4, 10) : rand(1.5, 4.5));
+}
+function makeRain() {
+  const N = 1100, pos = new Float32Array(N * 6), g = new THREE.BufferGeometry();
+  for (let i = 0; i < N; i++) { const x = rand(-45, 45), y = rand(0, 40), z = rand(-45, 45); pos.set([x, y, z, x - 0.15, y - 1.3, z], i * 6); }
+  g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  rainLines = new THREE.LineSegments(g, new THREE.LineBasicMaterial({ color: '#c8d8ec', transparent: true, opacity: 0, depthWrite: false })); rainLines.frustumCulled = false; G.scene.add(rainLines);
+}
+function updateWeather(dt) {
+  const W = wx(); if (gameHours() > W.until) nextWeather();
+  const raining = W.k === 'rain' || W.k === 'storm', hills = P.x < -300;
+  wet = damp(wet, raining && !inside ? (W.k === 'storm' ? 1 : 0.75) : 0, 0.4, dt);
+  fogK = damp(fogK, !inside && (W.k === 'fog' ? (hills ? 1 : 0.65) : raining ? 0.35 : hills && clockH > 4 && clockH < 9 ? 0.4 : 0), 0.3, dt);
+  peds.rain = raining && !inside;
+  if (!rainLines) makeRain();
+  rainLines.visible = wet > 0.02; rainLines.material.opacity = wet * 0.42;
+  if (rainLines.visible) { // the curtain of rain follows the camera; streaks fall and wrap
+    rainLines.position.set(camLook.x, camLook.y, camLook.z);
+    const a = rainLines.geometry.attributes.position, arr = a.array, fall = (W.k === 'storm' ? 38 : 30) * dt;
+    for (let i = 0; i < arr.length; i += 6) { arr[i + 1] -= fall; arr[i + 4] -= fall; if (arr[i + 4] < -2) { arr[i + 1] += 42; arr[i + 4] += 42; } }
+    a.needsUpdate = true;
+    if (Math.random() < dt * 30 * wet) spawnParticles(camLook.x + rand(-14, 14), 0.15, camLook.z + rand(-10, 10), '#dfe9f5', 2, 1.2, 0.2, 0.06, 8); // splashes
+  }
+  if (inside) return;
+  // darker, greyer sky; lightning in storms
+  const grey = new THREE.Color(night > 0.5 ? '#15171d' : '#7d8794');
+  G.scene.background.lerp(grey, wet * 0.7 + fogK * 0.5); G.scene.fog.color.copy(G.scene.background);
+  hemi.intensity *= 1 - wet * 0.35; sun.intensity *= 1 - wet * 0.65 - fogK * 0.3;
+  const fn = G.scene.fog.near, ff = G.scene.fog.far; G.scene.fog.near = fn + (camDist * 0.3 - fn) * fogK - wet * 12; G.scene.fog.far = ff + (camDist + 22 - ff) * fogK - wet * 40;
+  if (fogK > 0.05) G.scene.background.lerp(new THREE.Color(night > 0.5 ? '#2a2e38' : '#c9ced6'), fogK * 0.8), G.scene.fog.color.copy(G.scene.background);
+  if (W.k === 'storm') { boltT -= dt; if (boltT <= 0) { boltT = rand(6, 18); boltFlash = 1; sfx.thunder(rand(0.4, 2.2)); } }
+  if (boltFlash > 0) { boltFlash = Math.max(0, boltFlash - dt * 4); hemi.intensity += boltFlash * 2.5; G.scene.background.lerp(new THREE.Color('#e8eeff'), boltFlash * 0.5); }
+}
+const wetGrip = () => 1 - wet * 0.38;
 
 // ---------------- particles
 const particles = [], ppool = [], pgeo = new THREE.BoxGeometry(1, 1, 1);
@@ -447,7 +494,7 @@ function spawnTraffic(px, pz) {
     const axis = Math.random() < 0.5 ? 'x' : 'z', k = axis === 'x' ? ix : iz, range = axis === 'x' ? c.kx : c.kz;
     let dir = Math.random() < 0.5 ? 1 : -1; if (k + dir > range[1] || k + dir < range[0]) dir = -dir;
     ensureCarLib();
-    const isCop = Math.random() < 0.08; if (isCop && !policeLib) { const cfg = { ...DEFAULT_CAR, ...CAR_PRESETS.Police }, car = buildCar(cfg); policeLib = { cfg, geo: bakeGroup(car.group), len: car.length }; disposeObject(car.group); }
+    const isCop = Math.random() < 0.08; if (isCop && !policeLib) { const cfg = { ...DEFAULT_CAR, ...CAR_PRESETS.Police }, car = buildCar(cfg); policeLib = { cfg, geo: bakeGroup(car.group), wid: car.width, len: car.length }; disposeObject(car.group); }
     const lib = isCop ? policeLib : carLib[Math.floor(Math.random() * carLib.length)];
     const mesh = new THREE.Mesh(lib.geo, bakedMat); mesh.castShadow = true; dyn.add(mesh);
     const t = { c, lib, axis, line: axis === 'x' ? nz : nx, pos: axis === 'x' ? nx : nz, dir, next: (axis === 'x' ? nx : nz) + dir * 48, speed: 0, cruise: rand(8, 13), mesh, stun: 0, honk: 0 };
@@ -764,14 +811,16 @@ function carBox(v, x, z) {
   const h = v.s.h, fx = Math.sin(h), fz = Math.cos(h), rx = Math.cos(h), rz = -Math.sin(h), dx = x - v.s.x, dz = z - v.s.z;
   return { v, fx, fz, rx, rz, lx: dx * rx + dz * rz, lz: dx * fx + dz * fz, hw: v.b.width / 2, hl: v.b.length / 2, top: (v.s.y || 0) + v.b.height * (v.b.two ? 0.6 : 1) };
 }
+const trafProxy = t => t.proxy ||= { s: {}, b: { width: t.lib.wid || 1.9, length: t.lib.len || 4.4, height: 1.45 } };
+function carsAround() { const out = [...vehicles]; for (const t of traffic) { const q = trafProxy(t); Object.assign(q.s, { x: t.rx, z: t.rz, h: t.rh, y: 0 }); out.push(q); } return out; } // parked/driven cars + traffic
 function carNear(x, z, reach = 1.3) {
   let best = null;
-  for (const v of vehicles) { if (v === ride || (v.s.x - x) ** 2 + (v.s.z - z) ** 2 > 64) continue; const B = carBox(v, x, z); const d = Math.max(Math.abs(B.lx) - B.hw, Math.abs(B.lz) - B.hl); if (d < reach && (!best || d < best.d)) { B.d = d; best = B; } }
+  for (const v of carsAround()) { if (v === ride || (v.s.x - x) ** 2 + (v.s.z - z) ** 2 > 64) continue; const B = carBox(v, x, z); const d = Math.max(Math.abs(B.lx) - B.hw, Math.abs(B.lz) - B.hl); if (d < reach && (!best || d < best.d)) { B.d = d; best = B; } }
   return best;
 }
 function carTop(x, z, y) {
   let t = -99;
-  for (const v of vehicles) { if (v === ride || (v.s.x - x) ** 2 + (v.s.z - z) ** 2 > 64) continue; const B = carBox(v, x, z); if (Math.abs(B.lx) < B.hw - 0.05 && Math.abs(B.lz) < B.hl - 0.1 && y >= B.top - 0.5) t = Math.max(t, B.top); }
+  for (const v of carsAround()) { if (v === ride || (v.s.x - x) ** 2 + (v.s.z - z) ** 2 > 64) continue; const B = carBox(v, x, z); if (Math.abs(B.lx) < B.hw - 0.05 && Math.abs(B.lz) < B.hl - 0.1 && y >= B.top - 0.5) t = Math.max(t, B.top); }
   return t;
 }
 // ---------------- toilet: sit, relief. Hold it too long and you have an accident (and need a shower)
@@ -841,6 +890,14 @@ function updateFoot(dt) {
   const sp = (swim ? 2.6 : st.m > 0.85 ? 7.2 * runMul : 4.6) * st.m * (swim ? 1 : ws.mob || 1) * tired * (inside ? 0.8 : 1) * (P.leap ? 1.55 : 1) * (1 - body().fat * 0.15), ox = P.x, oz = P.z; // running jumps carry you further; extra weight slows you
   if (st.m > 0.1) { const wob = Math.sin(time * 1.4) * Math.min(1, FX.drunk) * 0.7, mx0 = st.x / st.m, mz0 = -st.y / st.m, mx = mx0 * Math.cos(wob) - mz0 * Math.sin(wob), mz = mx0 * Math.sin(wob) + mz0 * Math.cos(wob); P.x += mx * sp * fxSpeed() * dt; P.z += mz * sp * fxSpeed() * dt; P.face += wrapA(Math.atan2(mx, mz) - P.face) * (1 - Math.exp(-14 * dt)); }
   resolve(P, 0.4, Math.max(0, P.y - baseY(P.x, P.z)));
+  if (!inside && !P.vault && !P.climb) for (const t of traffic) { // traffic cars are solid too
+    if ((t.rx - P.x) ** 2 + (t.rz - P.z) ** 2 > 36) continue;
+    const fx = Math.sin(t.rh), fz = Math.cos(t.rh), rx = Math.cos(t.rh), rz = -Math.sin(t.rh), dx = P.x - t.rx, dz = P.z - t.rz;
+    const lx = dx * rx + dz * rz, lz = dx * fx + dz * fz, hw = (t.lib.wid || 1.9) / 2 + 0.32, hl = (t.lib.len || 4.4) / 2 + 0.28;
+    if (Math.abs(lx) >= hw || Math.abs(lz) >= hl) continue;
+    const px = hw - Math.abs(lx), pz = hl - Math.abs(lz);
+    if (px < pz) { const k = Math.sign(lx || 1) * px; P.x += rx * k; P.z += rz * k; } else { const k = Math.sign(lz || 1) * pz; P.x += fx * k; P.z += fz * k; }
+  }
   if (!inside) for (const v of vehicles) { // cars block you (as a solid box, no gaps); press jump next to one to vault it
     if ((v.s.x - P.x) ** 2 + (v.s.z - P.z) ** 2 > 49 || v === ride || P.vault || P.climb || P.y >= (v.s.y || 0) + v.b.height - 0.15) continue;
     const h = v.s.h, fx = Math.sin(h), fz = Math.cos(h), rx = Math.cos(h), rz = -Math.sin(h), dx = P.x - v.s.x, dz = P.z - v.s.z;
@@ -849,7 +906,7 @@ function updateFoot(dt) {
     const px = hw - Math.abs(lx), pz = hl - Math.abs(lz);
     if (px < pz) { const k = Math.sign(lx || 1) * px; P.x += rx * k; P.z += rz * k; } else { const k = Math.sign(lz || 1) * pz; P.x += fx * k; P.z += fz * k; }
   }
-  for (const p of peds.list) { const dx = P.x - p.x, dz = P.z - p.z, d = Math.hypot(dx, dz); if (d < 0.7 && d > 0.01 && p.state !== 'down') { p.x -= dx / d * (0.7 - d); p.z -= dz / d * (0.7 - d); } }
+  for (const p of peds.list) { const dx = P.x - p.x, dz = P.z - p.z, d = Math.hypot(dx, dz); if (d < 0.7 && d > 0.01 && p.state !== 'down') { if (p.kind === 'homeless' || p.state === 'lie' || p.state === 'sit' || p.state === 'talk') { P.x = p.x + dx / d * 0.7; P.z = p.z + dz / d * 0.7; } else { p.x -= dx / d * (0.7 - d); p.z -= dz / d * (0.7 - d); } } } // you can't shove someone sleeping on the pavement
   for (const n of allNpcs()) { if (n.hidden || (n.y || 0) > P.y + 1.5 || (n.y || 0) < P.y - 1.5) continue; const dx = P.x - n.x, dz = P.z - n.z, d = Math.hypot(dx, dz); if (d < 0.75 && d > 0.01) { P.x = n.x + dx / d * 0.75; P.z = n.z + dz / d * 0.75; } }
   if (!canWalk(P.x, P.z)) { P.x = ox; P.z = oz; }
   if (inside?.id === 'prison' && stats.jail && P.z > ORIGIN.z + 17.4 && Math.abs(P.x - ORIGIN.x) < 10.2 && P.z < ORIGIN.z + 19) { P.z = ORIGIN.z + 17.4; if (time > gateT) { gateT = time + 3; toast(`Security gate. Locked. ${hrs(jailLeft())} left.`); } }
@@ -907,7 +964,7 @@ function updateFoot(dt) {
   // ---- pose
   const moved = Math.hypot(P.x - ox, P.z - oz) / Math.max(dt, 1e-4);
   if (moved > 6.5 && !inside) { P.runDist += moved * dt; if (P.runDist > 60) { P.runDist = 0; gainXP('stamina', 2); } }
-  P.phase += dt * moved * 1.8;
+  P.phase += dt * (moved < 5.5 ? moved * 1.55 : moved * 1.8); // cadence follows ground speed
   if (P.vault) { // sliding across a bonnet on your side, one hand down
     const V = P.vault; V.t += dt / 0.48; const k = Math.min(1, V.t), e = k * k * (3 - 2 * k), up = Math.sin(k * Math.PI);
     P.x = V.x0 + (V.x1 - V.x0) * e; P.z = V.z0 + (V.z1 - V.z0) * e; P.y = V.y0 + Math.max(0, V.top - V.y0) * Math.min(1, up * 1.6);
@@ -943,7 +1000,7 @@ function updateFoot(dt) {
   const gunReady = (kind === 'gun' || kind === 'rpg') && (firing || P.fireCd > -0.6);
   if (heroW) heroW.group.visible = !inside;
   hero.torso.rotation.set(0, 0, 0); hero.hips.position.y = hero.legLen; hero.legL.knee.rotation.x = 0; hero.legR.knee.rotation.x = 0;
-  poseCharacter(hero, { phase: P.phase, speed: Math.min(1, moved / 7), air: P.y > gy + 0.05, aim: gunReady ? 0 : -0.55, recoil: P.recoil, t: time });
+  poseCharacter(hero, { phase: P.phase, speed: moved < 0.2 ? 0 : Math.min(1, 0.45 + moved / 9), air: P.y > gy + 0.05, aim: gunReady ? 0 : -0.55, recoil: P.recoil, t: time });
   if (swim) { const ph = time * 5; hero.armR.pivot.rotation.set(-ph % (Math.PI * 2), 0, 0.1); hero.armL.pivot.rotation.set(-(ph + Math.PI) % (Math.PI * 2), 0, -0.1); hero.legL.pivot.rotation.x = Math.sin(ph * 2) * 0.4; hero.legR.pivot.rotation.x = -Math.sin(ph * 2) * 0.4; if (moved > 0.5 && Math.random() < dt * 8) spawnParticles(P.x, WATER_Y + 0.1, P.z, '#ffffff', 1, 1, 0.5, 0.1, 2); }
   else if (kind !== 'gun' && kind !== 'rpg') {
     const sw = Math.sin(P.phase) * Math.min(1, moved / 5) * 0.6;
@@ -1254,7 +1311,7 @@ function riderPose(v, dt) {
 }
 // car-vs-car: two circles per car (front & back). The moving car gets pushed back, the other one gets shoved.
 // traffic cars collide as two circles along their length, just like other cars (no more invisible bubble)
-function trafCircles(t) { const fx = Math.sin(t.rh), fz = Math.cos(t.rh), o = (t.lib.len || 4.4) * 0.27, r = 1.0; return [[t.rx + fx * o, t.rz + fz * o, r], [t.rx - fx * o, t.rz - fz * o, r]]; }
+function trafCircles(t) { const fx = Math.sin(t.rh), fz = Math.cos(t.rh), o = (t.lib.len || 4.4) * 0.27, r = 1.0; return [[t.rx + fx * o, t.rz + fz * o, r], [t.rx, t.rz, r], [t.rx - fx * o, t.rz - fz * o, r]]; }
 function carVsTraffic(v, t) {
   let best = null;
   for (const a of carCircles(v)) for (const b of trafCircles(t)) { const dx = a[0] - b[0], dz = a[1] - b[1], d = Math.hypot(dx, dz), pen = a[2] + b[2] - d; if (pen > 0 && d > 1e-3 && (!best || pen > best.pen)) best = { pen, nx: dx / d, nz: dz / d, cx: (a[0] + b[0]) / 2, cz: (a[1] + b[1]) / 2 }; }
@@ -1356,7 +1413,7 @@ function updateVehicles(dt) {
     const turn = c.steer * s.turn * clamp(spd / 6, 0, 1) * (1 - Math.min(0.45, spd / s.top * 0.45)) * Math.sign(c.v || 1);
     c.h = wrapA(c.h + turn * dt);
     const fx = Math.sin(c.h), fz = Math.cos(c.h);
-    const grip = (c.braking && spd > 12 && Math.abs(c.steer) > 0.3 ? 1.8 : 7) * s.grip * dk;
+    const grip = (c.braking && spd > 12 && Math.abs(c.steer) > 0.3 ? 1.8 : 7) * s.grip * dk * (driving ? wetGrip() : 1); // wet roads: slide
     c.vx = damp(c.vx, fx * c.v, grip, dt); c.vz = damp(c.vz, fz * c.v, grip, dt);
     const ox = c.x, oz = c.z; c.x += c.vx * dt; c.z += c.vz * dt;
     const half = b.length * 0.3, r = b.width * 0.55;
@@ -4867,7 +4924,7 @@ function saveGame() {
   store.set('bc_save', save); store.set('bc_arsenal', arsenal); store.set('bc_cars', garage);
 }
 // auto-update: bookmarks and home-screen apps can hold on to an old copy. Check version.json (never cached) and reload once if newer.
-const BUILD = 76;
+const BUILD = 77;
 function checkUpdate() {
   fetch('version.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(j => {
     if (!(j.v > BUILD)) return;
@@ -4939,7 +4996,7 @@ function bringCar(silent) {
 }
 function updateAmbience() {
   const f = focusPos(), x = f.x, z = f.z, c = inside ? null : cityNear(x, z, 30), shoreD = shoreLine(x) - z;
-  ambience(inside ? { city: inside.id === 'club' ? 0.6 : 0.08, waves: 0, birds: 0, crickets: 0 } : { city: c ? (c.id === 'main' ? 1 : 0.6) * (1 - night * 0.4) : 0.15, waves: clamp(1 - (shoreD - 20) / 90, 0, 1), birds: (1 - night) * (x < -300 || !c ? 1 : 0.35), crickets: night * (c ? 0.3 : 1) });
+  ambience(inside ? { city: inside.id === 'club' ? 0.6 : 0.08, waves: 0, birds: 0, crickets: 0 } : { city: c ? (c.id === 'main' ? 1 : 0.6) * (1 - night * 0.4) : 0.15, waves: clamp(1 - (shoreD - 20) / 90, 0, 1), birds: (1 - night) * (x < -300 || !c ? 1 : 0.35), crickets: night * (c ? 0.3 : 1) * (1 - wet), rain: wet });
 }
 
 // ---------------- step
@@ -5149,7 +5206,7 @@ function frame(now) {
     const dt = rdt * timeScale;
     step(dt);
     if (!inside) updateChunks(P.x, P.z, ride ? 3 : 2);
-    applyTime(clockH, P.x, P.z); updateCamera(dt); updateHUD(rdt); updateAmbience();
+    applyTime(clockH, P.x, P.z); updateCamera(dt); updateWeather(dt); updateHUD(rdt); updateAmbience();
     renderer.render(G.scene, G.cam);
   } else if (state === 'talk') { talk.update(rdt); talk.render(renderer); }
   else if (state === 'phone' || state === 'ui') { if (state === 'ui') updateHUD(rdt); renderer.render(G.scene, G.cam); }

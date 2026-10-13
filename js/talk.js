@@ -1,8 +1,8 @@
 // Conversations staged like a Pokémon battle: they stand on a platform facing you,
 // you see the back of your own head in the foreground, subtitles type out, you pick replies.
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject } from './character.js?v=76';
-import { sfx, audio } from './audio.js?v=76';
+import { buildCharacter, poseCharacter, disposeObject } from './character.js?v=77';
+import { sfx, audio } from './audio.js?v=77';
 
 const $ = id => document.getElementById(id);
 const BG = {
@@ -116,7 +116,7 @@ export class Talk {
     if (pose) { // homeless: sleeping bag / cardboard on the platform
       const g = new THREE.Group(), m = c => new THREE.MeshStandardMaterial({ color: c, roughness: 0.9 });
       const card = new THREE.Mesh(new THREE.BoxGeometry(1.3, 0.04, 2.0), m('#b89a6a')); card.position.y = 0.02; g.add(card);
-      if (pose === 'lie') { const bag = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.42, 1.45), m('#3a5f7a')); bag.position.set(0, 0.21, 0.55); g.add(bag); }
+      if (pose === 'lie') { const bag = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.5, 1.55), m('#3a5f7a')); bag.position.set(0, 0.25, -0.2); g.add(bag); }
       this.prop = g; this.scene.add(g);
     }
     this.you = buildCharacter(youCfg); this.scene.add(this.you.root); this.you.root.visible = !think;
@@ -279,7 +279,11 @@ export class Talk {
     else if (this.actK && n && y) this.standAct(n, y);
     if (this.pose && n) {
       this.prop.position.copy(this.pNpc.g.position); this.prop.rotation.y = n.root.rotation.y;
-      if (this.pose === 'lie') { n.root.rotation.order = 'YXZ'; n.root.rotation.x = -1.35; n.root.position.y += 0.22; n.root.position.x -= 0.1; n.head.rotation.x = 0.9; }
+      if (this.pose === 'lie') { // tucked into the sleeping bag on their side, head poking out the end, facing you
+        n.root.rotation.order = 'YXZ'; n.root.rotation.set(0, 0, -Math.PI / 2 + 0.05); n.root.position.y += 0.14; n.root.position.x -= 0.85;
+        this.prop.rotation.y = Math.PI / 2; n.head.rotation.set(0, 0, 0.2);
+        n.legL.pivot.rotation.x = 0; n.legR.pivot.rotation.x = 0.1; n.armL.pivot.rotation.set(-0.3, 0, 0); n.armR.pivot.rotation.set(-0.5, 0, 0);
+      }
       else { n.root.position.y -= 0.45 * (n.height || 1.7) / 1.7; n.legL.pivot.rotation.x = -1.45; n.legR.pivot.rotation.x = -1.4; n.legL.knee.rotation.x = 0.1; n.legR.knee.rotation.x = 0.1; n.root.position.y += 0.05; }
     }
   }

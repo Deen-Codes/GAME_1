@@ -37,6 +37,7 @@ export const sfx = {
   spark() { if (!audio()) return; burst(0.12, 6000, 'highpass', 0.1); },
   engineStart() { if (!audio()) return; tone(60, 0.5, 'sawtooth', 0.08, 0, 140); },
   thud() { if (!audio()) return; tone(90, 0.2, 'sine', 0.2, 0, 40); burst(0.1, 400, 'lowpass', 0.15); },
+  thunder(d = 1) { if (!audio()) return; const t = A.currentTime + d; const s = A.createBufferSource(); s.buffer = NB || (NB = noiseBuf()); const f = A.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = 180; const g = A.createGain(); g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.5, t + 0.08); g.gain.exponentialRampToValueAtTime(0.18, t + 0.8); g.gain.exponentialRampToValueAtTime(0.0008, t + 3.2); s.connect(f); f.connect(g); g.connect(out()); s.start(t); s.stop(t + 3.3); },
   boom() { if (!audio()) return; burst(1.1, 500, 'lowpass', 0.6); tone(70, 0.8, 'sine', 0.35, 0, 30); burst(0.3, 3000, 'highpass', 0.12); },
   whoosh() { if (!audio()) return; burst(0.18, 900, 'bandpass', 0.12, 1.5); },
   punch() { if (!audio()) return; tone(120, 0.12, 'sine', 0.25, 0, 50); burst(0.06, 1500, 'lowpass', 0.2); },
@@ -64,10 +65,11 @@ export function ambience(mix) { // mix: { city, waves, birds, crickets } 0..1
   if (!A) return;
   if (!amb) {
     const mk = (type, freq, q) => { const s = A.createBufferSource(); s.buffer = noiseBuf(4); s.loop = true; const f = A.createBiquadFilter(); f.type = type; f.frequency.value = freq; f.Q.value = q; const g = A.createGain(); g.gain.value = 0; s.connect(f); f.connect(g); g.connect(out()); s.start(); return { g, f }; };
-    amb = { city: mk('lowpass', 300, 0.5), waves: mk('bandpass', 700, 0.4), t: 0, nextBird: 0, nextCricket: 0 };
+    amb = { city: mk('lowpass', 300, 0.5), waves: mk('bandpass', 700, 0.4), rain: mk('lowpass', 2600, 0.3), t: 0, nextBird: 0, nextCricket: 0 };
   }
   const t = A.currentTime;
   amb.city.g.gain.setTargetAtTime(mix.city * 0.05, t, 0.5);
+  amb.rain.g.gain.setTargetAtTime((mix.rain || 0) * 0.07, t, 0.8); // steady hiss of rain
   const swell = 0.5 + 0.5 * Math.sin(t * 0.9) * Math.sin(t * 0.37);
   amb.waves.g.gain.setTargetAtTime(mix.waves * (0.03 + swell * 0.06), t, 0.3);
   if (mix.birds > 0.1 && t > amb.nextBird) { amb.nextBird = t + 4 + Math.random() * 9; // occasional, quiet birdsong

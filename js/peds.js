@@ -1,7 +1,7 @@
 // Pedestrians: baked low-poly people who stroll sidewalks, wander the beach, flee from trouble.
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, randomChar, disposeObject } from './character.js?v=76';
-import { CITIES, sandLine, shoreLine, groundH, walkable as worldWalkable, resolve } from './world.js?v=76';
+import { buildCharacter, randomChar, disposeObject } from './character.js?v=77';
+import { CITIES, sandLine, shoreLine, groundH, walkable as worldWalkable, resolve } from './world.js?v=77';
 // interiors swap in their own floor test so brawlers can move around inside
 let walkable = worldWalkable; export function setWalk(fn) { walkable = fn || worldWalkable; }
 
@@ -97,6 +97,19 @@ function freshLook(beach) {
   if (LOOKS.length < 200 && (Math.random() < 0.7 || pool.length < 6)) { const l = makeLook(beach, Math.random() < 0.5); LOOKS.push(l); return l; }
   return pick(pool);
 }
+const UMB_M = ['#16161b', '#c9302c', '#2f80ed', '#ffd23f', '#4cd964', '#ff6fb5'].map(c => new THREE.MeshStandardMaterial({ color: c, roughness: 0.6, side: THREE.DoubleSide }));
+function umbrella() { const g = new THREE.Group(), stick = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 1.0, 5), UMB_M[0]); stick.position.set(0.28, 1.6, 0.15); g.add(stick); const top = new THREE.Mesh(new THREE.ConeGeometry(0.62, 0.3, 8, 1, true), UMB_M[1 + Math.floor(Math.random() * 5)]); top.position.set(0.28, 2.15, 0.15); g.add(top); return g; }
+// walk styles: women sway the hips with a quicker, narrower step; men vary from swagger to brisk to slouched
+function gaitFor(look) {
+  const r = Math.random();
+  if (look?.fem) return r < 0.45 ? { cad: 1.12, stride: 0.85, arm: 0.8, armOut: 0.05, sway: 0.07, twist: 0.12, bounce: 0.02, lean: 0 } // catwalk sway
+    : r < 0.8 ? { cad: 1.05, stride: 0.95, arm: 1, armOut: 0.04, sway: 0.04, twist: 0.08, bounce: 0.03, lean: 0.02 } // easy stroll
+    : { cad: 1.2, stride: 0.9, arm: 1.2, armOut: 0.05, sway: 0.03, twist: 0.05, bounce: 0.04, lean: 0.05 }; // brisk
+  return r < 0.3 ? { cad: 0.85, stride: 1.2, arm: 1.3, armOut: 0.16, sway: 0.03, twist: 0.1, bounce: 0.05, lean: -0.03 } // swagger
+    : r < 0.6 ? { cad: 1.0, stride: 1.0, arm: 1, armOut: 0.08, sway: 0.015, twist: 0.04, bounce: 0.03, lean: 0.03 } // normal
+    : r < 0.82 ? { cad: 1.18, stride: 1.05, arm: 1.15, armOut: 0.06, sway: 0.01, twist: 0.03, bounce: 0.02, lean: 0.08 } // brisk, late for work
+    : { cad: 0.9, stride: 0.8, arm: 0.5, armOut: 0.04, sway: 0.02, twist: 0.02, bounce: 0.01, lean: 0.12 }; // slouched
+}
 const PROP = new THREE.MeshStandardMaterial({ vertexColors: false, color: '#ffffff', roughness: 0.9 });
 const pm = c => new THREE.MeshStandardMaterial({ color: c, roughness: 0.9 });
 const BAG_M = [pm('#3a5f7a'), pm('#7a3a3a'), pm('#55602f')], CARD_M = pm('#b89a6a'), CART_M = new THREE.MeshStandardMaterial({ color: '#c9ccd2', metalness: 0.6, roughness: 0.4 });
@@ -183,7 +196,7 @@ export class Peds {
   knock(p, fx, fz, power = 6) { if (p.state === 'down') return false; p.state = 'down'; p.t = rand(3.5, 5); p.kx = fx * power; p.kz = fz * power; return true; }
   update(dt, px, pz, nearCity, nearBeach) {
     ensureLooks();
-    const cityTarget = nearCity ? (nearCity.style === 'downtown' ? 28 : 20) : 0, beachTarget = nearBeach ? 16 : 0;
+    const cityTarget = Math.round((nearCity ? (nearCity.style === 'downtown' ? 28 : 20) : 0) * (this.rain ? 0.55 : 1)), beachTarget = nearBeach ? (this.rain ? 2 : 16) : 0; // rain clears the streets and the beach
     const nCity = this.list.filter(p => p.kind === 'city').length, nBeach = this.list.filter(p => p.kind === 'beach').length;
     if (nCity < cityTarget) this.spawnCity(nearCity, px, pz);
     if (nBeach < beachTarget) this.spawnBeach(px, pz);
@@ -192,6 +205,9 @@ export class Peds {
       const p = this.list[i];
       if (Math.hypot(p.x - px, p.z - pz) > 125) { this.parent.remove(p.root); this.list.splice(i, 1); continue; }
       if (p.state === 'held') continue;
+      // umbrellas up when it rains (most people), down when it stops
+      if (this.rain && p.umb === undefined && p.kind !== 'homeless' && p.kind !== 'cop') { p.umb = Math.random() < 0.65 ? umbrella() : null; if (p.umb) p.inner.add(p.umb); }
+      else if (!this.rain && p.umb !== undefined) { if (p.umb) p.inner.remove(p.umb); p.umb = undefined; }
       let mv = 0;
       if (p.state === 'talk') { p.face += Math.atan2(Math.sin(Math.atan2(p.lookX - p.x, p.lookZ - p.z) - p.face), Math.cos(Math.atan2(p.lookX - p.x, p.lookZ - p.z) - p.face)) * Math.min(1, dt * 8); }
       if (p.state === 'walk') {
@@ -211,6 +227,7 @@ export class Peds {
       if (p.state === 'cross') {
         const dx = p.tx - p.x, dz = p.tz - p.z, d = Math.hypot(dx, dz);
         if (d < 0.3) { p.state = 'walk'; p.s = p.ns; p.dir = Math.random() < 0.5 ? 1 : -1; }
+        else if (this.carAt?.(p.x + dx / d * 2.2, p.z + dz / d * 2.2, 9)) { p.face = Math.atan2(dx, dz); } // wait at the kerb for the car to pass
         else { const s = Math.min(d, p.speed * 1.2 * dt); p.x += dx / d * s; p.z += dz / d * s; p.face = Math.atan2(dx, dz); mv = p.speed * 1.2; }
       }
       if (p.state === 'idle' || p.state === 'wander') {
@@ -234,16 +251,21 @@ export class Peds {
         if (p.t <= 0) { p.inner.rotation.x = 0; this.flee(p, p.x - (p.kx || 0.1), p.z - (p.kz || 0)); }
       } else p.inner.rotation.x = 0;
       // animate
-      p.phase += dt * mv * 2.6;
-      const sw = Math.min(1, mv / 1.5) * (mv > 3 ? 0.9 : 0.55);
+      // everyone walks a bit differently: cadence, arm swing, hip sway, bounce, lean
+      const G = p.gait ||= gaitFor(p.look);
+      p.phase += dt * mv * 2.6 * (mv > 3 ? 1 : G.cad);
+      const sw = Math.min(1, mv / 1.5) * (mv > 3 ? 0.9 : 0.55 * G.stride);
       p.limbs[0].rotation.x = -Math.sin(p.phase) * sw; p.limbs[1].rotation.x = Math.sin(p.phase) * sw;
-      p.limbs[2].rotation.x = Math.sin(p.phase) * sw * 0.8; p.limbs[3].rotation.x = -Math.sin(p.phase) * sw * 0.8;
+      p.limbs[2].rotation.x = Math.sin(p.phase) * sw * 0.8 * G.arm; p.limbs[3].rotation.x = -Math.sin(p.phase) * sw * 0.8 * G.arm;
+      p.limbs[2].rotation.z = G.armOut; p.limbs[3].rotation.z = -G.armOut;
+      if ((p.state === 'walk' || p.state === 'cross' || p.state === 'wander') && mv > 0.2) { p.inner.rotation.z = Math.sin(p.phase) * G.sway; p.inner.rotation.y = Math.sin(p.phase) * G.twist; p.inner.position.y = Math.abs(Math.cos(p.phase)) * G.bounce; p.inner.rotation.x = G.lean; }
+      else if (p.state !== 'down' && p.state !== 'lie' && p.state !== 'sit') { p.inner.rotation.z = 0; p.inner.rotation.y = 0; }
       if (p.state === 'punch') { p.pt = (p.pt || 0) + dt * 9; p.limbs[3].rotation.x = -1.5 + Math.sin(p.pt) * 0.6; p.limbs[2].rotation.x = -1.2 - Math.sin(p.pt) * 0.5; }
       let yo = 0;
       if (p.props) p.props.visible = p.state === 'lie' || p.state === 'sit';
       if (p.state === 'lie') { p.inner.rotation.x = -Math.PI / 2; p.inner.position.set(0, 0.32, 0.45); p.limbs[2].rotation.x = 0.3; p.limbs[3].rotation.x = 0.3; }
       else if (p.state === 'sit') { p.inner.position.set(0, -(p.limbs[0].position.y - 0.05), -0.15); p.limbs[0].rotation.x = -1.45; p.limbs[1].rotation.x = -1.35; p.limbs[2].rotation.x = -0.2; p.limbs[3].rotation.x = -0.5 + Math.sin(p.phase2 = (p.phase2 || 0) + dt) * 0.05; }
-      else p.inner.position.set(0, 0, 0);
+      else p.inner.position.set(0, p.state === 'walk' || p.state === 'cross' || p.state === 'wander' ? Math.abs(Math.cos(p.phase)) * (p.gait?.bounce || 0) : 0, 0);
       const gH = p.kind === 'beach' ? groundH(p.x, p.z) : 0, swimP = gH < -1.3;
       const y = p.kind === 'beach' ? (gH >= 0 ? gH : swimP ? -1.85 : gH) : p.kind === 'inmate' ? 0 : 0.17;
       if (swimP && p.state !== 'down') { p.inner.rotation.x = 1.2; const ph = p.phase * 2 + p.t; p.limbs[2].rotation.x = -(ph % 6.28); p.limbs[3].rotation.x = -((ph + 3.14) % 6.28); }

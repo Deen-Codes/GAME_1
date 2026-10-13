@@ -443,7 +443,7 @@ function genWorld() {
       const bx0 = city.cx + i * P + HR, bz0 = city.cz + j * P + HR;
       genBlock(city, bx0, bz0, mkRng(hash(i + 100, j + 100, city.cx + city.cz * 7 + 1)));
       // lamps on block corners-ish
-      for (const [lx, lz] of [[bx0 + 1.2, bz0 + 12], [bx0 + 34.8, bz0 + 24], [bx0 + 12, bz0 + 34.8], [bx0 + 24, bz0 + 1.2]]) { LAMPS.push({ x: lx, z: lz }); addObj({ t: 'lamp', x: lx, z: lz }); }
+      for (const [lx, lz] of [[bx0 + 1.2, bz0 + 12], [bx0 + 34.8, bz0 + 24], [bx0 + 12, bz0 + 34.8], [bx0 + 24, bz0 + 1.2]]) { LAMPS.push({ x: lx, z: lz }); addObj({ t: 'lamp', x: lx, z: lz }); addCollider({ x: lx, z: lz, r: 0.16 }); }
     }
   }
   // zebra crossings just outside every junction, where pedestrians cross
@@ -459,7 +459,7 @@ function genWorld() {
     const along = r.axis === 'x', a0 = along ? r.x0 : r.z0, a1 = along ? r.x1 : r.z1;
     for (let a = a0 + 15; a < a1 - 10; a += 30) {
       const x = along ? a : r.x1 + 1.2, z = along ? r.z0 - 1.2 : a;
-      if (!roadAt(x, z) && !cityAt(x, z, -2)) { LAMPS.push({ x, z }); addObj({ t: 'lamp', x, z }); }
+      if (!roadAt(x, z) && !cityAt(x, z, -2)) { LAMPS.push({ x, z }); addObj({ t: 'lamp', x, z }); addCollider({ x, z, r: 0.16 }); }
     }
   }
   // road dashes
