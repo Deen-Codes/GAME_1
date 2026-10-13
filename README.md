@@ -118,6 +118,18 @@ Walk into shops, venues and homes:
 - Weapon and radio wheels: tap to open, tap to pick.
 - The Work app lists every way to make money.
 
+- Car controls: bottom = Drive, left = Brake/Reverse, right = Shoot (drive-by, auto-aims), top = Get out. No speedo.
+- Real damage: panels dent where you hit, paint darkens and headlights break. Smoke turns from grey to black, then the car catches fire and blows up.
+- Fuel stations and the Suds car wash repair your car for a fee.
+- Bicycles, rental e-scooters ($2) and motorbikes are parked around town.
+
+## Getting around on foot
+- Swim in the sea and fountains. Some pedestrians swim too.
+- Jump at a wall to grab the ledge and climb up. Fire-escape ladders lead to rooftops. Dive off into water; long falls on land hurt.
+
+## Emergency services
+- Explosions start fires. Fire engines come to put them out, and ambulances come to collect the injured.
+
 ## Homes and furniture
 You start with a free studio downtown. Bigger apartments, houses and the Baywood mansion can be bought. Buy furniture at Casa Bay; it's delivered to your storage. Inside any home, tap the pencil button to edit: pick up, move, rotate, store or add furniture. Furniture is usable:
 - bed: sleep

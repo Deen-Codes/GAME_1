@@ -1,5 +1,5 @@
 // Everything you can walk or drive up to: shops, barbers, property, dealers, minigames, chop shop, race.
-import { blockSide, attachDoor, addStructure } from './world.js?v=22';
+import { blockSide, attachDoor, addStructure } from './world.js?v=23';
 
 const S = (city, i, j, side) => blockSide(city, i, j, side);
 
@@ -53,6 +53,10 @@ export const PLACES = [
   { id: 'v_police', kind: 'venue', interior: 'police', name: 'Bay City Police Dept.', icon: 'shield', desc: 'Pay fines, turn yourself in, or ask about the city.', ...S('main', -1, -2, 's') },
   { id: 'v_hospital', kind: 'venue', interior: 'hospital', name: 'Bay General Hospital', icon: 'cross', desc: 'Get patched up, have a check-up, or have a baby.', ...S('main', 3, -1, 's') },
   { id: 'v_church', kind: 'venue', interior: 'church', name: 'Bay Chapel', icon: 'church', desc: 'A quiet place. Sit, reflect, talk to Father Gabe.', ...S('main', -4, 0, 's'), church: true },
+  { id: 'gas1', kind: 'service', svc: 'gas', name: 'Bay Gas', icon: 'bolt', desc: 'Fill up and get your car patched up.', ...S('main', 2, 1, 's'), car: true },
+  { id: 'gas2', kind: 'service', svc: 'gas', name: 'Bay Gas Eastport', icon: 'bolt', desc: 'Fill up and get your car patched up.', ...S('east', 0, -1, 's'), car: true },
+  { id: 'gas3', kind: 'service', svc: 'gas', name: 'Bay Gas Northfield', icon: 'bolt', desc: 'Fill up and get your car patched up.', ...S('north', 2, 0, 's'), car: true },
+  { id: 'wash1', kind: 'service', svc: 'wash', name: 'Sparkle Car Wash', icon: 'wave', desc: 'Drive through: wash, polish and full repair.', ...S('main', -2, 3, 's'), car: true },
   { id: 'mods', kind: 'mods', name: 'Bay Customs', icon: 'wrench', desc: 'Drive your own car in to buy upgrades, paint and wheels.', ...S('main', -3, -2, 's'), car: true },
   { id: 'chop', kind: 'chop', name: "Lucky's Chop Shop", icon: 'wrench', x: 744, z: 70, car: true },
   { id: 'race', kind: 'race', name: 'Street Race', icon: 'flag', x: 0, z: -122, car: true },
@@ -158,10 +162,10 @@ export const RACE = {
   points: [[0, -288], [192, -288], [192, -96], [96, -96], [96, 96], [-96, 96], [-96, -96], [0, -96]],
 };
 
-export const CHOP_VALUE = { hatch: 350, sedan: 500, coupe: 700, sports: 1400, muscle: 950, pickup: 650, van: 450, buggy: 400, limo: 1600, suv: 800, convertible: 1100, wagon: 450, lowrider: 900, classic: 1000, boxtruck: 600, hyper: 2600 };
+export const CHOP_VALUE = { moto: 900, bike: 60, scooter: 80, hatch: 350, sedan: 500, coupe: 700, sports: 1400, muscle: 950, pickup: 650, van: 450, buggy: 400, limo: 1600, suv: 800, convertible: 1100, wagon: 450, lowrider: 900, classic: 1000, boxtruck: 600, hyper: 2600 };
 
 // Shops, venues and homes get a real front door on their building; the marker moves to stand in front of it.
 const DOOR_COL = { clothes: '#ff6fb5', barber: '#2f80ed', guns: '#e23b3b', diner: '#ffd23f', mart: '#4cd964', gym: '#ff8a2a', casino: '#d4af37', motors: '#38e8ff', casa: '#c98a4a', bar: '#1fb5a8', club: '#9b51e0', church: '#c9a24a', hospital: '#e23b3b', police: '#2a6aff', pit: '#ff3b3b' };
 for (const p of PLACES) if (p.interior && p.door) attachDoor(p, DOOR_COL[p.interior] || '#ff8a2a', null, p.church ? 'church' : null);
 for (const p of PROPERTIES) if (p.door) attachDoor(p, '#4cd964');
-for (const p of [...PLACES, ...PROPERTIES]) if (!p.door) addStructure(p);
+for (const p of [...PLACES, ...PROPERTIES]) if (!p.door || p.kind === 'service') addStructure(p);

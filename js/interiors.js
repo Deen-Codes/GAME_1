@@ -1,9 +1,9 @@
 // Enterable interiors. Rooms are built far away from the city (at ORIGIN) and the player is moved
 // there, so the normal movement, camera and collision code keeps working. South wall is cut away.
 import * as THREE from '../lib/three.module.min.js';
-import { FURN, buildFurn } from './furniture.js?v=22';
-import { addCollider, removeCollider } from './world.js?v=22';
-import { buildCar } from './car.js?v=22';
+import { FURN, buildFurn } from './furniture.js?v=23';
+import { addCollider, removeCollider } from './world.js?v=23';
+import { buildCar } from './car.js?v=23';
 
 export const ORIGIN = { x: 0, z: 2600 };
 const T = (name, w, d, floor, wall, items, npcs, spots, extra = {}) => ({ name, w, d, floor, wall, items, npcs, spots, ...extra });

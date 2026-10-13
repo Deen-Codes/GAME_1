@@ -142,10 +142,17 @@ const PAL = {
 };
 export const PARKED = []; // {x,z,rot,seed}
 export const LAMPS = [];
+export const LADDERS = []; // {x,z,top,nx,nz} climbable ladders on building walls
+// highest roof you can stand on at (x,z) given your current height y
+export function roofAt(x, z, y) { let t = -99; for (const c of collidersNear(x, z)) if (c.top && !c.r && x > c.x0 && x < c.x1 && z > c.z0 && z < c.z1 && y >= c.top - 0.6 && c.top > t) t = c.top; return t; }
+export function wallTop(x, z) { for (const c of collidersNear(x, z)) if (c.top && !c.r && x > c.x0 && x < c.x1 && z > c.z0 && z < c.z1) return c.top; return null; }
 
 function building(x, z, w, d, h, color, opts = {}) {
   const o = { t: 'bld', x, z, w, d, h, col: color, ...opts }; addObj(o);
-  o.cc = { x0: x - w / 2, x1: x + w / 2, z0: z - d / 2, z1: z + d / 2, h: h + (opts.roofH || 0) }; addCollider(o.cc);
+  o.cc = { x0: x - w / 2, x1: x + w / 2, z0: z - d / 2, z1: z + d / 2, h: h + (opts.roofH || 0), top: 0.15 + (opts.y || 0) + h + (opts.roof === 'pitch' ? (opts.roofH || 2) * 0.55 : opts.glass ? 0 : 0.5) }; addCollider(o.cc);
+  if (!opts.roof && !opts.glass && !opts.y && h < 34 && w > 8 && d > 8 && hash(x | 0, z | 0, 77) < 0.35) { // fire-escape ladder on the back
+    const L = { x: x + w * 0.3, z: z - d / 2 - 0.25, top: o.cc.top, nx: 0, nz: -1 }; LADDERS.push(L); addObj({ t: 'ladder', x: L.x, z: L.z, top: L.top });
+  }
   return o;
 }
 function removeObj(o) { const c = chunks.get(ckey(...chunkOf(o.x, o.z))); if (c) { const i = c.objs.indexOf(o); if (i >= 0) c.objs.splice(i, 1); } }
@@ -161,11 +168,13 @@ function clearRect(x0, z0, x1, z1) {
 }
 // Places out in the open (beach, pier, chop shop...) get a proper structure built behind their marker.
 export function addStructure(p) {
-  const S = { g_taco: [9, 5], g_gallery: [7, 3], g_surf: [7, 5], g_gym: [14, 9], g_hoops: [15, 26], v_anchor: [12, 9], p_shack: [6, 5], p_beach: [13, 10], chop: [16, 12], race: [16, 2] }[p.id];
+  const S = { gas1: [14, 11], gas2: [14, 11], gas3: [14, 11], wash1: [12, 9], g_taco: [9, 5], g_gallery: [7, 3], g_surf: [7, 5], g_gym: [14, 9], g_hoops: [15, 26], v_anchor: [12, 9], p_shack: [6, 5], p_beach: [13, 10], chop: [16, 12], race: [16, 2] }[p.id];
   if (!S) return;
   const [w, d] = S, cx = p.x, cz = p.z - d / 2 - (p.id === 'race' ? 0 : 2.4), y = p.id === 'g_gallery' ? 0.28 : 0;
   clearRect(cx - w / 2 - 1, cz - d / 2 - 1, cx + w / 2 + 1, cz + d / 2 + 1);
-  addObj({ t: 'struct', s: p.id, x: cx, z: cz, w, d, y });
+  for (const o of objsNear(cx - w / 2 - 16, cz - d / 2 - 16, cx + w / 2 + 16, cz + d / 2 + 16)) // knock down anything built where this goes
+    if (o.t === 'bld' && !o.y && Math.abs(o.x - cx) < (o.w + w) / 2 && Math.abs(o.z - cz) < (o.d + d) / 2) { removeObj(o); if (o.cc) removeCollider(o.cc); }
+  addObj({ t: 'struct', s: p.id.startsWith('gas') ? 'gas' : p.id, x: cx, z: cz, w, d, y });
   const col = (x0, z0, x1, z1, h = 4) => addCollider({ x0: cx + x0, z0: cz + z0, x1: cx + x1, z1: cz + z1, h });
   switch (p.id) {
     case 'g_taco': col(-3.6, -1.4, 3.6, 1.4, 3); break;
@@ -173,6 +182,8 @@ export function addStructure(p) {
     case 'g_surf': col(-2.2, -2.5, 2.2, 1.0, 3); break;
     case 'v_anchor': col(-6, -4.5, 6, 2.5, 5); break;
     case 'p_shack': col(-3, -2.5, 3, 2.5, 4); break;
+    case 'gas1': case 'gas2': case 'gas3': col(-6.5, -5.5, 6.5, -2.5, 4); for (const x of [-3, 3]) col(x - 0.5, -0.4, x + 0.5, 0.4, 2); break;
+    case 'wash1': col(-6, -4.5, -2.6, 4.5, 4); col(2.6, -4.5, 6, 4.5, 4); break;
     case 'p_beach': col(-6.5, -5, 6.5, 3, 7); break;
     case 'chop': col(-8, -6, 8, 6, 6); break;
     case 'g_gym': col(-6.6, -4, -5.8, -3.2, 3); col(5.8, -4, 6.6, -3.2, 3); break;
@@ -229,6 +240,16 @@ function drawStruct(o, B) {
       b(-3, 0, 6.05, 6, 4, 0.1, '#3a3d45'); for (let i = 0; i < 8; i++) b(-3, 0.25 + i * 0.5, 6.1, 6, 0.06, 0.04, '#2a2a30');
       b(4.5, 0, 6.05, 1.2, 2.2, 0.1, '#5a3d28'); b(0, 4.6, 6.15, 7, 0.8, 0.2, '#ff8a2a', { key: 'sign' });
       for (const [x, z, r] of [[5, 8.5, 0.2], [-6, 8, -0.3]]) b(x, 0, z, 0.8, 0.8, 0.8, '#16161a'); break; }
+    case 'gas': { // fuel station: canopy, pumps, little shop
+      b(0, 0, 0, 14, 0.08, 11, '#c9c4bc'); for (const [x, z] of [[-5.5, -1.5], [5.5, -1.5], [-5.5, 3.5], [5.5, 3.5]]) b(x, 0, z, 0.35, 4.4, 0.35, '#e8e8e8');
+      b(0, 4.4, 1, 13, 0.6, 7, '#e8e8e8'); b(0, 4.45, 4.52, 13, 0.5, 0.05, '#e23b3b', { key: 'sign' }); b(0, 4.2, 1, 12, 0.08, 6.4, '#fff6d8', { key: 'glow' });
+      for (const x of [-3, 3]) { b(x, 0, 0, 1, 0.25, 0.8, '#9aa0aa'); b(x, 0.25, 0, 0.7, 1.5, 0.5, '#e23b3b'); b(x, 1.3, 0.26, 0.5, 0.3, 0.02, '#16161a', { key: 'glow' }); }
+      b(0, 0, -4, 13, 3.6, 3, '#f2efe8'); b(0, 0.4, -2.48, 8, 2.4, 0.05, '#33475a', { key: 'glow' }); b(0, 3.6, -4, 13.4, 0.4, 3.4, '#e23b3b');
+      B.box(X + 6.4, Y, Z + 5.2, 0.25, 6, 0.25, '#9aa0aa'); b(6.4, 6, 5.2, 2, 2, 0.3, '#e23b3b', { key: 'sign' }); break; }
+    case 'wash1': { // drive-through car wash
+      b(0, 0, 0, 12, 0.08, 9, '#8fa4b8'); for (const x of [-4.3, 4.3]) b(x, 0, 0, 3.4, 4, 9, '#2f80ed'); b(0, 4, 0, 12, 0.6, 9, '#ffffff');
+      for (const x of [-2.2, 2.2]) for (const z of [-2.5, 0, 2.5]) B.cyl(X + x, Y + 0.2, Z + z, 0.45, 3.2, ['#38e8ff', '#ff6fb5', '#ffd23f'][Math.abs(z * 2) % 3 | 0], 8);
+      b(0, 4.6, 4.55, 7, 1, 0.2, '#38e8ff', { key: 'sign' }); break; }
     case 'race': { // start/finish gantry + checkered line
       for (let i = 0; i < 16; i++) for (let j = 0; j < 2; j++) B.flat(X - 7.5 + i, Y + 0.08, Z - 0.5 + j, 1, 1, (i + j) % 2 ? '#111111' : '#ffffff');
       for (const x of [-7.9, 7.9]) b(x, 0, 0, 0.6, 6, 0.6, '#c9ccd2'); b(0, 5.4, 0, 16.4, 1.2, 0.5, '#e23b3b', { key: 'sign' }); b(0, 5.6, 0.26, 8, 0.8, 0.02, '#ffffff', { key: 'sign' }); break; }
@@ -831,6 +852,7 @@ function drawObj(o, B) {
     case 'bench': B.box(o.x, 0.2, o.z, o.rot ? 0.6 : 2, 0.45, o.rot ? 2 : 0.6, '#8a5a35'); break;
     case 'rock': B.box(o.x, -2, o.z, o.w, o.h + 2, o.d, o.col, { rot: r() * 0.6 }); B.box(o.x + 2, o.h - 1, o.z - 1, o.w * 0.6, 3, o.d * 0.6, '#3f6b35', { rot: r() }); break;
     case 'struct': drawStruct(o, B); break;
+    case 'ladder': { for (const sx of [-0.28, 0.28]) B.box(o.x + sx, 0.15, o.z, 0.06, o.top - 0.15 + 0.9, 0.06, '#5a5d64'); for (let y = 0.5; y < o.top + 0.6; y += 0.35) B.box(o.x, y, o.z, 0.56, 0.04, 0.05, '#7a7d84'); break; }
     case 'umbrella': B.box(o.x, 0, o.z, 0.1, 2.2, 0.1, '#ddd'); B.cone(o.x, 2.0, o.z, 1.6, 0.7, o.col, 8); break;
     case 'lifeguard':
       for (const sx of [-1, 1]) for (const sz of [-1, 1]) B.box(o.x + sx * 1.2, 0, o.z + sz * 1.2, 0.2, 2.6, 0.2, '#f2f2f2');

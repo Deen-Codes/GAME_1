@@ -1,7 +1,7 @@
 // Modular car builder. Car faces +Z, sits on y=0, origin at the centre of the wheelbase.
 import * as THREE from '../lib/three.module.min.js';
-import { BASIC } from './character.js?v=22';
-import { patternTexture } from './gun.js?v=22';
+import { BASIC } from './character.js?v=23';
+import { patternTexture } from './gun.js?v=23';
 
 export const BODIES = {
   hatch:  { label: 'Hatchback', L: 3.8, W: 1.75, bh: 0.55, cl: 2.0, ch: 0.62, co: -0.4,  wr: 0.34, mass: 1.0 },
@@ -20,6 +20,9 @@ export const BODIES = {
   classic: { label: 'Classic',  L: 5.1, W: 1.95, bh: 0.6,  cl: 2.0, ch: 0.52, co: -0.25, wr: 0.38, mass: 1.1, fins: true },
   boxtruck: { label: 'Box Truck', L: 6.3, W: 2.2, bh: 0.8, cl: 1.4, ch: 0.95, co: 2.0, wr: 0.45, mass: 1.6, box: true },
   hyper:  { label: 'Hypercar',  L: 4.7, W: 2.05, bh: 0.38, cl: 1.5, ch: 0.38, co: -0.05, wr: 0.38, mass: 0.85 },
+  moto:   { label: 'Motorbike', L: 2.1, W: 0.7, bh: 0.5, cl: 0, ch: 0, co: 0, wr: 0.33, mass: 0.45, two: 'moto' },
+  bike:   { label: 'Bicycle',   L: 1.75, W: 0.55, bh: 0.4, cl: 0, ch: 0, co: 0, wr: 0.34, mass: 0.3, two: 'bike' },
+  scooter: { label: 'E-scooter', L: 1.2, W: 0.5, bh: 0.2, cl: 0, ch: 0, co: 0, wr: 0.12, mass: 0.3, two: 'scooter' },
 };
 const o = (label, m = {}) => ({ label, m });
 export const CAR_PARTS = {
@@ -125,6 +128,9 @@ export function computeCarStats(cfg) {
   const b = BODIES[c.body] || BODIES.coupe;
   const e = CAR_PARTS.engine[c.engine]?.m || CAR_PARTS.engine.stock.m;
   const s = { top: e.top, acc: e.acc / b.mass, grip: 1, off: c.body === 'buggy' ? 1.4 : 1 };
+  if (b.two === 'bike') return { top: 11, acc: 6, grip: 1.3, off: 1.1, turn: 3.2, two: 'bike' };
+  if (b.two === 'scooter') return { top: 8.5, acc: 5, grip: 1.2, off: 0.6, turn: 3.4, two: 'scooter' };
+  if (b.two === 'moto') { s.top *= 1.12; s.acc = e.acc * 1.25; s.grip = 1.05; }
   if (c.body === 'sports') { s.top *= 1.08; s.acc *= 1.1; s.grip *= 1.05; }
   if (['van', 'limo', 'pickup'].includes(c.body)) s.grip *= 0.93;
   for (const slot of ['tyres', 'suspension', 'wheelSize', 'front', 'rear', 'spoiler', 'hood']) {
@@ -152,9 +158,59 @@ function taper(w, h, l, topL, topW, shift) {
   return g;
 }
 
+// two-wheelers: bicycle, e-scooter, motorbike. Same interface as cars (wheels spin, lights work)
+function buildTwo(c, B) {
+  const grp = new THREE.Group(), M = (col, o = {}) => new THREE.MeshStandardMaterial({ color: col, roughness: 0.5, ...o });
+  const bodyM = M(c.bodyColor, { metalness: 0.4, roughness: 0.35 }), dark = M('#16161a', { roughness: 0.8 }), chrome = M('#d0d4da', { metalness: 0.9, roughness: 0.2 });
+  const headM = new THREE.MeshStandardMaterial({ color: '#ffffff', emissive: c.headlights || '#fff2b0', emissiveIntensity: 0.6 });
+  const tailM = new THREE.MeshStandardMaterial({ color: '#7a0a10', emissive: '#ff1a2a', emissiveIntensity: 0.5 });
+  const revM = new THREE.MeshStandardMaterial({ color: '#d8dce0', emissive: '#ffffff', emissiveIntensity: 0 });
+  const bx = (w, h, d, m, x, y, z, rx = 0) => { const o = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), m); o.position.set(x, y, z); o.rotation.x = rx; o.castShadow = true; grp.add(o); return o; };
+  const L = B.L, wr = B.wr, kind = B.two, wz = L * 0.38, wheels = [];
+  for (const fz of [1, -1]) {
+    const pivot = new THREE.Group(); pivot.position.set(0, wr, fz * wz); grp.add(pivot);
+    const spin = new THREE.Group(); pivot.add(spin);
+    const tyre = new THREE.Mesh(new THREE.TorusGeometry(wr * 0.86, kind === 'moto' ? wr * 0.17 : wr * 0.09, 6, 18).rotateY(Math.PI / 2), dark); spin.add(tyre);
+    const hubM = kind === 'moto' ? M(c.rimColor || '#c9ccd2', { metalness: 0.6 }) : chrome;
+    for (let i = 0; i < (kind === 'bike' ? 12 : 5); i++) { const sp = new THREE.Mesh(new THREE.BoxGeometry(0.015, wr * 1.6, kind === 'moto' ? 0.05 : 0.012), hubM); sp.rotation.x = i / (kind === 'bike' ? 12 : 5) * Math.PI; spin.add(sp); }
+    spin.add(new THREE.Mesh(new THREE.CylinderGeometry(wr * 0.18, wr * 0.18, 0.08, 10).rotateZ(Math.PI / 2), hubM));
+    wheels.push({ pivot, spin, front: fz > 0 });
+  }
+  let seatY = 0.9, barY = 1.05;
+  if (kind === 'bike') {
+    bx(0.04, 0.04, wz * 1.6, bodyM, 0, wr + 0.38, 0.05, -0.15);          // top tube
+    bx(0.04, 0.5, 0.04, bodyM, 0, wr + 0.12, -0.12, 0.25);              // seat tube
+    bx(0.04, 0.04, wz * 1.3, bodyM, 0, wr + 0.1, 0.25, 0.55);           // down tube
+    bx(0.04, 0.55, 0.04, chrome, 0, wr + 0.28, wz - 0.06, -0.3);        // fork
+    bx(0.5, 0.03, 0.03, dark, 0, wr + 0.62, wz - 0.18);                 // bars
+    bx(0.14, 0.05, 0.24, dark, 0, wr + 0.5, -0.22); seatY = wr + 0.5; barY = wr + 0.62;
+    bx(0.1, 0.1, 0.1, dark, 0, wr, 0);                                  // crank
+  } else if (kind === 'scooter') {
+    bx(0.16, 0.06, L * 0.8, bodyM, 0, wr + 0.06, 0);                    // deck
+    bx(0.05, 1.0, 0.05, M('#3a3d45', { metalness: 0.5 }), 0, wr + 0.55, wz - 0.02, -0.12);  // stem
+    bx(0.46, 0.04, 0.04, dark, 0, wr + 1.04, wz - 0.08);                // bars
+    seatY = wr + 0.1; barY = wr + 1.04;
+  } else { // motorbike
+    bx(0.32, 0.26, 0.6, bodyM, 0, wr + 0.42, 0.18);                     // tank
+    bx(0.28, 0.1, 0.62, dark, 0, wr + 0.44, -0.35);                     // seat
+    bx(0.3, 0.28, 0.4, M('#3a3d45', { metalness: 0.6 }), 0, wr + 0.12, 0.05);  // engine
+    bx(0.08, 0.08, 0.7, chrome, 0.18, wr - 0.02, -0.4, -0.15);          // exhaust
+    bx(0.05, 0.6, 0.05, chrome, 0, wr + 0.3, wz - 0.1, -0.35);          // fork
+    bx(0.62, 0.04, 0.04, dark, 0, wr + 0.62, wz - 0.25);                // bars
+    bx(0.3, 0.12, 0.3, bodyM, 0, wr + 0.18, -wz + 0.05);                // rear fender
+    bx(0.36, 0.2, 0.18, bodyM, 0, wr + 0.5, wz - 0.18);                 // front cowl
+    bx(0.16, 0.12, 0.05, headM, 0, wr + 0.48, wz - 0.07);               // headlight
+    seatY = wr + 0.5; barY = wr + 0.62;
+  }
+  if (kind !== 'moto') bx(0.08, 0.06, 0.04, headM, 0, kind === 'scooter' ? barY - 0.1 : barY - 0.06, wz - 0.1);
+  bx(0.12, 0.06, 0.04, tailM, 0, kind === 'scooter' ? wr + 0.1 : seatY - 0.08, -wz - 0.02);
+  bx(0.05, 0.04, 0.04, revM, 0.07, kind === 'scooter' ? wr + 0.1 : seatY - 0.08, -wz - 0.03);
+  return { group: grp, wheels, headM, tailM, revM, glow: null, length: L, width: B.W, height: barY + 0.1, wr, two: kind, seatY, barY };
+}
 export function buildCar(cfg) {
   const c = { ...DEFAULT_CAR, ...cfg };
   const B = BODIES[c.body] || BODIES.coupe;
+  if (B.two) return buildTwo(c, B);
   const grp = new THREE.Group();
   const fin = c.finish;
   const look = { gloss: [0.25, 0.2], matte: [0.85, 0], metallic: [0.3, 0.75], chrome: [0.06, 1], camo: [0.8, 0], carbon: [0.35, 0.3] }[fin] || [0.3, 0.3];
@@ -359,4 +415,4 @@ export function buildCar(cfg) {
   return { group: grp, wheels, headM, tailM, revM, glow, length: L, width: W, height: top + B.ch, wr };
 }
 
-export const CAR_PRICES = { hatch: 6000, sedan: 9000, wagon: 11000, coupe: 16000, van: 14000, pickup: 18000, suv: 26000, classic: 30000, lowrider: 24000, convertible: 38000, muscle: 42000, buggy: 15000, boxtruck: 22000, sports: 85000, limo: 70000, hyper: 160000 };
+export const CAR_PRICES = { scooter: 800, bike: 400, moto: 9000, hatch: 6000, sedan: 9000, wagon: 11000, coupe: 16000, van: 14000, pickup: 18000, suv: 26000, classic: 30000, lowrider: 24000, convertible: 38000, muscle: 42000, buggy: 15000, boxtruck: 22000, sports: 85000, limo: 70000, hyper: 160000 };

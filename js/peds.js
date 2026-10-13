@@ -1,7 +1,7 @@
 // Pedestrians: baked low-poly people who stroll sidewalks, wander the beach, flee from trouble.
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, randomChar, disposeObject } from './character.js?v=22';
-import { CITIES, sandLine, shoreLine, groundH, walkable, resolve } from './world.js?v=22';
+import { buildCharacter, randomChar, disposeObject } from './character.js?v=23';
+import { CITIES, sandLine, shoreLine, groundH, walkable, resolve } from './world.js?v=23';
 
 const MAT = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.7, metalness: 0.05 }); // boxes keep crisp per-face normals; rounded parts stay smooth
 const SKINS = ['#ffe0cc', '#f6c9a4', '#e8b088', '#d39a6a', '#b77a4b', '#8d5524', '#6b3f22', '#452a1a'];
@@ -115,7 +115,7 @@ export class Peds {
   }
   spawnBeach(px, pz) {
     for (let k = 0; k < 10; k++) {
-      const x = px + rand(-80, 80), sl = sandLine(x), z = rand(sl + 6, shoreLine(x) - 26);
+      const x = px + rand(-80, 80), sl = sandLine(x), z = Math.random() < 0.3 ? rand(shoreLine(x) - 9, shoreLine(x) - 2) : rand(sl + 6, shoreLine(x) - 26);
       if (Math.hypot(x - px, z - pz) < 25 || !walkable(x, z)) continue;
       const p = this.makePed(pick(LOOKS.filter(l => l.beach)));
       Object.assign(p, { kind: 'beach', x, z, hx: x, hz: z, tx: x, tz: z, state: 'idle', t: rand(0, 4) });
@@ -225,7 +225,9 @@ export class Peds {
       if (p.state === 'lie') { p.inner.rotation.x = -Math.PI / 2; p.inner.position.set(0, 0.32, 0.45); p.limbs[2].rotation.x = 0.3; p.limbs[3].rotation.x = 0.3; }
       else if (p.state === 'sit') { p.inner.position.set(0, -(p.limbs[0].position.y - 0.05), -0.15); p.limbs[0].rotation.x = -1.45; p.limbs[1].rotation.x = -1.35; p.limbs[2].rotation.x = -0.2; p.limbs[3].rotation.x = -0.5 + Math.sin(p.phase2 = (p.phase2 || 0) + dt) * 0.05; }
       else p.inner.position.set(0, 0, 0);
-      const y = p.kind === 'beach' ? Math.max(groundH(p.x, p.z), 0) : 0.17;
+      const gH = p.kind === 'beach' ? groundH(p.x, p.z) : 0, swimP = gH < -1.3;
+      const y = p.kind === 'beach' ? (gH >= 0 ? gH : swimP ? -1.85 : gH) : 0.17;
+      if (swimP && p.state !== 'down') { p.inner.rotation.x = 1.2; const ph = p.phase * 2 + p.t; p.limbs[2].rotation.x = -(ph % 6.28); p.limbs[3].rotation.x = -((ph + 3.14) % 6.28); }
       if (p.hitT > 0 && p.state !== 'down') p.inner.rotation.x = -0.45 * (p.hitT / 0.32);
       p.root.position.set(p.x, y + yo, p.z); p.root.rotation.y = p.face;
     }
