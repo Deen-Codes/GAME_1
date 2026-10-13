@@ -234,7 +234,10 @@ input[type=text] { width: 100%; padding: 10px 12px; border-radius: 10px; border:
 .ph-icon em { position: absolute; top: -5px; right: 4px; background: #ff3b30; font-style: normal; font-size: 11px; font-weight: 900; min-width: 20px; height: 20px; border-radius: 10px; display: grid; place-items: center; }
 #phApp h4 { margin: 4px 0 10px; font-size: 26px; font-weight: 900; }
 .ph-back { background: none; color: #fff; font-weight: 800; font-size: 15px; padding: 2px 0; opacity: .9; }
-#phMap { width: 100%; aspect-ratio: 1; border-radius: 16px; box-shadow: 0 6px 16px rgba(0,0,0,.35); touch-action: none; }
+#phMap { width: 100%; aspect-ratio: 3 / 4; border-radius: 16px; box-shadow: 0 6px 16px rgba(0,0,0,.35); touch-action: none; display: block; }
+.ph-mapwrap { position: relative; }
+.ph-mapbtns { position: absolute; right: 8px; top: 8px; display: flex; flex-direction: column; gap: 6px; }
+.ph-mapbtns button { width: 36px; height: 36px; border-radius: 10px; background: rgba(20,18,38,.82); color: #fff; font-size: 20px; font-weight: 900; display: grid; place-items: center; }
 .ph-hint { font-size: 13px; opacity: .85; margin: 8px 2px; line-height: 1.4; }
 .ph-btn { display: block; width: 100%; margin: 8px 0; padding: 14px; border-radius: 14px; background: rgba(255,255,255,.18); font-weight: 800; font-size: 15px; text-align: left; backdrop-filter: blur(6px); }
 .ph-btn:active, .ph-row:active { background: rgba(255,255,255,.3); }

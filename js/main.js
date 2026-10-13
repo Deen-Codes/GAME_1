@@ -1,23 +1,23 @@
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA } from './character.js?v=30';
-import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=30';
-import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=30';
-import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide } from './world.js?v=30';
-import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=30';
-import { buildPanel, renderStats } from './ui.js?v=30';
-import { Input } from './input.js?v=30';
-import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying } from './audio.js?v=30';
-import { runMinigame } from './minigames.js?v=30';
-import { Peds, bakeCfg, figure, setWalk } from './peds.js?v=30';
-import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=30';
-import { findRoute } from './nav.js?v=30';
-import { attachWheel } from './wheel.js?v=30';
-import { Animals } from './animals.js?v=30';
-import { Talk } from './talk.js?v=30';
-import { svg, drawIcon } from './icons.js?v=30';
-import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=30';
-import { FURN, CATALOG } from './furniture.js?v=30';
-import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE } from './interiors.js?v=30';
+import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA } from './character.js?v=31';
+import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=31';
+import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=31';
+import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide } from './world.js?v=31';
+import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=31';
+import { buildPanel, renderStats } from './ui.js?v=31';
+import { Input } from './input.js?v=31';
+import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying } from './audio.js?v=31';
+import { runMinigame } from './minigames.js?v=31';
+import { Peds, bakeCfg, figure, setWalk } from './peds.js?v=31';
+import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=31';
+import { findRoute } from './nav.js?v=31';
+import { attachWheel } from './wheel.js?v=31';
+import { Animals } from './animals.js?v=31';
+import { Talk } from './talk.js?v=31';
+import { svg, drawIcon } from './icons.js?v=31';
+import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=31';
+import { FURN, CATALOG } from './furniture.js?v=31';
+import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE } from './interiors.js?v=31';
 
 const $ = id => document.getElementById(id);
 let inside = null, editMode = false, held = null, pendingCar = false, homeMusic = false, phoneBadge = 0;
@@ -3222,7 +3222,9 @@ const APPS = [
   ['radio', 'Radio', 'radio', 'linear-gradient(135deg,#ff3b8a,#90205a)'],
   ['settings', 'Settings', 'gear', 'linear-gradient(135deg,#9aa0aa,#5d636e)'],
 ];
+const mapView = { z: 3, cx: 0, cz: 0, init: false, off: null };
 function openPhone(app = 'home') {
+  mapView.init = false;
   if (stats.jail) { toast('Your phone was confiscated at intake. Use the pay phone in the visiting room.', 3); sfx.fail(); return; }
   if (ride && Math.abs(ride.s.v) > 3) { toast('Stop the car to use your phone'); return; }
   if (editMode) endEdit();
@@ -3251,20 +3253,41 @@ function renderPhone() {
     el.innerHTML = `<div class="ph-home"><div class="ph-clock">${$('phTime').textContent}</div><div class="ph-date">Bay City · Day ${dayN}</div>
       <div class="ph-grid">${APPS.map(([id, name, ico, bg]) => `<button class="ph-icon" data-go="${id}"><i style="background:${bg}">${svg(ico, 'app')}</i><span>${name}</span>${id === 'msgs' && (phoneBadge || customers.length) ? `<em>${phoneBadge || customers.length}</em>` : ''}</button>`).join('')}</div></div>`;
   } else if (phoneApp === 'maps') {
-    el.innerHTML = `${back}<h4>Maps</h4><canvas id="phMap"></canvas><p class="ph-hint">${waypoint ? 'Waypoint set. Follow the purple route.' : 'Tap anywhere on the map to set a waypoint.'}</p>${waypoint ? '<button class="ph-btn" id="phClear">Clear waypoint</button>' : ''}`;
-    const cv = $('phMap'), sz = Math.round(cv.getBoundingClientRect().width * Math.min(devicePixelRatio, 2)); cv.width = cv.height = sz;
-    const info = drawMapTo(cv);
-    cv.onpointerdown = e => {
-      const r = cv.getBoundingClientRect(), px = (e.clientX - r.left) / r.width * sz, pz = (e.clientY - r.top) / r.height * sz;
-      if (waypoint && Math.hypot(info.tx(waypoint.x) - px, info.tz(waypoint.z) - pz) < 22) clearWaypoint();
+    el.innerHTML = `${back}<h4>Maps</h4><div class="ph-mapwrap"><canvas id="phMap"></canvas><div class="ph-mapbtns"><button id="mzIn">+</button><button id="mzOut">−</button><button id="mzMe">${svg('pin', 'sm')}</button></div></div><p class="ph-hint">${waypoint ? 'Waypoint set. Tap it again to clear. Follow the purple route.' : 'Drag to move, pinch to zoom, tap to set a waypoint.'}</p>${waypoint ? '<button class="ph-btn" id="phClear">Clear waypoint</button>' : ''}`;
+    const cv = $('phMap'), r0 = cv.getBoundingClientRect(), dpr = Math.min(devicePixelRatio, 2), W2 = Math.round(r0.width * dpr), H2 = Math.round(r0.height * dpr); cv.width = W2; cv.height = H2;
+    const off = mapView.off ||= document.createElement('canvas'); off.width = off.height = 1536;
+    const info = drawMapTo(off), ctx2 = cv.getContext('2d');
+    if (!mapView.init) { const f = inside ? inside.back : focusPos(); mapView.cx = info.tx(f.x); mapView.cz = info.tz(f.z); mapView.z = 3; mapView.init = true; }
+    const view = () => { const vw = off.width / mapView.z, vh = vw * H2 / W2; mapView.cx = clamp(mapView.cx, vw / 2, off.width - vw / 2); mapView.cz = clamp(mapView.cz, vh / 2, off.height - vh / 2); return { vw, vh, sx: mapView.cx - vw / 2, sz: mapView.cz - vh / 2 }; };
+    const draw = () => { const v = view(); ctx2.fillStyle = '#3d8fd0'; ctx2.fillRect(0, 0, W2, H2); ctx2.drawImage(off, v.sx, v.sz, v.vw, v.vh, 0, 0, W2, H2); };
+    draw();
+    const pts = new Map(); let moved = 0, pinch = null, last = null;
+    const toOff = (cx, cy) => { const r = cv.getBoundingClientRect(), v = view(); return [v.sx + (cx - r.left) / r.width * v.vw, v.sz + (cy - r.top) / r.height * v.vh]; };
+    cv.onpointerdown = e => { try { cv.setPointerCapture(e.pointerId); } catch (_) {} pts.set(e.pointerId, [e.clientX, e.clientY]); moved = pts.size > 1 ? 99 : 0; last = [e.clientX, e.clientY]; if (pts.size === 2) { const [a, b] = [...pts.values()]; pinch = { d: Math.hypot(a[0] - b[0], a[1] - b[1]), z: mapView.z }; } };
+    cv.onpointermove = e => {
+      if (!pts.has(e.pointerId)) return; pts.set(e.pointerId, [e.clientX, e.clientY]);
+      const r = cv.getBoundingClientRect(), v = view();
+      if (pts.size === 2 && pinch) { const [a, b] = [...pts.values()]; mapView.z = clamp(pinch.z * Math.hypot(a[0] - b[0], a[1] - b[1]) / Math.max(10, pinch.d), 1, 8); draw(); return; }
+      const dx = e.clientX - last[0], dy = e.clientY - last[1]; last = [e.clientX, e.clientY]; moved += Math.abs(dx) + Math.abs(dy);
+      if (moved > 8) { mapView.cx -= dx / r.width * v.vw; mapView.cz -= dy / r.height * v.vh; draw(); }
+    };
+    cv.onpointerup = cv.onpointercancel = e => {
+      pts.delete(e.pointerId); if (pts.size < 2) pinch = null;
+      if (moved > 8 || pts.size) return;
+      const [px, pz] = toOff(e.clientX, e.clientY), k = info.k;
+      if (waypoint && Math.hypot(info.tx(waypoint.x) - px, info.tz(waypoint.z) - pz) < 10 * k) clearWaypoint();
       else {
         let wx = info.fromX(px), wz = info.fromZ(pz), label = null;
-        for (const m of markers) if (Math.hypot(info.tx(m.x) - px, info.tz(m.z) - pz) < 14) { wx = m.x; wz = m.z; label = m.place.name; }
+        for (const m of markers) if (Math.hypot(info.tx(m.x) - px, info.tz(m.z) - pz) < 8 * k) { wx = m.x; wz = m.z; label = m.place.name; }
         setWaypoint(wx, wz, label);
         if (!inside) { const f = focusPos(); route = findRoute(f.x, f.z, wx, wz); routeT = 1.5; routeFrom = [f.x, f.z]; }
       }
       renderPhone();
     };
+    cv.onwheel = e => { e.preventDefault(); mapView.z = clamp(mapView.z * (1 - e.deltaY * 0.0015), 1, 8); draw(); };
+    $('mzIn').onclick = () => { mapView.z = clamp(mapView.z * 1.5, 1, 8); draw(); };
+    $('mzOut').onclick = () => { mapView.z = clamp(mapView.z / 1.5, 1, 8); draw(); };
+    $('mzMe').onclick = () => { const f = inside ? inside.back : focusPos(); mapView.cx = info.tx(f.x); mapView.cz = info.tz(f.z); draw(); };
     $('phClear') && ($('phClear').onclick = () => { clearWaypoint(); renderPhone(); });
   } else if (phoneApp === 'thread') {
     const id = phoneThread, name = nameOf(id), T = stats.texts[id] || [];
@@ -3378,7 +3401,7 @@ function saveGame() {
   store.set('bc_save', save); store.set('bc_arsenal', arsenal); store.set('bc_cars', garage);
 }
 // auto-update: bookmarks and home-screen apps can hold on to an old copy. Check version.json (never cached) and reload once if newer.
-const BUILD = 30;
+const BUILD = 31;
 function checkUpdate() {
   fetch('version.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(j => {
     if (!(j.v > BUILD)) return;
