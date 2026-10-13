@@ -141,10 +141,58 @@ export function nowPlaying() { return radio.song; }
 export function radioStation() { return STATIONS[radio.station]; }
 function stopTalk() { try { speechSynthesis?.cancel(); } catch (_) {} radio.talking = 0; }
 export function radioNext() { return radioSet((radio.station + 1) % STATIONS.length); }
-export function radioSet(i) { stopTalk(); radio.station = i; radio.step = 0; radio.song = null; if (A) radio.next = A.currentTime + 0.1; return STATIONS[i]; }
+// every station keeps "broadcasting" while you're tuned elsewhere: tuning in drops you mid-song, like real radio
+function songLen(S) { return S.bars * 16 * 60 / S.bpm / 4; }
+function tuneIn(st) {
+  const now = A ? A.currentTime : 0, wall = performance.now() / 1000;
+  if (st.live && wall - st.live.wall0 < songLen(st.live.song) - 2) { // still the same song, carry on where it'd be
+    radio.song = st.live.song; radio.step = Math.floor((wall - st.live.wall0) / (60 / radio.song.bpm / 4));
+  } else { // pick a song and land somewhere in it (sometimes the start, sometimes the very end)
+    const s = nextSong(st), r = Math.random(), frac = r < 0.2 ? 0 : r < 0.3 ? 0.9 : Math.random() * 0.85;
+    radio.song = s; radio.step = Math.floor(s.bars * 16 * frac) & ~15; st.live = { song: s, wall0: wall - radio.step * 60 / s.bpm / 4 };
+  }
+  radio.hadSong = true; radio.next = now + 0.1;
+  if (radio.step < 32 && Math.random() < 0.5) setTimeout(() => hostOver(st, radio.song, 'intro'), 900);
+  else if (Math.random() < 0.18) setTimeout(() => hostOver(st, radio.song, 'ident'), 1500);
+}
+export function radioSet(i) { stopTalk(); radio.station = i; radio.step = 0; radio.song = null; radio.tuned = false; if (A) radio.next = A.currentTime + 0.1; return STATIONS[i]; }
 export function radioIndex() { return radio.station; }
 export function setMuted(m) { audio(); if (master) master.gain.value = m ? 0 : 0.9; }
-export function radioOn(on) { radio.on = on; if (!on) stopTalk(); if (on && A) radio.next = Math.max(radio.next, A.currentTime + 0.1); if (rbus && A) rbus.gain.setTargetAtTime(on ? 0.85 : 0, A.currentTime, 0.05); }
+export function radioOn(on) { radio.on = on; if (!on) stopTalk(); if (on) radio.tuned = false; if (on && A) radio.next = Math.max(radio.next, A.currentTime + 0.1); if (rbus && A) rbus.gain.setTargetAtTime(on ? 0.85 : 0, A.currentTime, 0.05); }
+// ---------------- DJs: each station has its own host, voice and patter
+const DJ = {
+  chill: { name: 'Mellow Mike', rate: 0.88, pitch: 0.85, uk: false, male: true, ident: ['Bay FM, one oh one point one. Sunset Chill.', 'Just breathe. You\'re listening to Bay FM.'], lines: ['Mellow Mike here, easing you into the evening.', 'Windows down, sun going down. Perfect.', 'Take it slow out there, Bay City.'] },
+  bounce: { name: 'DJ Krazy K', rate: 1.2, pitch: 1.0, uk: false, male: true, ident: ['Westside ninety-six three! Let\'s GO!', 'Krazy K on the ones and twos, Westside!'], lines: ['Westside, make some noise!', 'This one\'s going out to everybody on the block tonight!', 'Turn it UP, Bay City!'] },
+  synth: { name: 'Synthia', rate: 0.95, pitch: 1.35, uk: false, male: false, ident: ['Neon eighty-eight. The future was yesterday.', 'You are tuned to Neon eighty-eight.'], lines: ['Drive into the night with Synthia.', 'Neon lights, empty highways. This is your soundtrack.', 'Chrome dreams on Neon eighty-eight.'] },
+  dnb: { name: 'MC Rinse', rate: 1.3, pitch: 0.95, uk: true, male: true, ident: ['Jungle one seven four, big up yourself!', 'MC Rinse in the place, Jungle one seven four!'], lines: ['Pull up, pull up! Rewind that one!', 'Big shout to all the junglists in Bay City, you know who you are!', 'Bass heavy, all night long, Jungle one seven four!'] },
+  classical: { name: 'Margaret Ashby', rate: 0.85, pitch: 0.95, uk: true, male: false, ident: ['You are listening to Classic Bay, ninety point five.', 'Classic Bay. Timeless music, for a busy city.'], lines: ['Good evening. Margaret Ashby with you on Classic Bay.', 'A gentle piece now, perfect for unwinding.', 'Composed over two hundred years ago, and still as moving today.'] },
+  rock: { name: 'Big Dave', rate: 1.0, pitch: 0.7, uk: false, male: true, ident: ['Rock one oh four seven. The ROCK!', 'Big Dave here. Crank it.'], lines: ['If it\'s too loud, you\'re too old! Rock one oh four seven!', 'Big Dave on the air, and we are not slowing down!', 'Headbangers, this one\'s for you!'] },
+  vibes: { name: 'DJ Sunny', rate: 1.05, pitch: 1.1, uk: false, male: false, ident: ['Vibes ninety-nine point nine.'], lines: [] },
+  dancehall: { name: 'Selecta Irie', rate: 1.12, pitch: 1.0, uk: true, male: true, ident: ['Yard ninety-two five! Big up!', 'Selecta Irie pon de mic, Yard ninety-two five!'], lines: ['Ladies, this one is for you! Wine it up!', 'Big up all the massive in Bay City!', 'Pull it up, selecta! Wheel and come again!'] },
+  drill: { name: 'Tizzy', rate: 1.2, pitch: 0.9, uk: true, male: true, ident: ['Ends one forty, you already know.', 'Tizzy on Ends one forty, say less.'], lines: ['This one is hard, trust me.', 'Big up the ends, big up the mandem.', 'No skips, Ends one forty.'] },
+  pop: { name: 'Kayla', rate: 1.12, pitch: 1.35, uk: false, male: false, ident: ['Hits one oh two point three! All the hits, all day!', 'Kayla here on Hits one oh two!'], lines: ['Okay, I am OBSESSED with this one!', 'Text in your requests, I\'m playing them all day!', 'Sing it with me, Bay City!'] },
+};
+let voices = null;
+function voiceFor(d) {
+  try { voices = voices?.length ? voices : speechSynthesis.getVoices(); } catch (_) { return null; }
+  const en = voices.filter(v => /^en/i.test(v.lang)), byLang = en.filter(v => d.uk ? /GB|IE|AU/i.test(v.lang) : /US/i.test(v.lang));
+  const fem = /female|samantha|karen|serena|zira|moira|fiona|victoria|tessa|kate|susan|allison|ava/i, mal = /male|daniel|alex|fred|david|mark|arthur|aaron|oliver|tom|rishi|gordon/i;
+  const want = d.male ? mal : fem;
+  return byLang.find(v => want.test(v.name)) || en.find(v => want.test(v.name)) || byLang[0] || en[0] || null;
+}
+// the DJ talks over the music (it ducks down under the voice)
+function hostOver(st, song, kind) {
+  if (!radio.on || STATIONS[radio.station] !== st || !A) return;
+  const d = DJ[st.style]; if (!d || !window.speechSynthesis) return;
+  const line = kind === 'intro' ? `${pick(d.lines.length ? d.lines : d.ident)} Here's ${song.title}, from ${song.artist}.` : kind === 'outro' ? `That was ${song.title}, by ${song.artist}. ${pick(d.ident)}` : pick(d.ident);
+  try {
+    const u = new SpeechSynthesisUtterance(line); u.rate = d.rate; u.pitch = d.pitch; u.volume = 1; const v = voiceFor(d); if (v) u.voice = v;
+    u.onstart = () => rbus?.gain.setTargetAtTime(0.32, A.currentTime, 0.15);
+    u.onend = u.onerror = () => { if (radio.on) rbus?.gain.setTargetAtTime(0.85, A.currentTime, 0.3); };
+    speechSynthesis.cancel(); speechSynthesis.speak(u);
+  } catch (_) {}
+}
+const pick = a => a[Math.floor(Math.random() * a.length)];
 const HOST = [
   "You're locked in to Vibes ninety-nine point nine. I'm DJ Sunny, keeping your evening smooth.",
   "Shout out to everybody stuck in traffic on the Bay Bridge right now. We see you. This one's for you.",
@@ -159,19 +207,17 @@ const HOST = [
 function hostTalk(next) {
   const line = `${HOST[Math.floor(Math.random() * HOST.length)]} Coming up next, ${next.title}, from ${next.artist}.`;
   const t = A.currentTime; radio.talking = 1; radio.talkEnd = t + 14;
-  // a little jingle under the voice
   [0, 4, 7, 12].forEach((iv, i) => rn(mtof(72 + iv), t + i * 0.12, 0.4, 'sine', 0.04, 4000));
   let spoke = false;
   try {
     if (window.speechSynthesis) {
-      const u = new SpeechSynthesisUtterance(line); u.rate = 1.05; u.pitch = 1.1; u.volume = 0.9;
-      const v = speechSynthesis.getVoices().find(v => /en[-_](GB|US)/i.test(v.lang) && /female|samantha|karen|serena|zira|moira|fiona/i.test(v.name)) || speechSynthesis.getVoices().find(v => /^en/i.test(v.lang));
-      if (v) u.voice = v;
+      const u = new SpeechSynthesisUtterance(line), d = DJ.vibes; u.rate = d.rate; u.pitch = d.pitch; u.volume = 0.9;
+      const v = voiceFor(d); if (v) u.voice = v;
       u.onend = u.onerror = () => { radio.talking = 0; if (A) radio.next = A.currentTime + 0.3; };
       speechSynthesis.cancel(); speechSynthesis.speak(u); spoke = true; radio.talkEnd = t + 16;
     }
   } catch (_) {}
-  if (!spoke) { // no speech engine: radio-host style jabber over a soft bed
+  if (!spoke) {
     for (let i = 0; i < 22; i++) { const tt = t + 0.5 + i * 0.16 + Math.random() * 0.05; rn(160 + Math.random() * 90, tt, 0.1, 'sawtooth', 0.025, 900 + Math.random() * 1200, 0.01); }
     radio.talkEnd = t + 4.5;
   }
@@ -184,15 +230,18 @@ export function radioTick() {
   if (!A || !radio.on) return;
   const st = STATIONS[radio.station]; if (st.style === 'off') return;
   if (radio.talking) { if (A.currentTime > radio.talkEnd) { radio.talking = 0; radio.next = A.currentTime + 0.2; } else return; }
+  if (!radio.song && !radio.tuned && !radio.dance) { radio.tuned = true; tuneIn(st); songCb?.(radio.song, st); }
   if (!radio.song) {
-    const s = nextSong(st);
+    const prev = radio.prevSong, s = nextSong(st);
+    st.live = { song: s, wall0: performance.now() / 1000 };
     if (st.talk && radio.hadSong) { radio.song = s; radio.step = 0; hostTalk(s); songCb?.(s, st); return; }
     radio.song = s; radio.step = 0; radio.hadSong = true; songCb?.(s, st);
+    if (!radio.dance) { const r = Math.random(); if (r < 0.35) setTimeout(() => hostOver(st, s, 'intro'), 700); else if (r < 0.5 && prev) setTimeout(() => hostOver(st, prev, 'outro'), 700); }
   }
   const S = radio.song, sp = 60 / S.bpm / 4; // sixteenth notes
   while (radio.next < A.currentTime + 0.25) {
     const t = radio.next, step = radio.step, bar = Math.floor(step / 16), pos = step % 16;
-    if (bar >= S.bars) { radio.song = null; radio.hadSong = true; radio.next = t + sp * 4; return; }
+    if (bar >= S.bars) { radio.prevSong = S; radio.song = null; radio.hadSong = true; radio.next = t + sp * 4; return; }
     playStep(S, t, bar, pos, sp);
     radio.next += sp; radio.step++;
   }
@@ -286,9 +335,9 @@ export function danceStart() {
   danceSave = { on: radio.on, station: radio.station };
   const opts = STATIONS.map((s, i) => i).filter(i => STATIONS[i].songs && STATIONS[i].style !== 'classical'), si = opts[Math.floor(Math.random() * opts.length)], st = STATIONS[si];
   stopTalk(); radio.station = si; radio.song = st.songs[Math.floor(Math.random() * st.songs.length)]; radio.step = 0; radio.hadSong = false;
-  radio.on = true; radio.next = A.currentTime + 0.8; if (rbus) rbus.gain.setTargetAtTime(0.95, A.currentTime, 0.05);
+  radio.on = true; radio.tuned = true; radio.dance = true; radio.next = A.currentTime + 0.8; if (rbus) rbus.gain.setTargetAtTime(0.95, A.currentTime, 0.05);
   return { song: radio.song, station: st.name, t0: radio.next, spb16: 60 / radio.song.bpm / 4 };
 }
 export function danceStop() {
-  if (!danceSave) return; radio.song = null; radio.station = danceSave.station; radio.step = 0; radioOn(danceSave.on); danceSave = null;
+  if (!danceSave) return; radio.dance = false; radio.tuned = false; radio.song = null; radio.station = danceSave.station; radio.step = 0; radioOn(danceSave.on); danceSave = null;
 }

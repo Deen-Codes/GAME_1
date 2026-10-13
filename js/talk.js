@@ -1,8 +1,8 @@
 // Conversations staged like a Pokémon battle: they stand on a platform facing you,
 // you see the back of your own head in the foreground, subtitles type out, you pick replies.
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject } from './character.js?v=37';
-import { sfx, audio } from './audio.js?v=37';
+import { buildCharacter, poseCharacter, disposeObject } from './character.js?v=39';
+import { sfx, audio } from './audio.js?v=39';
 
 const $ = id => document.getElementById(id);
 const BG = {
@@ -76,8 +76,8 @@ export class Talk {
     for (const p of [this.pNpc, this.pYou]) { p.top.material.color.set(b.plat); p.rim.material.color.set(b.rim); }
     this.hemi.intensity = N ? 0.8 : 1.3; this.sun.intensity = N ? 1 : 2; this.sun.color.set(N ? '#b0b8ff' : '#fff3e0');
   }
-  begin({ npcCfg, youCfg, name, tag, pitch = 300, bg = 'city', night = 0, wall = null, floor = null, pet = null, pose = null }) {
-    this.pose = pose;
+  begin({ npcCfg, youCfg, name, tag, pitch = 300, bg = 'city', night = 0, wall = null, floor = null, pet = null, pose = null, think = false }) {
+    this.pose = pose; this.think = think;
     audio();
     this.clear();
     this.active = true; this.t = 0; this.intro = 0; this.t0 = performance.now(); this.blipPitch = pitch;
@@ -90,7 +90,13 @@ export class Talk {
       if (pose === 'lie') { const bag = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.42, 1.45), m('#3a5f7a')); bag.position.set(0, 0.21, 0.55); g.add(bag); }
       this.prop = g; this.scene.add(g);
     }
-    this.you = buildCharacter(youCfg); this.scene.add(this.you.root);
+    this.you = buildCharacter(youCfg); this.scene.add(this.you.root); this.you.root.visible = !think;
+    if (think) { // thought bubbles drifting up from your head
+      const g = new THREE.Group(), m = new THREE.MeshStandardMaterial({ color: '#ffffff', roughness: 0.4, emissive: '#ffffff', emissiveIntensity: 0.25 });
+      [[0.38, 2.05, 0.07], [0.58, 2.3, 0.11], [0.86, 2.62, 0.17]].forEach(([x, y, r]) => { const b = new THREE.Mesh(new THREE.SphereGeometry(r, 12, 8), m); b.position.set(x, y, 0.2); g.add(b); });
+      this.bubbles = g; this.scene.add(g);
+    }
+    $('talkBox').classList.toggle('think', think);
     for (const c of [this.npc, this.you]) c.root.traverse(o => { if (o.isMesh) o.castShadow = true; });
     $('talkName').textContent = name; $('talkTag').textContent = tag || '';
     $('talkText').textContent = ''; $('talkOpts').innerHTML = ''; $('talkOpts').classList.add('hidden');
@@ -102,6 +108,7 @@ export class Talk {
     for (const k of ['npc', 'you']) if (this[k]) { this.scene.remove(this[k].root); disposeObject(this[k].root); this[k] = null; }
     if (this.pet) { this.scene.remove(this.pet); this.pet = null; }
     if (this.prop) { this.scene.remove(this.prop); this.prop = null; }
+    if (this.bubbles) { this.scene.remove(this.bubbles); this.bubbles = null; }
   }
   end() { this.active = false; this.clear(); $('talkUI').classList.add('hidden'); this._say = null; this._choose = null; }
   say(text, who = 'npc') {
@@ -156,6 +163,11 @@ export class Talk {
       const g = talk ? Math.sin(this.t * 4) * 0.25 : 0;
       c.armR.pivot.rotation.set(-0.15 - Math.max(0, g) * 1.4, 0, 0.12 + Math.max(0, g) * 0.3);
       c.armL.pivot.rotation.set(-0.1 + Math.min(0, g) * 1.2, 0, -0.12);
+    }
+    if (this.think && n) { // you, alone, hand on chin, mulling it over
+      n.root.position.x = 0; n.root.rotation.y = Math.sin(this.t * 0.5) * 0.15;
+      n.armR.pivot.rotation.set(-2.2, 0, -0.65); n.head.rotation.x = 0.12 + Math.sin(this.t * 1.1) * 0.04; n.head.rotation.y = 0.25;
+      if (this.bubbles) { this.bubbles.position.set(n.root.position.x, n.root.position.y + (n.height ? n.height - 1.7 : 0), n.root.position.z); this.bubbles.children.forEach((b, i) => { b.position.y = [2.05, 2.3, 2.62][i] + Math.sin(this.t * 2 + i) * 0.04; }); }
     }
     if (this.pose && n) {
       this.prop.position.copy(this.pNpc.g.position); this.prop.rotation.y = n.root.rotation.y;
