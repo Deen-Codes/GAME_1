@@ -138,6 +138,16 @@ Walk into shops, venues and homes:
 - Drug deals in view of a cop get called in. Passers-by sometimes snitch.
 - A fuel station, car wash or Bay Customs clears your stars once the cops have lost sight of you.
 
+- When an officer catches you on foot, you get a choice:
+  - At 1-2 stars: talk your way out. Your first 1-star offence gets a warning.
+  - At 1 star: pay a fine on the spot.
+  - At up to 3 stars: offer a bribe.
+  - Any time: go quietly for half the fine and sentence, or shove past and run.
+- Cops only shoot if you're armed, at 3+ stars in a car, or at 5 stars. If they take you down, you get arrested, not hospitalised.
+
+## Camera
+- Pinch the game view (or use the mouse wheel) to zoom right in and see faces and clothes, or zoom out. Double-click to reset.
+
 ## Prison: Bay County Correctional
 - Busted at 2+ stars means prison (12h to 3 days), in an orange jumpsuit. Your phone and weapons are taken. Free roam: cell block, canteen (3 free meals a day), yard (weights, hoops), visiting room, infirmary.
 - Lights out at 22:00 fast-forwards to morning. Your bunk lets you nap or do your time.
