@@ -1,23 +1,23 @@
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA } from './character.js?v=27';
-import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=27';
-import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=27';
-import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide } from './world.js?v=27';
-import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=27';
-import { buildPanel, renderStats } from './ui.js?v=27';
-import { Input } from './input.js?v=27';
-import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted } from './audio.js?v=27';
-import { runMinigame } from './minigames.js?v=27';
-import { Peds, bakeCfg, figure } from './peds.js?v=27';
-import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=27';
-import { findRoute } from './nav.js?v=27';
-import { attachWheel } from './wheel.js?v=27';
-import { Animals } from './animals.js?v=27';
-import { Talk } from './talk.js?v=27';
-import { svg, drawIcon } from './icons.js?v=27';
-import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=27';
-import { FURN, CATALOG } from './furniture.js?v=27';
-import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE } from './interiors.js?v=27';
+import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA } from './character.js?v=28';
+import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=28';
+import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=28';
+import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide } from './world.js?v=28';
+import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=28';
+import { buildPanel, renderStats } from './ui.js?v=28';
+import { Input } from './input.js?v=28';
+import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted } from './audio.js?v=28';
+import { runMinigame } from './minigames.js?v=28';
+import { Peds, bakeCfg, figure } from './peds.js?v=28';
+import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=28';
+import { findRoute } from './nav.js?v=28';
+import { attachWheel } from './wheel.js?v=28';
+import { Animals } from './animals.js?v=28';
+import { Talk } from './talk.js?v=28';
+import { svg, drawIcon } from './icons.js?v=28';
+import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=28';
+import { FURN, CATALOG } from './furniture.js?v=28';
+import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE } from './interiors.js?v=28';
 
 const $ = id => document.getElementById(id);
 let inside = null, editMode = false, held = null, pendingCar = false, homeMusic = false, phoneBadge = 0;
@@ -1708,6 +1708,7 @@ async function talkHomeless(p) {
 const WANT = { v: 0, stars: 0, loseT: 0, seen: false, sirenT: 0, arrestT: 0, flash: 0, lx: 0, lz: 0, coolT: 0, spawnT: 0, losT: 0 };
 // heat needed for each star: 1 star is easy to get, 5 stars takes a real rampage
 const STAR_AT = [0, 0.01, 2, 4.5, 8, 12];
+const RESPONSE = [0, 9, 5, 2.5, 1.5, 1]; // seconds until the first unit rolls up to investigate, by stars
 function heatStars() { let st = 0; for (let i = 1; i <= 5; i++) if (WANT.v >= STAR_AT[i]) st = i; return st; }
 const searchR = () => 35 + (WANT.stars || WANT.prev || 1) * 12; // the circle cops search after losing sight of you
 const evadeNeed = () => 5 + WANT.stars * 2.2; // seconds out of sight (and out of the circle) to lose them
@@ -1745,7 +1746,7 @@ function crime(amt, x = P.x, z = P.z) {
   // stars climb one at a time with a breather between (see updatePolice), so a shoot-out doesn't jump straight to 5
   if (!before) WANT.stars = Math.min(2, heatStars());
   else if (WANT.coolT <= 0 && heatStars() > before) WANT.stars = before + 1;
-  if (WANT.stars > before) { WANT.coolT = 7; if (!before) { WANT.seen = copSaw; WANT.spawnT = copSaw ? 1.5 : 3; if (!copSaw) setTimeout(() => toast('Someone called it in. Get out of the red circle!', 2.5), 2300); } }
+  if (WANT.stars > before) { WANT.coolT = 7; if (!before) { WANT.seen = copSaw; WANT.spawnT = copSaw ? 1.5 : RESPONSE[WANT.stars]; if (!copSaw) setTimeout(() => toast('Someone called it in. Get out of the red circle!', 2.5), 2300); } }
   if (WANT.stars > before) { toast(WANT.stars === 1 ? 'The police are on to you!' : `Wanted level ${WANT.stars}!`, 2); WANT.flash = 1.2; navigator.vibrate?.([20, 40, 20]); }
 }
 // drug deals: a cop who can see the deal calls it in; otherwise there's a small chance someone snitches later
@@ -1784,9 +1785,8 @@ function spawnCopCar() {
     let x, z;
     if (WANT.seen) { // reinforcements come from behind you, never out of nowhere in front
       const a = head + Math.PI + rand(-1.6, 1.6), d = rand(80, 105); x = f.x + Math.sin(a) * d; z = f.z + Math.cos(a) * d;
-    } else { // searching: units sweep the circle around where you were last seen
-      const a = rand(0, 6.28), d = rand(0.4, 1.3) * searchR(); x = WANT.lx + Math.sin(a) * d; z = WANT.lz + Math.cos(a) * d;
-      if (Math.hypot(x - f.x, z - f.z) < 80) continue;
+    } else { // searching: a unit turns up from out of view and drives into the circle to investigate
+      const a = rand(0, 6.28), d = rand(70, 105); x = f.x + Math.sin(a) * d; z = f.z + Math.cos(a) * d;
     }
     const r = roadAt(x, z); if (!r || !walkable(x, z, false)) continue;
     if (losClear(x, z, f.x, f.z) && Math.hypot(x - f.x, z - f.z) < 90) continue;
@@ -1795,6 +1795,8 @@ function spawnCopCar() {
 }
 // where a searching unit heads: random spots inside the search circle
 function searchSpot(v) {
+  // mostly sweep the circle; the more stars, the more often they get a hunch about where you actually are
+  if (WANT.stars && Math.random() < 0.15 + WANT.stars * 0.12) { const f = focusPos(); for (let i = 0; i < 6; i++) { const x = f.x + rand(-22, 22), z = f.z + rand(-22, 22); if (roadAt(x, z)) return { x, z }; } }
   for (let i = 0; i < 8; i++) { const a = rand(0, 6.28), d = rand(0, searchR()), x = WANT.lx + Math.sin(a) * d, z = WANT.lz + Math.cos(a) * d; if (roadAt(x, z)) return { x, z }; }
   return { x: WANT.lx, z: WANT.lz };
 }
@@ -1822,14 +1824,15 @@ function aiDrive(v, c, s, dt) {
   }
   const dx = tg.x - c.x, dz = tg.z - c.z, d = Math.hypot(dx, dz), err = wrapA(Math.atan2(dx, dz) - c.h);
   if (v.unstuck > 0) { v.unstuck -= dt; c.v = damp(c.v, -7, 3, dt); c.steer = damp(c.steer, -Math.sign(err || 1), 6, dt); return; }
-  const onFootClose = (!ride && d < 11 && v.ai === 'chase') || (v.ai === 'respond' && d < 10);
+  const fp = focusPos(), pd = Math.hypot(fp.x - c.x, fp.z - c.z), td = v.target ? Math.hypot(v.target.x - c.x, v.target.z - c.z) : 1e9;
+  const onFootClose = (!ride && pd < 11 && v.ai === 'chase' && (WANT.seen || !v.police)) || (v.ai === 'respond' && td < 10);
   const top = onFootClose ? 0 : v.ai === 'plough' ? 4.5 : v.ai === 'patrol' ? 10 : (v.police && !WANT.seen && v.ai === 'chase') ? 13 : d > 40 ? s.top * 0.92 : d > 14 ? 20 : 9;
   c.v = damp(c.v, Math.abs(err) > 1.7 && d > 10 ? 7 : top, onFootClose ? 4 : 1.4, dt);
   c.steer = damp(c.steer, clamp(err * 1.8, -1, 1), 7, dt);
   if (Math.abs(c.v) < 1.2 && !onFootClose) { v.stuckT = (v.stuckT || 0) + dt; if (v.stuckT > 1.4) { v.stuckT = 0; v.unstuck = 1.1; } } else v.stuckT = 0;
   // officers jump out when you're on foot nearby (or you've stopped the car)
   if (v.ai === 'chase' && !v.police) return;
-  if (v.ai === 'chase' && !v.deployed && d < 14 && (!ride || Math.abs(ride.s.v) < 2) && Math.abs(c.v) < 3) {
+  if (v.ai === 'chase' && !v.deployed && pd < 14 && (!ride || Math.abs(ride.s.v) < 2) && Math.abs(c.v) < 3) {
     v.deployed = true; const n = WANT.stars >= 3 ? 2 : 1;
     for (let i = 0; i < n; i++) makeCop(c.x + Math.cos(c.h) * (i ? -2 : 2), c.z - Math.sin(c.h) * (i ? -2 : 2));
   }
@@ -1909,7 +1912,7 @@ function updatePolice(dt) {
   const wantCars = WANT.stars ? [0, 1, 2, 3, 4, 5][WANT.stars] : 0;
   // reinforcements arrive at a steady pace instead of all at once
   WANT.spawnT -= dt;
-  if (WANT.stars && WANT.spawnT <= 0 && copCars.filter(v => v.police && v.ai === 'chase').length < wantCars) { WANT.spawnT = Math.max(2.5, 7 - WANT.stars); spawnCopCar(); }
+  if (WANT.stars && WANT.spawnT <= 0 && copCars.filter(v => v.police && v.ai === 'chase').length < wantCars) { WANT.spawnT = WANT.seen ? Math.max(2.5, 7 - WANT.stars) : Math.max(3, 11 - WANT.stars * 2); spawnCopCar(); }
   // losing them: break line of sight, get out of the search circle, stay hidden
   if (WANT.stars) {
     const nc = nearestCop(f.x, f.z);
@@ -3341,7 +3344,7 @@ function saveGame() {
   store.set('bc_save', save); store.set('bc_arsenal', arsenal); store.set('bc_cars', garage);
 }
 // auto-update: bookmarks and home-screen apps can hold on to an old copy. Check version.json (never cached) and reload once if newer.
-const BUILD = 27;
+const BUILD = 28;
 function checkUpdate() {
   fetch('version.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(j => {
     if (!(j.v > BUILD)) return;
