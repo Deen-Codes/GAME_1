@@ -1,25 +1,25 @@
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA } from './character.js?v=60';
-import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=60';
-import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=60';
-import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, onBridge, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=60';
-import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=60';
-import { buildPanel, renderStats } from './ui.js?v=60';
-import { Input } from './input.js?v=60';
-import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime } from './audio.js?v=60';
-import { runMinigame } from './minigames.js?v=60';
-import { Peds, bakeCfg, figure, setWalk, setTownSource } from './peds.js?v=60';
-import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=60';
-import { findRoute } from './nav.js?v=60';
-import { COURSES, CAREERS, QUIZ } from './careers.js?v=60';
-import { EVENTS, EVENT_BY_ID } from './events.js?v=60';
-import { attachWheel } from './wheel.js?v=60';
-import { Animals } from './animals.js?v=60';
-import { Talk } from './talk.js?v=60';
-import { svg, drawIcon } from './icons.js?v=60';
-import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=60';
-import { FURN, CATALOG } from './furniture.js?v=60';
-import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE } from './interiors.js?v=60';
+import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA } from './character.js?v=61';
+import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=61';
+import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=61';
+import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, onBridge, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=61';
+import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=61';
+import { buildPanel, renderStats } from './ui.js?v=61';
+import { Input } from './input.js?v=61';
+import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime } from './audio.js?v=61';
+import { runMinigame } from './minigames.js?v=61';
+import { Peds, bakeCfg, figure, setWalk, setTownSource } from './peds.js?v=61';
+import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=61';
+import { findRoute } from './nav.js?v=61';
+import { COURSES, CAREERS, QUIZ } from './careers.js?v=61';
+import { EVENTS, EVENT_BY_ID } from './events.js?v=61';
+import { attachWheel } from './wheel.js?v=61';
+import { Animals } from './animals.js?v=61';
+import { Talk } from './talk.js?v=61';
+import { svg, drawIcon } from './icons.js?v=61';
+import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=61';
+import { FURN, CATALOG } from './furniture.js?v=61';
+import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE } from './interiors.js?v=61';
 
 const $ = id => document.getElementById(id);
 let inside = null, editMode = false, held = null, pendingCar = false, homeMusic = false, phoneBadge = 0;
@@ -3345,7 +3345,7 @@ function updateDate(dt) {
   for (let i = leaving.length - 1; i >= 0; i--) { const l = leaving[i]; l.t += dt; l.fig.root.position.x += l.fx * 1.6 * dt; l.fig.root.position.z += l.fz * 1.6 * dt; l.fig.root.rotation.y = Math.atan2(l.fx, l.fz); const ph = l.t * 9; l.fig.limbs[0].rotation.x = -Math.sin(ph) * 0.5; l.fig.limbs[1].rotation.x = Math.sin(ph) * 0.5; if (l.t > 6) { dyn.remove(l.fig.root); leaving.splice(i, 1); } }
   dateCalls(dt);
   if (!date || woo) return;
-  if (gameHours() - date.since > 7) { endDate(`${date.name} had to head home. "Text me!"`); return; }
+  if (gameHours() - date.since > (partner()?.id === date.id ? 16 : 7)) { endDate(partner()?.id === date.id ? `${date.name} headed home. "See you later, babe."` : `${date.name} had to head home. "Text me!"`); return; }
   const D = date;
   // dancing next to you at the club
   if (dance && D.dancing) { const b = (audioTime() - dance.tr.t0) / (dance.tr.spb16 * 4) * Math.PI, l = D.fig.limbs; D.x = P.x + 1.1; D.z = P.z + 0.3; D.face = -0.5; D.fig.inner.position.y = Math.abs(Math.sin(b)) * 0.09; l[2].rotation.set(-2.4 + Math.sin(b) * 0.5, 0, -0.3); l[3].rotation.set(-2.4 - Math.sin(b) * 0.5, 0, 0.3); l[0].rotation.x = Math.sin(b) * 0.25; l[1].rotation.x = -Math.sin(b) * 0.25; D.fig.root.position.set(D.x, P.y, D.z); D.fig.root.rotation.y = D.face; return; }
@@ -3558,7 +3558,9 @@ function updateWoo(dt) {
       else { W.car.b.group.rotation.z = 0; for (const [m, c] of W.glass) m.color.setHex(c); }
       bumpRel(date.id, 25, false); date.interest += 20; stats.woohoo = (stats.woohoo || 0) + 1; maybePregnant(date.id, date.tryBaby); cheatCheck(date.id);
       const n = date.name; saveGame();
-      setTimeout(() => endDate(`${n}: "Wow. Call me, okay?" (Mood maxed, Charm up)`), 1600);
+      // your girlfriend / wife stays with you afterwards; a date heads home
+      if (partner()?.id === date.id) { date.since = gameHours(); setTimeout(() => toast(`${n}: "${pick(['I love you, you know that?', 'Mmm. Stay here a bit.', 'Best night ever.'])}" (Mood maxed, Charm up)`, 3), 1600); }
+      else setTimeout(() => endDate(`${n}: "Wow. Call me, okay?" (Mood maxed, Charm up)`), 1600);
     });
   }
 }
@@ -4576,7 +4578,7 @@ function saveGame() {
   store.set('bc_save', save); store.set('bc_arsenal', arsenal); store.set('bc_cars', garage);
 }
 // auto-update: bookmarks and home-screen apps can hold on to an old copy. Check version.json (never cached) and reload once if newer.
-const BUILD = 60;
+const BUILD = 61;
 function checkUpdate() {
   fetch('version.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(j => {
     if (!(j.v > BUILD)) return;

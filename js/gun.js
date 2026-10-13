@@ -1,6 +1,6 @@
 // Modular gun builder + stat model. Gun points along +Z, origin at the top of the grip (where the hand goes).
 import * as THREE from '../lib/three.module.min.js';
-import { BASIC } from './character.js?v=60';
+import { BASIC } from './character.js?v=61';
 
 // Base stats per frame. Every other part multiplies these.
 export const RECEIVERS = {
