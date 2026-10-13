@@ -1,9 +1,9 @@
 // Enterable interiors. Rooms are built far away from the city (at ORIGIN) and the player is moved
 // there, so the normal movement, camera and collision code keeps working. South wall is cut away.
 import * as THREE from '../lib/three.module.min.js';
-import { FURN, buildFurn } from './furniture.js?v=84';
-import { addCollider, removeCollider } from './world.js?v=84';
-import { buildCar } from './car.js?v=84';
+import { FURN, buildFurn } from './furniture.js?v=85';
+import { addCollider, removeCollider } from './world.js?v=85';
+import { buildCar } from './car.js?v=85';
 
 export const ORIGIN = { x: 0, z: 2600 };
 const T = (name, w, d, floor, wall, items, npcs, spots, extra = {}) => ({ name, w, d, floor, wall, items, npcs, spots, ...extra });
@@ -64,15 +64,48 @@ export const INTERIORS = {
   studio: T('Studio', 14, 10, '#c9b89a', '#e8e2d6', [], [], [], { home: true, layout: 2,
     walls: [[1.9, -5, 2.1, 1.2, 2.6, '#e8e2d6'], [1.9, 2.8, 2.1, 5, 2.6, '#e8e2d6'], [4.2, -5, 4.4, -1.8, 2.6, '#dfe8ec'], [4.3, -1.9, 5.2, -1.7, 2.6, '#dfe8ec'], [6.3, -1.9, 7, -1.7, 2.6, '#dfe8ec']],
     floors: [[-7, -5, -1.5, -2.6, '#d9d2c6'], [4.4, -5, 7, -1.9, '#cfe0e8'], [2.1, -5, 4.2, 5, '#a89bb8'], [4.2, -1.7, 7, 5, '#a89bb8']] }),
-  apartment: T('Apartment', 14, 10, '#b89a7a', '#e6e9f0', [], [], [], { home: true }),
+  apartment: T('Apartment', 16, 11, '#b89a7a', '#e6e9f0', [], [], [], { home: true, layout: 2,
+    walls: [[2.9, -5.5, 3.1, 0.8, 2.6], [2.9, 2.4, 3.1, 5.5, 2.6], [5.4, -5.5, 5.6, -2.3, 2.6, '#dfe8ec'], [5.5, -2.4, 6.2, -2.2, 2.6, '#dfe8ec'], [7.3, -2.4, 8, -2.2, 2.6, '#dfe8ec']],
+    floors: [[-8, -5.5, -2.5, -2.8, '#d9d2c6'], [5.6, -5.5, 8, -2.4, '#cfe0e8'], [3.1, -5.5, 5.4, 5.5, '#9a8a7a'], [5.4, -2.2, 8, 5.5, '#9a8a7a']] }),
+  // the money homes: big open-plan living with floor-to-ceiling windows, a proper kitchen island, master suite with a bathtub
+  penthouse: T('Penthouse', 24, 16, '#4a3a32', '#f2f2f4', [], [], [], { home: true, layout: 1, light: '#fff4e0',
+    walls: [[4.9, -8, 5.1, 0.8, 3], [4.9, 2.6, 5.1, 8, 3], [8.4, -8, 8.6, -3, 3, '#dfe8ec'], [8.5, -3.1, 9.4, -2.9, 3, '#dfe8ec'], [10.6, -3.1, 12, -2.9, 3, '#dfe8ec']],
+    floors: [[-12, -8, -5, -3.5, '#e8e8ea'], [8.6, -8, 12, -3.1, '#e4eaee'], [5.1, -8, 8.4, 8, '#5a4a40'], [8.4, -2.9, 12, 8, '#5a4a40']] }),
+  villa: T('Villa', 22, 14, '#c9a27a', '#f6f0e4', [], [], [], { home: true, layout: 1, light: '#fff1d6',
+    walls: [[4.9, -7, 5.1, 0.6, 2.8], [4.9, 2.2, 5.1, 7, 2.8], [8.2, -7, 8.4, -2.6, 2.8, '#dfe8ec'], [8.3, -2.7, 9.0, -2.5, 2.8, '#dfe8ec'], [10.2, -2.7, 11, -2.5, 2.8, '#dfe8ec']],
+    floors: [[-11, -7, -5, -3.5, '#e8e2d6'], [8.4, -7, 11, -2.7, '#e4eaee'], [5.1, -7, 8.2, 7, '#a08060'], [8.2, -2.5, 11, 7, '#a08060']] }),
   house: T('House', 18, 12, '#a0805a', '#efe6d6', [], [], [], { home: true, layout: 2,
     walls: [[3.9, -6, 4.1, 1.5, 2.6, '#efe6d6'], [3.9, 3.1, 4.1, 6, 2.6, '#efe6d6'], [6.1, -6, 6.3, -2.6, 2.6, '#dfe8ec'], [6.2, -2.7, 7.1, -2.5, 2.6, '#dfe8ec'], [8.2, -2.7, 9, -2.5, 2.6, '#dfe8ec']],
     floors: [[-9, -6, -3, -3, '#d9d2c6'], [6.3, -6, 9, -2.7, '#cfe0e8'], [4.1, -6, 6.1, 6, '#9a8a7a'], [6.1, -2.5, 9, 6, '#9a8a7a']] }),
-  mansion: T('Mansion', 26, 18, '#e8e2d6', '#fff8ee', [], [], [], { home: true }),
+  mansion: T('Mansion', 26, 18, '#e8e2d6', '#fff8ee', [], [], [], { home: true, layout: 1, light: '#fff4e0',
+    walls: [[5.9, -9, 6.1, 1, 3.2], [5.9, 2.8, 6.1, 9, 3.2], [9.4, -9, 9.6, -3.6, 3.2, '#dfe8ec'], [9.5, -3.7, 10.4, -3.5, 3.2, '#dfe8ec'], [11.6, -3.7, 13, -3.5, 3.2, '#dfe8ec']],
+    floors: [[-13, -9, -6, -4.5, '#f2ece2'], [9.6, -9, 13, -3.7, '#e4eaee'], [6.1, -9, 9.4, 9, '#8a6a5a'], [9.4, -3.5, 13, 9, '#8a6a5a'], [-13, 4, -7, 9, '#3a3d45']] }),
 };
 // default furniture for each home layout: kitchen along the back, sofa facing the TV, bed in the bedroom, en-suite fittings
 export const HOME_DEFAULTS = {
   studio: [{ t: 'fridge', x: -6.4, z: -4.5, r: 0 }, { t: 'stove', x: -5.3, z: -4.5, r: 0 }, { t: 'table', x: -3.6, z: -3.4, r: 0 }, { t: 'tv', x: -6.6, z: 1.8, r: Math.PI / 2 }, { t: 'couch', x: -3.4, z: 1.8, r: -Math.PI / 2, c: '#5a6b7a' }, { t: 'plant', x: 1.4, z: -4.5, r: 0 }, { t: 'single', x: 5.4, z: 2.5, r: 0, c: '#3a5fa0' }, { t: 'shower', x: 6.3, z: -4.3, r: 0 }, { t: 'toilet', x: 4.95, z: -4.5, r: 0, c: '#f4f6f8' }],
+  apartment: [{ t: 'fridge', x: -7.4, z: -5, r: 0 }, { t: 'stove', x: -6.3, z: -5, r: 0 }, { t: 'table', x: -4.4, z: -3.6, r: 0 }, { t: 'chair', x: -5.3, z: -3.6, r: Math.PI / 2 }, { t: 'chair', x: -3.5, z: -3.6, r: -Math.PI / 2 }, { t: 'tv', x: -7.6, z: 1.5, r: Math.PI / 2 }, { t: 'couch', x: -4.4, z: 1.5, r: -Math.PI / 2, c: '#3a3d45' }, { t: 'rug', x: -6, z: 1.5, r: Math.PI / 2, c: '#a03a4f' }, { t: 'plant', x: 2.3, z: -4.9, r: 0 }, { t: 'skywin', x: -1, z: -5.44, r: 0 }, { t: 'bed', x: 6.7, z: 0.4, r: 0, c: '#3a5fa0' }, { t: 'shower', x: 7.3, z: -4.8, r: 0 }, { t: 'toilet', x: 6.1, z: -5.0, r: 0, c: '#f4f6f8' }, { t: 'desk', x: 4.3, z: 4.9, r: Math.PI }],
+  penthouse: [{ t: 'fridge', x: -11.3, z: -7.5, r: 0, c: '#3a3d45' }, { t: 'stove', x: -10.1, z: -7.5, r: 0, c: '#3a3d45' }, { t: 'barcart', x: -8.2, z: -7.6, r: 0, c: '#16161b' }, { t: 'island', x: -9, z: -4.8, r: 0 }, { t: 'stool', x: -9.6, z: -3.8, r: Math.PI }, { t: 'stool', x: -8.4, z: -3.8, r: Math.PI },
+    { t: 'table', x: -9, z: -0.5, r: 0, c: '#16161b' }, { t: 'chair', x: -9.9, z: -0.5, r: Math.PI / 2, c: '#3a3d45' }, { t: 'chair', x: -8.1, z: -0.5, r: -Math.PI / 2, c: '#3a3d45' },
+    { t: 'skywin', x: -5.5, z: -7.94, r: 0 }, { t: 'skywin', x: -1.5, z: -7.94, r: 0 }, { t: 'skywin', x: 2.5, z: -7.94, r: 0 }, { t: 'skywin', x: 6.8, z: -7.94, r: 0 },
+    { t: 'tv', x: -1.5, z: -7.3, r: 0 }, { t: 'rug', x: -1.5, z: -4.4, r: 0, c: '#e8e2d6' }, { t: 'couch', x: -1.5, z: -2.4, r: Math.PI, c: '#3a3d45' }, { t: 'armchair', x: -4.2, z: -4.4, r: Math.PI / 2, c: '#8b1e3f' }, { t: 'armchair', x: 1.2, z: -4.4, r: -Math.PI / 2, c: '#8b1e3f' },
+    { t: 'piano', x: 2.8, z: 4.6, r: 0 }, { t: 'aquarium', x: -11.6, z: 3, r: Math.PI / 2 }, { t: 'hottub', x: -8.8, z: 5.6, r: 0, c: '#3a3d45' }, { t: 'plant', x: -11.3, z: -2.4, r: 0 }, { t: 'plant', x: 4.3, z: -7.4, r: 0 }, { t: 'stereo', x: -4.4, z: -7.6, r: 0 }, { t: 'lamp', x: 0.6, z: -6.9, r: 0 },
+    { t: 'bookshelf', x: 4.6, z: -4, r: -Math.PI / 2 }, { t: 'bed', x: 9.8, z: -1.4, r: 0, c: '#e8e2d6' }, { t: 'desk', x: 6.4, z: -7.4, r: 0, c: '#3a3d45' }, { t: 'armchair', x: 11, z: 6.6, r: -2.4, c: '#3a3d45' }, { t: 'plant', x: 11.4, z: 2.6, r: 0 },
+    { t: 'tub', x: 10.2, z: -7.4, r: 0 }, { t: 'shower', x: 11.4, z: -4.1, r: -Math.PI / 2 }, { t: 'toilet', x: 9.1, z: -4.6, r: Math.PI / 2, c: '#f4f6f8' }],
+  villa: [{ t: 'fridge', x: -10.3, z: -6.5, r: 0 }, { t: 'stove', x: -9.1, z: -6.5, r: 0 }, { t: 'island', x: -8.2, z: -4.4, r: 0, c: '#e8e2d6' }, { t: 'stool', x: -8.8, z: -3.4, r: Math.PI }, { t: 'stool', x: -7.6, z: -3.4, r: Math.PI },
+    { t: 'table', x: -8.5, z: 0.8, r: 0 }, { t: 'chair', x: -9.4, z: 0.8, r: Math.PI / 2 }, { t: 'chair', x: -7.6, z: 0.8, r: -Math.PI / 2 },
+    { t: 'skywin', x: -5, z: -6.94, r: 0 }, { t: 'skywin', x: 1.5, z: -6.94, r: 0 }, { t: 'tv', x: -1.5, z: -6.4, r: 0 }, { t: 'rug', x: -1.5, z: -3.6, r: 0, c: '#c2b280' }, { t: 'couch', x: -1.5, z: -1.8, r: Math.PI, c: '#c2b280' }, { t: 'armchair', x: -4.2, z: -3.6, r: Math.PI / 2, c: '#5a6b7a' },
+    { t: 'bookshelf', x: 2.6, z: -6.6, r: 0 }, { t: 'stereo', x: -4.2, z: -6.6, r: 0 }, { t: 'hottub', x: -8.6, z: 4.8, r: 0 }, { t: 'plant', x: -10.4, z: -1.8, r: 0 }, { t: 'plant', x: 4.3, z: -6.4, r: 0 }, { t: 'palm', x: 3.6, z: 5.8, r: 0 },
+    { t: 'bed', x: 9.6, z: -0.9, r: 0, c: '#3a5fa0' }, { t: 'desk', x: 6.2, z: -6.5, r: 0 }, { t: 'armchair', x: 10.2, z: 5.6, r: -2.4, c: '#c2b280' },
+    { t: 'tub', x: 9.6, z: -6.4, r: 0 }, { t: 'shower', x: 10.4, z: -3.8, r: -Math.PI / 2 }, { t: 'toilet', x: 8.9, z: -4.4, r: Math.PI / 2, c: '#f4f6f8' }],
+  mansion: [{ t: 'fridge', x: -12.3, z: -8.5, r: 0 }, { t: 'stove', x: -11.1, z: -8.5, r: 0 }, { t: 'stove', x: -9.9, z: -8.5, r: 0 }, { t: 'barcart', x: -7.3, z: -8.6, r: 0 }, { t: 'island', x: -10, z: -5.8, r: 0, c: '#e8e2d6' }, { t: 'stool', x: -10.6, z: -4.8, r: Math.PI }, { t: 'stool', x: -9.4, z: -4.8, r: Math.PI },
+    { t: 'table', x: -10, z: -1.6, r: 0 }, { t: 'chair', x: -10.9, z: -1.6, r: Math.PI / 2 }, { t: 'chair', x: -9.1, z: -1.6, r: -Math.PI / 2 }, { t: 'chair', x: -10, z: -2.5, r: 0 }, { t: 'chair', x: -10, z: -0.7, r: Math.PI },
+    { t: 'skywin', x: -4, z: -8.94, r: 0 }, { t: 'skywin', x: 0, z: -8.94, r: 0 }, { t: 'skywin', x: 4, z: -8.94, r: 0 }, { t: 'skywin', x: 7.8, z: -8.94, r: 0 },
+    { t: 'tv', x: 0, z: -8.3, r: 0 }, { t: 'rug', x: 0, z: -5.4, r: 0, c: '#8b1e3f' }, { t: 'couch', x: 0, z: -3.3, r: Math.PI, c: '#e8e2d6' }, { t: 'couch', x: -3, z: -5.6, r: Math.PI / 2, c: '#e8e2d6' }, { t: 'armchair', x: 2.7, z: -5.6, r: -Math.PI / 2, c: '#8b1e3f' },
+    { t: 'piano', x: 3.8, z: 5.6, r: 0, c: '#ffffff' }, { t: 'aquarium', x: 5.4, z: -1.5, r: -Math.PI / 2 }, { t: 'hottub', x: -3.6, z: 6.2, r: 0 }, { t: 'weights', x: -11.5, z: 6.6, r: 0 }, { t: 'treadmill', x: -8.6, z: 6.6, r: 0 }, { t: 'arcade', x: -12.4, z: 2.4, r: Math.PI / 2 },
+    { t: 'stereo', x: -4, z: -8.6, r: 0 }, { t: 'plant', x: -12.3, z: -3.6, r: 0 }, { t: 'palm', x: 5.2, z: 8, r: 0 }, { t: 'palm', x: -6.4, z: 8, r: 0 }, { t: 'lamp', x: 2.4, z: -8.2, r: 0 },
+    { t: 'bed', x: 11.2, z: -2, r: 0, c: '#a03a4f' }, { t: 'desk', x: 7.6, z: -8.4, r: 0 }, { t: 'bookshelf', x: 6.4, z: 5, r: Math.PI / 2 }, { t: 'armchair', x: 12.2, z: 7.6, r: -2.4 }, { t: 'plant', x: 12.4, z: 1.2, r: 0 },
+    { t: 'tub', x: 11.4, z: -8.4, r: 0 }, { t: 'shower', x: 12.3, z: -4.8, r: -Math.PI / 2 }, { t: 'toilet', x: 10.1, z: -5.2, r: Math.PI / 2, c: '#f4f6f8' }],
   house: [{ t: 'fridge', x: -8.4, z: -5.5, r: 0 }, { t: 'stove', x: -7.3, z: -5.5, r: 0 }, { t: 'table', x: -5.4, z: -4.2, r: 0 }, { t: 'tv', x: -8.6, z: 2.6, r: Math.PI / 2 }, { t: 'couch', x: -5.4, z: 2.6, r: -Math.PI / 2, c: '#5a6b7a' }, { t: 'plant', x: 3.4, z: -5.5, r: 0 }, { t: 'bed', x: 6.8, z: 2.8, r: 0, c: '#a03a4f' }, { t: 'shower', x: 8.3, z: -5.3, r: 0 }, { t: 'toilet', x: 6.9, z: -5.5, r: 0, c: '#f4f6f8' }],
 };
 export const STARTER_FURNITURE = [{ t: 'single', x: -3, z: -2.2, r: 0, c: '#3a5fa0' }, { t: 'fridge', x: 3.6, z: -3.4, r: 0 }, { t: 'plant', x: 4.2, z: 2.6, r: 0 }, { t: 'armchair', x: 0.5, z: -2.6, r: 0 }];

@@ -1,5 +1,5 @@
 // Everything you can walk or drive up to: shops, barbers, property, dealers, minigames, chop shop, race.
-import { blockSide, attachDoor, addStructure } from './world.js?v=84';
+import { blockSide, attachDoor, addStructure } from './world.js?v=85';
 
 const S = (city, i, j, side) => blockSide(city, i, j, side);
 
@@ -82,11 +82,11 @@ export const PROPERTIES = [
   { id: 'p_loft', name: 'Northfield Loft', icon: 'house', home: 'apartment', price: 18000, income: 150, ...S('north', 0, 0, 's') },
   { id: 'p_bung', name: 'Eastport Bungalow', icon: 'house', home: 'house', price: 26000, income: 220, ...S('east', 0, 1, 's') },
   { id: 'p_hangar', name: 'Airport Hangar', icon: 'house', home: 'apartment', price: 45000, income: 380, x: 245, z: -626 },
-  { id: 'p_pent', name: 'Downtown Penthouse', icon: 'house', home: 'apartment', price: 60000, income: 500, ...S('main', 1, 0, 'e') },
-  { id: 'p_beach', name: 'Malibay Beach House', icon: 'house', home: 'house', price: 85000, income: 700, x: 430, z: 372 },
-  { id: 'p_villa', name: 'Canyon Villa', icon: 'house', home: 'house', price: 120000, income: 950, x: -470, z: -141 },
-  { id: 'p_ridge', name: 'Ridge House', icon: 'house', home: 'house', price: 95000, income: 780, x: -392, z: -567 },
-  { id: 'p_lake', name: 'Trailside Retreat', icon: 'house', home: 'house', price: 70000, income: 560, x: -410, z: 137 },
+  { id: 'p_pent', name: 'Downtown Penthouse', icon: 'house', home: 'penthouse', price: 60000, income: 500, ...S('main', 1, 0, 'e') },
+  { id: 'p_beach', name: 'Malibay Beach House', icon: 'house', home: 'villa', price: 85000, income: 700, x: 430, z: 372 },
+  { id: 'p_villa', name: 'Canyon Villa', icon: 'house', home: 'villa', price: 120000, income: 950, x: -470, z: -141 },
+  { id: 'p_ridge', name: 'Ridge House', icon: 'house', home: 'villa', price: 95000, income: 780, x: -392, z: -567 },
+  { id: 'p_lake', name: 'Trailside Retreat', icon: 'house', home: 'villa', price: 70000, income: 560, x: -410, z: 137 },
   { id: 'p_mansion', name: 'Baywood Hills Mansion', icon: 'house', home: 'mansion', price: 250000, income: 2200, x: -432, z: -370 },
 ];
 

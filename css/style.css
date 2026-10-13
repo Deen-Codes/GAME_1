@@ -471,3 +471,16 @@ input[type=text] { width: 100%; padding: 10px 12px; border-radius: 10px; border:
 .big-btn { display: block; width: 100%; margin-top: 10px; padding: 13px; border-radius: 12px; background: var(--hot, #ff8a2a); color: #141428; font-weight: 900; font-size: 15px; border: 0; }
 .big-btn.alt { background: rgba(255,255,255,.12); color: #fff; }
 .big-btn:disabled { opacity: .4; }
+
+/* subtitles: someone talking to you while you roam. Face, name, the line. No reply needed. */
+#subs { position: absolute; left: calc(12px + var(--sal)); right: calc(12px + var(--sar)); max-width: 460px; margin: 0 auto; bottom: calc(var(--pad) + var(--sab) - 50px); display: flex; align-items: center; gap: 10px; padding: 8px 14px 8px 8px; border-radius: 18px; background: rgba(10,10,24,.72); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); border: 1px solid rgba(255,255,255,.12); transition: opacity .25s, transform .25s; text-shadow: none; }
+#subs.hidden { display: flex !important; opacity: 0; transform: translateY(10px); }
+#subs.radio { border-color: rgba(70,130,255,.6); }
+#subs.me { border-color: rgba(255,210,63,.45); }
+.subFaceWrap { flex: 0 0 64px; width: 64px; height: 64px; border-radius: 14px; overflow: hidden; background: radial-gradient(circle at 50% 35%, #5a6280, #23263a); }
+#subs.radio .subFaceWrap { background: radial-gradient(circle at 50% 35%, #3a5aa8, #141c3a); }
+#subFace { width: 64px; height: 64px; display: block; }
+.subBody { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+#subName { font-size: 11px; font-weight: 900; color: #ffd23f; letter-spacing: .03em; text-transform: uppercase; }
+#subs.radio #subName { color: #8ab4ff; }
+#subTxt { font-size: 14px; font-weight: 700; color: #fff; line-height: 1.3; }

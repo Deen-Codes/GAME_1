@@ -204,13 +204,14 @@ export function buildCharacter(cfg) {
     for (const sx of [-1, 1]) {
       const br = box(c.fem ? 0.09 : 0.1, c.fem ? 0.014 : 0.022, 0.016, hairM, sx * eyeX, eyeY + 0.075, faceZ + 0.004); if (c.fem) br.rotation.z = -sx * 0.12;
       br.rotation.z = c.eyes === 'angry' ? sx * 0.4 : 0;
-      head.add(br);
+      head.add(br); br.userData.sx = sx; br.userData.y0 = br.position.y; br.userData.r0 = br.rotation.z; (head.userData.brows ||= []).push(br);
     }
   }
   if (c.mask === 'none' || c.mask === 'ski') {
     if (c.headShape !== 'round' || true) head.add(box(c.fem ? 0.035 : 0.045, c.fem ? 0.05 : 0.07, c.fem ? 0.03 : 0.045, skin, 0, -headH * 0.04, faceZ + (c.fem ? 0.012 : 0.02)));
   }
-  const mouthY = -headH * 0.24;
+  const mouthY = -headH * 0.24, mouthFrom = head.children.length;
+  head.userData.rig = { mouthY, faceZ, fem: c.fem, lips: c.lips || '#b8325a', ok: c.mask === 'none' || c.mask === 'ski' };
   if (c.mask === 'none' || c.mask === 'ski') {
     if (c.mouth === 'neutral') head.add(box(0.1, 0.022, 0.01, dark, 0, mouthY, faceZ));
     if (c.mouth === 'open') head.add(box(0.08, 0.065, 0.01, dark, 0, mouthY, faceZ));
@@ -221,6 +222,7 @@ export function buildCharacter(cfg) {
       head.add(box(0.025, 0.022, 0.01, dark, 0.045, mouthY + 0.008 * s, faceZ));
     }
   }
+  head.userData.rig.mouth = head.children.slice(mouthFrom);
   // facial hair
   const fh = c.fem ? 'none' : c.facialHair;
   if (fh === 'stubble') head.add(box(headW * 0.86, headH * 0.32, 0.012, M(c.hairColor, { transparent: true, opacity: 0.45 }), 0, -headH * 0.27, headD / 2 + 0.002));
@@ -525,4 +527,24 @@ export function disposeObject(obj) {
     if (o.material) (Array.isArray(o.material) ? o.material : [o.material]).forEach(m => mats.add(m));
   });
   mats.forEach(m => { if (m.map) m.map.dispose(); m.dispose(); });
+}
+
+// ---- talking faces: a mouth that opens with speech and an expression (brows + mouth corners) ----
+// expr: neutral | happy | angry | sad | shock | flirty
+export function setFace(ch, expr = 'neutral', open = 0) {
+  const head = ch.head, R = head.userData.rig; if (!R || !R.ok) return;
+  if (!R.m) { // build our own mouth once and hide the static one
+    for (const m of R.mouth) m.visible = false;
+    const dark = new THREE.MeshStandardMaterial({ color: '#2a1416', roughness: 0.6 }), lip = R.fem ? new THREE.MeshStandardMaterial({ color: R.lips, roughness: 0.3 }) : dark;
+    const mk = (w, h, mat) => { const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, 0.012), mat); head.add(m); return m; };
+    R.m = { in: mk(0.07, 0.04, new THREE.MeshStandardMaterial({ color: '#5a1a22', roughness: 0.7 })), top: mk(R.fem ? 0.075 : 0.07, R.fem ? 0.02 : 0.016, lip), bot: mk(R.fem ? 0.07 : 0.065, R.fem ? 0.024 : 0.016, lip), l: mk(0.022, 0.018, dark), r: mk(0.022, 0.018, dark) };
+  }
+  const M = R.m, y = R.mouthY, z = R.faceZ + 0.002;
+  const cu = { happy: 0.012, flirty: 0.01, sad: -0.012, angry: -0.004, shock: 0, neutral: 0.002 }[expr] ?? 0;
+  const o = Math.max(0, Math.min(1, open)) * (expr === 'shock' ? 1 : 0.8) + (expr === 'shock' ? 0.5 : 0), h = 0.004 + o * 0.05, w = expr === 'shock' ? 0.05 : expr === 'happy' ? 0.08 : 0.068;
+  M.in.position.set(0, y - h / 2 + 0.002, z - 0.002); M.in.scale.set(w / 0.07, Math.max(0.05, h / 0.04), 1); M.in.visible = h > 0.006;
+  M.top.position.set(0, y + 0.004, z); M.top.scale.x = w / 0.07; M.bot.position.set(0, y - h - 0.004 + (expr === 'happy' && o < 0.2 ? 0.006 : 0), z); M.bot.scale.x = (w * 0.9) / 0.065;
+  M.l.position.set(-w / 2 - 0.006, y - h / 2 + cu, z); M.r.position.set(w / 2 + 0.006, y - h / 2 + cu, z);
+  M.l.rotation.z = cu * 25; M.r.rotation.z = -cu * 25;
+  for (const b of head.userData.brows || []) { const sx = b.userData.sx; b.rotation.z = expr === 'angry' ? sx * 0.45 : expr === 'sad' ? -sx * 0.35 : expr === 'flirty' ? (sx > 0 ? -0.25 : 0) : b.userData.r0; b.position.y = b.userData.y0 + (expr === 'shock' ? 0.025 : expr === 'flirty' && sx > 0 ? 0.015 : expr === 'angry' ? -0.008 : 0); }
 }

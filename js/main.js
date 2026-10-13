@@ -1,25 +1,25 @@
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas } from './character.js?v=84';
-import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=84';
-import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=84';
-import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=84';
-import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=84';
-import { buildPanel, renderStats } from './ui.js?v=84';
-import { Input } from './input.js?v=84';
-import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime } from './audio.js?v=84';
-import { runMinigame } from './minigames.js?v=84';
-import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk } from './peds.js?v=84';
-import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=84';
-import { findRoute } from './nav.js?v=84';
-import { COURSES, CAREERS, QUIZ } from './careers.js?v=84';
-import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=84';
-import { attachWheel } from './wheel.js?v=84';
-import { Animals } from './animals.js?v=84';
-import { Talk } from './talk.js?v=84';
-import { svg, drawIcon } from './icons.js?v=84';
-import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=84';
-import { FURN, CATALOG } from './furniture.js?v=84';
-import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=84';
+import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=85';
+import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=85';
+import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=85';
+import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=85';
+import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=85';
+import { buildPanel, renderStats } from './ui.js?v=85';
+import { Input } from './input.js?v=85';
+import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime } from './audio.js?v=85';
+import { runMinigame } from './minigames.js?v=85';
+import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk } from './peds.js?v=85';
+import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=85';
+import { findRoute } from './nav.js?v=85';
+import { COURSES, CAREERS, QUIZ } from './careers.js?v=85';
+import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=85';
+import { attachWheel } from './wheel.js?v=85';
+import { Animals } from './animals.js?v=85';
+import { Talk } from './talk.js?v=85';
+import { svg, drawIcon } from './icons.js?v=85';
+import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=85';
+import { FURN, CATALOG } from './furniture.js?v=85';
+import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=85';
 
 const $ = id => document.getElementById(id);
 let inside = null, editMode = false, held = null, pendingCar = false, homeMusic = false, phoneBadge = 0;
@@ -294,6 +294,125 @@ function applyTime(h, px, pz) {
   WATER_U.uNight.value = night;
 }
 
+// ================================================================ SUBTITLES: people talking to you (and you to yourself) while you roam
+// A face with a moving mouth and an expression, their name, and the line, just above the controls. Nothing to answer.
+const subs = (() => {
+  const el = $('subs'), cv = $('subFace'), nameEl = $('subName'), txtEl = $('subTxt');
+  let R = null, scene = null, cam = null, cur = null, t = 0, frameT = 0, hideT = 0;
+  const queue = [], cache = new Map();
+  function init() {
+    R = new THREE.WebGLRenderer({ canvas: cv, alpha: true, antialias: true }); R.setPixelRatio(1); R.setSize(160, 160, false); R.outputColorSpace = THREE.SRGBColorSpace;
+    scene = new THREE.Scene(); scene.add(new THREE.HemisphereLight('#ffffff', '#3a3a50', 2.4)); const dl = new THREE.DirectionalLight('#ffffff', 1.8); dl.position.set(1.5, 2, 3); scene.add(dl);
+    cam = new THREE.PerspectiveCamera(22, 1, 0.05, 20);
+  }
+  function figFor(key, cfg) {
+    let f = cache.get(key); if (f) return f;
+    f = buildCharacter({ ...cfg, back: 'none' }); f.root.visible = false; scene.add(f.root); f.root.updateMatrixWorld(true);
+    const hp = new THREE.Vector3(); f.head.getWorldPosition(hp); f.hp = hp; cache.set(key, f);
+    if (cache.size > 8) { const [k0, f0] = cache.entries().next().value; scene.remove(f0.root); disposeObject?.(f0.root); cache.delete(k0); }
+    return f;
+  }
+  // who: { key, name, cfg, pitch } or 'me'. o: { expr, radio, pri, tag }
+  function say(who, text, o = {}) {
+    if (who === 'me') who = { key: 'me', name: 'You', cfg: charCfg, pitch: 210, me: true };
+    if (!who?.cfg) return;
+    const line = { who, text, expr: o.expr || 'neutral', radio: !!o.radio, pri: o.pri || 0, tag: o.tag };
+    if (o.now || (cur && line.pri > cur.pri + 1)) { queue.length = 0; start(line); return; }
+    if (queue.length > 2) { const lo = queue.findIndex(q => q.pri < line.pri); if (lo < 0) return; queue.splice(lo, 1); }
+    queue.push(line);
+  }
+  function start(line) {
+    if (!R) init();
+    if (cur) { const f = cache.get(cur.who.key); if (f) f.root.visible = false; }
+    cur = line; t = 0; cur.shown = -1; cur.len = line.text.length; cur.hold = Math.max(1.6, cur.len * 0.035 + 1.2);
+    const f = figFor(line.who.key, line.who.cfg); f.root.visible = true; cur.fig = f;
+    nameEl.textContent = line.who.name + (line.tag ? ` · ${line.tag}` : line.radio ? ' · radio' : ''); txtEl.textContent = '';
+    el.classList.toggle('radio', line.radio); el.classList.toggle('me', !!line.who.me); el.classList.remove('hidden'); frameT = 0;
+    if (line.radio) { const A = audio(); if (A) { sfx.note(1400, A.currentTime, 0.05, 'square', 0.02, 3000); sfx.note(1100, A.currentTime + 0.06, 0.05, 'square', 0.02, 3000); } }
+  }
+  function stop() { if (cur?.fig) cur.fig.root.visible = false; cur = null; el.classList.add('hidden'); }
+  function update(dt) {
+    if (state !== 'play') { if (cur) stop(); return; }
+    if (!cur) { if (queue.length) start(queue.shift()); else return; }
+    t += dt; const shown = Math.min(cur.len, Math.floor(t * 34)), talking = shown < cur.len;
+    if (shown !== cur.shown) { cur.shown = shown; txtEl.textContent = cur.text.slice(0, shown); if (talking && shown % 2 === 0 && cur.text[shown - 1] !== ' ') { const A = audio(); if (A) sfx.note((cur.who.pitch || 260) * (0.9 + Math.random() * 0.25), A.currentTime, 0.045, cur.radio ? 'sawtooth' : 'square', 0.012, cur.radio ? 1400 : 2400); } }
+    if (!talking && t > cur.len / 34 + cur.hold) { stop(); return; }
+    frameT -= dt; if (frameT > 0) return; frameT = 1 / 24;
+    const f = cur.fig, mouth = talking ? Math.abs(Math.sin(t * 15)) * (0.5 + 0.5 * Math.abs(Math.sin(t * 4.3))) : 0;
+    setFace(f, cur.expr, mouth);
+    f.head.rotation.x = talking ? Math.sin(t * 9) * 0.05 : Math.sin(t * 1.4) * 0.02; f.head.rotation.y = Math.sin(t * 1.7) * 0.12 + (cur.expr === 'flirty' ? 0.15 : 0); f.head.rotation.z = cur.expr === 'flirty' ? 0.1 : cur.expr === 'sad' ? -0.06 : 0;
+    const hp = f.hp; cam.position.set(hp.x + 0.07, hp.y + 0.03, hp.z + 1.0); cam.lookAt(hp.x, hp.y - 0.02, hp.z);
+    for (const [k, g] of cache) g.root.visible = g === f;
+    R.render(scene, cam);
+  }
+  return { say, update, stop, get busy() { return !!cur || queue.length > 0; } };
+})();
+// who's who for the subtitles
+const youSay = (text, expr = 'neutral', o = {}) => subs.say('me', text, { expr, ...o });
+const dateWho = () => date ? { key: date.id, name: date.name, cfg: date.cfg, pitch: lookIsFem(date.look) ? 330 : 190 } : null;
+const pedWho = p => p?.look?.cfg ? { key: 'ped' + (p.uid ||= Math.random().toString(36).slice(2)), name: p.name || p.person?.name || (lookIsFem(p.look) ? 'Woman' : 'Man'), cfg: p.look.cfg, pitch: lookIsFem(p.look) ? 320 : 180 } : null;
+let dispatcher = null;
+const copWho = () => ({ key: 'cop', name: 'Officer ' + (copWho.n ||= pick(['Diaz', 'Walsh', 'Kowalski', 'Price', 'Reyes', 'Hart'])), cfg: copLook?.cfg || COP_CFG, pitch: 150 });
+const dispatchWho = () => ({ key: 'dispatch', name: 'Dispatch', cfg: (dispatcher ||= { ...COP_CFG, fem: true, hair: 'bun', hat: 'none', eyewear: 'none', skin: '#c68642', lips: '#8a3a4a' }), pitch: 300 });
+function colorName(hex) {
+  const c = new THREE.Color(hex), hsl = {}; c.getHSL(hsl); if (hsl.l < 0.16) return 'black'; if (hsl.l > 0.85) return 'white'; if (hsl.s < 0.15) return hsl.l > 0.55 ? 'silver' : 'grey';
+  const h = hsl.h * 360; return h < 15 || h >= 340 ? 'red' : h < 40 ? 'orange' : h < 65 ? 'yellow' : h < 160 ? 'green' : h < 200 ? 'teal' : h < 255 ? 'blue' : h < 290 ? 'purple' : 'pink';
+}
+function suspectDesc() {
+  if (ride && !ride.b.two) return `${colorName(ride.cfg.bodyColor || '#888')} ${({ sedan: 'sedan', hatch: 'hatchback', pickup: 'pickup', van: 'van', sports: 'sports car', muscle: 'muscle car', suv: 'SUV', classic: 'classic', lowrider: 'lowrider', super: 'supercar' })[ride.cfg.body] || 'vehicle'}`;
+  if (ride) return `${colorName(ride.cfg.bodyColor || '#888')} motorbike`;
+  return `${charCfg.fem ? 'female' : 'male'}, ${colorName(charCfg.topColor || '#888')} ${({ hoodie: 'hoodie', tshirt: 't-shirt', jacket: 'jacket', tank: 'tank top', long: 'long sleeve', shirt: 'shirt', suit: 'suit' })[charCfg.top] || 'top'}`;
+}
+// the chatter engine: police radio, your date, yourself, and people who remember you
+const chat = { t: 12, stars: 0, pull: null, rain: false, cd: {} };
+function chatCd(k, s) { if ((chat.cd[k] || 0) > time) return false; chat.cd[k] = time + s; return true; }
+function updateChatter(dt) {
+  if (state !== 'play') return;
+  // ---- police: dispatch calls in what you did; officers shout at you
+  if (WANT.stars !== chat.stars) {
+    const up = WANT.stars > chat.stars, s = WANT.stars; chat.stars = s;
+    if (up && s === 1 && !WANT.pull) subs.say(dispatchWho(), pick([`All units, reports of a disturbance. Suspect is ${suspectDesc()}.`, `Units in the area, suspect described as ${suspectDesc()}. Approach with caution.`]), { radio: true, pri: 3, expr: 'neutral' });
+    else if (up && s === 2) { subs.say(dispatchWho(), `Suspect is ${ride ? 'fleeing in a ' : 'on foot, '}${suspectDesc()}. All units respond.`, { radio: true, pri: 3 }); if (chatCd('meflee', 20)) setTimeout(() => youSay(pick(['Not today.', 'Gotta go, gotta go!', 'Nope. Nope nope nope.', 'Come on, come on...']), 'shock', { pri: 2 }), 2600); }
+    else if (up && s >= 3) subs.say(dispatchWho(), pick([`Shots fired! Suspect ${suspectDesc()}. Requesting backup.`, `Suspect is armed and dangerous. All available units.`, `Suspect still at large. Helicopter is en route.`]), { radio: true, pri: 4, expr: 'angry' });
+    else if (!up && s === 0) { subs.say(dispatchWho(), pick(['All units, we lost the suspect. Resume patrol.', 'Suspect lost. Stand down.']), { radio: true, pri: 2 }); if (chatCd('lost', 30)) setTimeout(() => youSay(pick(['Think I lost them.', 'Phew. That was close.', 'Too easy.']), 'happy', { pri: 2 }), 3000); }
+  }
+  if (WANT.pull !== chat.pull) {
+    chat.pull = WANT.pull;
+    if (WANT.pull) { subs.say(copWho(), WANT.pull === 'lights' ? 'Driver, your lights are off! Pull over to the side of the road.' : `Driver of the ${suspectDesc()}, pull over! You were doing ${WANT.pullMph} in a ${speedLimit(P.x, P.z) || 35}!`, { tag: 'loudspeaker', pri: 4, expr: 'angry', now: true }); setTimeout(() => { if (WANT.pull) youSay(pick(['Oh, come on...', 'Great. Just great.', 'Was I really going that fast?', 'Act natural.']), 'sad', { pri: 3 }); }, 3600); chat.nag = 12; }
+  }
+  if (WANT.pull && ride) { chat.nag -= dt; if (chat.nag <= 0 && Math.abs(ride.s.v) > 5) { chat.nag = 11; subs.say(copWho(), pick(['Pull over NOW!', 'Stop the vehicle!', 'Last warning! Pull over!']), { tag: 'loudspeaker', pri: 4, expr: 'angry' }); } }
+  // ---- ambient chatter
+  chat.t -= dt; if (chat.t > 0 || subs.busy || talk.active) return;
+  chat.t = rand(22, 45);
+  const lines = [], add = (who, text, expr = 'neutral', w = 1) => lines.push({ who, text, expr, w });
+  const f = focusPos(), here = cityAt(f.x, f.z, 2)?.id, beach = f.z > sandLine(f.x) - 30, rain = wet > 0.3, late = clockH >= 23 || clockH < 5;
+  const D = date && !date.left ? dateWho() : null, inCarD = D && date.inCar, mph = ride ? Math.abs(ride.s.v) * 2.237 : 0;
+  if (D) {
+    if (inCarD && mph > 70) add(D, pick(['Babe, slow DOWN!', 'Are you trying to get us killed?!', 'I want to live, thanks!']), 'shock', 4);
+    if (inCarD && mph > 20 && mph < 50) add(D, pick(['I like driving around with you.', 'Put something good on the radio.', 'This car suits you.', 'Where are we going?']), 'happy');
+    if (rain) add(D, pick(['Ugh, my hair!', 'I love the rain. Kind of.', 'We should get inside somewhere.']), rain && !ride ? 'sad' : 'neutral', 2);
+    if (late) add(D, pick(['It\'s getting late...', 'I should probably get home soon.', 'Your place or mine?']), 'flirty', 2);
+    if (beach) add(D, pick(['The water looks amazing.', 'We should come here in the summer.', 'Race you to the sea!']), 'happy', 2);
+    if (here === 'east' && !ride) add(D, pick(['This part of town gives me the creeps.', 'Stay close, okay?']), 'sad', 2);
+    if (night > 0.5 && Math.abs(f.z) < 30 && f.x > -170 && f.x < 45) add(D, pick(['We should go dancing!', 'Look at all the lights!']), 'happy', 2);
+    if (stats.hunger < 30) add(D, 'I\'m starving. Can we eat?', 'sad', 2);
+    add(D, pick(['I had fun today.', 'You\'re kind of funny, you know that?', 'So... tell me something about you.', 'I could get used to this.']), pick(['happy', 'flirty']));
+  }
+  if ((stats.bladder ?? 85) < 25) add('me', pick(['I really need the toilet...', 'Where\'s a bathroom when you need one?']), 'sad', 3);
+  if (stats.hunger < 20) add('me', pick(['I\'m so hungry.', 'Need food. Now.']), 'sad', 2);
+  if (stats.energy < 15) add('me', pick(['I need to sleep.', 'So tired...']), 'sad', 2);
+  if ((stats.hygiene ?? 80) < 20) add('me', pick(['Do I smell? I think I smell.', 'I need a shower. Badly.']), 'sad', 2);
+  if (rain && !ride && !chat.rain) add('me', pick(['Great. Rain.', 'Should\'ve brought an umbrella.']), 'sad', 3);
+  chat.rain = rain;
+  { const h = nearestHome(); if (h && Math.hypot(h.x - f.x, h.z - f.z) < 30 && !ride) add('me', pick(['Home sweet home.', 'Nearly home.']), 'happy'); }
+  for (const p of PLACES) if (p.biz && bizOf(p.biz) && Math.hypot(p.x - f.x, p.z - f.z) < 35) add('me', pick([`There's my ${BIZ[p.biz].name}. Look at it.`, `${BIZ[p.biz].name}. Mine. Still weird to say.`]), 'happy');
+  if (isMatchDay() && clockH > 16 && clockH < 21 && Math.hypot(264 - f.x, -146 - f.z) < 120) add('me', 'Match day. The whole city\'s buzzing.', 'happy');
+  if (ride && mph > 85 && !D) add('me', pick(['Woooo!', 'Let\'s see what this thing can do.']), 'happy', 2);
+  // people who remember you
+  if (!ride) for (const p of peds.list) { if (!p.person || Math.hypot(p.x - P.x, p.z - P.z) > 6 || p.state === 'down') continue; const r = p.person.rap || 0; if (r > 30) add(pedWho(p), pick(['Hey! Good to see you!', 'Oh hey, it\'s you!', 'Looking good today!']), 'happy', 3); else if (r < -40) add(pedWho(p), pick(['Stay away from me.', 'You again? Great.', 'I know what you did.']), 'angry', 3); }
+  if (!lines.length) return;
+  let tot = lines.reduce((a, l) => a + l.w, 0), r = Math.random() * tot; for (const l of lines) { r -= l.w; if (r <= 0) { l.who === 'me' ? youSay(l.text, l.expr) : subs.say(l.who, l.text, { expr: l.expr }); return; } }
+}
 // ================================================================ STREET EVENTS: the city does things without you
 // Every so often something kicks off nearby: a police chase, a mugging, a shop robbery, a gang scrap, a street performer,
 // a car crash or a fire. You can step in, film it in your head, or keep walking. Each one plays out by itself.
@@ -1289,7 +1408,7 @@ function updateFoot(dt) {
     const px = hw - Math.abs(lx), pz = hl - Math.abs(lz);
     if (px < pz) { const k = Math.sign(lx || 1) * px; P.x += rx * k; P.z += rz * k; } else { const k = Math.sign(lz || 1) * pz; P.x += fx * k; P.z += fz * k; }
   }
-  for (const p of peds.list) { const dx = P.x - p.x, dz = P.z - p.z, d = Math.hypot(dx, dz); if (d < 0.7 && d > 0.01 && p.state !== 'down') { if (p.kind === 'homeless' || p.state === 'lie' || p.state === 'sit' || p.state === 'talk') { P.x = p.x + dx / d * 0.7; P.z = p.z + dz / d * 0.7; } else { p.x -= dx / d * (0.7 - d); p.z -= dz / d * (0.7 - d); } } } // you can't shove someone sleeping on the pavement
+  for (const p of peds.list) { const dx = P.x - p.x, dz = P.z - p.z, d = Math.hypot(dx, dz); if (d < 0.7 && d > 0.01 && p.state !== 'down') { if (p.kind === 'homeless' || p.state === 'lie' || p.state === 'sit' || p.state === 'talk') { P.x = p.x + dx / d * 0.7; P.z = p.z + dz / d * 0.7; } else { p.x -= dx / d * (0.7 - d); p.z -= dz / d * (0.7 - d); if (input.stick.m > 0.8 && !p.ev && (p.bumpT || 0) < time && Math.random() < 0.5 && chatCd('bump', 6)) { p.bumpT = time + 20; const w = pedWho(p); if (w) subs.say(w, pick(['Hey! Watch it!', 'Excuse YOU.', 'Woah, where\'s the fire?', 'Rude!']), { expr: 'angry', pri: 1 }); } } } } // you can't shove someone sleeping on the pavement
   for (const n of allNpcs()) { if (n.hidden || (n.y || 0) > P.y + 1.5 || (n.y || 0) < P.y - 1.5) continue; const dx = P.x - n.x, dz = P.z - n.z, d = Math.hypot(dx, dz); if (d < 0.75 && d > 0.01) { P.x = n.x + dx / d * 0.75; P.z = n.z + dz / d * 0.75; } }
   if (!canWalk(P.x, P.z)) { P.x = ox; P.z = oz; }
   if (inside?.id === 'prison' && stats.jail && P.z > ORIGIN.z + 17.4 && Math.abs(P.x - ORIGIN.x) < 10.2 && P.z < ORIGIN.z + 19) { P.z = ORIGIN.z + 17.4; if (time > gateT) { gateT = time + 3; toast(`Security gate. Locked. ${hrs(jailLeft())} left.`); } }
@@ -1626,6 +1745,7 @@ async function breakIntoParked(p) {
 // ---------------- car damage: dents where you hit, smoke, fire, then it blows
 function damageCar(v, amt, ix, iz) {
   if (!v || v.wrecked || amt <= 0) return;
+  if (v === ride && amt > 10 && chatCd('crash', 8)) { if (date?.inCar) subs.say(dateWho(), pick(['Oh my god! Watch the road!', 'Are you CRAZY?!', 'I nearly hit my head!', 'Seriously?!']), { expr: 'shock', pri: 3, now: true }); else if (Math.random() < 0.5) youSay(pick(['Whoops.', 'My bad, my bad.', 'That\'s gonna leave a mark.', 'Who put that there?']), 'shock', { pri: 2 }); }
   v.hp ??= 100; v.hp -= amt * (v.b.two ? 1.4 : 1);
   // crumple the panels nearest the impact
   if (ix !== undefined) {
@@ -2193,11 +2313,76 @@ function updateNpcList(list, dt) {
     if (d > 120) { if (n.fig) n.fig.root.visible = false; continue; }
     if (!n.fig) { n.look ||= bakeCfg(n.cfg); n.fig = figure(n.look); (n.parent || dyn).add(n.fig.root); n.fig.root.position.set(n.x, n.y ?? baseY(n.x, n.z), n.z); }
     n.fig.root.visible = !n.hidden; if (n.hidden) continue; n.t += dt;
+    if (n.life?.busy || n.life?.st === 'do' || n.life?.st === 'walk') continue; // living their life at home
+    if (n.life) n.fig.root.position.set(n.x, 0, n.z);
     const want = d < 12 ? Math.atan2(P.x - n.x, P.z - n.z) : (n.homeFace ?? Math.sin(n.t * 0.3) * 0.6 + Math.PI);
     n.face += wrapA(want - n.face) * Math.min(1, dt * 5); n.fig.root.rotation.y = n.face;
     const l = n.fig.limbs, br = Math.sin(n.t * 1.6) * 0.04;
     l[2].rotation.set(br, 0, -0.08); l[3].rotation.set(-br + (n.role === 'dealer' ? -0.4 : 0), 0, 0.08);
     if (n.dance) { n.fig.root.position.y = Math.abs(Math.sin(n.t * 6)) * 0.15; l[2].rotation.x = Math.sin(n.t * 6) * 1.2 - 1.2; l[3].rotation.x = -Math.sin(n.t * 6) * 1.2 - 1.2; }
+  }
+}
+// ================================================================ HOME LIFE: your partner (and kids) actually live in the place
+// They walk round the furniture (not through it), sit and watch TV, cook, read, soak in the hot tub, play the piano, sleep in the bed.
+const HOME_DO = { sit: 'sit', cook: 'cook', eat: 'cook', read: 'read', sleep: 'sleep', relax: 'look', piano: 'piano', hottub: 'soak', music: 'dance', laptop: 'laptop', arcade: 'game', drink: 'drink' };
+function homePath(x0, z0, x1, z1) { // grid BFS round walls and furniture, in world coords
+  const S = 0.4, H = inside.h, ox = ORIGIN.x - H.w / 2, oz = ORIGIN.z - H.d / 2, nx = Math.ceil(H.w / S), nz = Math.ceil(H.d / S);
+  const free = (i, j) => { if (i < 0 || j < 0 || i >= nx || j >= nz) return false; const x = ox + (i + 0.5) * S, z = oz + (j + 0.5) * S; for (const [a, b] of [[0, 0], [0.22, 0], [-0.22, 0], [0, 0.22], [0, -0.22]]) if (solidPoint(x + a, z + b, 0.5)) return false; return true; };
+  const ci = x => Math.floor((x - ox) / S), cj = z => Math.floor((z - oz) / S), si = ci(x0), sj = cj(z0), gi = ci(x1), gj = cj(z1);
+  const prev = new Int32Array(nx * nz).fill(-2), q = [si + sj * nx]; prev[q[0]] = -1;
+  for (let h = 0; h < q.length; h++) { const c = q[h], i = c % nx, j = (c - i) / nx; if (Math.abs(i - gi) <= 1 && Math.abs(j - gj) <= 1) { const path = [{ x: x1, z: z1 }]; let k = c; while (k >= 0 && k !== q[0]) { path.unshift({ x: ox + (k % nx + 0.5) * S, z: oz + (Math.floor(k / nx) + 0.5) * S }); k = prev[k]; } return path; }
+    for (const [a, b] of [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [1, -1], [-1, 1], [-1, -1]]) { const ii = i + a, jj = j + b, k = ii + jj * nx; if (ii < 0 || jj < 0 || ii >= nx || jj >= nz || prev[k] !== -2) continue; if (!free(ii, jj) || (a && b && (!free(i + a, j) || !free(i, j + b)))) { prev[k] = -3; continue; } prev[k] = c; q.push(k); } }
+  return null;
+}
+function homeChoices(n) {
+  const out = [], night2 = clockH >= 22.5 || clockH < 7, meal = (clockH >= 7 && clockH < 9) || (clockH >= 12 && clockH < 13.5) || (clockH >= 18 && clockH < 20.5), kid = n.role === 'kid';
+  for (const it of inside.h.furn) { const F = FURN[it.t], d = HOME_DO[F?.act]; if (!d) continue; if (it.busyBy && it.busyBy !== n) continue;
+    if (d === 'sleep') { if (night2 && (kid ? it.t === 'single' || !inside.h.furn.some(f => f.t === 'single') : it.t === 'bed' || it.t === 'single')) out.push([it, d, 50]); continue; }
+    if (night2) continue;
+    if (kid && ['cook', 'drink', 'soak', 'laptop'].includes(d)) continue;
+    const w = { sit: 3, cook: meal ? 6 : 0.6, read: 1, look: 1, piano: 1, soak: clockH > 17 ? 1.5 : 0.4, dance: 0.6, laptop: 1, game: kid ? 3 : 0.5, drink: clockH > 18 ? 0.6 : 0 }[d] || 1;
+    out.push([it, d, w]); }
+  return out;
+}
+const HOME_LINES = { sit: ['This show is so trashy. I love it.', 'Come sit with me.', 'Babe, you\'re blocking the TV.'], cook: ['Dinner\'s nearly ready!', 'Taste this. Good, right?', 'Don\'t touch, it\'s hot!'], read: ['This book is so good.', 'Shh, I\'m at the good bit.'], look: ['The fish are so calming.', 'I named that one after you.'], piano: ['I\'ve been practising!', 'Listen to this one.'], soak: ['Get in, the water\'s perfect.', 'I never want to leave this tub.'], dance: ['I love this song!', 'Dance with me!'], laptop: ['Just answering some emails.', 'Look at this video, haha.'], game: ['I\'m beating your high score!', 'One more go!'], drink: ['Want one?', 'Cheers to us.'], sleep: ['Mmm... come to bed.', 'Night night.'] };
+function updateHomeLife(dt) {
+  if (!inside?.prop) return;
+  for (const n of inside.npcs) {
+    if (!n.fam || !n.fig || (n.role === 'kid' && kidStage(n.fam) === 'Baby')) continue;
+    const L = n.life ||= { st: 'idle', t: rand(1, 4) }, R = n.fig.root, I2 = n.fig.inner, l = n.fig.limbs;
+    if (talk.active) continue;
+    if (L.st === 'idle') { L.busy = false; L.t -= dt; if (L.t > 0) continue;
+      const ch = homeChoices(n); if (!ch.length) { L.t = rand(4, 8); continue; }
+      let tot = ch.reduce((a, c) => a + c[2], 0), r = Math.random() * tot, pickC = ch[0]; for (const c of ch) { r -= c[2]; if (r <= 0) { pickC = c; break; } }
+      const [it, d] = pickC, w = inside.h.toWorld(it.x, it.z), rr2 = it.r || 0, F = FURN[it.t], fx = Math.sin(rr2), fz = Math.cos(rr2);
+      const seat = d === 'sit' || d === 'sleep' || d === 'soak', reach = seat ? (Math.max(F.d, 0.8) / 2 + 0.55) : F.d / 2 + (d === 'piano' ? 0.95 : 0.5);
+      const ax = w.x + fx * reach, az = w.z + fz * reach, path = homePath(n.x, n.z, ax, az); if (!path) { L.t = rand(3, 6); continue; }
+      Object.assign(L, { st: 'walk', path, it, d, wx: w.x, wz: w.z, r: rr2, busy: true }); it.busyBy = n; continue; }
+    if (L.st === 'walk') { const p0 = L.path[0]; if (!p0) { L.st = 'do'; L.t = L.d === 'sleep' ? 1e9 : rand(14, 30); L.say = rand(3, 9); continue; }
+      const dx = p0.x - n.x, dz = p0.z - n.z, dd = Math.hypot(dx, dz), sp = 1.25 * dt;
+      if (dd < sp) { n.x = p0.x; n.z = p0.z; L.path.shift(); } else { n.x += dx / dd * sp; n.z += dz / dd * sp; n.face += wrapA(Math.atan2(dx, dz) - n.face) * Math.min(1, dt * 10); }
+      L.ph = (L.ph || 0) + dt * 7; l[0].rotation.x = Math.sin(L.ph) * 0.5; l[1].rotation.x = -Math.sin(L.ph) * 0.5; l[2].rotation.set(-Math.sin(L.ph) * 0.4, 0, -0.08); l[3].rotation.set(Math.sin(L.ph) * 0.4, 0, 0.08);
+      R.position.set(n.x, 0, n.z); R.rotation.y = n.face; I2.position.set(0, Math.abs(Math.sin(L.ph)) * 0.04, 0); I2.rotation.set(0, 0, 0); continue; }
+    if (L.st === 'do') {
+      const d = L.d, tt = (L.ph = (L.ph || 0) + dt);
+      if (d === 'sleep' && !(clockH >= 22.5 || clockH < 7)) L.t = 0;
+      L.t -= dt;
+      if (L.t <= 0 || (d !== 'sleep' && Math.hypot(P.x - n.x, P.z - n.z) < 0.5)) { L.st = 'idle'; L.t = rand(2, 6); L.it.busyBy = null; I2.position.set(0, 0, 0); I2.rotation.set(0, 0, 0); for (const q of l) q.rotation.set(0, 0, 0);
+        if (['sit', 'sleep', 'soak'].includes(d)) { const a = L.r, nx2 = L.wx + Math.sin(a) * 1.1, nz2 = L.wz + Math.cos(a) * 1.1; if (!solidPoint(nx2, nz2, 0.5)) { n.x = nx2; n.z = nz2; } } R.position.set(n.x, 0, n.z); continue; }
+      if (d === 'sit') { const seatY = L.it.t === 'couch' ? 0.42 : 0.45; n.face = L.r; R.position.set(L.wx + Math.sin(L.r) * 0.12, seatY - 0.05, L.wz + Math.cos(L.r) * 0.12); I2.position.set(0, -(l[0].position.y - 0.08), -0.12); l[0].rotation.x = -1.45; l[1].rotation.x = -1.4; l[2].rotation.set(-0.35, 0, -0.15); l[3].rotation.set(-0.35, 0, 0.15); }
+      else if (d === 'sleep') { const F = FURN[L.it.t], off = F.d / 2 - 0.25; n.face = L.r + Math.PI; R.position.set(L.wx + Math.sin(L.r) * off, 0.52, L.wz + Math.cos(L.r) * off); R.rotation.y = L.r; I2.rotation.set(-Math.PI / 2, 0, 0); I2.position.set(0, 0.1, 0); for (const q of l) q.rotation.set(0, 0, 0); n.fig.root.rotation.y = L.r; continue; }
+      else if (d === 'soak') { n.face = L.r + Math.PI; R.position.set(L.wx, 0.05, L.wz); I2.position.set(0, -0.2, 0); l[0].rotation.x = -1.4; l[1].rotation.x = -1.4; l[2].rotation.set(0, 0, -1.2); l[3].rotation.set(0, 0, 1.2); }
+      else { n.face = Math.atan2(L.wx - n.x, L.wz - n.z); R.position.set(n.x, 0, n.z); I2.position.set(0, 0, 0);
+        if (d === 'cook') { l[2].rotation.set(-1.1 + Math.sin(tt * 6) * 0.25, 0, -0.1); l[3].rotation.set(-1.0, 0, 0.1); if (Math.random() < dt * 1.5) spawnParticles(L.wx, 1.1, L.wz, ['#ffffff', '#e8e8ea'], 2, 0.4, 1.2, 0.12, 0.6); }
+        else if (d === 'read') { l[2].rotation.set(-1.2, 0, 0.35); l[3].rotation.set(-1.2, 0, -0.35); n.fig.inner.rotation.x = 0.12; }
+        else if (d === 'piano' || d === 'laptop' || d === 'game') { l[2].rotation.set(-1.15 + Math.sin(tt * 9) * 0.12, 0, -0.1); l[3].rotation.set(-1.15 + Math.cos(tt * 8) * 0.12, 0, 0.1); if (d === 'piano' && Math.hypot(P.x - n.x, P.z - n.z) < 8 && Math.random() < dt * 3) { const A = audio(); if (A) sfx.note(pick([262, 294, 330, 392, 440, 523]), A.currentTime, 0.4, 'triangle', 0.025, 2400); } }
+        else if (d === 'dance') { I2.position.y = Math.abs(Math.sin(tt * 6)) * 0.12; l[2].rotation.set(-2.2 + Math.sin(tt * 6) * 0.6, 0, -0.3); l[3].rotation.set(-2.2 - Math.sin(tt * 6) * 0.6, 0, 0.3); }
+        else if (d === 'drink') { l[3].rotation.set(-1.6 + Math.sin(tt * 0.8) * 0.4, 0, 0.3); }
+        else { l[2].rotation.set(0, 0, -0.08); l[3].rotation.set(0, 0, 0.08); I2.rotation.z = Math.sin(tt * 0.8) * 0.03; } }
+      R.rotation.y = n.face;
+      // she talks to you about what she's doing, now and then
+      L.say -= dt; if (L.say <= 0 && Math.hypot(P.x - n.x, P.z - n.z) < 7 && !subs.busy) { L.say = rand(25, 50); const lines = HOME_LINES[d]; if (lines) subs.say({ key: n.relId || n.name, name: n.name, cfg: n.cfg, pitch: n.role === 'kid' ? 420 : 330 }, n.role === 'kid' ? pick(KID_LINES[kidStage(n.fam)] || lines) : pick(lines), { expr: d === 'sleep' ? 'flirty' : pick(['happy', 'happy', 'flirty', 'neutral']) }); }
+    }
   }
 }
 function allNpcs() { return inside ? inside.npcs : [...npcs, ...custNpcs()]; }
@@ -2219,7 +2404,7 @@ function enterInterior(place, prop) {
   fade(() => {
     if (prop && !homes[prop.id]) homes[prop.id] = (prop.starter ? STARTER_FURNITURE : [{ t: 'single', x: -2.5, z: -2, r: 0, c: '#3a5fa0' }, { t: 'fridge', x: 2.5, z: -2.8, r: 0 }]).map(f => ({ ...f }));
     if (prop && HOME_DEFAULTS[prop.home] && (stats.homeLayout ||= {})[prop.id] !== INTERIORS[prop.home].layout) { // homes upgraded to the new layout (rooms + en-suite); anything extra you bought lines the living room wall
-      const def = HOME_DEFAULTS[prop.home].map(f => ({ ...f })), kept = homes[prop.id].filter(f => !def.some(d => d.t === f.t) && f.t !== 'single' && f.t !== 'bed');
+      const def = HOME_DEFAULTS[prop.home].map(f => ({ ...f })), pool = def.map(d => d.t), kept = homes[prop.id].filter(f => { if (f.t === 'single' || f.t === 'bed') return false; const i = pool.indexOf(f.t); if (i >= 0) { pool[i] = null; return false; } return true; }); // anything you bought beyond the new defaults is kept
       kept.forEach((f, i) => { f.x = -INTERIORS[prop.home].w / 2 + 1.2 + (i % 5) * 1.3; f.z = INTERIORS[prop.home].d / 2 - 1.4 - Math.floor(i / 5) * 1.3; f.r = 0; });
       const hadBed = homes[prop.id].find(f => f.t === 'bed'); if (hadBed) { const b = def.find(f => f.t === 'single' || f.t === 'bed'); b.t = 'bed'; b.c = hadBed.c || b.c; }
       homes[prop.id] = [...def, ...kept]; stats.homeLayout[prop.id] = INTERIORS[prop.home].layout;
@@ -2307,9 +2492,14 @@ async function useFurn(item) {
   else if (act === 'run') { if ((stats.relDay['gym:' + dayN] || 0) >= GYM_DAILY) { toast(`You've done ${GYM_DAILY} workouts today. Rest up.`); return; } const r = await mini('tread'); workout(r.score / 10, 'cardio'); gainXP('stamina', Math.round(r.score * 0.6)); gainXP('health', Math.round(r.score * 0.3)); feed({ energy: -12, mood: 4 }); }
   else if (act === 'music') { homeMusic = !homeMusic; radioOn(homeMusic); toast(homeMusic ? `Playing ${STATIONS[radioIndex()].name}` : 'Music off'); }
   else if (act === 'relax') { feed({ mood: 8 }); toast('The fish are very calming.'); }
+  else if (act === 'bath') { fade(() => { advanceTime(0.75); stats.hygiene = 100; feed({ mood: 12, energy: 6 }); const her = homePartnerNear(); toast(her ? `A long hot bath with ${her}. Bubbles everywhere.` : 'A long hot bubble bath. You feel brand new.', 2.8); }); }
+  else if (act === 'hottub') { fade(() => { advanceTime(1); feed({ mood: 16, energy: 8 }); stats.hygiene = Math.min(100, (stats.hygiene ?? 80) + 6); const her = homePartnerNear(); if (her) { const f = fam(); bumpRel(f.partner.id, 4, false); } toast(her ? `Hot tub with ${her}, city lights everywhere. This is the life.` : 'You sank into the hot tub. Jets on. Problems off.', 3); }); }
+  else if (act === 'piano') { const lv = (stats.piano = (stats.piano || 0) + 1); feed({ mood: 6 }); const A = audio(); if (A) { const sc = [262, 294, 330, 349, 392, 440, 494, 523]; for (let i = 0; i < 8; i++) sfx.note(lv > 6 ? sc[[0, 2, 4, 7, 4, 2, 5, 7][i]] : sc[Math.floor(Math.random() * 8)], A.currentTime + i * 0.28, 0.4, 'triangle', 0.05, 2400); } toast(lv < 4 ? 'You plinked out Chopsticks. Badly.' : lv < 10 ? 'Getting better. That was almost a tune.' : 'Beautiful. You actually play now.', 2.6); }
+  else if (act === 'drink') { feed({ mood: 5, drunk: 0.3 }); toast(pick(['Neat whisky, one ice cube.', 'You poured yourself a glass of red.', 'Mixed a cocktail. Not bad.']), 2.2); }
   else if (act === 'arcade') { const r = await mini('beat'); feed({ mood: 10 }); }
   saveGame();
 }
+function homePartnerNear() { const n = inside?.npcs?.find(q => q.role === 'spouse'); return n && Math.hypot(n.x - P.x, n.z - P.z) < 9 ? n.name : null; }
 async function mini(kind, opts = {}) { setState('mini'); const r = await runMinigame(kind, opts); setState('play'); return r; }
 function startEdit() { if (!inside?.prop) return; editMode = true; held = null; toast('Edit mode: pick up, move and rotate furniture.', 3); $('editBar').classList.remove('hidden'); }
 function endEdit() { if (held) { const p = holdPos(); if (fits(held.t, p.x, p.z, held.r)) placeHeld(true); else { storage.push({ t: held.t, c: held.c }); inside.h.group.remove(held.ghost); held = null; toast('No room there, so it went into storage.'); } } editMode = false; $('editBar').classList.add('hidden'); saveHome(); }
@@ -2660,7 +2850,7 @@ function lifeApi() {
     night: () => clockH < 5 || clockH >= 21, driving: () => !!ride, hasCar: () => !!myCar, ownsHome: () => owned.size > 0,
     career: () => career(), careerName: () => career() ? CAREERS[career().id].name.toLowerCase() : '', perf: d => { if (career()) career().perf = clamp(career().perf + d, 0, 100); },
     fire: () => { stats.career = null; }, promote: () => { const c = career(); if (c && c.lvl < CAREERS[c.id].ladder.length - 1) { c.lvl++; c.perf = 60; } }, hire: id => { stats.career = { id, lvl: 0, perf: 55, shifts: 0, lastDay: 0 }; },
-    crime: st => forceWanted(st), kidAge: (...st) => f.kids.find(k => st.includes(kidStage(k))) || null, partner: () => f.partner, hasDated: () => Object.keys(stats.dates || {}).length > 0,
+    crime: st => forceWanted(st), kidAge: (...st) => f.kids.find(k => st.includes(kidStage(k))) || null, partner: () => f.partner, hasKids: () => f.kids.length > 0, hasDated: () => Object.keys(stats.dates || {}).length > 0,
     breakup: () => { const p = f.partner; if (p) { stats.rel[p.id] = 5; f.partner = null; } }, fat: () => body().fat, muscle: () => body().muscle, drinker: () => L.drinks > 12,
     hospital: () => { P.hp = 1; die(); }, wasInside: () => stats.jailRecord != null, loseStash: () => { for (const g of GOODS) stash[g.id] = 0; },
     dealMeet: () => startDealMeet(),
@@ -3233,6 +3423,7 @@ function trafficCheck(dt) {
   if (night > 0.35 && !lightsOn() && spd > 3 && road) why = 'lights';
   else if (speedLimit(c.x, c.z) && spd * 2.237 > speedLimit(c.x, c.z) + 22) why = 'speed';
   if (!why || !copSees(c.x, c.z)) return;
+  if (why === 'speed' && !((stats.speedWarn || 0) > gameHours())) { stats.speedWarn = gameHours() + 2; stopCheckT = 6; subs.say(copWho(), pick([`Slow it down! That's ${Math.round(spd * 2.237)} in a ${speedLimit(c.x, c.z)}!`, 'Ease off the gas, driver. Last warning.', `Hey! This is a ${speedLimit(c.x, c.z)} zone. Slow down.`]), { tag: 'loudspeaker', pri: 4, expr: 'angry', now: true }); sfx.siren?.(); return; } // a warning first
   WANT.pull = why; WANT.pullT = 0; WANT.pullMph = Math.round(spd * 2.237);
   forceWanted(1); WANT.flash = 1.2; sfx.siren?.();
   toast(why === 'lights' ? 'Police lights behind you. Your headlights are off. Pull over and stop.' : 'Police lights behind you. Pull over and stop.', 3.5);
@@ -3664,7 +3855,7 @@ function famNewDay() {
   // kids growing up
   for (const k of f.kids) { const st = kidStage(k); if (k.stage && k.stage !== st) toast(`${k.name} is now a ${st.toLowerCase()}!`, 3); k.stage = st; }
   // neglect
-  if (f.partner && dayN - (f.seen || 0) > 2) { stats.rel[f.partner.id] = Math.max(0, rel(f.partner.id) - 6); textMe(f.partner.id, f.partner.name, pick(["Do you even live here anymore?", "The kids keep asking where you are.", "We need to talk about us."])); }
+  if (f.partner && dayN - (f.seen || 0) > 2) { stats.rel[f.partner.id] = Math.max(0, rel(f.partner.id) - 6); textMe(f.partner.id, f.partner.name, pick(["Do you even live here anymore?", "We need to talk about us.", ...(f.kids.length ? [f.kids.length > 1 ? "The kids keep asking where you are." : `${f.kids[0].name} keeps asking where you are.`] : []), ...(f.preg ? ["I'm carrying your baby and I haven't seen you in days.", "The baby's kicking. Wish you were here to feel it."] : [])])); }
 }
 let famTextT = 120;
 function famTexts(dt) { // random incoming texts from people who care about you
@@ -3691,7 +3882,7 @@ async function talkFamily(n) {
   if (n.role === 'spouse') {
     const P2 = f.partner;
     beginTalk(n.cfg, P2.name, P2.status === 'married' ? 'Your wife' : P2.status === 'engaged' ? 'Your fiancée' : 'Your girlfriend', 330, P2.id);
-    await talk.say(rel(P2.id) < 25 ? pick(["Oh. You're back.", "We need to talk."]) : pick(["Hey you. Missed you.", "There you are! How was your day?", "The kids were asking about you."]));
+    await talk.say(rel(P2.id) < 25 ? pick(["Oh. You're back.", "We need to talk."]) : pick(["Hey you. Missed you.", "There you are! How was your day?", ...(fam().kids.length ? [fam().kids.length > 1 ? "The kids were asking about you." : `${fam().kids[0].name} was asking about you.`] : []), ...(fam().preg ? ["The baby's been kicking all day. Feel!"] : [])]));
     const o = [{ label: I('heart', 'Kiss'), k: 'kiss' }, { label: I('chat', 'How was your day?'), k: 'chat' }, { label: I('cash', 'Give housekeeping money <small>$200</small>'), k: 'money' }];
     if (P2.status === 'partner' && rel(P2.id) >= 65) o.push({ label: I('star', 'Propose <small>ring $2,500</small>'), k: 'propose' });
     if (inside.h.furn.some(x => FURN[x.t].act === 'sleep')) o.push({ label: I('heart', 'WooHoo'), k: 'woo' });
@@ -5538,7 +5729,7 @@ function saveGame() {
   store.set('bc_save', save); store.set('bc_arsenal', arsenal); store.set('bc_cars', garage);
 }
 // auto-update: bookmarks and home-screen apps can hold on to an old copy. Check version.json (never cached) and reload once if newer.
-const BUILD = 84;
+const BUILD = 85;
 function checkUpdate() {
   fetch('version.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(j => {
     if (!(j.v > BUILD)) return;
@@ -5661,7 +5852,8 @@ function step(dt) {
     animals.update(dt, f.x, f.z, clockH, { x: f.x, z: f.z, car: !!ride && Math.abs(ride.s.v) > 2, run: !ride && input.stick.m > 0.85 }, false);
     updateAngry(dt); updateStreetEvents(dt); updateGangs(dt); updateHills(); updateLandmarks(dt);
     updateNpcList(npcs, dt); updateFlyer(dt);
-  } else { updateNpcList(inside.npcs, dt); inside.h.seeThrough?.(P.x, P.z, P.y); if (inside.id === 'prison') { peds.update(dt, P.x, P.z, null, false); updateAngry(dt); updateBrawl(dt); if (inside.h.upper?.length) { const o = P.y < 2 ? 0.16 : 1; if (inside.fadeO !== o) { inside.fadeO = o; inside.h.fadeUpper(o); } } } }
+  } else { updateHomeLife(dt); updateNpcList(inside.npcs, dt); inside.h.seeThrough?.(P.x, P.z, P.y); if (inside.id === 'prison') { peds.update(dt, P.x, P.z, null, false); updateAngry(dt); updateBrawl(dt); if (inside.h.upper?.length) { const o = P.y < 2 ? 0.16 : 1; if (inside.fadeO !== o) { inside.fadeO = o; inside.h.fadeUpper(o); } } } }
+  updateChatter(dt); subs.update(dt);
   lifeTick(dt); updateDate(dt); famTexts(dt); updateFx(dt); updatePolice(dt); updatePrison(dt); updateFarm(dt); updateTrain(dt); if (!inside) updateEmergency(dt);
   updateBullets(dt); updateProjectiles(dt); updateParticles(dt); updateCash(dt); updateMarkers(); updateRace(dt); updateRoute(dt); updateCustomers(dt); updateReacts(dt); updateDoors(dt); updateJob(dt);
   if (input.consume('map') || input.consume('pause')) openPhone('maps');
@@ -5677,7 +5869,7 @@ const input = new Input();
 input.bindTouch({ zone: $('stickZone'), base: $('stickBase'), knob: $('stickKnob'), canvas, buttons: { a: $('btnA'), b: $('btnB'), x: $('btnX'), y: $('btnY') } });
 function show(id, on) { $(id).classList.toggle('hidden', !on); }
 const CUSTOM_STATES = ['char', 'gun', 'car', 'clothes', 'barber', 'carshop'];
-function setState(s) {
+function setState(s) { if (s !== 'play') subs.stop();
   state = s;
   show('custom', CUSTOM_STATES.includes(s));
   show('hud', s === 'play' || s === 'ui' || s === 'phone'); show('pad', s === 'play');
@@ -5829,4 +6021,4 @@ function frame(now) {
 }
 startGame();
 requestAnimationFrame(frame);
-window.__game = { get animals() { return animals; }, crime, WANT, copCars, cops, pitFight, busted, fam, famNewDay, makeOfficial, talkFamily, get dayN() { return dayN; }, set dayN(v) { dayN = v; }, scene: G.scene, cam: G.cam, snap: () => updateCamera(0, true), get state() { return state; }, P, input, get ride() { return ride; }, get myCar() { return myCar; }, get traffic() { return traffic; }, peds, setTime: h => { clockH = h; }, openCustom, enterVehicle, exitCar, get money() { return money; }, set money(v) { money = v; }, openPlace, PLACES, PROPERTIES, runMinigame, get action() { return action; }, arsenal, selectWeapon, openPhone, setWaypoint, get route() { return route; }, talkToPed, talk, doAction, stats, get inside() { return inside; }, enterInterior, exitInterior, get customers() { return customers; }, newCustomer, startEdit, endEdit, get job() { return job; }, gainXP, storage, doSpot, useFurn, phoneGo, talkVenue, talkJob, openPlace, talkCustomer, startJob, openCarShop, damageCar, repairCar, addFire, get fires() { return fires; }, get ems() { return ems; }, get vehicles() { return vehicles; }, makeVehicle, makeCop, prisonFight, life, startDealMeet, get lifeAct() { return lifeAct; }, get train() { return train; }, get trainRide() { return trainRide; }, boardTrain, eventReset: () => { eventOpen = false; }, bodyCheck, attendClass, talkAdmissions, edu, startDance, get dance() { return dance; }, radioSet: i => { radioSet(i); radioOn(true); }, get zoom() { return zoom; }, set zoom(z) { zoom = z; }, DEFAULT_CAR, setState: x => setState(x), get jail() { return stats.jail; }, witness, personOf, dealHeat, trafficStop, carNear, carTop, startDate, talkDate, get date() { return date; }, get carAnim() { return carAnim; }, lifeApi, startShower, bizNewDay, ev: { evChase, evMug, evRobbery, evGang, evBusk, evCrash, evFire, evMarket, evParade, evProtest, streetEvents } };
+window.__game = { get animals() { return animals; }, crime, WANT, copCars, cops, pitFight, busted, fam, famNewDay, makeOfficial, talkFamily, get dayN() { return dayN; }, set dayN(v) { dayN = v; }, scene: G.scene, cam: G.cam, snap: () => updateCamera(0, true), get state() { return state; }, P, input, get ride() { return ride; }, get myCar() { return myCar; }, get traffic() { return traffic; }, peds, setTime: h => { clockH = h; }, openCustom, enterVehicle, exitCar, get money() { return money; }, set money(v) { money = v; }, openPlace, PLACES, PROPERTIES, runMinigame, get action() { return action; }, arsenal, selectWeapon, openPhone, setWaypoint, get route() { return route; }, talkToPed, talk, doAction, stats, get inside() { return inside; }, enterInterior, exitInterior, get customers() { return customers; }, newCustomer, startEdit, endEdit, get job() { return job; }, gainXP, storage, doSpot, useFurn, phoneGo, talkVenue, talkJob, openPlace, talkCustomer, startJob, openCarShop, damageCar, repairCar, addFire, get fires() { return fires; }, get ems() { return ems; }, get vehicles() { return vehicles; }, makeVehicle, makeCop, prisonFight, life, startDealMeet, get lifeAct() { return lifeAct; }, get train() { return train; }, get trainRide() { return trainRide; }, boardTrain, eventReset: () => { eventOpen = false; }, bodyCheck, attendClass, talkAdmissions, edu, startDance, get dance() { return dance; }, radioSet: i => { radioSet(i); radioOn(true); }, get zoom() { return zoom; }, set zoom(z) { zoom = z; }, DEFAULT_CAR, setState: x => setState(x), get jail() { return stats.jail; }, witness, personOf, dealHeat, trafficStop, carNear, carTop, startDate, talkDate, get date() { return date; }, get carAnim() { return carAnim; }, lifeApi, startShower, bizNewDay, subs, forceWanted, ev: { evChase, evMug, evRobbery, evGang, evBusk, evCrash, evFire, evMarket, evParade, evProtest, streetEvents } };

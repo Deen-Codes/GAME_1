@@ -131,7 +131,7 @@ export const EVENTS = [
   { id: 'caught_cheating', via: 'home', speaker: 'partner', follow: true,
     text: () => ['Sit down.', 'I saw the messages. Don\'t even try to lie to me.'],
     choices: a => [
-      { label: 'I\'m so sorry', go: () => { if (!a.partner()) return '...'; if (roll(a.relV(a.partner().id) / 140)) { a.rel(a.partner().id, -30); return 'I\'ll stay. For the kids. But I don\'t trust you.'; } a.breakup(); return 'I\'m done. I\'m leaving.'; } },
+      { label: 'I\'m so sorry', go: () => { if (!a.partner()) return '...'; if (roll(a.relV(a.partner().id) / 140)) { a.rel(a.partner().id, -30); return 'I\'ll stay. ' + (a.hasKids?.() ? 'For the kids. ' : 'For us. ') + 'But I don\'t trust you.'; } a.breakup(); return 'I\'m done. I\'m leaving.'; } },
       { label: 'Deny everything', go: () => { if (!a.partner()) return '...'; a.rel(a.partner().id, -40); if (roll(0.5)) { a.breakup(); return 'You\'re a liar. We\'re finished.'; } return 'I don\'t believe you. Sleep on the couch.'; } },
     ] },
   { id: 'secret_kept', via: 'thought', follow: true,
