@@ -354,13 +354,15 @@ export function buildCharacter(cfg) {
     const pivot = new THREE.Group(); pivot.position.set(side * (torsoW / 2 + limbW / 2 + 0.005), shoulderY, 0);
     pivot.rotation.order = 'YXZ';
     pivot.add(box(limbW, armLen * 0.5, limbW, upperM, 0, -armLen * 0.25, 0));
-    pivot.add(box(limbW * 0.92, armLen * 0.42, limbW * 0.92, lowerM, 0, -armLen * 0.71, 0));
-    if (longSleeve && c.gloves !== 'gloves') pivot.add(box(limbW * 0.96, 0.04, limbW * 0.96, M(shade(c.topColor, 0.8)), 0, -armLen * 0.9, 0));
-    pivot.add(box(limbW * 1.05, armLen * 0.12, limbW * 1.05, handM, 0, -armLen * 0.96, 0));
+    // forearm hangs off an elbow so arms can bend (phone to the ear, etc.); straight by default
+    const elbow = new THREE.Group(); elbow.position.y = -armLen * 0.5; pivot.add(elbow);
+    elbow.add(box(limbW * 0.92, armLen * 0.42, limbW * 0.92, lowerM, 0, -armLen * 0.21, 0));
+    if (longSleeve && c.gloves !== 'gloves') elbow.add(box(limbW * 0.96, 0.04, limbW * 0.96, M(shade(c.topColor, 0.8)), 0, -armLen * 0.4, 0));
+    elbow.add(box(limbW * 1.05, armLen * 0.12, limbW * 1.05, handM, 0, -armLen * 0.46, 0));
     if (c.top === 'armor') pivot.add(box(limbW * 1.4, 0.08, limbW * 1.4, acc, 0, 0.0, 0));
-    const hand = new THREE.Group(); hand.position.y = -armLen * 0.96; pivot.add(hand);
+    const hand = new THREE.Group(); hand.position.y = -armLen * 0.46; elbow.add(hand);
     torso.add(pivot);
-    return { pivot, hand };
+    return { pivot, hand, elbow };
   };
   const armR = makeArm(-1), armL = makeArm(1);
 

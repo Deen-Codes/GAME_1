@@ -1,8 +1,8 @@
 // Conversations staged like a Pokémon battle: they stand on a platform facing you,
 // you see the back of your own head in the foreground, subtitles type out, you pick replies.
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject } from './character.js?v=69';
-import { sfx, audio } from './audio.js?v=69';
+import { buildCharacter, poseCharacter, disposeObject } from './character.js?v=70';
+import { sfx, audio } from './audio.js?v=70';
 
 const $ = id => document.getElementById(id);
 const BG = {
@@ -128,8 +128,7 @@ export class Talk {
     $('talkBox').classList.toggle('think', think);
     if (phone) for (const c of [this.npc, this.you]) { // phone pressed to the right ear, hand cupped round it
       const ph = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.2, 0.1), new THREE.MeshStandardMaterial({ color: '#16161b', roughness: 0.3 }));
-      c.root.updateMatrixWorld(true); const hb = new THREE.Box3().setFromObject(c.head); const hw = (hb.max.x - hb.min.x) / 2 || 0.2;
-      ph.position.set(-hw - 0.02, (hb.max.y - hb.min.y) * 0.42 - (c.head.getWorldPosition(new THREE.Vector3()).y - hb.min.y), 0.02); ph.rotation.x = 0.25; c.head.add(ph);
+      ph.position.set(0, -0.02, 0.06); ph.rotation.set(0, 0, 0); c.armR.hand.add(ph);
     }
     if (seat) { // car seat, dashboard and steering wheel
       const g = new THREE.Group(), m = c => new THREE.MeshStandardMaterial({ color: c, roughness: 0.7 });
@@ -223,6 +222,7 @@ export class Talk {
     y.root.rotation.y = Math.atan2(n.root.position.x - y.root.position.x, n.root.position.z - y.root.position.z);
     for (const [c, who] of [[n, 'npc'], [y, 'you']]) {
       poseCharacter(c, { t: this.t + (who === 'you' ? 1 : 0), aim: -1.45, speed: 0 });
+      if (c.armR.elbow) { c.armR.elbow.rotation.set(0, 0, 0); c.armL.elbow.rotation.set(0, 0, 0); }
       const talk = this.talking === who;
       c.head.rotation.x = talk ? Math.sin(this.t * 11) * 0.08 : Math.sin(this.t * 1.3) * 0.03;
       c.head.rotation.y = talk ? Math.sin(this.t * 3.1) * 0.1 : 0;
@@ -230,7 +230,7 @@ export class Talk {
       c.armR.pivot.rotation.set(-0.15 - Math.max(0, g) * 1.4, 0, 0.12 + Math.max(0, g) * 0.3);
       c.armL.pivot.rotation.set(-0.1 + Math.min(0, g) * 1.2, 0, -0.12);
     }
-    if (this.phone && n && y) for (const c of [n, y]) { c.armR.pivot.rotation.set(-2.45, 0.35, 0.42); c.head.rotation.z = -0.14; } // hand up at the ear holding the phone
+    if (this.phone && n && y) for (const c of [n, y]) { c.armR.pivot.rotation.set(-0.85, 0.15, -0.42); c.armR.elbow.rotation.set(-2.6, 0, 0); c.head.rotation.z = -0.12; } // hand up at the ear holding the phone
     if (this.think && n) { // you, alone, hand on chin, mulling it over
       n.root.position.x = 0;
       if (this.seat && this.seatG) { // sat at the wheel, both hands on it, glancing down at the dash
