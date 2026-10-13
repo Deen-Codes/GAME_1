@@ -129,10 +129,13 @@ export function buildCharacter(cfg) {
     torso.add(box(chestW * 0.92, torsoH * 0.56, torsoD * 0.96, bodyM, 0, torsoH * 0.72, 0));
     const chestM = c.top === 'swimtop' ? topM : swim ? skin : topM, bd = 0.05 + 0.08 * bust;
     // stepped, blocky chest that matches the voxel style: a main block with bevel steps above and below
-    const fz = torsoD * 0.96 / 2, cy = torsoH * 0.6, ch = torsoH * (0.2 + 0.05 * bust), dz = 0.035 + 0.055 * bust;
-    torso.add(box(chestW * 0.86, ch, dz, chestM, 0, cy, fz + dz / 2 - 0.004));
-    torso.add(box(chestW * 0.8, ch * 0.28, dz * 0.55, chestM, 0, cy + ch / 2 + ch * 0.12, fz + dz * 0.27));
-    torso.add(box(chestW * 0.82, ch * 0.22, dz * 0.7, chestM, 0, cy - ch / 2 - ch * 0.09, fz + dz * 0.35));
+    const fz = torsoD * 0.96 / 2, cy = torsoH * 0.6, ch = torsoH * (0.26 + 0.05 * bust), dz = 0.04 + 0.06 * bust;
+    // side profile: flush at the collarbone, sloping out, then tucking back under
+    const prof = new THREE.Shape(), top = cy + ch * 0.62, bot = cy - ch / 2;
+    prof.moveTo(0, top); prof.lineTo(dz * 0.55, top - ch * 0.3); prof.lineTo(dz, cy); prof.lineTo(dz * 0.9, cy - ch * 0.3); prof.lineTo(dz * 0.45, bot + 0.005); prof.lineTo(0, bot); prof.lineTo(0, top);
+    const bw = chestW * 0.84, bg = new THREE.ExtrudeGeometry(prof, { depth: bw, bevelEnabled: false });
+    bg.rotateY(-Math.PI / 2); bg.translate(bw / 2, 0, 0);
+    const bm = new THREE.Mesh(bg, chestM); bm.position.z = fz - 0.004; bm.castShadow = true; torso.add(bm);
     if (c.top === 'swimtop') { // bikini top: band all the way round at chest height + straps
       torso.add(box(chestW * 0.94, ch * 0.75, torsoD * 0.98, chestM, 0, cy - ch * 0.05, 0));
       for (const sx of [-1, 1]) torso.add(box(0.03, torsoH * 0.2, torsoD * 0.9, chestM, sx * chestW * 0.28, torsoH * 0.86, 0));
