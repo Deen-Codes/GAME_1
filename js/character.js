@@ -100,12 +100,13 @@ export function buildCharacter(cfg) {
   const dark = M('#18181d'), white = M('#ffffff', { roughness: 0.4 }), metal = M('#9aa0aa', { metalness: 0.8, roughness: 0.3 });
   const handM = c.gloves === 'gloves' ? M(c.gloveColor) : skin;
 
-  const h = c.height, b = c.build, sb = Math.sqrt(b);
+  const h = c.height, b = c.build, sb = Math.sqrt(b), mu = Math.min(1, c.muscle || 0), fa = Math.min(1, c.fat || 0);
   const legLen = 0.86 * h * c.legs, thighL = legLen * 0.5, shinL = legLen * 0.5;
-  const torsoH = 0.62 * h, torsoW = 0.46 * b, torsoD = 0.27 * sb;
+  // gym time widens the shoulders and thickens the arms; junk food rounds out the middle
+  const torsoH = 0.62 * h, torsoW = 0.46 * b * (1 + 0.2 * mu + 0.24 * fa), torsoD = 0.27 * sb * (1 + 0.14 * mu + 0.45 * fa);
   const hs = 0.34 * c.headSize;
   const armLen = 0.66 * h * c.arms;
-  const limbW = 0.13 * sb, legW = 0.16 * sb;
+  const limbW = 0.13 * sb * (1 + 0.5 * mu + 0.3 * fa), legW = 0.16 * sb * (1 + 0.2 * mu + 0.32 * fa);
 
   // women: figure sets bust and hips (slim / athletic / curvy / plus), only for grown-ups
   const adultF = c.fem && h >= 0.8;
@@ -137,6 +138,8 @@ export function buildCharacter(cfg) {
 
     }
   } else torso.add(box(chestW, torsoH, torsoD, swim ? skin : topM, 0, torsoH / 2, 0));
+  if (fa > 0.12) { const bd = 0.04 + 0.16 * fa; torso.add(box(chestW * (0.82 + 0.12 * fa), torsoH * (0.3 + 0.18 * fa), bd, swim ? skin : topM, 0, torsoH * 0.16, torsoD / 2 + bd / 2 - 0.01)); } // gut
+  if (mu > 0.25 && !adultF) { const pd = 0.03 + 0.05 * mu; for (const sx of [-1, 1]) torso.add(box(chestW * 0.4, torsoH * 0.2, pd, swim ? skin : topM, sx * chestW * 0.22, torsoH * 0.62, torsoD / 2 + pd / 2 - 0.01)); for (const sx of [-1, 1]) torso.add(box(limbW * 1.5, limbW * 1.3, torsoD * 0.8, swim ? skin : topM, sx * (chestW / 2 + limbW * 0.25), torsoH * 0.9, 0)); } // pecs + delts
   if (c.belly > 0) { const bd = 0.06 + 0.22 * c.belly; torso.add(box(chestW * (0.7 + 0.15 * c.belly), torsoH * (0.35 + 0.2 * c.belly), bd, swim ? skin : topM, 0, torsoH * 0.18, torsoD / 2 + bd / 2 - 0.01)); }
   if (c.top === 'swimtop' && !adultF) torso.add(box(chestW * 1.02, torsoH * 0.16, torsoD * 1.04, topM, 0, torsoH * 0.72, 0)); // swim top band
   if (c.pants !== 'swim') { torso.add(box(torsoW * 1.01, 0.06, torsoD * 1.01, dark, 0, 0.02, 0)); // belt

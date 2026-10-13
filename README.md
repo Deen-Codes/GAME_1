@@ -145,6 +145,15 @@ Walk into shops, venues and homes:
   - Any time: go quietly for half the fine and sentence, or shove past and run.
 - Cops only shoot if you're armed, at 3+ stars in a car, or at 5 stars. If they take you down, you get arrested, not hospitalised.
 
+## Body and gym
+- Iron Temple is members only: $120 for 30 days, auto-renews (toggle with the trainer).
+- Max 3 workouts a day across all gyms, home kit and the prison yard.
+- Lifting builds visible muscle (shoulders, arms, chest). Muscle fades if you skip the gym for days.
+- Junk food (burgers, fries, shakes, pancakes) adds visible fat, worse if you eat when already full. Salads, home cooking and cardio burn it off.
+
+## Radio
+- 10 stations with 10 original songs each, written live by the game: chill, hip-hop, synthwave, drum & bass, classical, rock, R&B (with a talking DJ between songs), dancehall, UK drill, pop.
+
 ## Camera
 - Pinch the game view (or use the mouse wheel) to zoom right in and see faces and clothes, or zoom out. Double-click to reset.
 

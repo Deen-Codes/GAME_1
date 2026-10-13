@@ -1,23 +1,23 @@
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA } from './character.js?v=31';
-import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=31';
-import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=31';
-import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide } from './world.js?v=31';
-import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=31';
-import { buildPanel, renderStats } from './ui.js?v=31';
-import { Input } from './input.js?v=31';
-import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying } from './audio.js?v=31';
-import { runMinigame } from './minigames.js?v=31';
-import { Peds, bakeCfg, figure, setWalk } from './peds.js?v=31';
-import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=31';
-import { findRoute } from './nav.js?v=31';
-import { attachWheel } from './wheel.js?v=31';
-import { Animals } from './animals.js?v=31';
-import { Talk } from './talk.js?v=31';
-import { svg, drawIcon } from './icons.js?v=31';
-import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=31';
-import { FURN, CATALOG } from './furniture.js?v=31';
-import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE } from './interiors.js?v=31';
+import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA } from './character.js?v=32';
+import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=32';
+import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=32';
+import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide } from './world.js?v=32';
+import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=32';
+import { buildPanel, renderStats } from './ui.js?v=32';
+import { Input } from './input.js?v=32';
+import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying } from './audio.js?v=32';
+import { runMinigame } from './minigames.js?v=32';
+import { Peds, bakeCfg, figure, setWalk } from './peds.js?v=32';
+import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=32';
+import { findRoute } from './nav.js?v=32';
+import { attachWheel } from './wheel.js?v=32';
+import { Animals } from './animals.js?v=32';
+import { Talk } from './talk.js?v=32';
+import { svg, drawIcon } from './icons.js?v=32';
+import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=32';
+import { FURN, CATALOG } from './furniture.js?v=32';
+import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE } from './interiors.js?v=32';
 
 const $ = id => document.getElementById(id);
 let inside = null, editMode = false, held = null, pendingCar = false, homeMusic = false, phoneBadge = 0;
@@ -332,6 +332,7 @@ function gainXP(id, amt) {
   if (up) { sfx.cash(); toast(`${skillName(id)} reached level ${up}`, 3); if (id === 'health') P.hp = Math.min(maxHP(), P.hp + 10); if (id.startsWith('gun_') && arsenal.cur === id.slice(4)) equipWeapon(); }
 }
 function feed(f) { // apply a food/drink/activity effect object
+  if (f.fat) { const B = body(); B.fat = clamp(B.fat + f.fat * (stats.hunger > 85 ? 1.8 : 1), 0, 1); bodyCheck(); }
   if (f.hunger) stats.hunger = clamp(stats.hunger + f.hunger, 0, 100);
   if (f.energy) stats.energy = clamp(stats.energy + f.energy, 0, 100);
   if (f.mood) stats.mood = clamp(stats.mood + f.mood, 0, 100);
@@ -1356,8 +1357,8 @@ async function useFurn(item) {
   else if (act === 'tv') { fade(() => { advanceTime(1); feed({ mood: 10, energy: 4 }); toast('You watched an episode of "Bay Housewives". Mood up.'); }); }
   else if (act === 'read') { if ((useCd.read || 0) > gameHours()) { toast('You already read today. Try tomorrow.'); return; } useCd.read = gameHours() + 12; fade(() => { advanceTime(1); feed({ energy: -4, mood: 3 }); gainXP('charm', 40); toast('You read "How to Talk to Anyone". Charm up.'); }); }
   else if (act === 'laptop') openMarket();
-  else if (act === 'lift') { const r = await mini('gym'); gainXP('strength', r.score * 10); gainXP('health', r.score * 3); feed({ energy: -10, mood: 4 }); }
-  else if (act === 'run') { const r = await mini('tread'); gainXP('stamina', Math.round(r.score * 0.6)); gainXP('health', Math.round(r.score * 0.3)); feed({ energy: -12, mood: 4 }); }
+  else if (act === 'lift') { if ((stats.relDay['gym:' + dayN] || 0) >= GYM_DAILY) { toast(`You've done ${GYM_DAILY} workouts today. Rest up.`); return; } const r = await mini('gym'); workout(r.score, 'lift'); gainXP('strength', r.score * 10); gainXP('health', r.score * 3); feed({ energy: -10, mood: 4 }); }
+  else if (act === 'run') { if ((stats.relDay['gym:' + dayN] || 0) >= GYM_DAILY) { toast(`You've done ${GYM_DAILY} workouts today. Rest up.`); return; } const r = await mini('tread'); workout(r.score / 10, 'cardio'); gainXP('stamina', Math.round(r.score * 0.6)); gainXP('health', Math.round(r.score * 0.3)); feed({ energy: -12, mood: 4 }); }
   else if (act === 'music') { homeMusic = !homeMusic; radioOn(homeMusic); toast(homeMusic ? `Playing ${STATIONS[radioIndex()].name}` : 'Music off'); }
   else if (act === 'relax') { feed({ mood: 8 }); toast('The fish are very calming.'); }
   else if (act === 'arcade') { const r = await mini('beat'); feed({ mood: 10 }); }
@@ -1465,8 +1466,10 @@ async function doSpot(s) {
     spend(15); const r = await mini('gallery', { title: `${SLOT[arsenal.cur].name} practice`, pay: false });
     gainXP('gun_' + arsenal.cur, (r.hits || 0) * 6); if (r.hits) toast(`${SLOT[arsenal.cur].name} skill +${r.hits * 6} XP`);
   }
-  if (s.kind === 'lift' || s.kind === 'bag') { if (money < 10) { toast('Gym sessions cost $10'); return; } spend(10); const r = await mini('gym', { title: s.kind === 'bag' ? 'Heavy Bag' : 'Bench Press' }); gainXP('strength', r.score * 12); gainXP('health', r.score * (s.kind === 'bag' ? 6 : 3)); feed({ energy: -10, mood: 5 }); }
-  if (s.kind === 'tread') { if (money < 10) { toast('Gym sessions cost $10'); return; } spend(10); const r = await mini('tread'); gainXP('stamina', Math.round(r.score * 0.7)); gainXP('health', Math.round(r.score * 0.35)); feed({ energy: -12, mood: 5 }); }
+  if ((s.kind === 'lift' || s.kind === 'bag' || s.kind === 'tread') && id === 'gym' && !gymMember()) { toast('Members only. Talk to the trainer to sign up ($120 for 30 days).', 3); return; }
+  if ((s.kind === 'lift' || s.kind === 'bag' || s.kind === 'tread') && (stats.relDay['gym:' + dayN] || 0) >= GYM_DAILY) { toast(`You've done ${GYM_DAILY} workouts today. Your body needs to recover.`, 3); return; }
+  if (s.kind === 'lift' || s.kind === 'bag') { const r = await mini('gym', { title: s.kind === 'bag' ? 'Heavy Bag' : 'Bench Press' }); workout(r.score, 'lift'); gainXP('strength', r.score * 12); gainXP('health', r.score * (s.kind === 'bag' ? 6 : 3)); feed({ energy: -10, mood: 5 }); }
+  if (s.kind === 'tread') { const r = await mini('tread'); workout(r.score / 10, 'cardio'); gainXP('stamina', Math.round(r.score * 0.7)); gainXP('health', Math.round(r.score * 0.35)); feed({ energy: -12, mood: 5 }); }
   if (s.kind === 'blackjack' || s.kind === 'slots') { if (money < 10) { toast('You need at least $10 to play'); return; } const r = await mini(s.kind, { money }); if (r.money) addMoney(r.money); feed({ mood: r.money > 0 ? 8 : -3 }); }
   if (s.kind === 'dj') { const r = await mini('beat', { title: 'Neon Room DJ set' }); if (r.money) addMoney(r.money); gainXP('charm', r.score); feed({ mood: 10, energy: -6 }); }
   if (s.kind === 'rest') { if (money < 150) { toast('A bed costs $150. Talk to reception if you are hurt.'); return; } spend(150); fade(() => { advanceTime(2); P.hp = maxHP(); feed({ energy: 30, hunger: 20, mood: 5 }); toast('You rested in the ward. Fully healed.', 3); }); }
@@ -1607,14 +1610,22 @@ async function talkFood(n, menu, place) {
 }
 async function talkTrainer(n, place) {
   beginTalk(n.cfg, n.name, place.name, 200, n.relId);
-  await talk.say(pick(["Let's get to work! Bench, treadmill or bag. Ten bucks a session.", "You look like you skip leg day."]));
+  await talk.say(gymMember() ? pick(["Back again! Let's work.", 'Looking good. Bench, treadmill or bag?']) : pick(["Welcome to Iron Temple. Members only on the equipment: $120 for 30 days.", "You look like you skip leg day. Want a membership?"]));
   const done = stats.relDay['train:' + dayN];
-  const c = await talk.choose([I('dumbbell', `Personal training <small>$60</small>`), I('chart', 'How am I doing?'), I('x', 'Later')]);
+  const mOpt = gymMember() ? I('check', `Membership: ${stats.gymUntil - dayN} days left${stats.gymAuto ? ' (auto-renew on)' : ''}`) : I('cash', 'Sign up <small>$120 / 30 days</small>');
+  const c0 = await talk.choose([mOpt, I('dumbbell', `Personal training <small>$60</small>`), I('chart', 'How am I doing?'), I('x', 'Later')]);
+  if (c0 === 0) {
+    if (gymMember()) { stats.gymAuto = !stats.gymAuto; await talk.say(stats.gymAuto ? "Auto-renew is on. We'll bill you $120 every 30 days." : "Auto-renew is off. Your membership runs out on its own."); }
+    else if (money < 120) await talk.say('Membership is $120. Come back when you have it.');
+    else { spend(120); stats.gymUntil = dayN + 30; stats.gymAuto = true; bumpRel(n.relId, 5); await talk.say("You're in! Auto-renews every 30 days, you can cancel with me any time. Max three workouts a day, rest matters."); }
+    endTalk(); saveGame(); return;
+  }
+  const c = c0 - 1;
   if (c === 0) {
     if (done) await talk.say("One session a day. Your muscles need to recover!");
     else if (money < 60) await talk.say("Sixty bucks. Come back when you've got it.");
-    else { spend(60); stats.relDay['train:' + dayN] = 1; fade(() => { advanceTime(1); gainXP('strength', 60); gainXP('stamina', 40); gainXP('health', 40); feed({ energy: -15, mood: 8 }); }); bumpRel(n.relId, 4); await talk.say("Great session! You'll feel that tomorrow."); }
-  } else if (c === 1) await talk.say(`Strength ${lvl('strength')}, stamina ${lvl('stamina')}, health ${lvl('health')}. ${lvl('strength') < 4 ? 'We have work to do.' : 'Looking strong!'}`);
+    else { spend(60); stats.relDay['train:' + dayN] = 1; fade(() => { advanceTime(1); workout(20, 'lift'); gainXP('strength', 60); gainXP('stamina', 40); gainXP('health', 40); feed({ energy: -15, mood: 8 }); }); bumpRel(n.relId, 4); await talk.say("Great session! You'll feel that tomorrow."); }
+  } else if (c === 1) { const B = body(); await talk.say(`Strength ${lvl('strength')}, stamina ${lvl('stamina')}. Muscle ${Math.round(B.muscle * 100)}%, body fat ${B.fat > 0.6 ? 'high' : B.fat > 0.3 ? 'a bit high' : 'good'}. ${B.fat > 0.3 ? 'Cut the burgers and do some cardio.' : lvl('strength') < 4 ? 'We have work to do.' : 'Looking strong!'}`); }
   endTalk();
 }
 async function talkPastor(n, place) {
@@ -2584,9 +2595,10 @@ function openGame(p) {
   modal(`<div class="big-ico">${svg(p.icon, 'big')}</div><h3>${p.name}</h3><p>${p.desc}</p>`, [
     { label: 'Play', cls: 'big', fn: async () => {
       $('modal').classList.add('hidden');
-      const r = await mini(p.game, p.game === 'gym' ? { onRep: () => { charCfg.build = Math.min(1.4, (charCfg.build || 1) + 0.01); } } : {});
+      if (p.game === 'gym' && (stats.relDay['gym:' + dayN] || 0) >= GYM_DAILY) { setState('play'); toast(`You've done ${GYM_DAILY} workouts today. Come back tomorrow.`); return; }
+      const r = await mini(p.game, {});
       if (r.money) addMoney(r.money);
-      if (p.game === 'gym' && r.score) { store.set('rr_char', charCfg); buildHero(); gainXP('strength', r.score * 8); toast('Looking stronger'); }
+      if (p.game === 'gym' && r.score) { workout(r.score, 'lift'); gainXP('strength', r.score * 8); }
       if (p.game === 'surf' || p.game === 'hoops') { gainXP('stamina', 10); feed({ mood: 10, energy: -8 }); }
       if (p.game === 'taco') { feed({ hunger: 10, energy: -10 }); }
       if (p.game === 'gallery' && (ws.kind === 'gun')) gainXP('gun_' + arsenal.cur, (r.hits || 0) * 3);
@@ -2906,7 +2918,7 @@ async function prisonSpot(s) {
     if (J.plan && !J.spoon && Math.random() < 0.7) setTimeout(() => { J.spoon = true; toast('You slipped a metal spoon up your sleeve. Pops will be pleased.', 3.5); }, 600);
     return;
   }
-  if (s.kind === 'plift') { const r = await mini('gym', { title: 'Yard weights' }); gainXP('strength', r.score * 14); gainXP('health', r.score * 3); feed({ energy: -10, mood: 6 }); if (r.score > 5) bumpRel('pr:moose', 3); return; }
+  if (s.kind === 'plift') { if ((stats.relDay['gym:' + dayN] || 0) >= GYM_DAILY) { toast(`Enough for today. ${GYM_DAILY} workouts max.`); return; } const r = await mini('gym', { title: 'Yard weights' }); workout(r.score, 'lift'); gainXP('strength', r.score * 14); gainXP('health', r.score * 3); feed({ energy: -10, mood: 6 }); if (r.score > 5) bumpRel('pr:moose', 3); return; }
   if (s.kind === 'hoops') { fade(() => { advanceTime(0.5); gainXP('stamina', 12); feed({ mood: 10, energy: -8 }); bumpRel('pr:dre', 2); toast(pick(['Pickup game on the yard. You hit the game winner.', 'You got crossed up by Dre. The yard went wild.', 'Three on three. Your team took it.']), 3); }); return; }
   if (s.kind === 'infirmary') { fade(() => { advanceTime(1); P.hp = maxHP(); feed({ energy: 10 }); toast('Nurse Ortega patched you up. Full health.', 3); }); return; }
   if (s.kind === 'payphone') return payPhone();
@@ -3401,7 +3413,7 @@ function saveGame() {
   store.set('bc_save', save); store.set('bc_arsenal', arsenal); store.set('bc_cars', garage);
 }
 // auto-update: bookmarks and home-screen apps can hold on to an old copy. Check version.json (never cached) and reload once if newer.
-const BUILD = 31;
+const BUILD = 32;
 function checkUpdate() {
   fetch('version.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(j => {
     if (!(j.v > BUILD)) return;
@@ -3416,7 +3428,7 @@ document.addEventListener('visibilitychange', () => { if (!document.hidden) chec
 function startGame() {
   if (save) { Object.assign(P, { x: save.x, z: save.z, face: save.face || 0 }); clockH = save.h ?? 8; dayN = save.day ?? 1; }
   P.hp = save?.hp > 0 ? Math.min(save.hp, maxHP()) : maxHP();
-  buildHero();
+  applyBody(); buildHero();
   myCar = null; rebuildMyCar();
   if (save && save.cx != null) Object.assign(myCar.s, { x: save.cx, z: save.cz, h: save.ch });
   placeVehicle(myCar);
@@ -3452,8 +3464,32 @@ function updateAmbience() {
 }
 
 // ---------------- step
+// ---------------- body: muscle from training (max a few sessions a day), fat from junk food; both show on your character
+function body() { return stats.body ||= { muscle: 0, fat: 0, shown: [0, 0], lastGym: 0 }; }
+function bodyCheck() {
+  const B = body(); if (stats.jail && charCfg === undefined) return;
+  if (Math.abs(B.muscle - B.shown[0]) > 0.06 || Math.abs(B.fat - B.shown[1]) > 0.06) {
+    const up = B.muscle > B.shown[0] + 0.06, fatter = B.fat > B.shown[1] + 0.06, slimmer = B.fat < B.shown[1] - 0.06;
+    B.shown = [B.muscle, B.fat]; applyBody(); buildHero();
+    toast(up ? 'You\'re getting bigger. The gym is paying off.' : fatter ? 'Your clothes feel tighter. Too much junk food.' : slimmer ? 'You\'re looking leaner.' : 'You\'ve lost some muscle. Get back to the gym.', 3);
+  }
+}
+function applyBody() { const B = body(); charCfg.muscle = B.shown[0]; charCfg.fat = B.shown[1]; if (stats.jail?.outfit) Object.assign(stats.jail.outfit, { muscle: B.shown[0], fat: B.shown[1] }); }
+const GYM_DAILY = 3;
+// one workout: returns false (and tells you) if you've hit today's limit
+function workout(score, kind = 'lift') {
+  const B = body(), k = 'gym:' + dayN; stats.relDay[k] ||= 0;
+  if (stats.relDay[k] >= GYM_DAILY) { toast(`Your muscles are fried. ${GYM_DAILY} workouts a day max. Rest and come back tomorrow.`, 3); return false; }
+  stats.relDay[k]++; B.lastGym = dayN;
+  if (kind === 'cardio') B.fat = clamp(B.fat - 0.012 - score * 0.0008, 0, 1);
+  else { B.muscle = clamp(B.muscle + Math.min(0.035, 0.008 + score * 0.0012) * (1 - B.muscle * 0.5), 0, 1); B.fat = clamp(B.fat - 0.004, 0, 1); }
+  bodyCheck(); return true;
+}
+const gymMember = () => (stats.gymUntil || 0) > dayN;
 function newDay() {
   dayN++;
+  { const B = body(); if (dayN - (B.lastGym || 0) > 3) B.muscle = clamp(B.muscle - 0.01, 0, 1); bodyCheck(); }
+  if (stats.gymUntil && dayN >= stats.gymUntil && stats.gymAuto) { if (money >= 120) { spend(120); stats.gymUntil = dayN + 30; setTimeout(() => toast('Iron Temple membership renewed: $120 for 30 days.', 3), 1500); } else { stats.gymAuto = false; setTimeout(() => toast('Your Iron Temple membership lapsed. Not enough money to renew.', 3), 1500); } }
   const inc = PROPERTIES.filter(p => owned.has(p.id) && propMode(p.id) === 'rent').reduce((a, p) => a + p.income, 0);
   famNewDay();
   if (inc) { money += inc; floatMoney(inc); toast(`New day · property income +${fmt(inc)}`, 3.5); } else toast('New day · dealer prices changed', 3);
@@ -3642,4 +3678,4 @@ function frame(now) {
 }
 startGame();
 requestAnimationFrame(frame);
-window.__game = { get animals() { return animals; }, crime, WANT, copCars, cops, pitFight, busted, fam, famNewDay, makeOfficial, talkFamily, get dayN() { return dayN; }, set dayN(v) { dayN = v; }, scene: G.scene, cam: G.cam, snap: () => updateCamera(0, true), get state() { return state; }, P, input, get ride() { return ride; }, get myCar() { return myCar; }, get traffic() { return traffic; }, peds, setTime: h => { clockH = h; }, openCustom, enterVehicle, exitCar, get money() { return money; }, set money(v) { money = v; }, openPlace, PLACES, PROPERTIES, runMinigame, get action() { return action; }, arsenal, selectWeapon, openPhone, setWaypoint, get route() { return route; }, talkToPed, talk, doAction, stats, get inside() { return inside; }, enterInterior, exitInterior, get customers() { return customers; }, newCustomer, startEdit, endEdit, get job() { return job; }, gainXP, storage, doSpot, useFurn, phoneGo, talkVenue, talkJob, openPlace, talkCustomer, startJob, openCarShop, damageCar, repairCar, addFire, get fires() { return fires; }, get ems() { return ems; }, get vehicles() { return vehicles; }, makeVehicle, makeCop, prisonFight, radioSet: i => { radioSet(i); radioOn(true); }, get zoom() { return zoom; }, set zoom(z) { zoom = z; }, DEFAULT_CAR, setState: x => setState(x), get jail() { return stats.jail; } };
+window.__game = { get animals() { return animals; }, crime, WANT, copCars, cops, pitFight, busted, fam, famNewDay, makeOfficial, talkFamily, get dayN() { return dayN; }, set dayN(v) { dayN = v; }, scene: G.scene, cam: G.cam, snap: () => updateCamera(0, true), get state() { return state; }, P, input, get ride() { return ride; }, get myCar() { return myCar; }, get traffic() { return traffic; }, peds, setTime: h => { clockH = h; }, openCustom, enterVehicle, exitCar, get money() { return money; }, set money(v) { money = v; }, openPlace, PLACES, PROPERTIES, runMinigame, get action() { return action; }, arsenal, selectWeapon, openPhone, setWaypoint, get route() { return route; }, talkToPed, talk, doAction, stats, get inside() { return inside; }, enterInterior, exitInterior, get customers() { return customers; }, newCustomer, startEdit, endEdit, get job() { return job; }, gainXP, storage, doSpot, useFurn, phoneGo, talkVenue, talkJob, openPlace, talkCustomer, startJob, openCarShop, damageCar, repairCar, addFire, get fires() { return fires; }, get ems() { return ems; }, get vehicles() { return vehicles; }, makeVehicle, makeCop, prisonFight, bodyCheck, radioSet: i => { radioSet(i); radioOn(true); }, get zoom() { return zoom; }, set zoom(z) { zoom = z; }, DEFAULT_CAR, setState: x => setState(x), get jail() { return stats.jail; } };

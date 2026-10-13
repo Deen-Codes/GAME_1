@@ -38,22 +38,22 @@ export function relPriceMod(v) { return 1 - Math.min(0.15, v * 0.0015); } // up 
 
 // ---------------- food & things that fill needs
 export const FOODS = {
-  burger: { name: 'Bay Burger', price: 14, hunger: 35, mood: 4 },
-  fries: { name: 'Loaded Fries', price: 8, hunger: 18, mood: 3 },
-  salad: { name: 'Cali Bowl', price: 16, hunger: 28, mood: 6, health: 4 },
-  steak: { name: 'Steak Dinner', price: 42, hunger: 60, mood: 12 },
-  pancakes: { name: 'Pancake Stack', price: 12, hunger: 30, mood: 6 },
+  burger: { name: 'Bay Burger', price: 14, hunger: 35, mood: 4, fat: 0.02 },
+  fries: { name: 'Loaded Fries', price: 8, hunger: 18, mood: 3, fat: 0.016 },
+  salad: { name: 'Cali Bowl', price: 16, hunger: 28, mood: 6, health: 4, fat: -0.008 },
+  steak: { name: 'Steak Dinner', price: 42, hunger: 60, mood: 12, fat: 0.01 },
+  pancakes: { name: 'Pancake Stack', price: 12, hunger: 30, mood: 6, fat: 0.012 },
   coffee: { name: 'Coffee', price: 5, hunger: 2, energy: 20, mood: 2 },
-  shake: { name: 'Milkshake', price: 7, hunger: 10, mood: 8 },
-  taco: { name: 'Street Taco', price: 6, hunger: 18, mood: 4 },
-  beer: { name: 'Beer', price: 8, mood: 10, energy: -5, drunk: 0.35 },
+  shake: { name: 'Milkshake', price: 7, hunger: 10, mood: 8, fat: 0.016 },
+  taco: { name: 'Street Taco', price: 6, hunger: 18, mood: 4, fat: 0.01 },
+  beer: { name: 'Beer', price: 8, mood: 10, energy: -5, drunk: 0.35, fat: 0.006 },
   shot: { name: 'Tequila Shot', price: 10, mood: 12, drunk: 0.55 },
   whiskey: { name: 'Whiskey', price: 16, mood: 14, drunk: 0.7 },
-  cocktail: { name: 'Cocktail', price: 18, mood: 16, energy: -6, drunk: 0.5 },
+  cocktail: { name: 'Cocktail', price: 18, mood: 16, energy: -6, drunk: 0.5, fat: 0.006 },
   energy: { name: 'Energy Drink', price: 6, energy: 25, mood: -2 },
-  snack: { name: 'Snack Bar', price: 3, hunger: 10 },
+  snack: { name: 'Snack Bar', price: 3, hunger: 10, fat: 0.008 },
   groceries: { name: 'Groceries (5 meals)', price: 35, groceries: 5 },
-  meal: { name: 'Home-cooked meal', price: 0, hunger: 40, mood: 5 },
+  meal: { name: 'Home-cooked meal', price: 0, hunger: 40, mood: 5, fat: -0.003 },
 };
 export const MENUS = {
   diner: ['pancakes', 'burger', 'fries', 'salad', 'steak', 'shake', 'coffee'],
