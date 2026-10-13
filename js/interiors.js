@@ -1,9 +1,9 @@
 // Enterable interiors. Rooms are built far away from the city (at ORIGIN) and the player is moved
 // there, so the normal movement, camera and collision code keeps working. South wall is cut away.
 import * as THREE from '../lib/three.module.min.js';
-import { FURN, buildFurn } from './furniture.js?v=59';
-import { addCollider, removeCollider } from './world.js?v=59';
-import { buildCar } from './car.js?v=59';
+import { FURN, buildFurn } from './furniture.js?v=60';
+import { addCollider, removeCollider } from './world.js?v=60';
+import { buildCar } from './car.js?v=60';
 
 export const ORIGIN = { x: 0, z: 2600 };
 const T = (name, w, d, floor, wall, items, npcs, spots, extra = {}) => ({ name, w, d, floor, wall, items, npcs, spots, ...extra });
@@ -97,7 +97,8 @@ export function buildInterior(id, furniture = null, carCfgs = []) {
   // ---- big multi-room interiors: coloured floor zones, internal walls, upper decks and stairs
   const upper = [];  // meshes on the upper floor, faded out while you're downstairs so you can see under them
   for (const [x0, z0, x1, z1, c] of tpl.floors || []) { const m = box(g, x1 - x0, 0.02, z1 - z0, c, (x0 + x1) / 2, 0.002, (z0 + z1) / 2); m.castShadow = false; }
-  for (const [x0, z0, x1, z1, hh = 3, c] of tpl.walls || []) { box(g, Math.max(0.3, x1 - x0), hh, Math.max(0.3, z1 - z0), c || wallC, (x0 + x1) / 2, 0, (z0 + z1) / 2); cols.push(wc(x0, z0, Math.max(x1, x0 + 0.3), Math.max(z1, z0 + 0.3))); cols[cols.length - 1].h = hh; }
+  const iwalls = []; // inner walls go see-through when you're standing just behind one (camera looks from the south)
+  for (const [x0, z0, x1, z1, hh = 3, c] of tpl.walls || []) { const wm = box(g, Math.max(0.3, x1 - x0), hh, Math.max(0.3, z1 - z0), c || wallC, (x0 + x1) / 2, 0, (z0 + z1) / 2); wm.material = new THREE.MeshStandardMaterial({ color: c || wallC, roughness: 0.85, transparent: true, opacity: 1 }); iwalls.push({ m: wm, x0: ORIGIN.x + x0, x1: ORIGIN.x + Math.max(x1, x0 + 0.3), z: ORIGIN.z + (z0 + z1) / 2, hh, o: 1 }); cols.push(wc(x0, z0, Math.max(x1, x0 + 0.3), Math.max(z1, z0 + 0.3))); cols[cols.length - 1].h = hh; }
   const fadeMat = c => new THREE.MeshStandardMaterial({ color: c, roughness: 0.7, transparent: true, opacity: 1 });
   for (const D of tpl.decks || []) {
     const slab = new THREE.Mesh(new THREE.BoxGeometry(D.x1 - D.x0, 0.25, D.z1 - D.z0), fadeMat('#8a8e96')); slab.position.set((D.x0 + D.x1) / 2, D.y - 0.125, (D.z0 + D.z1) / 2); slab.receiveShadow = true; g.add(slab); upper.push(slab);
@@ -138,6 +139,7 @@ export function buildInterior(id, furniture = null, carCfgs = []) {
   for (const c of cols) addCollider(c);
   return {
     id, tpl, group: g, furn, cars, w, d, floorY, upper,
+    seeThrough(px, pz, py = 0) { for (const W of iwalls) { const dz = W.z - pz, o = px > W.x0 - 0.8 && px < W.x1 + 0.8 && dz > 0 && dz < W.hh * 1.4 + 0.6 && py < W.hh ? 0.22 : 1; if (o !== W.o) { W.o = o; W.m.material.opacity = o; W.m.material.depthWrite = o > 0.9; W.m.castShadow = o > 0.9; } } },
     fadeUpper(o) { for (const m of upper) { m.material.opacity = o; m.material.depthWrite = o > 0.9; } },
     toWorld: (x, z) => ({ x: ORIGIN.x + x, z: ORIGIN.z + z }),
     inside: (x, z, m = 0.4) => Math.abs(x - ORIGIN.x) < w / 2 - m && z - ORIGIN.z > -d / 2 + m && z - ORIGIN.z < d / 2 + 0.9,

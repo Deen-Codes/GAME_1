@@ -1,25 +1,25 @@
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA } from './character.js?v=59';
-import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=59';
-import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=59';
-import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, onBridge, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=59';
-import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=59';
-import { buildPanel, renderStats } from './ui.js?v=59';
-import { Input } from './input.js?v=59';
-import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime } from './audio.js?v=59';
-import { runMinigame } from './minigames.js?v=59';
-import { Peds, bakeCfg, figure, setWalk, setTownSource } from './peds.js?v=59';
-import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=59';
-import { findRoute } from './nav.js?v=59';
-import { COURSES, CAREERS, QUIZ } from './careers.js?v=59';
-import { EVENTS, EVENT_BY_ID } from './events.js?v=59';
-import { attachWheel } from './wheel.js?v=59';
-import { Animals } from './animals.js?v=59';
-import { Talk } from './talk.js?v=59';
-import { svg, drawIcon } from './icons.js?v=59';
-import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=59';
-import { FURN, CATALOG } from './furniture.js?v=59';
-import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE } from './interiors.js?v=59';
+import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA } from './character.js?v=60';
+import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=60';
+import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=60';
+import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, onBridge, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=60';
+import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=60';
+import { buildPanel, renderStats } from './ui.js?v=60';
+import { Input } from './input.js?v=60';
+import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime } from './audio.js?v=60';
+import { runMinigame } from './minigames.js?v=60';
+import { Peds, bakeCfg, figure, setWalk, setTownSource } from './peds.js?v=60';
+import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=60';
+import { findRoute } from './nav.js?v=60';
+import { COURSES, CAREERS, QUIZ } from './careers.js?v=60';
+import { EVENTS, EVENT_BY_ID } from './events.js?v=60';
+import { attachWheel } from './wheel.js?v=60';
+import { Animals } from './animals.js?v=60';
+import { Talk } from './talk.js?v=60';
+import { svg, drawIcon } from './icons.js?v=60';
+import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=60';
+import { FURN, CATALOG } from './furniture.js?v=60';
+import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE } from './interiors.js?v=60';
 
 const $ = id => document.getElementById(id);
 let inside = null, editMode = false, held = null, pendingCar = false, homeMusic = false, phoneBadge = 0;
@@ -195,6 +195,7 @@ let animals = null; // created once baseY exists (see below)
 const talk = new Talk();
 function applySettings() {
   $('pad').classList.toggle('righty', settings.stickSide === 'right');
+  $('speedo').classList.toggle('righty', settings.stickSide === 'right');
   setMuted(!settings.sound);
   renderer.shadowMap.enabled = settings.shadows; sun.castShadow = settings.shadows;
   G.scene.traverse(o => { if (o.material) o.material.needsUpdate = true; });
@@ -326,6 +327,7 @@ function updateCash(dt) {
 }
 function addMoney(n, quiet) { money += n; if (n > 0) { quiet ? sfx.coin() : sfx.cash(); } if (n) floatMoney(n); saveGame(); }
 function spend(n) { money -= n; floatMoney(-n); sfx.cash(); saveGame(); }
+$('moneyFloat').addEventListener('animationend', e => e.currentTarget.classList.remove('go')); // otherwise it replays every time the HUD reappears after a menu
 function floatMoney(n) { const el = $('moneyFloat'); el.textContent = (n >= 0 ? '+' : '−') + '$' + Math.floor(Math.abs(n)).toLocaleString('en-US'); el.classList.toggle('neg', n < 0); el.classList.remove('go'); void el.offsetWidth; el.classList.add('go'); }
 
 // ---------------- skills & needs
@@ -951,7 +953,7 @@ function sitIn(v) {
   if (v.radio == null) v.radio = v.b.two ? STATIONS.length - 1 : Math.floor(Math.random() * STATIONS.length);
   if (v.radio !== radioIndex()) radioSet(v.radio);
   radioOn(!v.b.two);
-  toast(v.personal ? (carCfg.name || 'Your car') : v.taxi ? 'Bay Cab' : `${BODIES[v.cfg.body]?.label || 'Car'} (stolen)`, 1.6);
+  $('carLabel').textContent = v.personal ? (carCfg.name || 'Your car') : v.taxi ? 'Bay Cab' : `${BODIES[v.cfg.body]?.label || 'Car'} · stolen`; // shown under the stick you drive with
 }
 function enterVehicle(v, anim = true) {
   if (!anim || P.dead || carAnim) { if (!carAnim) sitIn(v); return; }
@@ -1738,6 +1740,7 @@ function startDance() {
   addEventListener('keydown', onkeydown_dance);
   $('danceQuit').onclick = () => endDance(true);
   for (const n of inside.npcs) if (n.role === 'guest') n.dance = true;
+  if (date && !date.dancing) date.dancing = date.prefs.love.includes('nightlife') || date.prefs.love.includes('music') || date.interest > 70;
   for (const m of inside.marks) m.g.visible = false;
   toast(`${tr.station.split(' — ')[1]}: ${tr.song.title} · ${tr.song.artist}`, 3);
 }
@@ -1805,6 +1808,7 @@ function endDance(quit) {
   for (const m of inside?.marks || []) m.g.visible = true;
   hero.root.rotation.set(0, P.face, 0); hero.hips.position.y = hero.legLen;
   const acc = D2.hits / D2.notes.length; if (acc > 0.6) life().flags.danced = 1;
+  if (date && inside?.id === 'club') { const dd = date; if (dd.dancing) { dd.interest += 8 + Math.round(acc * 14); bumpRel(dd.id, 5, false); hearts(dd.x, dd.z, 10); setTimeout(() => toast(`${dd.name}: "${acc > 0.7 ? 'Okay, you can DANCE.' : 'Haha, that was fun!'}"`, 2.6), 2600); } else dd.interest += acc > 0.8 ? 4 : -2; dd.dancing = false; }
   if (quit && D2.hits < 5) { toast('You left the dance floor.'); return; }
   const tips = acc > 0.85 ? Math.round(D2.score / 40) : 0;
   advanceTime(0.5); feed({ mood: Math.round(6 + acc * 20), energy: -10 }); gainXP('charm', Math.round(8 + acc * 30)); gainXP('stamina', 8);
@@ -2135,7 +2139,7 @@ function setTalkRel(id) { const el = $('talkRel'); if (!id) { el.classList.add('
 
 // ================================================================ CONVERSATIONS
 function zoneBg(x, z) { if (inside) return 'interior'; if (onPier(x, z)) return 'pier'; const n = zoneName(x, z); return n === 'Bay Beach' ? 'beach' : n === 'Hidden Hills' || n === 'Countryside' || n === 'Farmland' ? 'hills' : n.includes('Airport') ? 'airport' : n === 'Eastport' || n === 'Northfield' ? 'suburb' : 'city'; }
-function beginTalk(cfg, name, tag, pitch, relId, pet = null, pose = null, think = false, seat = false, phone = false) { talk.layout(W, H); talk.begin({ npcCfg: cfg, youCfg: charCfg, name, tag, pitch, bg: zoneBg(P.x, P.z), night, pet, pose, think, seat, phone, wall: inside ? INTERIORS[inside.id].wall : null, floor: inside ? INTERIORS[inside.id].floor : null }); if (relId) relNames[relId] = name; setTalkRel(relId); setState('talk'); }
+function beginTalk(cfg, name, tag, pitch, relId, pet = null, pose = null, think = false, seat = false, phone = false, car = false) { talk.layout(W, H); talk.begin({ npcCfg: cfg, youCfg: charCfg, name, tag, pitch, bg: zoneBg(P.x, P.z), night, pet, pose, think, seat, phone, car, wall: inside ? INTERIORS[inside.id].wall : null, floor: inside ? INTERIORS[inside.id].floor : null }); if (relId) relNames[relId] = name; setTalkRel(relId); setState('talk'); }
 function endTalk() { talkNeeds(false); talk.end(); setState('play'); }
 const I = (n, t) => `${svg(n, 'sm')} ${t}`;
 const DEALER_HI = { Stranger: ["Do I know you? ...What you need.", "Keep it quick, cops roll through here.", "New face. Prices are prices."], Known: ["You again. What you need?", "Ayy, back for more?"], Friendly: ["My guy! What we doing today?", "Good to see you. Fresh stock in."], Trusted: ["There's my best customer. I got you.", "For you? Always open."], Family: ["Family! Sit down, sit down.", "Anything you need, it's yours."] };
@@ -2420,7 +2424,7 @@ function crime(amt, x = P.x, z = P.z) {
 // drug deals: a cop who can see the deal calls it in; otherwise there's a small chance someone snitches later
 function dealHeat(x, z, value) {
   if (inside) return;
-  witness('deal', x, z);
+  witness('deal', x, z); if (date && Math.hypot(date.x - x, date.z - z) < 30) dateSeesDeal();
   const seen = copSees(x, z);
   if (seen) { setTimeout(() => { crime(1.6, x, z); toast('A cop saw the deal!', 2.5); }, 400); return; }
   // a snitch has to be a real person who saw it: someone nearby with a clear view
@@ -2452,6 +2456,8 @@ function ditchJumpsuit() { if (!stats.escaped || stats.jail) return; charCfg = {
 // ---------------- headlights and traffic stops
 // Lights are Auto (on after dark) or Off. Off is sneakier at night (cops spot you from less far away),
 // but a cop who sees you driving in the dark with no lights pulls you over. So does serious speeding in town.
+// US-style limits: 25 in the suburbs, 30 downtown, 35 elsewhere in town, 55 on the open road; none off-road
+function speedLimit(x, z) { const r = roadAt(x, z); if (!r) return 0; const c = cityAt(x, z, 2); if (!c) return 55; return c.style === 'suburb' ? 25 : c.style === 'downtown' ? 30 : 35; }
 const lightsOn = () => stats.lights !== 'off';
 function toggleLights() { stats.lights = lightsOn() ? 'off' : 'auto'; sfx.click(); toast(lightsOn() ? 'Headlights: auto' : 'Headlights off', 1.4); }
 let stopCheckT = 0;
@@ -2461,7 +2467,7 @@ function trafficCheck(dt) {
   const c = ride.s, spd = Math.abs(c.v), road = !!roadAt(c.x, c.z);
   let why = null;
   if (night > 0.35 && !lightsOn() && spd > 3 && road) why = 'lights';
-  else if (spd > 25 && cityAt(c.x, c.z, -6)) why = 'speed';
+  else if (speedLimit(c.x, c.z) && spd * 2.237 > speedLimit(c.x, c.z) + 22) why = 'speed';
   if (!why || !copSees(c.x, c.z)) return;
   WANT.pull = why; WANT.pullT = 0; WANT.pullMph = Math.round(spd * 2.237);
   forceWanted(1); WANT.flash = 1.2; sfx.siren?.();
@@ -2471,7 +2477,7 @@ async function trafficStop(v) {
   const why = WANT.pull, warned = stats.ticketWarn || 0, hot = stashCount() > 0;
   WANT.pull = null; ride.s.v = 0;
   beginTalk(copLook?.cfg || COP_CFG, 'Officer ' + pick(['Diaz', 'Walsh', 'Kowalski', 'Price', 'Reyes', 'Hart']), 'Traffic stop', 130, null, null, null, false, true);
-  await talk.say(why === 'lights' ? pick(['Evening. Know why I pulled you over? Your headlights are off. It\'s dark out there.', 'Driving with no lights at night? Headlights go on from sunset to sunrise. That\'s the law.']) : `License and registration. You were doing ${WANT.pullMph} in a 35. This is a city street, not a racetrack.`);
+  await talk.say(why === 'lights' ? pick(['Evening. Know why I pulled you over? Your headlights are off. It\'s dark out there.', 'Driving with no lights at night? Headlights go on from sunset to sunrise. That\'s the law.']) : `License and registration. You were doing ${WANT.pullMph} in a ${speedLimit(ride.s.x, ride.s.z) || 35}. ${cityAt(ride.s.x, ride.s.z, 2) ? 'This is a city street, not a racetrack.' : 'Slow it down.'}`);
   // sometimes they want a look in the car, and a stash in there is a problem
   if (hot && Math.random() < 0.3) {
     await talk.say('Mind if I take a look inside the vehicle?');
@@ -3283,70 +3289,232 @@ function townHtml() {
   if (!ppl.length) return '';
   return `<div class="ph-sec">People around town</div><p class="ph-hint">What locals think of you. They remember what they see you do.</p>` + ppl.map(r => `<div class="ph-row col"><span><b>${r.name}</b> <small>${opWord(r.rap)}${r.met ? ' · ' + ATTITUDE[r.att] : ' · seen you around'}</small></span>${bar(Math.abs(r.rap), r.rap < 0 ? '#e23b3b' : '#2fbf55')}</div>`).join('');
 }
-function addDateContact(p) { stats.dates ||= {}; const id = 'date:' + p.name; stats.dates[id] = { name: p.name, cfg: p.look.cfg }; stats.rel[id] = Math.max(stats.rel[id] || 0, 20); relNames[id] = p.name; saveGame(); }
+function addDateContact(p) { stats.dates ||= {}; const id = 'date:' + p.name; stats.dates[id] = { ...(stats.dates[id] || {}), name: p.name, cfg: p.look.cfg }; prefsOf(id, p.soc || p.person); stats.rel[id] = Math.max(stats.rel[id] || 0, 20); relNames[id] = p.name; saveGame(); }
+// ================================================================ DATES (she follows you, gets in your car, has her own tastes)
+// Everyone you date keeps the personality they had as a stranger: two things they love, one they hate.
+// Get to know them (ask, listen), then take them places they'll love. In the car you sit side by side and chat.
+const DATE_SPOTS = [
+  { id: 'club', interior: 'club', name: 'the club', loves: ['nightlife', 'music'] },
+  { id: 'bar', interior: 'bar', name: 'the bar', loves: ['nightlife'] },
+  { id: 'diner', interior: 'diner', name: 'the diner', loves: ['food'] },
+  { id: 'gym', interior: 'gym', name: 'the gym', loves: ['fitness'] },
+  { id: 'casino', interior: 'casino', name: 'the casino', loves: ['money'] },
+  { id: 'motors', interior: 'motors', name: 'the car showroom', loves: ['cars'] },
+  { id: 'clothes', interior: 'clothes', name: 'shopping', loves: ['art', 'money'] },
+  { id: 'beach', beach: true, name: 'the beach', loves: ['travel', 'fitness'] },
+];
+const LOVE_STATION = { music: 1, nightlife: 3, art: 2, travel: 0, fitness: 3, cars: 2, food: 0, money: 1 };
+function seatsFor(v) { const b = v.cfg?.body; if (v.b.two) return v.b.two === 'moto' ? 2 : 1; return { coupe: 2, sports: 2, hyper: 2, convertible: 2, buggy: 2, tractor: 1, boxtruck: 3, pickup: 3, van: 6, limo: 8 }[b] || 4; }
+function prefsOf(id, src) {
+  stats.dates ||= {}; const d = stats.dates[id] ||= {};
+  if (!d.prefs) { const keys = Object.keys(TOPICS).sort(() => Math.random() - 0.5); d.prefs = src && src.love ? { love: [...src.love], hate: src.hate, known: [...(src.known || [])], att: src.att || 'normal' } : { love: keys.slice(0, 2), hate: keys[2], known: [], att: pick(['straight', 'normal', 'normal', 'edgy']) }; }
+  return d.prefs;
+}
 function startDate(p) {
   peds.release(p); const i = peds.list.indexOf(p); if (i >= 0) peds.list.splice(i, 1); dyn.remove(p.root);
   if (p.dog) p.dog.owner = null;
   const bl = bellyFor('date:' + p.name); let look = p.look; if (bl) look = { ...bakeCfg({ ...look.cfg, belly: bl }), fem: true };
   const fig = figure(look); dyn.add(fig.root);
-  date = { name: p.name, look, cfg: look.cfg, fig, x: p.x, z: p.z, face: p.face, phase: 0, interest: p.interest, since: gameHours(), id: 'date:' + p.name };
-  addDateContact(p); bumpRel(date.id, 10, false);
+  date = { name: p.name, look, cfg: look.cfg, fig, x: p.x, z: p.z, face: p.face, phase: 0, interest: p.interest, since: gameHours(), id: 'date:' + p.name, used: {}, been: {} };
+  addDateContact(p); bumpRel(date.id, 10, false); date.prefs = prefsOf(date.id, p.soc || p.person);
   $('loveBtn').classList.remove('hidden');
-  toast(`${p.name} is hanging out with you. Tap the heart to talk. Take her home or find somewhere private...`, 4);
+  toast(`${p.name} is hanging out with you. Tap the heart for things to do together.`, 4);
 }
 function endDate(msg) {
   if (!date) return; const d = date; date = null; $('loveBtn').classList.add('hidden');
+  if (d.inCar && ride) { d.fig.root.visible = true; const ds = doorSpot(ride, -DRIVER); d.fig.root.position.set(ds.x, baseY(ds.x, ds.z), ds.z); }
   if (msg) toast(msg, 3);
-  // she walks off and fades away
   const leave = { fig: d.fig, t: 0, fx: Math.sin(d.face + 2.5), fz: Math.cos(d.face + 2.5) };
   leaving.push(leave);
 }
 const leaving = [];
 function placeDateNear(x, z) { if (!date) return; date.x = x + 0.9; date.z = z + 0.6; date.fig.root.visible = true; date.inCar = false; }
+function dateWalk(tx, tz, dt, fast = 7.5) {
+  const dx = tx - date.x, dz = tz - date.z, d = Math.hypot(dx, dz); let mv = 0;
+  if (d > 25) { date.x = tx; date.z = tz; }
+  else if (d > 0.3) { const sp = Math.min(d * 2.5, fast); date.x += dx / d * sp * dt; date.z += dz / d * sp * dt; date.face = Math.atan2(dx, dz); mv = sp; if (!inside) resolve(date, 0.35, 0); }
+  return { d, mv };
+}
+function dateLimbs(mv) {
+  date.phase += 0.016 * mv * 2.6;
+  const sw = Math.min(1, mv / 1.5) * (mv > 3 ? 0.9 : 0.55), l = date.fig.limbs;
+  l[0].rotation.x = -Math.sin(date.phase) * sw; l[1].rotation.x = Math.sin(date.phase) * sw; l[2].rotation.set(Math.sin(date.phase) * sw * 0.8, 0, 0); l[3].rotation.set(-Math.sin(date.phase) * sw * 0.8, 0, 0);
+  date.fig.inner.position.y = 0;
+}
 function updateDate(dt) {
   for (let i = leaving.length - 1; i >= 0; i--) { const l = leaving[i]; l.t += dt; l.fig.root.position.x += l.fx * 1.6 * dt; l.fig.root.position.z += l.fz * 1.6 * dt; l.fig.root.rotation.y = Math.atan2(l.fx, l.fz); const ph = l.t * 9; l.fig.limbs[0].rotation.x = -Math.sin(ph) * 0.5; l.fig.limbs[1].rotation.x = Math.sin(ph) * 0.5; if (l.t > 6) { dyn.remove(l.fig.root); leaving.splice(i, 1); } }
+  dateCalls(dt);
   if (!date || woo) return;
   if (gameHours() - date.since > 7) { endDate(`${date.name} had to head home. "Text me!"`); return; }
-  if (ride) { date.inCar = true; date.fig.root.visible = false; date.x = ride.s.x; date.z = ride.s.z; return; }
-  if (date.inCar) placeDateNear(P.x, P.z);
-  const tx = P.x - Math.sin(P.face) * 1.3 + Math.sin(P.face + 1.57) * 0.8, tz = P.z - Math.cos(P.face) * 1.3 + Math.cos(P.face + 1.57) * 0.8;
-  const dx = tx - date.x, dz = tz - date.z, d = Math.hypot(dx, dz);
-  let mv = 0;
-  if (d > 25) { date.x = tx; date.z = tz; }
-  else if (d > 0.3) { const sp = Math.min(d * 2.5, 7.5); date.x += dx / d * sp * dt; date.z += dz / d * sp * dt; date.face = Math.atan2(dx, dz); mv = sp; if (!inside) resolve(date, 0.35, 0); }
-  else date.face += wrapA(P.face - date.face) * Math.min(1, dt * 4);
-  date.phase += dt * mv * 2.6;
-  const sw = Math.min(1, mv / 1.5) * (mv > 3 ? 0.9 : 0.55), l = date.fig.limbs;
-  l[0].rotation.x = -Math.sin(date.phase) * sw; l[1].rotation.x = Math.sin(date.phase) * sw; l[2].rotation.x = Math.sin(date.phase) * sw * 0.8; l[3].rotation.x = -Math.sin(date.phase) * sw * 0.8;
-  date.fig.root.position.set(date.x, baseY(date.x, date.z), date.z); date.fig.root.rotation.y = date.face; date.fig.root.visible = !P.dead;
+  const D = date;
+  // dancing next to you at the club
+  if (dance && D.dancing) { const b = (audioTime() - dance.tr.t0) / (dance.tr.spb16 * 4) * Math.PI, l = D.fig.limbs; D.x = P.x + 1.1; D.z = P.z + 0.3; D.face = -0.5; D.fig.inner.position.y = Math.abs(Math.sin(b)) * 0.09; l[2].rotation.set(-2.4 + Math.sin(b) * 0.5, 0, -0.3); l[3].rotation.set(-2.4 - Math.sin(b) * 0.5, 0, 0.3); l[0].rotation.x = Math.sin(b) * 0.25; l[1].rotation.x = -Math.sin(b) * 0.25; D.fig.root.position.set(D.x, P.y, D.z); D.fig.root.rotation.y = D.face; return; }
+  // getting into your car: walk round to the passenger door, if there's a seat for her
+  if (ride) {
+    if (D.inCar) { D.x = ride.s.x; D.z = ride.s.z; D.fig.root.visible = false; carDateTick(dt); return; }
+    if (D.left) { D.fig.root.visible = true; dateLimbs(0); return; }
+    if (seatsFor(ride) < 2) { if (!D.noRoom) { D.noRoom = true; toast(`${D.name}: "Erm, there's no room for me on that."`, 2.6); } dateLimbs(0); D.fig.root.position.set(D.x, baseY(D.x, D.z), D.z); return; }
+    if (Math.abs(ride.s.v) > 4) { D.left = true; D.interest -= 12; toast(`You drove off without ${D.name}! She's waiting where you left her.`, 3); return; }
+    const ds = doorSpot(ride, -DRIVER), w = dateWalk(ds.x, ds.z, dt, 5);
+    if (w.d < 0.5) { D.board = (D.board || 0) + dt; if (D.board < dt * 1.5) setDoor(ride, -DRIVER, true); if (D.board > 0.5) { D.inCar = true; D.board = 0; D.fig.root.visible = false; setDoor(ride, -DRIVER, false); } }
+    dateLimbs(w.mv); D.fig.root.position.set(D.x, baseY(D.x, D.z), D.z); D.fig.root.rotation.y = D.face; return;
+  }
+  D.noRoom = false;
+  if (D.inCar) { const v = vehicles.find(q => Math.hypot(q.s.x - P.x, q.s.z - P.z) < 8); const ds = v ? doorSpot(v, -DRIVER) : { x: P.x + 0.9, z: P.z + 0.6 }; D.x = ds.x; D.z = ds.z; D.inCar = false; D.fig.root.visible = true; }
+  if (D.left) { if (Math.hypot(P.x - D.x, P.z - D.z) < 14) { D.left = false; toast(`${D.name}: "Oh, NOW you remember me?"`, 2.5); } else { dateLimbs(0); D.fig.root.position.set(D.x, baseY(D.x, D.z), D.z); return; } }
+  // walking with you: a step behind, or right beside you holding hands
+  const side = D.holding ? 0.72 : 0.8, back = D.holding ? 0.05 : 1.3;
+  const tx = P.x - Math.sin(P.face) * back + Math.sin(P.face + 1.57) * side, tz = P.z - Math.cos(P.face) * back + Math.cos(P.face + 1.57) * side;
+  const w = dateWalk(tx, tz, dt);
+  if (w.d <= 0.3) D.face += wrapA(P.face - D.face) * Math.min(1, dt * 4);
+  dateLimbs(w.mv);
+  if (D.holding) { D.face = P.face; D.fig.limbs[3].rotation.set(-0.25, 0, -0.5); hero.armL.pivot.rotation.set(-0.25, 0, 0.5); }
+  D.fig.root.position.set(D.x, inside ? (inside.h.floorY ? inside.h.floorY(D.x, D.z, P.y) : 0) : baseY(D.x, D.z), D.z); D.fig.root.rotation.y = D.face; D.fig.root.visible = !P.dead;
+  dateSpotCheck();
+}
+// how you drive matters: tearing around scares her, a calm cruise is nice
+function carDateTick(dt) {
+  const D = date, spd = Math.abs(ride.s.v), lim = speedLimit(ride.s.x, ride.s.z), mph = spd * 2.237;
+  // some love a speed demon: anyone into cars, or with a wild streak
+  if ((D.prefs.love.includes('cars') || D.prefs.att === 'edgy') && lim && mph > lim + 10) { D.thrill = (D.thrill || 0) + dt; if (D.thrill > 4) { D.thrill = 0; D.interest += 5; bumpRel(D.id, 2, false); toast(`${D.name}: "${pick(['WOOO! Faster!', 'Okay this is fun!', 'You\'re crazy. I love it.'])}"`, 2.2); } return; }
+  if (spd > 27) { D.scare = (D.scare || 0) + dt; if (D.scare > 3) { D.scare = 0; D.interest -= 6; toast(`${D.name}: "${pick(['Slow down!', 'Are you trying to kill us?!', 'Okay, I\'m scared now.'])}"`, 2.2); } }
+  else if (spd > 3 && spd < 20) { D.cruise = (D.cruise || 0) + dt; if (D.cruise > 40) { D.cruise = 0; D.interest += 3; bumpRel(D.id, 1, false); } }
+}
+function dateSpotAt() { if (inside) return DATE_SPOTS.find(s => s.interior === inside.id); return zoneBg(P.x, P.z) === 'beach' ? DATE_SPOTS.find(s => s.beach) : null; }
+function dateSpotCheck() {
+  const D = date, s = dateSpotAt(); if (!s || D.been[s.id]) return; D.been[s.id] = 1;
+  const pr = D.prefs, liked = s.loves.find(l => pr.love.includes(l)), hated = s.loves.includes(pr.hate);
+  if (liked) { D.interest += 15; bumpRel(D.id, 6, false); if (!pr.known.includes(liked)) pr.known.push(liked); hearts(D.x, D.z, 10); toast(`${D.name}: "${pick(['Oh I LOVE it here!', 'How did you know? This is my favourite!', 'Okay, you get points for this.'])}"`, 3); }
+  else if (hated) { D.interest -= 10; toast(`${D.name}: "${pick(['Ugh. Not really my scene.', 'Seriously? Here?', 'Can we go somewhere else?'])}"`, 3); }
+  else { D.interest += 4; toast(`${D.name}: "${pick(['This is nice.', 'Cute spot.', 'Not bad.'])}"`, 2.4); }
+}
+// she sees you deal: depends who she is and how close you two are
+function dateSeesDeal() {
+  const D = date; if (!D || D.inCar && !ride) return;
+  if (D.prefs.att === 'edgy' || rel(D.id) >= 60) { if (!D.sawDeal) { D.sawDeal = 1; toast(`${D.name}: "${D.prefs.att === 'edgy' ? 'Ha. Busy man. I like it.' : 'Just... be careful, okay?'}"`, 2.8); } return; }
+  D.interest -= D.prefs.att === 'straight' ? 25 : 14; bumpRel(D.id, -6, false);
+  if (D.interest < 15) return endDate(`${D.name}: "You're a DEALER? I'm out. Don't text me."`);
+  toast(`${D.name}: "${pick(['Wait... are you selling drugs?', 'I did NOT sign up for this.', 'Is that what I think it is?'])}"`, 3);
+}
+// she rings you up to hang out; say yes and go and pick her up
+function dateCalls(dt) {
+  if (stats.dateMeet) {
+    const M = stats.dateMeet, d = stats.dates?.[M.id];
+    if (!d || date) { stats.dateMeet = null; }
+    else if (gameHours() > M.until) { stats.dateMeet = null; bumpRel(M.id, -8, false); textMe(M.id, d.name, pick(['Wow. You stood me up.', 'Guess you\'re not coming then.'])); clearWaypoint(); }
+    else if (!inside && Math.hypot(P.x - M.x, P.z - M.z) < 26) {
+      stats.dateMeet = null; clearWaypoint();
+      startDate({ name: d.name, look: { ...bakeCfg(d.cfg), fem: true }, x: M.x, z: M.z, face: 0, interest: 40 + rel(M.id) * 0.6, root: new THREE.Group() });
+      toast(`${d.name}: "${pick(['There you are!', 'Hey you. Let\'s go.', 'Finally! Where are we going?'])}"`, 2.6);
+    }
+    return;
+  }
+  stats.nextDateCall ??= gameHours() + rand(4, 9);
+  if (gameHours() < stats.nextDateCall || date || state !== 'play' || talk.active || stats.jail || inside || dance || woo) return;
+  stats.nextDateCall = gameHours() + rand(8, 16);
+  const ids = Object.keys(stats.dates || {}).filter(id => rel(id) >= 35); if (!ids.length) return;
+  const id = pick(ids), d = stats.dates[id]; if (!d?.cfg) return;
+  dateCall(id, d);
+}
+async function dateCall(id, d) {
+  notify(d.name, 'Incoming call…', 3); sfx.coin();
+  beginTalk(d.cfg, d.name, 'Calling you', 330, id, null, null, false, false, true);
+  await talk.say(pick([`Hey you. I'm bored. Come pick me up?`, `I was just thinking about you... you free tonight?`, `Hiii. Wanna hang out? I'm already dressed.`]));
+  const k = await talk.choose([I('car', 'On my way'), I('x', 'Can\'t tonight, sorry')]);
+  if (k === 0) {
+    const s = randomRoadSpot(70, 220); stats.dateMeet = { id, x: s.x + 3.5, z: s.z, until: gameHours() + 3 };
+    await talk.say(pick(['Yay! I\'ll send you my location.', 'Don\'t keep me waiting!']));
+    endTalk(); setWaypoint(s.x + 3.5, s.z, `Pick up ${d.name}`);
+  } else { bumpRel(id, -3, false); await talk.say(pick(['Oh. Okay. Another time then.', 'Fine. Your loss.'])); endTalk(); }
 }
 async function talkDate() {
   if (!date || woo || state !== 'play') return;
-  const D = date;
-  beginTalk(D.cfg, D.name, `${relName(rel(D.id))} · on a date`, 330, D.id);
-  await talk.say(pick(D.interest > 80 ? ['I like being around you.', 'So... what now?', 'You\'re fun, you know that?'] : ['Where are we going?', 'This is nice.', 'So, tell me something about you.']));
-  const bed = inside?.prop ? inside.h.furn.find(f => FURN[f.t].act === 'sleep') : null;
-  const parked = ride && Math.abs(ride.s.v) < 1;
-  const atBar = inside && ['bar', 'club', 'diner'].includes(inside.id);
-  const opts = [{ label: I('heart', 'Kiss her'), k: 'kiss' }];
-  if (atBar) opts.push({ label: I('drink', `Buy her a drink <small>$18</small>`), k: 'drink' });
-  opts.push({ label: I('chat', 'Talk'), k: 'talk' });
-  if (!partner() && rel(D.id) >= 45) opts.push({ label: I('star', 'Be my girlfriend?'), k: 'official' });
-  if (bed || parked) opts.push({ label: I('heart', bed ? 'WooHoo (bed)' : 'WooHoo (in the car)'), k: 'woo' });
-  else { const h = nearestHome(); if (h) opts.push({ label: I('house', 'Come back to my place?'), k: 'home', h }); }
-  opts.push({ label: I('x', 'Call it a night'), k: 'bye' });
-  const o = opts[await talk.choose(opts)];
-  if (o.k === 'kiss') { if (D.interest >= 50 || Math.random() < 0.4) { D.interest += 10; bumpRel(D.id, 6); feed({ mood: 8 }); await talk.say('*mwah*'); hearts(P.x, P.z, 12); } else { D.interest -= 8; await talk.say('Whoa, slow down. Buy me a drink first.'); } }
-  else if (o.k === 'drink') { if (money < 18) await talk.say('...You can\'t afford a drink? Wow.'); else { spend(18); D.interest += 14; bumpRel(D.id, 5); await talk.say(pick(['Ooh, thank you. Cheers!', 'You\'re sweet.'])); } }
-  else if (o.k === 'talk') { gainXP('charm', 6); D.interest += 5; bumpRel(D.id, 3); await talk.say(pick(['I work at a nail salon on the south side. It\'s fine. I want to open my own place one day.', 'I moved here from Ohio. Never going back.', 'Honestly? I came out today hoping something interesting would happen.', 'My ex was a total loser. You\'re... different.'])); }
-  else if (o.k === 'home') { setWaypoint(o.h.x, o.h.z, 'Home'); await talk.say(D.interest >= 55 ? pick(['Mmm, okay. Lead the way.', 'I thought you\'d never ask.']) : 'Maybe... let\'s see how the night goes.'); }
-  else if (o.k === 'woo') {
-    if (D.interest < 65) { await talk.say(pick(['Ha! Not yet, tiger.', 'I don\'t know you well enough for that.'])); D.interest -= 5; }
-    else { await talk.say(pick(['I was hoping you\'d say that.', 'Come here, you.', '*giggles* Okay...'])); D.tryBaby = await askBaby(); endTalk(); return startWoo(bed ? 'bed' : 'car', bed); }
+  const D = date, inCar = !!(ride && D.inCar), pr = D.prefs;
+  beginTalk(D.cfg, D.name, `${relName(rel(D.id))} · on a date`, 330, D.id, null, null, false, false, false, inCar);
+  await talk.say(pick(D.interest > 80 ? ['I like being around you.', 'So... what now?', 'You\'re fun, you know that?'] : inCar ? ['Where are we going?', 'Nice car.', 'So, where are you taking me?'] : ['Where are we going?', 'This is nice.', 'So, tell me something about you.']));
+  const ok = (k, need) => { const n = D.used[k] = (D.used[k] || 0) + 1; return D.interest >= need - lvl('charm') * 2 || Math.random() < 0.25 / n; };
+  for (;;) {
+    const bed = inside?.prop ? inside.h.furn.find(f => FURN[f.t].act === 'sleep') : null, parked = ride && Math.abs(ride.s.v) < 1;
+    const atBar = inside && ['bar', 'club', 'diner'].includes(inside.id), atClub = inside?.id === 'club';
+    const top = [{ label: I('heart', 'Get close'), k: 'sweet' }, { label: I('chat', 'Talk'), k: 'talk' }, { label: I('map', 'Where to?'), k: 'go' }];
+    if (inCar) top.push({ label: I('radio', 'Put her music on'), k: 'music' });
+    if (atBar) top.push({ label: I('drink', `Buy her a drink <small>$18</small>`), k: 'drink' });
+    if (atClub && !dance) top.push({ label: I('music', 'Dance with me'), k: 'dance' });
+    if (!partner() && rel(D.id) >= 45) top.push({ label: I('star', 'Be my girlfriend?'), k: 'official' });
+    if (bed || parked) top.push({ label: I('heart', bed ? 'WooHoo (bed)' : 'WooHoo (in the car)'), k: 'woo' });
+    else { const h = nearestHome(); if (h) top.push({ label: I('house', 'Come back to my place?'), k: 'home', h }); }
+    top.push({ label: I('check', 'That\'s all'), k: 'done' }, { label: I('x', 'Call it a night'), k: 'bye' });
+    const o = top[await talk.choose(top)];
+    if (o.k === 'done') break;
+    if (o.k === 'bye') { endTalk(); bumpRel(D.id, 4); return endDate(`${D.name}: "Tonight was fun. Text me."`); }
+    if (o.k === 'sweet') {
+      const opts = [{ label: I('heart', 'Kiss her'), k: 'kiss' }, { label: I('people', inCar ? 'Lean in for a hug' : 'Hug her'), k: 'hug' }];
+      if (inCar) opts.push({ label: I('hand', 'Hand on her knee'), k: 'knee' }, { label: I('hand', 'Hold her hand'), k: 'hand' });
+      else opts.push({ label: I('hand', D.holding ? 'Let go of her hand' : 'Hold her hand'), k: 'hold' }, { label: I('people', 'Arm around her'), k: 'arm' });
+      opts.push({ label: I('x', 'Back'), k: 'back' });
+      const s = opts[await talk.choose(opts)].k; if (s === 'back') continue;
+      if (s === 'kiss') { if (ok('kiss', 50)) { D.interest += 10; bumpRel(D.id, 6); feed({ mood: 8 }); hearts(P.x, P.z, 12); await talk.act('kiss', 2); await talk.say(pick(['*mwah* ...again?', 'Mmm.', '*smiles* Okay, that was nice.'])); } else { D.interest -= 6; await talk.say(pick(['Whoa, slow down.', 'Not yet. Earn it.'])); } }
+      else if (s === 'hug') { if (ok('hug', 25)) { D.interest += 5; bumpRel(D.id, 3); await talk.act('hug', 1.8); await talk.say(pick(['Aww.', 'You give good hugs.'])); } else await talk.say('Ha, okay, personal space please.'); }
+      else if (s === 'knee') { if (ok('knee', 60)) { D.interest += 8; bumpRel(D.id, 4); await talk.act('knee', 2.2); await talk.say(pick(['*bites lip* Eyes on the road.', 'Mmm. Keep driving.'])); } else { D.interest -= 10; await talk.say('Hands on the wheel, buddy.'); } }
+      else if (s === 'hand') { if (ok('hand', 35)) { D.interest += 5; bumpRel(D.id, 3); await talk.act('hand', 2); await talk.say('*squeezes your hand*'); } else await talk.say('Ha. Maybe later.'); }
+      else if (s === 'hold') { if (D.holding) { D.holding = false; await talk.say('Okay.'); } else if (ok('hold', 35)) { D.holding = true; D.interest += 4; await talk.act('hand', 1.4); await talk.say(pick(['*takes your hand*', 'Okay, cute.'])); } else await talk.say('Let\'s not get ahead of ourselves.'); }
+      else if (s === 'arm') { if (ok('arm', 40)) { D.interest += 5; bumpRel(D.id, 3); await talk.act('hug', 1.6); await talk.say('*leans into you*'); } else await talk.say('Easy.'); }
+      continue;
+    }
+    if (o.k === 'talk') {
+      const opts = [{ label: I('chat', 'Ask about her'), k: 'ask' }, { label: I('star', 'Talk about…'), k: 'topic' }, { label: I('smile', 'Compliment her'), k: 'comp' }, { label: I('x', 'Back'), k: 'back' }];
+      const s = opts[await talk.choose(opts)].k; if (s === 'back') continue;
+      if (s === 'ask') {
+        await talk.say(pick(['Tell me something about you.', 'What are you into?', 'What makes you happy?']), 'you');
+        const hid = pr.love.find(t => !pr.known.includes(t));
+        if (hid) { pr.known.push(hid); D.interest += 4; await talk.say(`Honestly? ${TOPICS[hid].label}. I'm really into ${TOPICS[hid].label.toLowerCase()}. ${pick(['Take me somewhere for that sometime.', 'That\'s my thing.'])}`); gainXP('charm', 6); }
+        else if (!pr.saidHate) { pr.saidHate = 1; await talk.say(`You know me pretty well now. Just... don't get me started on ${TOPICS[pr.hate].label.toLowerCase()}. Hate it.`); }
+        else await talk.say('You already know me. That\'s kind of nice.');
+      } else if (s === 'topic') {
+        const tk = Object.keys(TOPICS), opts2 = tk.map(t => ({ label: I(TOPICS[t].icon, TOPICS[t].label + (pr.known.includes(t) ? ' <small>♥</small>' : '')), t })); opts2.push({ label: I('x', 'Back'), t: null });
+        const t = opts2[await talk.choose(opts2)].t; if (!t) continue; const T = TOPICS[t], n = D.used['t:' + t] = (D.used['t:' + t] || 0) + 1;
+        await talk.say(pick(T.you), 'you');
+        if (n > 1) { await talk.say('We talked about that already.'); continue; }
+        if (pr.love.includes(t)) { D.interest += 10; bumpRel(D.id, 4); if (!pr.known.includes(t)) pr.known.push(t); hearts(P.x, P.z, 5); await talk.say(pick(T.love)); }
+        else if (pr.hate === t) { D.interest -= 8; await talk.say(pick(T.hate)); }
+        else { D.interest += 2; await talk.say(pick(T.meh)); }
+      } else {
+        await talk.say(pick(['You look amazing tonight.', 'I like spending time with you.', 'You\'ve got the best laugh.']), 'you');
+        if (ok('comp', 0) && (D.used.comp || 0) < 3) { D.interest += 5; bumpRel(D.id, 2); await talk.say(pick(['Stop it. ...Don\'t stop.', 'Smooth.', 'You\'re sweet.'])); } else await talk.say('You said that already, charmer.');
+      }
+      continue;
+    }
+    if (o.k === 'go') {
+      const known = pr.love.filter(l => pr.known.includes(l));
+      const opts = [{ label: I('chat', 'What do you want to do?'), k: 'ask' }, ...DATE_SPOTS.filter(s => s.beach || PLACES.some(q => q.interior === s.interior)).map(s => ({ label: I('pin', `Let's go to ${s.name}` + (s.loves.some(l => known.includes(l)) ? ' <small>♥</small>' : '')), k: 'spot', s })), { label: I('x', 'Back'), k: 'back' }];
+      const c = opts[await talk.choose(opts)]; if (c.k === 'back') continue;
+      let s = c.s;
+      if (c.k === 'ask') { const l = pick(pr.love); s = DATE_SPOTS.find(q => q.loves.includes(l) && (q.beach || PLACES.some(p2 => p2.interior === q.interior))) || DATE_SPOTS[2]; if (!pr.known.includes(l)) pr.known.push(l); await talk.say(`Ooh. Can we go to ${s.name}? I love ${TOPICS[l].label.toLowerCase()}.`); }
+      else await talk.say(s.loves.includes(pr.hate) ? 'Eh... if you want.' : s.loves.some(l => pr.love.includes(l)) ? 'Yes! Let\'s go!' : 'Sure, why not.');
+      dateGo(s); continue;
+    }
+    if (o.k === 'music') {
+      const fav = pr.love.find(l => LOVE_STATION[l] != null) || pr.love[0], st = LOVE_STATION[fav] ?? 0;
+      radioSet(st); radioOn(true); if (ride) ride.radio = st;
+      if (!pr.known.includes(fav)) pr.known.push(fav);
+      D.interest += (D.used.music = (D.used.music || 0) + 1) === 1 ? 6 : 0; await talk.say(pick([`Ooh, ${STATIONS[st].name.split(' — ')[1]}! You remembered.`, 'Yes! This is my station.', 'Turn it up!']));
+      continue;
+    }
+    if (o.k === 'dance') { endTalk(); D.dancing = pr.love.includes('nightlife') || pr.love.includes('music') || D.interest > 70; if (!D.dancing) toast(`${D.name}: "I'll watch. Dancing's not really my thing."`, 2.6); return startDance(); }
+    if (o.k === 'drink') { if (money < 18) await talk.say('...You can\'t afford a drink? Wow.'); else { spend(18); D.interest += (D.used.drink = (D.used.drink || 0) + 1) < 3 ? 12 : 2; bumpRel(D.id, 4); await talk.say(D.used.drink < 3 ? pick(['Ooh, thank you. Cheers!', 'You\'re sweet.']) : 'Okay, I think I\'ve had enough.'); } continue; }
+    if (o.k === 'home') { setWaypoint(o.h.x, o.h.z, 'Home'); await talk.say(D.interest >= 55 ? pick(['Mmm, okay. Lead the way.', 'I thought you\'d never ask.']) : 'Maybe... let\'s see how the night goes.'); continue; }
+    if (o.k === 'woo') {
+      if (D.interest < 65) { await talk.say(pick(['Ha! Not yet, tiger.', 'I don\'t know you well enough for that.'])); D.interest -= 5; continue; }
+      await talk.say(pick(['I was hoping you\'d say that.', 'Come here, you.', '*giggles* Okay...'])); D.tryBaby = await askBaby(); endTalk(); return startWoo(bed ? 'bed' : 'car', bed);
+    }
+    if (o.k === 'official') { if (D.interest >= 60) { makeOfficial(D.id); hearts(P.x, P.z, 14); await talk.act('kiss', 1.8); await talk.say(pick(['Yes! Finally. I thought you\'d never ask.', 'Okay... yes. You\'re mine now.'])); toast(`You and ${D.name} are official!`, 3); } else await talk.say('Let\'s not rush it. Take me out a few more times.'); continue; }
   }
-  else if (o.k === 'official') { if (D.interest >= 60) { makeOfficial(D.id); hearts(P.x, P.z, 14); await talk.say(pick(['Yes! Finally. I thought you\'d never ask.', 'Okay... yes. You\'re mine now.'])); toast(`You and ${D.name} are official!`, 3); } else await talk.say('Let\'s not rush it. Take me out a few more times.'); }
-  else if (o.k === 'bye') { endTalk(); bumpRel(D.id, 4); return endDate(`${D.name}: "Tonight was fun. Text me."`); }
   endTalk();
+}
+function dateGo(s) {
+  if (s.beach) { const x = clamp(P.x, -200, 400), z = sandLine(x) + 18; setWaypoint(x, z, 'The beach'); return; }
+  let best = null, bd = 1e9; for (const q of PLACES) if (q.interior === s.interior) { const d = Math.hypot(q.x - P.x, q.z - P.z); if (d < bd) { bd = d; best = q; } }
+  if (best) setWaypoint(best.x, best.z, best.name);
 }
 function nearestHome() { let best = null, bd = 1e9; for (const p of PROPERTIES) if (owned.has(p.id)) { const d = Math.hypot(p.x - P.x, p.z - P.z); if (d < bd) { bd = d; best = p; } } return best; }
 function hearts(x, z, n = 6, y = 1.8) { spawnParticles(x, y, z, ['#ff6fb5', '#ff3b8a', '#ffd1e8'], n, 1.6, 1.4, 0.22, -1.5); }
@@ -3627,6 +3795,8 @@ async function talkCustomer(c) {
   const have = stash[g.id] || 0;
   const c2 = await talk.choose([{ label: I('deal', `Hand over ${c.qty} <small>for ${fmt(c.pay)}</small>`), disabled: have < c.qty }, I('x', have < c.qty ? `I don't have it yet (${have}/${c.qty})` : 'Not yet'), I('phone', 'Lose my number')]);
   if (c2 === 2) {
+    await talk.say("Wait, you're cutting me off? For real?");
+    if (await talk.choose([I('check', 'Yeah. Lose my number'), I('x', 'Nah, forget I said that')]) === 1) { await talk.say('Phew. Don\'t scare me like that.'); endTalk(); return; }
     await talk.say(pick(["Wow. Fine. Plenty of other plugs.", "Your loss, man.", "Seriously? Alright then."])); bumpRel('street', -3, false);
     endTalk(); removeCustomer(c); return;
   }
@@ -4146,9 +4316,10 @@ function updateHUD(dt) {
   $('wpnBtn').classList.toggle('hidden', !!ride || !!inside);
   $('editBtn').classList.toggle('hidden', !(inside && inside.prop) || editMode);
   $('radioBtn').classList.toggle('hidden', !ride);
-  $('speedo').classList.add('hidden');
+  $('carLabel').classList.toggle('on', !!ride);
+  $('speedo').classList.toggle('hidden', !ride || !!ride.b.two && ride.cfg?.body === 'bike');
   $('phoneBtn').classList.toggle('badge', phoneBadge > 0); $('phoneBtn').classList.toggle('hidden', !!stats.jail);
-  if (ride) setText('speedTxt', String(Math.round(Math.abs(ride.s.v) * 3.6)));
+  if (ride) { const mph = Math.round(Math.abs(ride.s.v) * 2.237), lim = speedLimit(ride.s.x, ride.s.z); setText('speedTxt', String(mph)); setText('limTxt', lim ? String(lim) : ''); $('speedo').classList.toggle('over', !!lim && mph > lim + 4); $('limSign').classList.toggle('hidden', !lim); }
   const jt = race ? `Race ${race.i}/${RACE.points.length} · ${Math.ceil(race.t)}s` : job ? (job.type === 'bins' ? (job.stage === 'return' ? 'Bins · return the lorry' : `Bins · ${8 - job.bins.length}/8 · ${fmt(job.earned)}`) : job.type === 'taxi' ? (job.stage === 'pickup' ? `Cab · pick up fare · ${fmt(job.earned)}` : `Cab · drop off · ${Math.ceil(job.t)}s · ${fmt(job.pay)}`) : `Courier · ${Math.ceil(job.t)}s · ${fmt(job.pay)}`) : '';
   setText('raceTxt', jt); $('raceTxt').classList.toggle('hidden', !jt);
   if (editMode) { setBtn('btnA', held ? 'check' : 'hand', held ? 'Place' : 'Pick up'); setBtn('btnB', 'check', 'Done'); setBtn('btnX', 'rotate', 'Rotate'); setBtn('btnY', 'box', 'Store'); }
@@ -4405,7 +4576,7 @@ function saveGame() {
   store.set('bc_save', save); store.set('bc_arsenal', arsenal); store.set('bc_cars', garage);
 }
 // auto-update: bookmarks and home-screen apps can hold on to an old copy. Check version.json (never cached) and reload once if newer.
-const BUILD = 59;
+const BUILD = 60;
 function checkUpdate() {
   fetch('version.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(j => {
     if (!(j.v > BUILD)) return;
@@ -4526,7 +4697,7 @@ function step(dt) {
     animals.update(dt, f.x, f.z, clockH, { x: f.x, z: f.z, car: !!ride && Math.abs(ride.s.v) > 2, run: !ride && input.stick.m > 0.85 }, false);
     updateAngry(dt);
     updateNpcList(npcs, dt); updateFlyer(dt);
-  } else { updateNpcList(inside.npcs, dt); if (inside.id === 'prison') { peds.update(dt, P.x, P.z, null, false); updateAngry(dt); updateBrawl(dt); if (inside.h.upper?.length) { const o = P.y < 2 ? 0.16 : 1; if (inside.fadeO !== o) { inside.fadeO = o; inside.h.fadeUpper(o); } } } }
+  } else { updateNpcList(inside.npcs, dt); inside.h.seeThrough?.(P.x, P.z, P.y); if (inside.id === 'prison') { peds.update(dt, P.x, P.z, null, false); updateAngry(dt); updateBrawl(dt); if (inside.h.upper?.length) { const o = P.y < 2 ? 0.16 : 1; if (inside.fadeO !== o) { inside.fadeO = o; inside.h.fadeUpper(o); } } } }
   lifeTick(dt); updateDate(dt); famTexts(dt); updateFx(dt); updatePolice(dt); updatePrison(dt); updateFarm(dt); updateTrain(dt); if (!inside) updateEmergency(dt);
   updateBullets(dt); updateProjectiles(dt); updateParticles(dt); updateCash(dt); updateMarkers(); updateRace(dt); updateRoute(dt); updateCustomers(dt); updateReacts(dt); updateDoors(dt); updateJob(dt);
   if (input.consume('map') || input.consume('pause')) openPhone('maps');
@@ -4694,4 +4865,4 @@ function frame(now) {
 }
 startGame();
 requestAnimationFrame(frame);
-window.__game = { get animals() { return animals; }, crime, WANT, copCars, cops, pitFight, busted, fam, famNewDay, makeOfficial, talkFamily, get dayN() { return dayN; }, set dayN(v) { dayN = v; }, scene: G.scene, cam: G.cam, snap: () => updateCamera(0, true), get state() { return state; }, P, input, get ride() { return ride; }, get myCar() { return myCar; }, get traffic() { return traffic; }, peds, setTime: h => { clockH = h; }, openCustom, enterVehicle, exitCar, get money() { return money; }, set money(v) { money = v; }, openPlace, PLACES, PROPERTIES, runMinigame, get action() { return action; }, arsenal, selectWeapon, openPhone, setWaypoint, get route() { return route; }, talkToPed, talk, doAction, stats, get inside() { return inside; }, enterInterior, exitInterior, get customers() { return customers; }, newCustomer, startEdit, endEdit, get job() { return job; }, gainXP, storage, doSpot, useFurn, phoneGo, talkVenue, talkJob, openPlace, talkCustomer, startJob, openCarShop, damageCar, repairCar, addFire, get fires() { return fires; }, get ems() { return ems; }, get vehicles() { return vehicles; }, makeVehicle, makeCop, prisonFight, life, startDealMeet, get lifeAct() { return lifeAct; }, get train() { return train; }, get trainRide() { return trainRide; }, boardTrain, eventReset: () => { eventOpen = false; }, bodyCheck, attendClass, talkAdmissions, edu, startDance, get dance() { return dance; }, radioSet: i => { radioSet(i); radioOn(true); }, get zoom() { return zoom; }, set zoom(z) { zoom = z; }, DEFAULT_CAR, setState: x => setState(x), get jail() { return stats.jail; }, witness, personOf, dealHeat, trafficStop, carNear, carTop };
+window.__game = { get animals() { return animals; }, crime, WANT, copCars, cops, pitFight, busted, fam, famNewDay, makeOfficial, talkFamily, get dayN() { return dayN; }, set dayN(v) { dayN = v; }, scene: G.scene, cam: G.cam, snap: () => updateCamera(0, true), get state() { return state; }, P, input, get ride() { return ride; }, get myCar() { return myCar; }, get traffic() { return traffic; }, peds, setTime: h => { clockH = h; }, openCustom, enterVehicle, exitCar, get money() { return money; }, set money(v) { money = v; }, openPlace, PLACES, PROPERTIES, runMinigame, get action() { return action; }, arsenal, selectWeapon, openPhone, setWaypoint, get route() { return route; }, talkToPed, talk, doAction, stats, get inside() { return inside; }, enterInterior, exitInterior, get customers() { return customers; }, newCustomer, startEdit, endEdit, get job() { return job; }, gainXP, storage, doSpot, useFurn, phoneGo, talkVenue, talkJob, openPlace, talkCustomer, startJob, openCarShop, damageCar, repairCar, addFire, get fires() { return fires; }, get ems() { return ems; }, get vehicles() { return vehicles; }, makeVehicle, makeCop, prisonFight, life, startDealMeet, get lifeAct() { return lifeAct; }, get train() { return train; }, get trainRide() { return trainRide; }, boardTrain, eventReset: () => { eventOpen = false; }, bodyCheck, attendClass, talkAdmissions, edu, startDance, get dance() { return dance; }, radioSet: i => { radioSet(i); radioOn(true); }, get zoom() { return zoom; }, set zoom(z) { zoom = z; }, DEFAULT_CAR, setState: x => setState(x), get jail() { return stats.jail; }, witness, personOf, dealHeat, trafficStop, carNear, carTop, startDate, talkDate, get date() { return date; }, get carAnim() { return carAnim; } };

@@ -432,11 +432,24 @@ input[type=text] { width: 100%; padding: 10px 12px; border-radius: 10px; border:
 #pad.righty .face { right: auto; left: calc(14px + var(--sal)); }
 
 /* side buttons stretch into a pill (phone: message summary, radio: song) */
-.sidebtn { transition: width .35s cubic-bezier(.2,.9,.3,1.2), background .3s; overflow: hidden; }
-.sidebtn .peek { position: absolute; left: 14px; right: 50px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; align-items: flex-start; text-align: left; opacity: 0; transition: opacity .2s; white-space: nowrap; pointer-events: none; }
+.sidebtn { transition: width .35s cubic-bezier(.2,.9,.3,1.2), background .3s; }
+.sidebtn .peek { position: absolute; left: 14px; right: 50px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; align-items: flex-start; text-align: left; opacity: 0; transition: opacity .2s; white-space: nowrap; pointer-events: none; overflow: hidden; }
 .sidebtn .peek b { font-size: 13px; font-weight: 900; max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
 .sidebtn .peek small { font-size: 11px; font-weight: 700; opacity: .75; max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
 .sidebtn .ic { position: absolute; right: 11px; top: 11px; }
 .sidebtn.open { width: min(250px, calc(100vw - 150px)); background: rgba(10,10,24,.82); }
 .sidebtn.open .peek { opacity: 1; transition-delay: .12s; }
 #hud:has(.sidebtn.open) .toast { top: calc(var(--sat) + 262px); }
+
+#carLabel { position: absolute; left: calc(80px + var(--sal)); bottom: 6px; transform: translateX(-50%); white-space: nowrap; font-size: 12px; font-weight: 900; letter-spacing: .04em; text-transform: uppercase; color: rgba(255,255,255,.85); text-shadow: 0 1px 3px rgba(0,0,0,.6); pointer-events: none; opacity: 0; transition: opacity .3s; }
+#carLabel.on { opacity: 1; }
+#pad.righty #carLabel { left: auto; right: calc(80px + var(--sar)); transform: translateX(50%); }
+
+/* speedometer sits above the stick you drive with, with the local speed limit sign */
+.speedo { left: calc(80px + var(--sal)); transform: translateX(-50%); bottom: calc(var(--pad) + 4px); display: flex; align-items: center; gap: 2px; }
+.speedo.righty { left: auto; right: calc(80px + var(--sar)); transform: translateX(50%); }
+.speedo .lim { display: inline-flex; flex-direction: column; align-items: center; justify-content: center; width: 30px; height: 36px; margin-left: 8px; border-radius: 4px; background: #fff; border: 2px solid #141428; box-shadow: inset 0 0 0 1.5px #fff, inset 0 0 0 2.5px #141428; font-style: normal; } /* US-style SPEED LIMIT sign */
+.speedo .lim::before { content: 'LIMIT'; font-size: 6.5px; font-weight: 900; color: #141428; letter-spacing: .02em; }
+.speedo .lim em { font-style: normal; font-size: 14px; font-weight: 900; color: #141428; line-height: 1; }
+.speedo .lim.hidden { display: none; }
+.speedo.over b { color: #ff5a5a; animation: lowPulse .5s infinite alternate; }

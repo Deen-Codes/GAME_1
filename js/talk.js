@@ -1,8 +1,8 @@
 // Conversations staged like a Pokémon battle: they stand on a platform facing you,
 // you see the back of your own head in the foreground, subtitles type out, you pick replies.
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject } from './character.js?v=59';
-import { sfx, audio } from './audio.js?v=59';
+import { buildCharacter, poseCharacter, disposeObject } from './character.js?v=60';
+import { sfx, audio } from './audio.js?v=60';
 
 const $ = id => document.getElementById(id);
 const BG = {
@@ -76,8 +76,8 @@ export class Talk {
     for (const p of [this.pNpc, this.pYou]) { p.top.material.color.set(b.plat); p.rim.material.color.set(b.rim); }
     this.hemi.intensity = N ? 0.8 : 1.3; this.sun.intensity = N ? 1 : 2; this.sun.color.set(N ? '#b0b8ff' : '#fff3e0');
   }
-  begin({ npcCfg, youCfg, name, tag, pitch = 300, bg = 'city', night = 0, wall = null, floor = null, pet = null, pose = null, think = false, seat = false, phone = false }) {
-    this.pose = pose; this.think = think; this.seat = seat; this.phone = phone;
+  begin({ npcCfg, youCfg, name, tag, pitch = 300, bg = 'city', night = 0, wall = null, floor = null, pet = null, pose = null, think = false, seat = false, phone = false, car = false }) {
+    this.pose = pose; this.think = think; this.seat = seat; this.phone = phone; this.car = car; this.actK = null; this.actT = 0;
     audio();
     this.clear();
     this.active = true; this.t = 0; this.intro = 0; this.t0 = performance.now(); this.blipPitch = pitch;
@@ -97,7 +97,11 @@ export class Talk {
       this.bubbles = g; this.scene.add(g);
     }
     $('talkBox').classList.toggle('think', think);
-    if (phone) for (const c of [this.npc, this.you]) { const ph = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.16, 0.09), new THREE.MeshStandardMaterial({ color: '#16161b', roughness: 0.3 })); ph.position.set(0, -0.06, 0.05); (c.hand || c.armR.pivot).add(ph); }
+    if (phone) for (const c of [this.npc, this.you]) { // phone pressed to the right ear, hand cupped round it
+      const ph = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.2, 0.1), new THREE.MeshStandardMaterial({ color: '#16161b', roughness: 0.3 }));
+      c.root.updateMatrixWorld(true); const hb = new THREE.Box3().setFromObject(c.head); const hw = (hb.max.x - hb.min.x) / 2 || 0.2;
+      ph.position.set(-hw - 0.02, (hb.max.y - hb.min.y) * 0.42 - (c.head.getWorldPosition(new THREE.Vector3()).y - hb.min.y), 0.02); ph.rotation.x = 0.25; c.head.add(ph);
+    }
     if (seat) { // car seat, dashboard and steering wheel
       const g = new THREE.Group(), m = c => new THREE.MeshStandardMaterial({ color: c, roughness: 0.7 });
       const seatB = new THREE.Mesh(new THREE.BoxGeometry(0.75, 0.16, 0.7), m('#2a2b30')); seatB.position.set(0, 0.55, -0.1); g.add(seatB);
@@ -109,6 +113,23 @@ export class Talk {
       const spoke = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.04, 0.03), m('#3a3d45')); wheel.add(spoke);
       this.seatG = g; this.scene.add(g);
     }
+    if (car) { // inside a car: you at the wheel, them in the passenger seat, seen through the windscreen
+      const g = new THREE.Group(), m = c => new THREE.MeshStandardMaterial({ color: c, roughness: 0.7 });
+      for (const sx of [0.45, -0.45]) {
+        const sb = new THREE.Mesh(new THREE.BoxGeometry(0.62, 0.16, 0.62), m('#2a2b30')); sb.position.set(sx, 0.52, -0.05); g.add(sb);
+        const bk = new THREE.Mesh(new THREE.BoxGeometry(0.62, 1.0, 0.16), m('#2a2b30')); bk.position.set(sx, 1.0, -0.42); bk.rotation.x = -0.12; g.add(bk);
+        const hr = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.26, 0.14), m('#2a2b30')); hr.position.set(sx, 1.66, -0.5); g.add(hr);
+      }
+      const dash = new THREE.Mesh(new THREE.BoxGeometry(1.9, 0.22, 0.45), m('#2b2d33')); dash.position.set(0, 0.62, 1.05); g.add(dash);
+      const well = new THREE.Mesh(new THREE.BoxGeometry(1.9, 0.5, 0.1), m('#22242a')); well.position.set(0, 0.26, 1.2); g.add(well);
+      const col = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.42, 8), m('#16161a')); col.position.set(0.45, 0.85, 0.85); col.rotation.x = -1.1; g.add(col);
+      const wheel = new THREE.Mesh(new THREE.TorusGeometry(0.2, 0.035, 8, 22), m('#16161a')); wheel.position.set(0.45, 1.0, 0.62); wheel.rotation.x = 0.45; g.add(wheel); this.wheel = wheel;
+      const roof = new THREE.Mesh(new THREE.BoxGeometry(2.0, 0.08, 1.6), m('#30323a')); roof.position.set(0, 2.05, 0.1); g.add(roof);
+      for (const sx of [-0.98, 0.98]) { const pil = new THREE.Mesh(new THREE.BoxGeometry(0.09, 1.15, 0.09), m('#30323a')); pil.position.set(sx, 1.5, 1.05); pil.rotation.x = 0.35; g.add(pil); }
+      const mirror = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.08, 0.04), m('#16161a')); mirror.position.set(0, 1.86, 0.75); g.add(mirror);
+      this.carG = g; this.scene.add(g);
+    }
+    for (const p of [this.pNpc, this.pYou]) p.g.visible = !car;
     for (const c of [this.npc, this.you]) c.root.traverse(o => { if (o.isMesh) o.castShadow = true; });
     $('talkName').textContent = name; $('talkTag').textContent = tag || '';
     $('talkText').textContent = ''; $('talkOpts').innerHTML = ''; $('talkOpts').classList.add('hidden');
@@ -122,7 +143,10 @@ export class Talk {
     if (this.prop) { this.scene.remove(this.prop); this.prop = null; }
     if (this.bubbles) { this.scene.remove(this.bubbles); this.bubbles = null; }
     if (this.seatG) { this.scene.remove(this.seatG); this.seatG = null; }
+    if (this.carG) { this.scene.remove(this.carG); this.carG = null; }
   }
+  // a little bit of acting: kiss, hug, hold hands, a hand on the knee
+  act(kind, dur = 1.8) { this.actK = kind; this.actT = 0; this.actDur = dur; return new Promise(res => setTimeout(() => { this.actK = null; res(); }, dur * 1000)); }
   end() { this.active = false; this.clear(); $('talkUI').classList.add('hidden'); this._say = null; this._choose = null; }
   say(text, who = 'npc') {
     $('talkOpts').classList.add('hidden');
@@ -177,7 +201,7 @@ export class Talk {
       c.armR.pivot.rotation.set(-0.15 - Math.max(0, g) * 1.4, 0, 0.12 + Math.max(0, g) * 0.3);
       c.armL.pivot.rotation.set(-0.1 + Math.min(0, g) * 1.2, 0, -0.12);
     }
-    if (this.phone && n && y) for (const c of [n, y]) { c.armR.pivot.rotation.set(-2.65, 0, 0.55); c.head.rotation.z = -0.12; } // phone to the ear
+    if (this.phone && n && y) for (const c of [n, y]) { c.armR.pivot.rotation.set(-2.45, 0.35, 0.42); c.head.rotation.z = -0.14; } // hand up at the ear holding the phone
     if (this.think && n) { // you, alone, hand on chin, mulling it over
       n.root.position.x = 0;
       if (this.seat && this.seatG) { // sat at the wheel, both hands on it, glancing down at the dash
@@ -201,11 +225,40 @@ export class Talk {
       y.armL.pivot.rotation.set(-1.25, 0, -0.32); if (this.talking !== 'you') y.armR.pivot.rotation.set(-1.25, 0, 0.32);
       y.head.rotation.y = 1.35 + (this.talking === 'you' ? Math.sin(this.t * 3.1) * 0.1 : 0);
     }
+    if (this.car && n && y) this.carPose(n, y);
+    else if (this.actK && n && y) this.standAct(n, y);
     if (this.pose && n) {
       this.prop.position.copy(this.pNpc.g.position); this.prop.rotation.y = n.root.rotation.y;
       if (this.pose === 'lie') { n.root.rotation.order = 'YXZ'; n.root.rotation.x = -1.35; n.root.position.y += 0.22; n.root.position.x -= 0.1; n.head.rotation.x = 0.9; }
       else { n.root.position.y -= 0.45 * (n.height || 1.7) / 1.7; n.legL.pivot.rotation.x = -1.45; n.legR.pivot.rotation.x = -1.4; n.legL.knee.rotation.x = 0.1; n.legR.knee.rotation.x = 0.1; n.root.position.y += 0.05; }
     }
+  }
+  carPose(n, y) {
+    this.actT += 1 / 60; const k = this.actK ? Math.min(1, this.actT / 0.4, (this.actDur - this.actT) / 0.4) : 0, e = Math.max(0, k);
+    this.cam.position.set(0, 1.85, 3.7); this.cam.lookAt(0, 1.05, 0);
+    const sit = (c, x) => { c.root.position.set(x, -0.42, 0); c.root.rotation.set(0, 0, 0); c.legL.pivot.rotation.x = -1.45; c.legR.pivot.rotation.x = -1.45; c.legL.knee.rotation.x = 1.3; c.legR.knee.rotation.x = 1.3; };
+    sit(y, 0.45); sit(n, -0.45);
+    // at the wheel / hands in lap, heads turned to each other while you talk
+    y.armL.pivot.rotation.set(-1.15, 0, -0.25); y.armR.pivot.rotation.set(-1.15, 0, 0.25);
+    n.armL.pivot.rotation.set(-0.7, 0, -0.1); n.armR.pivot.rotation.set(-0.7, 0, 0.1);
+    y.head.rotation.y = -0.55 + (this.talking === 'you' ? Math.sin(this.t * 3) * 0.08 : 0); n.head.rotation.y = 0.55 + (this.talking === 'npc' ? Math.sin(this.t * 3) * 0.08 : 0);
+    if (this.wheel) this.wheel.rotation.z = Math.sin(this.t * 0.8) * 0.06;
+    const K = this.actK;
+    if (K === 'kiss') { y.root.rotation.z = 0.3 * e; n.root.rotation.z = -0.3 * e; y.head.rotation.y = -1.1 * e - 0.55 * (1 - e); n.head.rotation.y = 1.1 * e + 0.55 * (1 - e); y.armR.pivot.rotation.set(-1.3, 0, -0.6 * e + 0.25); }
+    else if (K === 'hug') { y.root.rotation.z = 0.25 * e; n.root.rotation.z = -0.25 * e; y.armR.pivot.rotation.set(-1.5, 0, -1.2 * e); n.armL.pivot.rotation.set(-1.5, 0, 1.2 * e); }
+    else if (K === 'knee') { y.armR.pivot.rotation.set(-0.75, 0, -0.75 * e + 0.25); y.root.rotation.z = 0.08 * e; }
+    else if (K === 'hand') { y.armR.pivot.rotation.set(-0.8, 0, -0.55 * e); n.armL.pivot.rotation.set(-0.8, 0, 0.55 * e); }
+  }
+  standAct(n, y) {
+    this.actT += 1 / 60; const e = Math.max(0, Math.min(1, this.actT / 0.45, (this.actDur - this.actT) / 0.45)), K = this.actK;
+    // step in close, then do the thing
+    const tx = n.root.position.x - 0.55, tz = n.root.position.z + 0.45;
+    y.root.position.x += (tx - y.root.position.x) * e; y.root.position.z += (tz - y.root.position.z) * e;
+    const a = Math.atan2(n.root.position.x - y.root.position.x, n.root.position.z - y.root.position.z); y.root.rotation.y = a;
+    n.root.rotation.y = n.root.rotation.y * (1 - e) + (a + Math.PI) * e;
+    if (K === 'kiss') { y.head.rotation.x = 0.25 * e; n.head.rotation.x = 0.25 * e; y.root.rotation.x = 0.12 * e; y.armR.pivot.rotation.set(-1.2 * e, 0, 0.3); y.armL.pivot.rotation.set(-1.2 * e, 0, -0.3); }
+    else if (K === 'hug') { for (const c of [y, n]) { c.armR.pivot.rotation.set(-1.4 * e, 0, -0.9 * e); c.armL.pivot.rotation.set(-1.4 * e, 0, 0.9 * e); } }
+    else if (K === 'hand') { y.armR.pivot.rotation.set(-0.6 * e, 0, 0); n.armR.pivot.rotation.set(-0.6 * e, 0, 0); }
   }
   render(renderer) { renderer.render(this.scene, this.cam); }
 }

@@ -537,6 +537,12 @@ for (const c of chunks.values()) for (let i = c.objs.length - 1; i >= 0; i--) {
   const hit = objsNear(o.x - 16, o.z - 16, o.x + 16, o.z + 16).some(b => b.t === 'bld' && Math.abs(o.x - b.x) < b.w / 2 + 1.2 && Math.abs(o.z - b.z) < b.d / 2 + 1.2);
   if (hit) { c.objs.splice(i, 1); for (const cc of collidersNear(o.x, o.z).slice()) if (cc.r && Math.abs(cc.x - o.x) < 0.01 && Math.abs(cc.z - o.z) < 0.01) removeCollider(cc); }
 }
+// tidy-up: fire-escape ladders and stairs whose building was cleared away (roads, parks, structures) go too
+{
+  const bldAt = (x, z) => objsNear(x - 40, z - 40, x + 40, z + 40).some(b => b.t === 'bld' && Math.abs(x - b.x) < b.w / 2 + 0.05 && Math.abs(z - b.z) < b.d / 2 + 0.05);
+  for (let i = LADDERS.length - 1; i >= 0; i--) { const L = LADDERS[i]; if (bldAt(L.x, L.z - L.nz * 0.6)) continue; LADDERS.splice(i, 1); for (const o of objsNear(L.x - 1, L.z - 1, L.x + 1, L.z + 1)) if (o.t === 'ladder' && Math.abs(o.x - L.x) < 0.01 && Math.abs(o.z - L.z) < 0.01) removeObj(o); }
+  for (const o of objsNear(WORLD.x0, WORLD.z0, WORLD.x1, WORLD.z1)) if (o.t === 'fstairs' && !bldAt(o.fl[0].x0 - 0.6, (o.fl[0].zmin + o.fl[0].zmax) / 2)) { removeObj(o); for (const S of o.fl) { const k = STAIRS.indexOf(S); if (k >= 0) STAIRS.splice(k, 1); } }
+}
 export function parkedIn(cx, cz) { return (chunks.get(ckey(cx, cz))?.objs || []).filter(o => o.t === 'parked'); }
 
 // ---------------- collision
