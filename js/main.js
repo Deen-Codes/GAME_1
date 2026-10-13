@@ -1,25 +1,25 @@
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA } from './character.js?v=70';
-import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=70';
-import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=70';
-import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, onBridge, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=70';
-import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=70';
-import { buildPanel, renderStats } from './ui.js?v=70';
-import { Input } from './input.js?v=70';
-import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime } from './audio.js?v=70';
-import { runMinigame } from './minigames.js?v=70';
-import { Peds, bakeCfg, figure, setWalk, setTownSource } from './peds.js?v=70';
-import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=70';
-import { findRoute } from './nav.js?v=70';
-import { COURSES, CAREERS, QUIZ } from './careers.js?v=70';
-import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=70';
-import { attachWheel } from './wheel.js?v=70';
-import { Animals } from './animals.js?v=70';
-import { Talk } from './talk.js?v=70';
-import { svg, drawIcon } from './icons.js?v=70';
-import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=70';
-import { FURN, CATALOG } from './furniture.js?v=70';
-import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE } from './interiors.js?v=70';
+import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA } from './character.js?v=71';
+import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=71';
+import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=71';
+import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, onBridge, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=71';
+import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=71';
+import { buildPanel, renderStats } from './ui.js?v=71';
+import { Input } from './input.js?v=71';
+import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime } from './audio.js?v=71';
+import { runMinigame } from './minigames.js?v=71';
+import { Peds, bakeCfg, figure, setWalk, setTownSource } from './peds.js?v=71';
+import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=71';
+import { findRoute } from './nav.js?v=71';
+import { COURSES, CAREERS, QUIZ } from './careers.js?v=71';
+import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=71';
+import { attachWheel } from './wheel.js?v=71';
+import { Animals } from './animals.js?v=71';
+import { Talk } from './talk.js?v=71';
+import { svg, drawIcon } from './icons.js?v=71';
+import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=71';
+import { FURN, CATALOG } from './furniture.js?v=71';
+import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE } from './interiors.js?v=71';
 
 const $ = id => document.getElementById(id);
 let inside = null, editMode = false, held = null, pendingCar = false, homeMusic = false, phoneBadge = 0;
@@ -983,8 +983,16 @@ function sitIn(v) {
 }
 function enterVehicle(v, anim = true) {
   if (!anim || P.dead || carAnim) { if (!carAnim) sitIn(v); return; }
-  const pl = planIn(v);
   v.s.v = 0; v.s.vx = v.s.vz = 0;
+  // with a date along: walk her to the passenger door and open it for her first, then go round to your side
+  if (date && !date.inCar && !date.left && !v.b.two && seatsFor(v) >= 2 && Math.hypot(date.x - P.x, date.z - P.z) < 12) {
+    date.holding = false; date.escortCar = v;
+    const h = v.s.h, sd = -DRIVER, o = v.b.width / 2 + 1.05, S = { x: v.s.x + Math.cos(h) * o * sd - Math.sin(h) * 0.95, z: v.s.z - Math.sin(h) * o * sd - Math.cos(h) * 0.95 };
+    const path = []; if (sideOf(v, P.x, P.z) !== sd) { const f = v.b.length / 2 + 1.3; path.push({ x: v.s.x + Math.sin(h) * f, z: v.s.z + Math.cos(h) * f }); } path.push(S); // round the front if you're on the other side
+    carAnim = { type: 'escort', v, t: 0, stage: 0, from: { x: P.x, z: P.z }, stand: S, path };
+    return;
+  }
+  const pl = planIn(v);
   carAnim = { type: 'in', v, ...pl, t: 0, from: { x: P.x, z: P.z }, d2: 0.5 };
   sfx.click();
 }
@@ -1045,7 +1053,22 @@ function updateCarAnim(dt) {
     }
   }
   let arms = 'walk';
-  if (A.type === 'in') {
+  if (A.type === 'escort') {
+    const v = A.v, D = date;
+    if (A.stage === 0) { // walk to her door
+      const T = A.path[0], dx = T.x - P.x, dz = T.z - P.z, d = Math.hypot(dx, dz);
+      if (d > 0.15) { const sp = Math.min(d / dt, 4.8); P.x += dx / d * sp * dt; P.z += dz / d * sp * dt; P.face = Math.atan2(dx, dz); speed = 1; }
+      else if (A.path.length > 1) A.path.shift();
+      else { A.stage = 1; A.t = 0; setDoor(v, -DRIVER, true); sfx.click(); }
+      if (A.t > 6) { A.stage = 1; A.t = 0; setDoor(v, -DRIVER, true); }
+    } else if (A.stage === 1) { // hold the door open while she gets in
+      const ds = doorSpot(v, -DRIVER); P.face += wrapA(Math.atan2(ds.x - P.x, ds.z - P.z) - P.face) * Math.min(1, dt * 10); arms = 'hold';
+      if (!D || D.inCar || A.t > 7) { A.stage = 2; A.t = 0; setDoor(v, -DRIVER, false); if (D && D.inCar) { toast(`${D.name}: "${pick(['Aww, such a gentleman.', 'Look at you, opening doors.', 'Thank you, babe.'])}"`, 2.2); D.interest += 3; } }
+    } else if (A.t > 0.45) { // shut it, then round to the driver's side
+      carAnim = { type: 'in', v, ...planIn(v), t: 0, from: { x: P.x, z: P.z }, d2: 0.5 }; return;
+    }
+  }
+  else if (A.type === 'in') {
     const v = A.v; A.d0 ??= v.b.doors && !(v.door && v.door.side === A.side && v.door.target) ? 0.32 : 0;
     if (A.t < A.d1) { walkTo(A); speed = 1; }
     else if (A.t < A.d1 + A.d0) { // reach for the handle and pull the door open
@@ -1087,6 +1110,7 @@ function updateCarAnim(dt) {
   if (A.type === 'bail' || arms === 'wheel') return; // hands only go to the wheel once you're sat down
   const sw = Math.sin(P.phase) * 0.55 * speed;
   if (arms === 'walk') { hero.armR.pivot.rotation.set(-sw, 0, 0.08); hero.armL.pivot.rotation.set(sw, 0, -0.08); }
+  else if (arms === 'hold') { hero.armR.pivot.rotation.set(-1.1, 0.2, 0.5); hero.armL.pivot.rotation.set(0.1, 0, -0.08); }
   else if (arms === 'reach') { const k = Math.min(1, (A.t - A.d1) / A.d0); hero.armR.pivot.rotation.set(-1.25 + k * 0.5, 0.3, 0.15 + k * 0.35); hero.armL.pivot.rotation.set(0.1, 0, -0.08); }
   else { hero.armR.pivot.rotation.set(-0.35, 0, 0.12); hero.armL.pivot.rotation.set(-0.35, 0, -0.12); }
 }
@@ -3418,7 +3442,7 @@ function updateDate(dt) {
   if (dance && D.dancing) { const b = (audioTime() - dance.tr.t0) / (dance.tr.spb16 * 4) * Math.PI, l = D.fig.limbs; D.x = P.x + 1.1; D.z = P.z + 0.3; D.face = -0.5; D.fig.inner.position.y = Math.abs(Math.sin(b)) * 0.09; l[2].rotation.set(-2.4 + Math.sin(b) * 0.5, 0, -0.3); l[3].rotation.set(-2.4 - Math.sin(b) * 0.5, 0, 0.3); l[0].rotation.x = Math.sin(b) * 0.25; l[1].rotation.x = -Math.sin(b) * 0.25; D.fig.root.position.set(D.x, P.y, D.z); D.fig.root.rotation.y = D.face; return; }
   // getting into your car: walk round to the passenger door, if there's a seat for her
   if (ride) {
-    if (D.inCar) { D.x = ride.s.x; D.z = ride.s.z; D.fig.root.visible = false; carDateTick(dt); return; }
+    if (D.inCar) { D.x = ride.s.x; D.z = ride.s.z; D.fig.root.visible = false; D.escortCar = null; carDateTick(dt); return; }
     if (D.left) { if (Math.hypot(ride.s.x - D.x, ride.s.z - D.z) < 12 && Math.abs(ride.s.v) < 2) { D.left = false; toast(`${D.name}: "Finally! You came back."`, 2.4); } else { D.fig.root.visible = true; dateLimbs(0); return; } }
     if (seatsFor(ride) < 2) { if (!D.noRoom) { D.noRoom = true; toast(`${D.name}: "Erm, there's no room for me on that."`, 2.6); } dateLimbs(0); D.fig.root.position.set(D.x, baseY(D.x, D.z), D.z); return; }
     // only counts as leaving her behind if you drive away while she's on her way to the car
@@ -3428,6 +3452,15 @@ function updateDate(dt) {
     dateLimbs(w.mv); D.fig.root.position.set(D.x, baseY(D.x, D.z), D.z); D.fig.root.rotation.y = D.face; return;
   }
   D.noRoom = false;
+  if (carAnim && D.escortCar === carAnim.v && (carAnim.type === 'escort' || carAnim.type === 'in')) {
+    if (D.inCar) { D.fig.root.visible = false; return; }
+    if (carAnim.type === 'escort' && carAnim.stage >= 1) { // walk in through the open door
+      D.boardCar = carAnim.v; const ds = doorSpot(carAnim.v, -DRIVER), w = dateWalk(ds.x, ds.z, dt, 4.5);
+      if (w.d < 0.45) { D.board = (D.board || 0) + dt; if (D.board > 0.35) { D.inCar = true; D.board = 0; D.fig.root.visible = false; } }
+      dateLimbs(w.mv); D.fig.root.position.set(D.x, baseY(D.x, D.z), D.z); D.fig.root.rotation.y = D.face; return;
+    }
+    if (carAnim.type === 'escort') { const w = dateWalk(P.x - Math.sin(P.face) * 1.0, P.z - Math.cos(P.face) * 1.0, dt, 5); dateLimbs(w.mv); D.fig.root.position.set(D.x, baseY(D.x, D.z), D.z); D.fig.root.rotation.y = D.face; return; }
+  }
   if (D.inCar) { const v = vehicles.find(q => Math.hypot(q.s.x - P.x, q.s.z - P.z) < 8); const ds = v ? doorSpot(v, -DRIVER) : { x: P.x + 0.9, z: P.z + 0.6 }; D.x = ds.x; D.z = ds.z; D.inCar = false; D.fig.root.visible = true; if (v) { setTimeout(() => setDoor(v, -DRIVER, true), 500); setTimeout(() => setDoor(v, -DRIVER, false), 1300); } }
   if (D.left) { if (Math.hypot(P.x - D.x, P.z - D.z) < 14) { D.left = false; toast(`${D.name}: "Oh, NOW you remember me?"`, 2.5); } else { dateLimbs(0); D.fig.root.position.set(D.x, baseY(D.x, D.z), D.z); return; } }
   // walking with you: a step behind, or right beside you holding hands
@@ -4655,7 +4688,7 @@ function saveGame() {
   store.set('bc_save', save); store.set('bc_arsenal', arsenal); store.set('bc_cars', garage);
 }
 // auto-update: bookmarks and home-screen apps can hold on to an old copy. Check version.json (never cached) and reload once if newer.
-const BUILD = 70;
+const BUILD = 71;
 function checkUpdate() {
   fetch('version.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(j => {
     if (!(j.v > BUILD)) return;
