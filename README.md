@@ -93,6 +93,23 @@ Walk into shops, venues and homes:
   - Gold Leaf: golden glow and +3 Charm.
 - Mixing too much means an overdose and a trip to hospital.
 
+## Police
+- Crimes give you wanted stars: punching, shooting, jacking, running people over, robbing, explosions. Patrol cars in traffic make it worse.
+- Cop cars chase you with sirens. Officers jump out, try to arrest you (1-2 stars) or open fire (3+ stars).
+- Lose them by staying out of sight, hide at home, or pay the fine at Bay City PD.
+- Busted: fined, stash confiscated, and you wake up in a cell at the station.
+
+## Fighting
+- Tap Punch for jab, jab, hook, uppercut combos (the bat swings, backhands and goes overhead). Kick is on the Y button.
+- People take several hits. Some fight back, others run.
+- The Pit (Eastport) is an underground cage-fight ladder of 5 fighters. Jab, hook, block their wind-ups, counter, and bet on yourself with Sal the bookie.
+
+## Streets
+- Traffic lights at every downtown junction, and traffic stops on red.
+- Brake and reverse lights on every car.
+- Every person has their own name. Dog walkers bring their dog into conversations, and the conversation backdrop matches where you are (city, suburb, beach, pier, hills, airport).
+- Bay Waste binman job: drive the bin lorry round 8 bins, paid per bin plus a bonus.
+
 ## Cars, jacking and crashes
 - Climb in and out of cars with an animation. Exit at speed to bail out and roll, while the car keeps going.
 - Jacking drags the driver out. Brave drivers get up and fight you or chase their car, and can pull you back out. The rest run off.

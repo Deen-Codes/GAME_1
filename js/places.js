@@ -1,5 +1,5 @@
 // Everything you can walk or drive up to: shops, barbers, property, dealers, minigames, chop shop, race.
-import { blockSide, attachDoor, addStructure } from './world.js?v=20';
+import { blockSide, attachDoor, addStructure } from './world.js?v=21';
 
 const S = (city, i, j, side) => blockSide(city, i, j, side);
 
@@ -45,9 +45,12 @@ export const PLACES = [
   { id: 'g_gym', kind: 'game', game: 'gym', name: 'Muscle Beach', icon: 'dumbbell', desc: 'Pump iron in the sun. Builds Strength.', x: 230, z: 378 },
   { id: 'g_hoops', kind: 'game', game: 'hoops', name: 'Venice Courts', icon: 'ball', desc: 'Flick to shoot. Sink as many as you can.', x: -96, z: 366 },
   { id: 'j_taxi', kind: 'job', job: 'taxi', name: 'Bay Cabs', icon: 'taxi', desc: 'Drive a cab. Pick up fares and get them there fast.', ...S('main', 0, -2, 's') },
+  { id: 'j_bins', kind: 'job', job: 'bins', name: 'Bay Waste', icon: 'trash', desc: 'Drive the bin lorry and empty wheelie bins around town.', ...S('main', -4, 3, 's') },
   { id: 'j_courier', kind: 'job', job: 'courier', name: 'Speedy Couriers', icon: 'box', desc: 'Deliver parcels across town before the timer runs out.', ...S('main', 2, 2, 's') },
 
   // ---- car activities
+  { id: 'v_pit', kind: 'venue', interior: 'pit', name: 'The Pit', icon: 'fist', desc: 'Underground cage fights. Climb the ladder, bet on yourself.', ...S('east', 2, -1, 's') },
+  { id: 'v_police', kind: 'venue', interior: 'police', name: 'Bay City Police Dept.', icon: 'shield', desc: 'Pay fines, turn yourself in, or ask about the city.', ...S('main', -1, -2, 's') },
   { id: 'v_hospital', kind: 'venue', interior: 'hospital', name: 'Bay General Hospital', icon: 'cross', desc: 'Get patched up, have a check-up, or have a baby.', ...S('main', 3, -1, 's') },
   { id: 'v_church', kind: 'venue', interior: 'church', name: 'Bay Chapel', icon: 'church', desc: 'A quiet place. Sit, reflect, talk to Father Gabe.', ...S('main', -4, 0, 's'), church: true },
   { id: 'mods', kind: 'mods', name: 'Bay Customs', icon: 'wrench', desc: 'Drive your own car in to buy upgrades, paint and wheels.', ...S('main', -3, -2, 's'), car: true },
@@ -158,7 +161,7 @@ export const RACE = {
 export const CHOP_VALUE = { hatch: 350, sedan: 500, coupe: 700, sports: 1400, muscle: 950, pickup: 650, van: 450, buggy: 400, limo: 1600, suv: 800, convertible: 1100, wagon: 450, lowrider: 900, classic: 1000, boxtruck: 600, hyper: 2600 };
 
 // Shops, venues and homes get a real front door on their building; the marker moves to stand in front of it.
-const DOOR_COL = { clothes: '#ff6fb5', barber: '#2f80ed', guns: '#e23b3b', diner: '#ffd23f', mart: '#4cd964', gym: '#ff8a2a', casino: '#d4af37', motors: '#38e8ff', casa: '#c98a4a', bar: '#1fb5a8', club: '#9b51e0', church: '#c9a24a', hospital: '#e23b3b' };
+const DOOR_COL = { clothes: '#ff6fb5', barber: '#2f80ed', guns: '#e23b3b', diner: '#ffd23f', mart: '#4cd964', gym: '#ff8a2a', casino: '#d4af37', motors: '#38e8ff', casa: '#c98a4a', bar: '#1fb5a8', club: '#9b51e0', church: '#c9a24a', hospital: '#e23b3b', police: '#2a6aff', pit: '#ff3b3b' };
 for (const p of PLACES) if (p.interior && p.door) attachDoor(p, DOOR_COL[p.interior] || '#ff8a2a', null, p.church ? 'church' : null);
 for (const p of PROPERTIES) if (p.door) attachDoor(p, '#4cd964');
 for (const p of [...PLACES, ...PROPERTIES]) if (!p.door) addStructure(p);

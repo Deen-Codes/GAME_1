@@ -1,9 +1,9 @@
 // Enterable interiors. Rooms are built far away from the city (at ORIGIN) and the player is moved
 // there, so the normal movement, camera and collision code keeps working. South wall is cut away.
 import * as THREE from '../lib/three.module.min.js';
-import { FURN, buildFurn } from './furniture.js?v=20';
-import { addCollider, removeCollider } from './world.js?v=20';
-import { buildCar } from './car.js?v=20';
+import { FURN, buildFurn } from './furniture.js?v=21';
+import { addCollider, removeCollider } from './world.js?v=21';
+import { buildCar } from './car.js?v=21';
 
 export const ORIGIN = { x: 0, z: 2600 };
 const T = (name, w, d, floor, wall, items, npcs, spots, extra = {}) => ({ name, w, d, floor, wall, items, npcs, spots, ...extra });
@@ -28,6 +28,11 @@ export const INTERIORS = {
     [{ role: 'clerk', x: 3, z: 2.9 }], [{ kind: 'talk', x: 3, z: 5.1, label: 'Browse', icon: 'sofa' }]),
   bar: T('The Anchor', 12, 10, '#5a4030', '#3a2a1a', [['barcounter', 0, -3.3], ['stool', -1.5, -2.4], ['stool', 0, -2.4], ['stool', 1.5, -2.4], ['table', -3.5, 2, 0, '#7a5230'], ['table', 3.5, 2, 0, '#7a5230'], ['chair', -4.6, 2], ['chair', 4.6, 2]],
     [{ role: 'bartender', x: 0, z: -4.2 }], [{ kind: 'talk', x: 0, z: -1.4, label: 'Order', icon: 'drink' }], { light: '#ffb35c' }),
+  pit: T('The Pit', 20, 16, '#3a3a40', '#2a2628', [['cage', 1, -1.5], ['barcounter', -7.5, 5.5], ['sign', 1, -7.9, 0, '#ff3b3b'], ['stool', -8.5, 4.5], ['stool', -6.5, 4.5], ['chair', 7.5, 4.5], ['chair', 8.5, 4.5]],
+    [{ role: 'bookie', x: -6.5, z: -5.6 }, { role: 'bartender', x: -7.5, z: 6.5 }], [{ kind: 'fight', x: 1, z: 2.6, label: 'Enter the cage', icon: 'fist' }, { kind: 'talk', x: -6.5, z: -4.2, label: 'Bookie', icon: 'cash' }, { kind: 'talk', x: -7.5, z: 4.2, label: 'Bar', icon: 'drink' }], { light: '#ff6a3a', dark: true }),
+  police: T('Bay City PD', 18, 14, '#7a8090', '#c8ccd4', [['counter', -4, -3.4], ['desk', -6.5, 1.5, 0, '#5a4a3a'], ['desk', -2.5, 1.5, 0, '#5a4a3a'], ['chair', -6.5, 2.4], ['chair', -2.5, 2.4], ['plant', -8, -6], ['sign', -4, -6.9, 0, '#2a6aff'],
+    ['cellwall', 2.2, -5.8], ['cellwall', 5.2, -5.8], ['cellwall', 8.2, -5.8], ['cellbars', 3.7, -4.6], ['cellbars', 6.7, -4.6], ['cot', 3.0, -6.2, Math.PI / 2], ['cot', 6.0, -6.2, Math.PI / 2], ['chair', 4.5, 3.8], ['chair', 5.5, 3.8], ['chair', 6.5, 3.8], ['chair', 7.5, 3.8]],
+    [{ role: 'cop', x: -4, z: -4.6 }, { role: 'cop', x: -6.5, z: 2.6 }], [{ kind: 'talk', x: -4, z: -2.2, label: 'Front desk', icon: 'shield' }], { light: '#e8eef8' }),
   hospital: T('Bay General Hospital', 20, 14, '#e4eaee', '#f4f7f9', [['counter', -6, -3.8], ['plant', -9.2, -6.2], ['plant', -9.2, 5.6], ['chair', -8.6, 1.2], ['chair', -7.6, 1.2], ['chair', -6.6, 1.2], ['chair', -8.6, 3], ['chair', -7.6, 3], ['chair', -6.6, 3],
     ['hbed', 0.5, -5.4], ['curtain', 2, -5.3], ['hbed', 3.5, -5.4], ['curtain', 5, -5.3], ['hbed', 6.5, -5.4], ['monitor', 1.4, -6.4], ['monitor', 4.4, -6.4], ['monitor', 7.4, -6.4], ['hbed', 8.4, 2.5, Math.PI / 2], ['curtain', 8.4, 0.6, Math.PI / 2], ['monitor', 9.4, 3.6], ['sign', -6, -6.9, 0, '#e23b3b']],
     [{ role: 'nurse', x: -6, z: -5 }, { role: 'doctor', x: 3.5, z: -2.6 }], [{ kind: 'talk', x: -6, z: -2.6, label: 'Reception', icon: 'cross' }, { kind: 'rest', x: 0.5, z: -3.6, label: 'Rest ($150)', icon: 'bed' }, { kind: 'talk', x: 3.5, z: -1.4, label: 'Doctor', icon: 'chat' }], { light: '#e8f4ff' }),

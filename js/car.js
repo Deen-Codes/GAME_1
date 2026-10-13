@@ -1,7 +1,7 @@
 // Modular car builder. Car faces +Z, sits on y=0, origin at the centre of the wheelbase.
 import * as THREE from '../lib/three.module.min.js';
-import { BASIC } from './character.js?v=20';
-import { patternTexture } from './gun.js?v=20';
+import { BASIC } from './character.js?v=21';
+import { patternTexture } from './gun.js?v=21';
 
 export const BODIES = {
   hatch:  { label: 'Hatchback', L: 3.8, W: 1.75, bh: 0.55, cl: 2.0, ch: 0.62, co: -0.4,  wr: 0.34, mass: 1.0 },
@@ -167,6 +167,7 @@ export function buildCar(cfg) {
   const glass = new THREE.MeshStandardMaterial({ color: tintCol, roughness: 0.08, metalness: 0.5, transparent: true, opacity: c.tint === 'clear' ? 0.6 : 0.9, flatShading: true });
   const headM = new THREE.MeshStandardMaterial({ color: '#ffffff', emissive: c.headlights, emissiveIntensity: 0.6, roughness: 0.2 });
   const tailM = new THREE.MeshStandardMaterial({ color: '#7a0a10', emissive: '#ff1a2a', emissiveIntensity: 0.5, roughness: 0.3 });
+  const revM = new THREE.MeshStandardMaterial({ color: '#d8dce0', emissive: '#ffffff', emissiveIntensity: 0, roughness: 0.3 });
   const rimM = new THREE.MeshStandardMaterial({ color: c.rimColor || '#c9ccd2', roughness: 0.25, metalness: 0.85, flatShading: true });
 
   const add = (geo, mat, x, y, z) => { const m = new THREE.Mesh(geo, mat); m.position.set(x, y, z); m.castShadow = true; grp.add(m); return m; };
@@ -237,6 +238,7 @@ export function buildCar(cfg) {
   for (const sx of [-1, 1]) {
     bx(W * 0.2, 0.1, 0.05, headM, sx * W * 0.33, by + 0.08, halfL + 0.01);
     bx(W * 0.2, 0.09, 0.05, tailM, sx * W * 0.33, by + 0.1, -halfL - 0.01);
+    bx(W * 0.07, 0.07, 0.05, revM, sx * W * 0.18, by + 0.1, -halfL - 0.012); // reverse light
   }
   // front bumper
   if (c.front === 'lip') bx(W * 0.98, 0.04, 0.25, dark, 0, clr + 0.02, halfL);
@@ -354,7 +356,7 @@ export function buildCar(cfg) {
     glow.rotation.x = -Math.PI / 2; glow.position.y = 0.03; grp.add(glow);
   }
   grp.traverse(m => { if (m.isMesh) m.castShadow = true; });
-  return { group: grp, wheels, headM, tailM, glow, length: L, width: W, height: top + B.ch, wr };
+  return { group: grp, wheels, headM, tailM, revM, glow, length: L, width: W, height: top + B.ch, wr };
 }
 
 export const CAR_PRICES = { hatch: 6000, sedan: 9000, wagon: 11000, coupe: 16000, van: 14000, pickup: 18000, suv: 26000, classic: 30000, lowrider: 24000, convertible: 38000, muscle: 42000, buggy: 15000, boxtruck: 22000, sports: 85000, limo: 70000, hyper: 160000 };

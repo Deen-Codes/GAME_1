@@ -1,12 +1,14 @@
 // Conversations staged like a Pokémon battle: they stand on a platform facing you,
 // you see the back of your own head in the foreground, subtitles type out, you pick replies.
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject } from './character.js?v=20';
-import { sfx, audio } from './audio.js?v=20';
+import { buildCharacter, poseCharacter, disposeObject } from './character.js?v=21';
+import { sfx, audio } from './audio.js?v=21';
 
 const $ = id => document.getElementById(id);
 const BG = {
   city: { sky: ['#7ec8f2', '#d9f0ff'], ground: ['#8d8a92', '#5d5b66'], plat: '#a9a5ad', rim: '#6b6873' },
+  suburb: { sky: ['#86cff5', '#e3f5ff'], ground: ['#7dbb5a', '#5f9f45'], plat: '#b9b4ad', rim: '#7a756e' },
+  pier: { sky: ['#6ec6f0', '#e6f7ff'], ground: ['#a8865a', '#7a5e3c'], plat: '#c9a26a', rim: '#8a6a45' },
   beach: { sky: ['#6ec6f0', '#e6f7ff'], ground: ['#f2dfa6', '#e2c47e'], plat: '#f6e7b8', rim: '#cdb07a' },
   hills: { sky: ['#86cff5', '#e3f5ff'], ground: ['#8ccf63', '#5f9f45'], plat: '#a4dc7c', rim: '#5f9f45' },
   airport: { sky: ['#8ad0f5', '#e8f7ff'], ground: ['#b8b8b0', '#8a8a84'], plat: '#cfcfc8', rim: '#8a8a84' },
@@ -37,29 +39,50 @@ export class Talk {
   }
   background(kind, night, wall, floor) {
     if (kind === 'interior' && wall) {
-      const W = new THREE.Color(wall), F = new THREE.Color(floor || '#555');
-      const s = c => '#' + c.getHexString();
-      BG.interior = { sky: [s(W.clone().multiplyScalar(0.7)), s(W)], ground: [s(F.clone().multiplyScalar(1.15)), s(F.clone().multiplyScalar(0.8))], plat: s(F.clone().lerp(new THREE.Color('#ffffff'), 0.25)), rim: s(F.clone().multiplyScalar(0.6)) };
+      const Wc = new THREE.Color(wall), F = new THREE.Color(floor || '#555');
+      const hx = c => '#' + c.getHexString();
+      BG.interior = { sky: [hx(Wc.clone().multiplyScalar(0.7)), hx(Wc)], ground: [hx(F.clone().multiplyScalar(1.15)), hx(F.clone().multiplyScalar(0.8))], plat: hx(F.clone().lerp(new THREE.Color('#ffffff'), 0.25)), rim: hx(F.clone().multiplyScalar(0.6)) };
       night = 0;
     }
-    const b = BG[kind] || BG.city, sky = night > 0.5 ? NIGHT.sky : b.sky;
-    const c = document.createElement('canvas'); c.width = 8; c.height = 512; const x = c.getContext('2d');
-    const g = x.createLinearGradient(0, 0, 0, 512);
-    g.addColorStop(0, sky[0]); g.addColorStop(0.5, sky[1]); g.addColorStop(0.5, b.ground[0]); g.addColorStop(1, b.ground[1]);
-    x.fillStyle = g; x.fillRect(0, 0, 8, 512);
-    if (night > 0.5) { x.fillStyle = 'rgba(0,0,30,.45)'; x.fillRect(0, 256, 8, 256); }
+    const b = BG[kind] || BG.city, N = night > 0.5, sky = N ? NIGHT.sky : b.sky;
+    // painted backdrop: sky, a scene on the horizon that matches where you are, and the ground
+    const c = document.createElement('canvas'); c.width = 512; c.height = 512; const x = c.getContext('2d');
+    const g = x.createLinearGradient(0, 0, 0, 256); g.addColorStop(0, sky[0]); g.addColorStop(1, sky[1]); x.fillStyle = g; x.fillRect(0, 0, 512, 257);
+    const gg = x.createLinearGradient(0, 256, 0, 512); gg.addColorStop(0, b.ground[0]); gg.addColorStop(1, b.ground[1]); x.fillStyle = gg; x.fillRect(0, 256, 512, 256);
+    const R = (a => () => (a = (a * 16807) % 2147483647) / 2147483647)(7 + kind.length * 31);
+    if (N) { x.fillStyle = '#ffffff'; for (let i = 0; i < 70; i++) x.fillRect(R() * 512, R() * 170, 1.5, 1.5); x.fillStyle = '#f4f1dc'; x.beginPath(); x.arc(420, 60, 16, 0, 7); x.fill(); }
+    else if (kind !== 'interior') { x.fillStyle = 'rgba(255,255,255,.75)'; for (let i = 0; i < 4; i++) { const cx = R() * 512, cy = 30 + R() * 90; for (let k = 0; k < 4; k++) { x.beginPath(); x.arc(cx + k * 16, cy + (k % 2) * 6, 14 + R() * 6, 0, 7); x.fill(); } } }
+    const win = (bx, by, bw, bh) => { for (let yy = by + 6; yy < 256 - 6; yy += 12) for (let xx = bx + 5; xx < bx + bw - 6; xx += 10) { x.fillStyle = N ? (R() < 0.45 ? ['#ffd27a', '#ffb35c', '#cfe8ff'][Math.floor(R() * 3)] : 'rgba(0,0,0,.35)') : 'rgba(80,110,140,.55)'; x.fillRect(xx, yy, 5, 7); } };
+    const sil = N ? 'rgba(20,18,40,1)' : null;
+    if (kind === 'city' || kind === 'airport') {
+      let bx = -10; while (bx < 520) { const bw = 30 + R() * 50, bh = (kind === 'airport' ? 30 : 60) + R() * (kind === 'airport' ? 30 : 130); x.fillStyle = sil || ['#8f97a8', '#a9a29a', '#7f8a9a', '#b8b2a6', '#9aa6b4'][Math.floor(R() * 5)]; x.fillRect(bx, 256 - bh, bw, bh); win(bx, 256 - bh, bw, bh); bx += bw + 2; }
+      if (kind === 'airport') { x.fillStyle = N ? '#2a2a3a' : '#e8ecf0'; x.fillRect(300, 120, 60, 10); x.fillRect(320, 112, 14, 26); x.fillRect(352, 116, 8, 10); }
+      x.fillStyle = N ? '#3a3a44' : '#6a6872'; x.fillRect(0, 256, 512, 26); x.fillStyle = N ? '#ffe9a0' : '#f2f2f2'; for (let i = 0; i < 512; i += 40) x.fillRect(i, 268, 20, 3);
+    } else if (kind === 'suburb') {
+      for (let i = 0; i < 6; i++) { const hx = i * 90 + R() * 20, hw = 60, hh = 40; x.fillStyle = sil || ['#f6d1c1', '#bfe3e0', '#f9e7a8', '#f2b8c6'][i % 4]; x.fillRect(hx, 256 - hh, hw, hh); x.fillStyle = sil || ['#a8432f', '#5a4a42', '#3e5a7a'][i % 3]; x.beginPath(); x.moveTo(hx - 6, 256 - hh); x.lineTo(hx + hw / 2, 256 - hh - 26); x.lineTo(hx + hw + 6, 256 - hh); x.fill(); x.fillStyle = N ? '#ffd27a' : '#5a7a9a'; x.fillRect(hx + 10, 256 - hh + 12, 12, 10); x.fillRect(hx + 38, 256 - hh + 12, 12, 10); }
+    } else if (kind === 'beach' || kind === 'pier') {
+      x.fillStyle = N ? '#14204a' : '#2f8fd0'; x.fillRect(0, 200, 512, 56); x.fillStyle = N ? 'rgba(255,255,255,.15)' : 'rgba(255,255,255,.5)'; for (let i = 0; i < 30; i++) x.fillRect(R() * 512, 205 + R() * 48, 18, 2);
+      if (!N) { x.fillStyle = '#ffe9a0'; x.beginPath(); x.arc(90, 150, 22, 0, 7); x.fill(); }
+      if (kind === 'pier') { x.strokeStyle = N ? '#ff6fb5' : '#e23b3b'; x.lineWidth = 4; x.beginPath(); x.arc(400, 150, 50, 0, 7); x.stroke(); for (let a = 0; a < 6.28; a += 0.52) { x.beginPath(); x.moveTo(400, 150); x.lineTo(400 + Math.cos(a) * 50, 150 + Math.sin(a) * 50); x.stroke(); } }
+      else for (const px of [40, 470, 300]) { x.strokeStyle = sil || '#7a5a3a'; x.lineWidth = 7; x.beginPath(); x.moveTo(px, 256); x.quadraticCurveTo(px + 12, 200, px + 6, 150); x.stroke(); x.fillStyle = sil || '#3f9a45'; for (let k = 0; k < 6; k++) { x.beginPath(); x.ellipse(px + 6 + Math.cos(k) * 22, 150 + Math.sin(k) * 8, 26, 7, k, 0, 7); x.fill(); } }
+    } else if (kind === 'hills') {
+      x.fillStyle = N ? '#1a2a24' : '#7fbf6a'; x.beginPath(); x.moveTo(0, 256); for (let i = 0; i <= 512; i += 16) x.lineTo(i, 190 - Math.sin(i / 60) * 30 - Math.sin(i / 23) * 10); x.lineTo(512, 256); x.fill();
+      x.fillStyle = N ? '#0f1c18' : '#2f6b3a'; for (let i = 0; i < 18; i++) { const tx = R() * 512, ty = 200 + R() * 50; x.beginPath(); x.moveTo(tx, ty - 34); x.lineTo(tx - 12, ty); x.lineTo(tx + 12, ty); x.fill(); }
+      if (!N) { x.fillStyle = '#ffffff'; x.font = 'bold 22px sans-serif'; x.fillText('BAYWOOD', 300, 160); }
+    }
     const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace;
     if (this.scene.background?.dispose) this.scene.background.dispose();
     this.scene.background = t;
     for (const p of [this.pNpc, this.pYou]) { p.top.material.color.set(b.plat); p.rim.material.color.set(b.rim); }
-    this.hemi.intensity = night > 0.5 ? 0.8 : 1.3; this.sun.intensity = night > 0.5 ? 1 : 2; this.sun.color.set(night > 0.5 ? '#b0b8ff' : '#fff3e0');
+    this.hemi.intensity = N ? 0.8 : 1.3; this.sun.intensity = N ? 1 : 2; this.sun.color.set(N ? '#b0b8ff' : '#fff3e0');
   }
-  begin({ npcCfg, youCfg, name, tag, pitch = 300, bg = 'city', night = 0, wall = null, floor = null }) {
+  begin({ npcCfg, youCfg, name, tag, pitch = 300, bg = 'city', night = 0, wall = null, floor = null, pet = null }) {
     audio();
     this.clear();
     this.active = true; this.t = 0; this.intro = 0; this.t0 = performance.now(); this.blipPitch = pitch;
     this.background(wall ? 'interior' : bg, night, wall, floor);
     this.npc = buildCharacter(npcCfg); this.scene.add(this.npc.root);
+    if (pet) { this.pet = pet; pet.scale.setScalar(1.15); this.scene.add(pet); }
     this.you = buildCharacter(youCfg); this.scene.add(this.you.root);
     for (const c of [this.npc, this.you]) c.root.traverse(o => { if (o.isMesh) o.castShadow = true; });
     $('talkName').textContent = name; $('talkTag').textContent = tag || '';
@@ -70,6 +93,7 @@ export class Talk {
   }
   clear() {
     for (const k of ['npc', 'you']) if (this[k]) { this.scene.remove(this[k].root); disposeObject(this[k].root); this[k] = null; }
+    if (this.pet) { this.scene.remove(this.pet); this.pet = null; }
   }
   end() { this.active = false; this.clear(); $('talkUI').classList.add('hidden'); this._say = null; this._choose = null; }
   say(text, who = 'npc') {
@@ -112,6 +136,7 @@ export class Talk {
     this.pNpc.g.position.set(this.npcPos.x + (1 - e) * 6, 0, this.npcPos.z);
     this.pYou.g.position.set(this.youPos.x - (1 - e) * 6, 0, this.youPos.z);
     n.root.position.copy(this.pNpc.g.position); y.root.position.copy(this.pYou.g.position);
+    if (this.pet) { this.pet.position.set(n.root.position.x + 0.75, Math.abs(Math.sin(this.t * 3)) * 0.04, n.root.position.z + 0.35); this.pet.rotation.y = Math.atan2(this.cam.position.x - this.pet.position.x, this.cam.position.z - this.pet.position.z) * 0.7; }
     n.root.rotation.y = Math.atan2(this.cam.position.x - n.root.position.x, this.cam.position.z - n.root.position.z) * 0.6 + Math.atan2(y.root.position.x - n.root.position.x, y.root.position.z - n.root.position.z) * 0.4;
     y.root.rotation.y = Math.atan2(n.root.position.x - y.root.position.x, n.root.position.z - y.root.position.z);
     for (const [c, who] of [[n, 'npc'], [y, 'you']]) {

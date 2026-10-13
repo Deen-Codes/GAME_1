@@ -1,7 +1,7 @@
 // Pedestrians: baked low-poly people who stroll sidewalks, wander the beach, flee from trouble.
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, randomChar, disposeObject } from './character.js?v=20';
-import { CITIES, sandLine, shoreLine, groundH, walkable, resolve } from './world.js?v=20';
+import { buildCharacter, randomChar, disposeObject } from './character.js?v=21';
+import { CITIES, sandLine, shoreLine, groundH, walkable, resolve } from './world.js?v=21';
 
 const MAT = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.7, metalness: 0.05 }); // boxes keep crisp per-face normals; rounded parts stay smooth
 const SKINS = ['#ffe0cc', '#f6c9a4', '#e8b088', '#d39a6a', '#b77a4b', '#8d5524', '#6b3f22', '#452a1a'];
@@ -27,6 +27,12 @@ function bake(meshes, inv) {
 function underAny(o, roots) { for (let p = o; p; p = p.parent) if (roots.includes(p)) return true; return false; }
 
 const LOOKS = [];
+// a big pool of first and last names so the city is full of distinct people
+const FIRST_M = ['James', 'Marcus', 'Leo', 'Andre', 'Tyler', 'Diego', 'Ethan', 'Malik', 'Owen', 'Hugo', 'Ravi', 'Kenji', 'Luca', 'Omar', 'Felix', 'Jamal', 'Noah', 'Caleb', 'Mateo', 'Darius', 'Sam', 'Theo', 'Isaac', 'Rico', 'Jonah', 'Elijah', 'Kai', 'Nate', 'Vince', 'Troy', 'Wes', 'Abdul', 'Ivan', 'Pedro', 'Hank', 'Dev', 'Ray', 'Zane', 'Colby', 'Ahmed'];
+const FIRST_F = ['Jade', 'Mia', 'Sofia', 'Chloe', 'Lexi', 'Nina', 'Ava', 'Zoe', 'Maya', 'Bella', 'Kira', 'Luna', 'Rosa', 'Tasha', 'Gabi', 'Leah', 'Imani', 'Priya', 'Yuki', 'Carmen', 'Brooke', 'Skye', 'Dana', 'Nadia', 'Erin', 'Fatima', 'Grace', 'Holly', 'Iris', 'Jasmine', 'Kayla', 'Lola', 'Megan', 'Nova', 'Olivia', 'Paige', 'Quinn', 'Rachel', 'Sienna', 'Tara'];
+const LAST = ['Johnson', 'Garcia', 'Nguyen', 'Kim', 'Patel', 'Lopez', 'Brown', 'Okafor', 'Silva', 'Murphy', 'Rossi', 'Chen', 'Walker', 'Rivera', 'Haddad', 'Novak', 'Reyes', 'Santos', 'Brooks', 'Diaz', 'Cole', 'Ward', 'Price', 'Fox', 'Mendoza', 'Hayes', 'Bennett', 'Park', 'Yamada', 'Costa', 'Ali', 'Kowalski', 'Moreau', 'Jensen', 'Ortiz', 'Grant', 'Shaw', 'Ramos', 'Bell', 'Stone', 'Vega', 'Lee', 'Adams', 'Cruz', 'Holt', 'Banks', 'Monroe', 'Webb', 'Duarte', 'Sato'];
+let nameSeq = Math.floor(Math.random() * 4000);
+export function personName(fem) { nameSeq = (nameSeq * 1103515245 + 12345) % 2147483647; const r = nameSeq; return (fem ? FIRST_F : FIRST_M)[r % 40] + ' ' + LAST[Math.floor(r / 40) % LAST.length]; }
 const FEM_HAIR = ['long', 'bob', 'ponytail', 'bun', 'long', 'afro'], MASC_HAIR = ['short', 'buzz', 'quiff', 'spiky', 'afro', 'none', 'short'];
 function makeLook(beach, fem = Math.random() < 0.5) {
   const cfg = { ...randomChar(), mask: 'none', skin: pick(SKINS), hairColor: pick(HAIRS), eyewear: Math.random() < 0.25 ? 'shades' : 'none', back: Math.random() < 0.15 ? 'backpack' : 'none', eyes: 'normal', headSize: rand(0.95, 1.1), height: rand(0.88, 1.12) };
@@ -94,7 +100,7 @@ export class Peds {
     const body = new THREE.Mesh(look.body, MAT); body.castShadow = true; inner.add(body);
     const limbs = look.parts.map(p => { const g = new THREE.Group(); g.position.copy(p.pos); const m = new THREE.Mesh(p.geo, MAT); m.castShadow = true; g.add(m); inner.add(g); return g; });
     this.parent.add(root);
-    return { root, inner, limbs, phase: Math.random() * 6, face: 0, speed: rand(1.1, 1.7), state: 'walk', t: 0, h: look.h, look };
+    return { root, inner, limbs, phase: Math.random() * 6, face: 0, speed: rand(1.1, 1.7), state: 'walk', t: 0, h: look.h, look, name: personName(look.fem) };
   }
   spawnCity(c, px, pz) {
     for (let k = 0; k < 10; k++) {
@@ -147,6 +153,14 @@ export class Peds {
   release(p) { if (p.state === 'talk') this.settle(p); }
   scare(x, z, r = 18) { for (const p of this.list) if (p.state !== 'down' && Math.hypot(p.x - x, p.z - z) < r) this.flee(p, x, z); }
   flee(p, x, z) { p.state = 'flee'; p.t = rand(3.5, 6); const a = Math.atan2(p.x - x, p.z - z) + rand(-0.5, 0.5); p.fx = Math.sin(a); p.fz = Math.cos(a); }
+  // a hit that doesn't floor them: stagger back; returns true if this hit knocked them down
+  hit(p, fx, fz, dmg, power = 4) {
+    if (p.state === 'down') return false;
+    p.hp ??= p.kind === 'cop' ? 6 : p.kind === 'homeless' ? 2 : 3 + Math.floor(Math.random() * 2);
+    p.hp -= dmg;
+    if (p.hp <= 0) { p.hp = undefined; return this.knock(p, fx, fz, power * 1.6); }
+    p.hitT = 0.32; p.hkx = fx * power; p.hkz = fz * power; return false;
+  }
   knock(p, fx, fz, power = 6) { if (p.state === 'down') return false; p.state = 'down'; p.t = rand(3.5, 5); p.kx = fx * power; p.kz = fz * power; return true; }
   update(dt, px, pz, nearCity, nearBeach) {
     ensureLooks();
@@ -194,6 +208,7 @@ export class Peds {
         p.face = Math.atan2(p.fx, p.fz); mv = 4.6;
         if (p.t <= 0) this.settle(p);
       }
+      if (p.hitT > 0 && p.state !== 'down') { p.hitT -= dt; const ox = p.x, oz = p.z; p.x += p.hkx * dt * 2; p.z += p.hkz * dt * 2; resolve(p, 0.35, 0); if (!walkable(p.x, p.z)) { p.x = ox; p.z = oz; } }
       if (p.state === 'down') {
         p.t -= dt; p.x += (p.kx || 0) * dt; p.z += (p.kz || 0) * dt; p.kx *= Math.exp(-4 * dt); p.kz *= Math.exp(-4 * dt); resolve(p, 0.35, 0);
         p.inner.rotation.x += (-Math.PI / 2 - p.inner.rotation.x) * Math.min(1, dt * 10);
@@ -211,6 +226,7 @@ export class Peds {
       else if (p.state === 'sit') { p.inner.position.set(0, -(p.limbs[0].position.y - 0.05), -0.15); p.limbs[0].rotation.x = -1.45; p.limbs[1].rotation.x = -1.35; p.limbs[2].rotation.x = -0.2; p.limbs[3].rotation.x = -0.5 + Math.sin(p.phase2 = (p.phase2 || 0) + dt) * 0.05; }
       else p.inner.position.set(0, 0, 0);
       const y = p.kind === 'beach' ? Math.max(groundH(p.x, p.z), 0) : 0.17;
+      if (p.hitT > 0 && p.state !== 'down') p.inner.rotation.x = -0.45 * (p.hitT / 0.32);
       p.root.position.set(p.x, y + yo, p.z); p.root.rotation.y = p.face;
     }
   }

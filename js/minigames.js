@@ -1,6 +1,6 @@
 // Touch minigames in the spirit of Chinatown Wars. Each one draws on a 2D canvas overlay.
-import { sfx, audio } from './audio.js?v=20';
-import { drawIcon } from './icons.js?v=20';
+import { sfx, audio } from './audio.js?v=21';
+import { drawIcon } from './icons.js?v=21';
 
 const rnd = (a, b) => a + Math.random() * (b - a);
 const pick = a => a[Math.floor(Math.random() * a.length)];
@@ -220,6 +220,86 @@ const GAMES = {
     };
   },
 
+  // ---------------------------------------------------------------- cage fight (The Pit)
+  cage: (o = {}) => {
+    const opp = o.opp || { name: 'Rookie', hp: 60, power: 8, tell: 0.75, col: '#e23b3b' }, str = o.str || 1, stamLvl = o.stam || 1;
+    let W, H, you = 100, them = opp.hp, stam = 100, block = false, pAct = null, pT = 0, oState = 'idle', oT = 1.2, oStun = 0, msg = '', msgT = 0, shakeT = 0, done = 0, hitFx = [];
+    const maxStam = 100 + stamLvl * 8;
+    const btns = () => [['JAB', 0.04], ['HOOK', 0.36], ['BLOCK', 0.68]];
+    const say = (m) => { msg = m; msgT = 0.7; };
+    const fighter = (c, x, y, s, dir, col, act, k, blocking, skin) => {
+      c.save(); c.translate(x, y); c.scale(dir * s, s);
+      c.fillStyle = '#222'; c.fillRect(-14, 40, 11, 60); c.fillRect(4, 40, 11, 60);                 // legs
+      c.fillStyle = col; c.fillRect(-16, 30, 32, 16);                                            // shorts
+      c.fillStyle = skin; c.fillRect(-15, -30, 30, 62);                                          // torso
+      c.fillRect(-12, -62, 24, 28);                                                              // head
+      c.fillStyle = '#111'; c.fillRect(2, -52, 5, 5);                                            // eye
+      const reach = act ? Math.sin(Math.min(1, k) * Math.PI) : 0;
+      c.fillStyle = skin;
+      const armY = blocking ? -56 : act === 'hook' ? -24 - reach * 20 : -22;
+      c.fillRect(8, armY, 12 + (act === 'jab' ? reach * 40 : act === 'hook' ? reach * 30 : 0), 10);    // lead arm
+      c.fillRect(-6, blocking ? -60 : -16, 12 + (act === 'hook' ? reach * 30 : 0), 10);                // rear arm
+      c.fillStyle = '#e23b3b'; c.fillRect(20 + (act === 'jab' ? reach * 40 : act === 'hook' ? reach * 30 : 0), armY - 3, 14, 16);  // gloves
+      c.fillRect(6 + (act === 'hook' ? reach * 30 : 0), (blocking ? -60 : -16) - 3, 14, 16);
+      c.restore();
+    };
+    return {
+      title: `The Pit: vs ${opp.name}`, hint: 'JAB is fast, HOOK hits hard. Hold BLOCK when they wind up (red flash). Hit them during their wind-up to counter.', time: 9999,
+      init(w, h) { W = w; H = h; },
+      down(x, y) {
+        if (done) return;
+        if (y < H * 0.72) return;
+        const i = x < W * 0.34 ? 0 : x < W * 0.66 ? 1 : 2;
+        if (i === 2) { block = true; return; }
+        if (pAct || block) return;
+        const cost = i === 0 ? 9 : 20; if (stam < cost) { say('Too tired!'); return; }
+        stam -= cost; pAct = i === 0 ? 'jab' : 'hook'; pT = 0; sfx.whoosh();
+      },
+      up() { block = false; },
+      update(dt) {
+        if (done) { done += dt; return done > 1.4; }
+        stam = Math.min(maxStam, stam + dt * (block ? 10 : 22)); msgT -= dt; shakeT -= dt;
+        hitFx = hitFx.filter(f => (f.t -= dt) > 0);
+        // your punch
+        if (pAct) { pT += dt / (pAct === 'jab' ? 0.22 : 0.38); if (pT >= 0.5 && !pAct.hit) {
+          const counter = oState === 'wind', blocked = oState === 'guard';
+          let dmg = (pAct === 'jab' ? 4 : 9) * (1 + (str - 1) * 0.15) * (counter ? 1.6 : 1) * (blocked ? 0.25 : 1);
+          them -= dmg; hitFx.push({ x: W * 0.62, y: H * 0.38, t: 0.25, big: pAct === 'hook' }); sfx.punch(); navigator.vibrate?.(12);
+          if (counter) { oState = 'stun'; oT = 0.7; say('COUNTER!'); } else if (blocked) say('Blocked'); else if (pAct === 'hook' && Math.random() < 0.3) { oState = 'stun'; oT = 0.5; }
+          pAct = Object.assign(new String(pAct), { hit: true }); }
+          if (pT >= 1) pAct = null; }
+        // opponent AI
+        oT -= dt;
+        if (oState === 'idle' && oT <= 0) { const r = Math.random(); if (r < 0.65) { oState = 'wind'; oT = opp.tell * (0.8 + Math.random() * 0.4); } else { oState = 'guard'; oT = 0.6 + Math.random() * 0.6; } }
+        else if (oState === 'wind' && oT <= 0) { oState = 'hit'; oT = 0.25;
+          if (block) { stam = Math.max(0, stam - 12); say('Blocked!'); sfx.click(); }
+          else { you -= opp.power * (0.8 + Math.random() * 0.4); shakeT = 0.25; hitFx.push({ x: W * 0.38, y: H * 0.38, t: 0.3, big: true }); sfx.punch(); navigator.vibrate?.(30); } }
+        else if ((oState === 'hit' || oState === 'guard' || oState === 'stun') && oT <= 0) { oState = 'idle'; oT = 0.4 + Math.random() * 0.9 * (opp.tell + 0.3); }
+        if (them <= 0 || you <= 0) { done = 0.001; say(them <= 0 ? 'K.O.!' : 'You got knocked out'); msgT = 9; }
+      },
+      draw(c, t) {
+        const sx = shakeT > 0 ? (Math.random() - 0.5) * 10 : 0;
+        c.fillStyle = '#1a1420'; c.fillRect(0, 0, W, H);
+        c.fillStyle = '#2c2430'; c.fillRect(0, H * 0.55, W, H * 0.2);
+        c.strokeStyle = 'rgba(200,200,210,.25)'; c.lineWidth = 2; for (let i = 0; i < W; i += 16) { c.beginPath(); c.moveTo(i, H * 0.16); c.lineTo(i + 40, H * 0.55); c.stroke(); c.beginPath(); c.moveTo(i + 40, H * 0.16); c.lineTo(i, H * 0.55); c.stroke(); }
+        // bars
+        const bar = (x, w, v, col, label) => { rr(c, x, H * 0.04, w, 14, 7); c.fillStyle = 'rgba(255,255,255,.15)'; c.fill(); rr(c, x, H * 0.04, w * Math.max(0, v), 14, 7); c.fillStyle = col; c.fill(); txt(c, label, x + w / 2, H * 0.04 + 28, 13, '#fff', 800); };
+        bar(W * 0.04, W * 0.42, you / 100, '#4cd964', 'YOU'); bar(W * 0.54, W * 0.42, them / opp.hp, '#ff3b4a', opp.name.toUpperCase());
+        rr(c, W * 0.04, H * 0.11, W * 0.42, 6, 3); c.fillStyle = '#ffd23f'; c.fill(); rr(c, W * 0.04, H * 0.11, W * 0.42 * Math.max(0, 1 - stam / maxStam), 6, 3); c.fillStyle = '#3a3040'; c.fill();
+        const wind = oState === 'wind';
+        if (wind) { c.fillStyle = `rgba(255,40,60,${0.15 + 0.15 * Math.sin(t * 30)})`; c.fillRect(0, 0, W, H * 0.7); }
+        const fy = H * 0.42;
+        fighter(c, W * 0.34 + sx, fy, Math.min(W, H) / 330, 1, '#2f80ed', pAct ? String(pAct) : null, pT, block, '#d39a6a');
+        const oAct = oState === 'hit' ? 'hook' : null;
+        c.save(); if (oState === 'stun') { c.translate(W * 0.66, fy); c.rotate(0.15); c.translate(-W * 0.66, -fy); }
+        fighter(c, W * 0.66, fy - (wind ? 4 : 0), Math.min(W, H) / 330, -1, opp.col, oAct, oState === 'hit' ? 1 - oT / 0.25 : 0, oState === 'guard', opp.skin || '#b77a4b'); c.restore();
+        for (const f of hitFx) { c.fillStyle = `rgba(255,230,120,${f.t * 3})`; c.beginPath(); c.arc(f.x, f.y, (f.big ? 40 : 24) * (1.2 - f.t), 0, 7); c.fill(); }
+        if (msgT > 0) txt(c, msg, W / 2, H * 0.2, 30, msg === 'COUNTER!' || msg === 'K.O.!' ? '#ffd23f' : '#fff');
+        btns().forEach(([l, x], i) => { rr(c, W * x, H * 0.76, W * 0.28, H * 0.17, 18); c.fillStyle = i === 2 && block ? 'rgba(76,217,100,.5)' : i === 1 ? 'rgba(255,90,60,.35)' : 'rgba(255,255,255,.14)'; c.fill(); txt(c, l, W * x + W * 0.14, H * 0.845, 20); });
+      },
+      result() { return { win: them <= 0, money: 0, score: Math.max(0, Math.round(100 - (100 - you))) }; },
+    };
+  },
   // ---------------------------------------------------------------- blackjack
   blackjack: (o = {}) => {
     let W, H, bank = o.money || 0, net = 0, bet = 0, chips = [10, 50, 100, 500], deck = [], ph = [], dh = [], stage = 'bet', msg = 'Place your bet', btns = [], done = false;

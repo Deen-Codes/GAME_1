@@ -259,7 +259,7 @@ export function attachDoor(p, accent = '#ff8a2a', sign = null, build = null) {
     const front = fw(o.x, o.z) + hn, l0 = lat(o.x, o.z) - hl, l1 = lat(o.x, o.z) + hl;
     if (l1 - l0 < 4.5 || front < 5) continue;
     const sc = front - Math.max(0, l0 - pl, pl - l1) * 0.8;
-    if (sc > bs) { bs = sc; best = { front, l0, l1 }; }
+    if (sc > bs) { bs = sc; best = { front, l0, l1, col: o.col }; }
   }
   if (!best) { // empty lot (park / parking): build a small shop
     const L = Math.max(-10, Math.min(10, pl)), fc = 14.6 - 5.5, bx = cx + nx * fc + tx * L, bz = cz + nz * fc + tz * L;
@@ -272,7 +272,7 @@ export function attachDoor(p, accent = '#ff8a2a', sign = null, build = null) {
   const P = (a, b) => ({ x: cx + nx * a + tx * b, z: cz + nz * a + tz * b });
   const q0 = P(f + 0.1, dl - 1.8), q1 = P(17.5, dl + 1.8);
   clearRect(Math.min(q0.x, q1.x), Math.min(q0.z, q1.z), Math.max(q0.x, q1.x), Math.max(q0.z, q1.z));
-  const dp = P(f, dl); addObj({ t: 'door', x: dp.x, z: dp.z, nx, nz, col: accent, sign });
+  const dp = P(f, dl); addObj({ t: 'door', x: dp.x, z: dp.z, nx, nz, col: accent, sign, wall: best.col || '#ece4d6' });
   const m = P(f + 2.1, dl); p.x = m.x; p.z = m.z; p.doorN = [nx, nz];
 }
 function tree(x, z, kind = 'round', s = 1) { addObj({ t: 'tree', x, z, kind, s }); addCollider({ x, z, r: 0.45 * s }); }
@@ -746,7 +746,11 @@ function drawObj(o, B) {
       if (o.roof === 'pitch') {
         B.box(o.x, y0, o.z, o.w, o.h, o.d, o.col, o.plain ? {} : { sideKey: 'win', uv: true, topCol: o.col });
         B.prism(o.x, y0 + o.h, o.z, o.w + 0.6, o.roofH, o.d + 0.6, o.roofCol);
-        if (o.door) B.box(o.x, y0, o.z + o.d / 2, 1.1, 2.1, 0.12, '#6b4a33');
+        if (o.door) { // door sits in the wall gap between two window columns (windows repeat every 3 m from the left edge)
+          const dx = o.x - o.w / 2 + 3 * Math.max(1, Math.round(o.w / 6));
+          B.box(dx, y0, o.z + o.d / 2 + 0.02, 1.12, 2.45, 0.06, o.col); // plain wall patch
+          B.box(dx, y0, o.z + o.d / 2 + 0.05, 0.95, 2.1, 0.08, '#6b4a33'); B.box(dx + 0.3, y0 + 1.0, o.z + o.d / 2 + 0.1, 0.08, 0.08, 0.04, '#d4af37');
+        }
       } else {
         B.box(o.x, y0, o.z, o.w, o.h, o.d, o.glass ? '#bfe0f0' : o.col, { sideKey: 'win', uv: true, topCol: '#8d8a86' });
         B.box(o.x, y0 + o.h, o.z, o.w + 0.3, 0.5, o.d + 0.3, o.col);
@@ -800,6 +804,7 @@ function drawObj(o, B) {
     case 'cross': { const rot = o.nx ? Math.PI / 2 : 0, x = o.x + o.nx * 0.1, z = o.z + o.nz * 0.1; B.box(x, 10.5, z, 0.45, 3, 0.25, '#e8c55a', { rot, key: 'sign' }); B.box(x, 11.6, z, 1.8, 0.45, 0.25, '#e8c55a', { rot, key: 'sign' }); B.box(o.x + o.nx * 0.05, 3.6, o.z + o.nz * 0.05, 1.6, 2.2, 0.2, '#5a8ad0', { rot, key: 'glow' }); break; }
     case 'door': {
       const rot = o.nx ? Math.PI / 2 : 0, out = (k, y, w, h, d, c, key) => B.box(o.x + o.nx * k, y, o.z + o.nz * k, w, h, d, c, { rot, key });
+      out(0.03, 0.15, 4.6, 3.8, 0.1, o.wall || '#ece4d6');       // plain shopfront wall so no window sits behind the door
       out(0.05, 0.15, 2.8, 2.9, 0.22, '#2a2a30');                 // frame
       out(0.1, 0.15, 2.1, 2.5, 0.24, '#33475a', 'glow');          // glass doors (glow at night)
       out(0.12, 0.15, 0.08, 2.5, 0.26, '#2a2a30');                // middle bar
