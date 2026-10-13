@@ -1,25 +1,25 @@
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA } from './character.js?v=53';
-import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=53';
-import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=53';
-import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=53';
-import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=53';
-import { buildPanel, renderStats } from './ui.js?v=53';
-import { Input } from './input.js?v=53';
-import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime } from './audio.js?v=53';
-import { runMinigame } from './minigames.js?v=53';
-import { Peds, bakeCfg, figure, setWalk } from './peds.js?v=53';
-import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=53';
-import { findRoute } from './nav.js?v=53';
-import { COURSES, CAREERS, QUIZ } from './careers.js?v=53';
-import { EVENTS, EVENT_BY_ID } from './events.js?v=53';
-import { attachWheel } from './wheel.js?v=53';
-import { Animals } from './animals.js?v=53';
-import { Talk } from './talk.js?v=53';
-import { svg, drawIcon } from './icons.js?v=53';
-import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=53';
-import { FURN, CATALOG } from './furniture.js?v=53';
-import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE } from './interiors.js?v=53';
+import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA } from './character.js?v=54';
+import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=54';
+import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=54';
+import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=54';
+import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=54';
+import { buildPanel, renderStats } from './ui.js?v=54';
+import { Input } from './input.js?v=54';
+import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime } from './audio.js?v=54';
+import { runMinigame } from './minigames.js?v=54';
+import { Peds, bakeCfg, figure, setWalk } from './peds.js?v=54';
+import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=54';
+import { findRoute } from './nav.js?v=54';
+import { COURSES, CAREERS, QUIZ } from './careers.js?v=54';
+import { EVENTS, EVENT_BY_ID } from './events.js?v=54';
+import { attachWheel } from './wheel.js?v=54';
+import { Animals } from './animals.js?v=54';
+import { Talk } from './talk.js?v=54';
+import { svg, drawIcon } from './icons.js?v=54';
+import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=54';
+import { FURN, CATALOG } from './furniture.js?v=54';
+import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE } from './interiors.js?v=54';
 
 const $ = id => document.getElementById(id);
 let inside = null, editMode = false, held = null, pendingCar = false, homeMusic = false, phoneBadge = 0;
@@ -1160,7 +1160,13 @@ function updateVehicles(dt) {
       else if (brk) { if (c.v > 0.3) { c.v = Math.max(0, c.v - 18 * dt); c.braking = true; } else c.v = Math.max(-s.top * 0.32, c.v - s.acc * 0.6 * dt); }
       else c.v = damp(c.v, 0, 0.8, dt);
       if (c.v > top + 0.5) c.v = damp(c.v, top, 1.5, dt);
-      c.steer = damp(c.steer, clamp(-st.x + Math.sin(time * 1.1) * Math.min(1, FX.drunk) * 0.45, -1, 1), 9, dt);
+      let want = -st.x;
+      if ((settings.steer || 'screen') === 'screen') {
+        // point the stick where you want the car to go on screen; the car turns to face it (reversing: the back of the car follows the stick)
+        if (st.m > 0.3) { const rev = c.v < -0.3 || (brk && !gas && c.v < 0.5), face = rev ? c.h + Math.PI : c.h, err = wrapA(Math.atan2(st.x, -st.y) - face); want = clamp(err * 2.2, -1, 1) * (rev ? -1 : 1) * Math.min(1, st.m * 1.3); }
+        else want = 0;
+      }
+      c.steer = damp(c.steer, clamp(want + Math.sin(time * 1.1) * Math.min(1, FX.drunk) * 0.45, -1, 1), 9, dt);
       P.fireCd -= dt; if (P.reload > 0) { P.reload -= dt; if (P.reload <= 0) finishReload(); }
       if (input.held('b')) driveBy(); else input.consume('b');
       input.consume('x'); input.consume('a');
@@ -2054,8 +2060,22 @@ async function talkDealer(p) {
   for (;;) {
     const opts = [{ label: I('deal', 'Trade'), id: 'trade' }, { label: I('chat', 'Chat'), id: 'chat' }, { label: I('star', 'Heard anything?'), id: 'tip' }];
     if (stats.haggle[p.id] !== dayN) opts.push({ label: I('smile', `Haggle <small>(Charm ${lvl('charm')})</small>`), id: 'haggle' });
+    opts.push(stats.burner ? { label: I('phone', 'Ditch my burner'), id: 'ditch' } : { label: I('phone', `Get a burner phone <small>${fmt(150)}</small>`), id: 'burner' });
     opts.push({ label: I('x', 'Later'), id: 'bye' });
     const c = opts[await talk.choose(opts)].id;
+    if (c === 'burner') {
+      await talk.say('Got a burner? I want customers hitting me up.', 'you');
+      if (money < 150) { await talk.say('Come back with 150 and I\'ll sort you.'); continue; }
+      spend(150); stats.burner = true; settings.custTexts = 'on'; applySettings(); custT = 25; saveGame();
+      await talk.say("Here. I'll pass the number round. People will text you when they need something. Switch it off when you need a break, it's in your phone settings.");
+      continue;
+    }
+    if (c === 'ditch') {
+      await talk.say('I\'m done taking orders for a bit. Bin the number.', 'you');
+      stats.burner = false; for (const cu of [...customers]) removeCustomer(cu); saveGame();
+      await talk.say(pick(["Smart. Lay low.", "Your call. Come see me if you want a new one."]));
+      continue;
+    }
     if (c === 'trade') { const v = await openTrade(p); if (v) dealHeat(p.x, p.z, v); if (v) bumpRel(p.id, Math.min(6, v / 400)); await talk.say(pick(['Pleasure doing business.', 'Smart move.', 'Anything else?', 'Come back tomorrow, prices change.'])); }
     else if (c === 'chat') {
       await talk.say(pick(["How's business?", "What's new around here?", "You good?"]), 'you');
@@ -2867,39 +2887,177 @@ async function talkBookie(n, place) {
 }
 // ================================================================ ROMANCE (Sims style: flirt, get a number, go on a date, woohoo under the duvet)
 const FEM_NAMES = ['Jade', 'Mia', 'Sofia', 'Chloe', 'Lexi', 'Nina', 'Ava', 'Zoe', 'Maya', 'Bella', 'Kira', 'Luna', 'Rosa', 'Tasha', 'Gabi', 'Leah'];
-const FLIRT = {
-  compliment: { label: 'Compliment', you: ['You have a seriously nice smile.', 'I like your style. You put that together yourself?', 'Your eyes are kind of distracting, you know that?'], risk: 0.1, gain: 14 },
-  cheesy: { label: 'Cheesy line', you: ['Are you a parking ticket? Because you\'ve got FINE written all over you.', 'Do you have a map? I keep getting lost in your eyes.', 'Is your name Wi-Fi? Because I\'m feeling a connection.'], risk: 0.35, gain: 20 },
-  bold: { label: 'Bold move', you: ['I\'ll be honest, I walked over here because you\'re the best-looking person in Bay City.', 'Let\'s skip the small talk. Drink with me tonight.', 'You and me. Sunset. Think about it.'], risk: 0.5, gain: 30 },
-  beach: { label: 'Beach flirt', you: ['That swimsuit should come with a warning sign.', 'Need someone to do your sunscreen? Purely professional.', 'Careful, the lifeguard\'s gonna think you\'re a hazard. Too hot.'], risk: 0.4, gain: 26 },
-};
-const FLIRT_YES = ['Haha, okay, smooth. Go on...', 'Stop it! ...No, actually, keep going.', 'Well, aren\'t you confident. I like that.', 'You\'re kind of cute, you know.', '*laughs* That actually worked a little.'];
-const FLIRT_NO = ['Wow. Does that ever work?', 'Ew. No.', 'I have a boyfriend. He\'s huge.', 'Not even a little bit.', 'Try that on someone else.'];
 let date = null, woo = null;
 function lookIsFem(look) { return !!look?.fem; }
-async function flirtLoop(p, bg) {
-  p.interest ??= Math.floor(rand(0, 15)) + (bg === 'beach' ? 10 : 0) + (night > 0.5 ? 8 : 0);
-  p.name ??= pick(FEM_NAMES);
-  $('talkName').textContent = p.name;
-  while (true) {
-    const styles = ['compliment', 'cheesy', 'bold', ...(bg === 'beach' ? ['beach'] : [])];
-    const opts = styles.map(k => ({ label: I('heart', FLIRT[k].label), k }));
-    if (p.interest >= 35 && !p.gotNumber) opts.push({ label: I('phone', 'Can I get your number?'), k: 'number' });
-    if (p.interest >= 60) opts.push({ label: I('star', 'Want to get out of here?'), k: 'date' });
+// Every stranger has a personality: two things they love, one they can't stand, and maybe a partner.
+// Rapport (respect / friendliness) is built with Chat and Deep talk. Attraction comes from Flirt and Cheeky.
+// Flirting works far better once she actually likes you, and the same line twice gets old fast.
+const TOPICS = {
+  music: { label: 'Music', icon: 'music', you: ['What are you listening to these days?', 'Been on Bassline FM all week. You into music?'], love: ['Oh my god, music is my whole life. I go to every gig in the city.', 'Yes! I make playlists for literally every mood.'], meh: ['I listen to whatever is on, honestly.'], hate: ['I don\'t really get music people. It\'s just noise to me.'] },
+  cars: { label: 'Cars', icon: 'car', you: ['You see that car that just went past? Mental.', 'I\'ve been doing up my car. You into cars at all?'], love: ['Okay you\'re speaking my language. I want a lowrider so bad.', 'My dad raced. I grew up in a garage, I love that stuff.'], meh: ['A car is a car to me. Does it get me places?'], hate: ['Car guys are the worst. No offence.'] },
+  fitness: { label: 'Fitness', icon: 'dumbbell', you: ['Been hitting Iron Temple lately.', 'You look like you train. Do you?'], love: ['Gym every morning. It keeps me sane.', 'I run the seafront every day. Love it.'], meh: ['I walk places. That counts, right?'], hate: ['Ugh, gym talk. Please no.'] },
+  food: { label: 'Food', icon: 'taco', you: ['Have you tried the taco truck down by the beach?', 'Where\'s good to eat round here?'], love: ['Don\'t get me started, I\'m a total foodie. That diner does the best pancakes.', 'Food is my love language. I cook every night.'], meh: ['I mostly eat whatever is quick.'], hate: ['I\'m on a diet, can we not talk about food.'] },
+  travel: { label: 'Travel', icon: 'map', you: ['If you could fly anywhere tomorrow, where?', 'Ever thought about getting out of Bay City for a bit?'], love: ['I\'ve been to eleven countries! I\'m saving for Japan next.', 'I would leave tomorrow if I could. I love seeing new places.'], meh: ['I\'ve never really left the city, to be honest.'], hate: ['Airports stress me out. I like it here.'] },
+  money: { label: 'Hustle', icon: 'cash', you: ['I\'m building something. Making moves.', 'What do you do for money?'], love: ['I love a hustler. I\'ve got two side businesses myself.', 'Ambition is attractive. Tell me more.'], meh: ['I work, I get paid, I go home.'], hate: ['Money talk is so boring. Everyone here is obsessed.'] },
+  art: { label: 'Art', icon: 'edit', you: ['There\'s some sick murals down by the docks.', 'You seem creative. Do you make stuff?'], love: ['I paint! Mostly at night. Nobody ever asks.', 'Those murals are my favourite thing in the city.'], meh: ['I can\'t draw a stick man, ha.'], hate: ['I don\'t really get art.'] },
+  nightlife: { label: 'Going out', icon: 'drink', you: ['You go out much? Club Neon gets wild.', 'What\'s your go-to spot on a Friday?'], love: ['I live for a night out. Dancing till 4am.', 'Club Neon! I\'m there every weekend.'], meh: ['I go out sometimes. I\'m more of a sofa person.'], hate: ['Clubs? No. Too loud, too sweaty.'] },
+};
+const JOBS_SAID = ['I work at a nail salon on the south side.', 'I\'m a nurse at Bay General. Long shifts.', 'I\'m studying at the college. Business.', 'I do hair. Got my own chair now.', 'Barista. For now.', 'I work in an office in the tower. It\'s fine.', 'I\'m a lifeguard, believe it or not.', 'I\'m between jobs right now. Don\'t judge.'];
+const SOCIAL = {
+  chat: {
+    small: { label: 'Small talk', you: ['Busy day?', 'Nice out today, isn\'t it?', 'You from round here?'], say: ['Yeah, not bad. You?', 'Born and raised. You?', 'It\'s alright. Better now there\'s someone to talk to.'] },
+    ask: { label: 'Ask about her', you: ['So what\'s your story?', 'What do you do?', 'Tell me something about you.'] },
+    topic: { label: 'Talk about…' },
+    joke: { label: 'Make her laugh', you: ['I tried to get fit once. The gym sent me a get well soon card.', 'I\'m not saying I\'m lost, I\'m just giving the city a full tour.', 'My car\'s so slow, the parking ticket caught up with me.'] },
+  },
+  flirt: {
+    compliment: { label: 'Compliment', you: ['You have a seriously nice smile.', 'Your eyes are kind of distracting, you know that?', 'You\'re really pretty. Had to say it.'], risk: 0.1, gain: 12 },
+    style: { label: 'Love your style', you: ['I like your style. You put that together yourself?', 'That outfit is working, for real.'], risk: 0.08, gain: 10 },
+    cheesy: { label: 'Cheesy line', you: ['Are you a parking ticket? Because you\'ve got FINE written all over you.', 'Is your name Wi-Fi? Because I\'m feeling a connection.', 'Do you have a map? I keep getting lost in your eyes.'], risk: 0.3, gain: 16 },
+    bold: { label: 'Bold move', you: ['I\'ll be honest, I came over because you\'re the best-looking person in Bay City.', 'Let\'s skip the small talk. Drink with me tonight.', 'You and me. Sunset. Think about it.'], risk: 0.45, gain: 26 },
+    beach: { label: 'Beach flirt', you: ['That swimsuit should come with a warning sign.', 'Need someone to do your sunscreen? Purely professional.'], risk: 0.35, gain: 22, beach: true },
+  },
+  cheeky: {
+    tease: { label: 'Tease her', you: ['You walk like you\'re late for something you don\'t want to go to.', 'Let me guess. You\'re trouble.', 'You laugh at your own jokes, don\'t you? I can tell.'] },
+    brag: { label: 'Show off', you: ['I\'ll be honest, I\'m kind of a big deal round here.', 'You should see my ride.', 'Stick with me. I know everybody in this city.'] },
+    dare: { label: 'Dare her', you: ['Bet you won\'t give me your number.', 'I dare you to come for one drink.'] },
+    man: { label: '"He\'s not here though"', you: ['Your man\'s not here though, is he?', 'Does he make you laugh like this?'], taken: true },
+  },
+  deep: {
+    share: { label: 'Open up', you: ['Honestly? I came to this city with nothing. Still figuring it out.', 'Some days I don\'t know what I\'m doing. Today\'s a good one though.', 'I\'m trying to be better than I was. That\'s the truth.'] },
+    dream: { label: 'Ask about dreams', you: ['If money didn\'t matter, what would you be doing?', 'What do you actually want out of life?'], say: ['Honestly? Open my own place. Something that\'s mine.', 'Get out of this city, see the world, then come back and buy a house in the hills.', 'Have a family one day. And be good at it.', 'Make art people actually see.'] },
+    honest: { label: 'Be honest', you: ['I\'m not good at this. I just wanted to meet you.', 'No line. I just thought you seemed cool.'] },
+    respect: { label: 'Respect it', you: ['Fair enough. He\'s a lucky guy.', 'All good, I respect that. You still seem cool though.'], taken: true },
+  },
+};
+const MOODS = { chat: ['chat', 'Chat'], flirt: ['heart', 'Flirt'], cheeky: ['bolt', 'Cheeky'], deep: ['brain', 'Deep talk'] };
+const NO_FLIRT = ['Wow. Does that ever work?', 'Ew. No.', 'Not even a little bit.', 'Try that on someone else.', 'We literally just met.'];
+const YES_FLIRT = ['Haha, okay, smooth. Go on...', 'Stop it! ...No, actually, keep going.', 'Well, aren\'t you confident. I like that.', 'You\'re kind of cute, you know.', '*laughs* That actually worked a little.'];
+const AGAIN = ['You already said that.', 'Is that your only move?', 'Okay, new material please.', 'Heard it. Got anything else?'];
+
+function socialInit(p, bg) {
+  if (p.soc) return p.soc;
+  const keys = Object.keys(TOPICS).sort(() => Math.random() - 0.5);
+  const fem = lookIsFem(p.look);
+  p.interest ??= Math.floor(rand(0, 12)) + (bg === 'beach' ? 8 : 0) + (night > 0.5 ? 6 : 0);
+  return p.soc = { rap: Math.floor(rand(0, 10)), love: keys.slice(0, 2), hate: keys[2], known: [], used: {}, turns: 0, patience: Math.floor(rand(5, 9)), taken: fem && Math.random() < 0.3, saidTaken: false, respected: false, job: pick(JOBS_SAID), fem };
+}
+function vibe(p) {
+  const s = p.soc, r = s.rap, a = p.interest;
+  const rw = r < 12 ? 'Guarded' : r < 30 ? 'Polite' : r < 55 ? 'Friendly' : r < 80 ? 'Warm' : 'Close';
+  const aw = !s.fem ? '' : a < 15 ? '' : a < 35 ? ' · curious' : a < 60 ? ' · into you' : ' · really into you';
+  return `${rw}${aw}${s.taken && s.saidTaken ? ' · has a man' : ''}`;
+}
+function socTag(p) { $('talkTag').textContent = vibe(p); }
+// The more she likes you as a person, the better everything lands.
+function socChance(p, base) {
+  const s = p.soc, b = body();
+  return base + (lvl('charm') - 1) * 0.04 + (stats.mood - 50) / 400 + s.rap * 0.006 + p.interest * 0.002 + (b.muscle || 0) * 0.0008 - (b.fat || 0) * 0.0008;
+}
+function reused(p, k) { const n = p.soc.used[k] || 0; p.soc.used[k] = n + 1; return n; }
+
+async function socialTalk(p, bg) {
+  const s = socialInit(p, bg); socTag(p);
+  for (;;) {
+    if (s.turns > s.patience + s.rap / 8 + (s.fem ? p.interest / 12 : 0)) { await talk.say(pick(['Anyway, I really have to go.', 'Okay, I gotta run. Nice talking to you.', 'I\'m gonna be late. See you around.'])); return 'done'; }
+    const opts = Object.entries(MOODS).filter(([k]) => k !== 'flirt' || s.fem).map(([k, [ic, l]]) => ({ label: I(ic, l), k }));
+    if (s.fem && !p.gotNumber && ((p.interest >= 35 && s.rap >= 20 && (!s.taken || p.interest >= 70)) || (s.respected && s.rap >= 45))) opts.push({ label: I('phone', s.respected && p.interest < 70 ? 'Swap numbers <small>(as friends)</small>' : 'Can I get your number?'), k: 'number' });
+    if (s.fem && p.interest >= 60 && s.rap >= 30 && (!s.taken || p.interest >= 85)) opts.push({ label: I('star', 'Want to get out of here?'), k: 'date' });
     opts.push({ label: I('x', 'Back'), k: 'back' });
-    const c = opts[await talk.choose(opts)].k;
-    if (c === 'back') return;
-    if (c === 'number') { p.gotNumber = true; addDateContact(p); await talk.say(pick(['Sure. Don\'t be weird with it.', 'Here. Text me sometime.', 'Okay... but you better actually call.'])); gainXP('charm', 15); continue; }
-    if (c === 'date') {
-      if (date) { await talk.say("Aren't you already with someone right now? Wow."); p.interest -= 30; continue; }
+    const mood = opts[await talk.choose(opts)].k;
+    if (mood === 'back') return;
+    if (mood === 'number') { p.gotNumber = true; addDateContact(p); await talk.say(s.respected && p.interest < 70 ? 'Sure, friends. Here.' : pick(['Sure. Don\'t be weird with it.', 'Here. Text me sometime.', 'Okay... but you better actually call.'])); gainXP('charm', 15); continue; }
+    if (mood === 'date') {
+      if (date) { await talk.say("Aren't you already with someone right now? Wow."); p.interest -= 30; socTag(p); continue; }
       await talk.say(pick(['Ha. Okay, yeah. Let\'s go.', 'I thought you\'d never ask.', 'Sure, why not. Lead the way.'])); startDate(p); return 'date';
     }
-    const F = FLIRT[c]; await talk.say(pick(F.you), 'you');
-    const chance = 0.42 + (lvl('charm') - 1) * 0.05 + (stats.mood - 50) / 300 + p.interest / 250 - F.risk * 0.5 + (bg === 'beach' && c === 'beach' ? 0.1 : 0);
-    if (Math.random() < chance) { p.interest += F.gain + lvl('charm'); gainXP('charm', Math.round(F.gain / 3)); feed({ mood: 3 }); await talk.say(c === 'beach' || (c === 'bold' && bg === 'beach') ? pick(['Mmm, maybe I do need help with the sunscreen...', 'Keep talking like that and I might let you buy me a drink.', '*bites lip* You\'re trouble, aren\'t you?']) : pick(FLIRT_YES)); }
-    else { p.interest -= 12 + F.risk * 20; feed({ mood: -3 }); await talk.say(pick(FLIRT_NO)); if (p.interest < -25) { await talk.say('Okay, I\'m done here.'); if (c === 'bold' || c === 'beach') { hurt(2); sfx.punch?.(); toast('Slapped!'); } return 'left'; } }
+    const menu = SOCIAL[mood];
+    const sub = Object.entries(menu).filter(([, o]) => (!o.beach || bg === 'beach') && (!o.taken || (s.taken && s.saidTaken && !(mood === 'deep' && s.respected)))).map(([k, o]) => ({ label: I(MOODS[mood][0], o.label.replace('her', s.fem ? 'her' : 'them')), k }));
+    sub.push({ label: I('x', 'Back'), k: 'back' });
+    const k = sub[await talk.choose(sub)].k;
+    if (k === 'back') continue;
+    s.turns++;
+    const r = await socialMove(p, mood, k, bg);
+    socTag(p);
+    if (r) return r;
   }
 }
+
+async function socialMove(p, mood, k, bg) {
+  const s = p.soc, o = SOCIAL[mood][k], fem = s.fem, n = reused(p, mood + k);
+  const ok = () => { gainXP('charm', 4); feed({ mood: 1 }); };
+  if (k === 'topic') {
+    const tk = Object.keys(TOPICS), opts = tk.map(t => ({ label: I(TOPICS[t].icon, TOPICS[t].label + (s.known.includes(t) ? ' <small>♥</small>' : '')), t }));
+    opts.push({ label: I('x', 'Back'), t: null });
+    const t = opts[await talk.choose(opts)].t; if (!t) { s.turns--; return; }
+    const T = TOPICS[t], tn = reused(p, 'topic:' + t);
+    await talk.say(pick(T.you), 'you');
+    if (tn > 0) { await talk.say(pick(['We kind of covered that.', 'Yeah, you said.'])); s.rap += 1; return; }
+    if (s.love.includes(t)) { s.rap += 14; p.interest += fem ? 4 : 0; if (!s.known.includes(t)) s.known.push(t); hearts(P.x, P.z, 4); await talk.say(pick(T.love)); gainXP('charm', 10); ok(); }
+    else if (s.hate === t) { s.rap -= 7; await talk.say(pick(T.hate)); }
+    else { s.rap += 4; await talk.say(pick(T.meh)); ok(); }
+    return;
+  }
+  await talk.say(pick(o.you), 'you');
+  if (mood === 'chat') {
+    if (k === 'small') { s.rap += Math.max(0, 4 - n * 2); await talk.say(n > 1 ? pick(['...Yeah. You said.', 'Mm-hm.']) : pick(o.say)); if (n < 2) ok(); return; }
+    if (k === 'ask') {
+      const hid = s.love.find(t => !s.known.includes(t));
+      s.rap += n < 2 ? 6 : 1;
+      if (n === 0) await talk.say(s.job);
+      if (hid) { s.known.push(hid); await talk.say(`I'm really into ${TOPICS[hid].label.toLowerCase()}. ${pick(['Like, a lot.', 'Ask me about it sometime.', 'That\'s my thing.'])}`); }
+      else await talk.say(pick(['That\'s about it really. What about you?', 'You\'re nosy, you know that? ...I don\'t mind.']));
+      if (n === 0 && s.taken && fem && Math.random() < 0.5) { s.saidTaken = true; await talk.say('Oh, and I live with my boyfriend. Just so you know.'); }
+      ok(); return;
+    }
+    if (k === 'joke') {
+      if (n > 1) { await talk.say(pick(AGAIN)); s.rap -= 2; return; }
+      if (Math.random() < socChance(p, 0.4)) { s.rap += 8; p.interest += fem ? 5 : 0; await talk.say(pick(['*laughs* Okay, that was actually funny.', 'Haha! Stop.', 'You\'re an idiot. *laughing*'])); gainXP('charm', 8); ok(); }
+      else { s.rap -= 2; await talk.say(pick(['...Was that a joke?', 'Tough crowd, huh. Me. I\'m the tough crowd.', 'Hmm. No.'])); }
+      return;
+    }
+  }
+  if (mood === 'flirt') {
+    if (s.taken && !s.saidTaken) { s.saidTaken = true; await talk.say(pick(['I have a boyfriend, actually.', 'Sorry, I\'ve got a man.', 'Flattered. But I\'m with someone.'])); s.rap += 1; return; }
+    if (n > 0 && Math.random() < 0.3 + n * 0.25) { p.interest -= 3; await talk.say(pick(AGAIN)); return; }
+    const chance = socChance(p, 0.36) - o.risk * 0.5 - n * 0.12 - (s.taken ? 0.25 : 0) + (o.beach ? 0.08 : 0);
+    if (Math.random() < chance) { p.interest += Math.round(o.gain * (0.6 + Math.min(80, s.rap) / 100)) + lvl('charm'); gainXP('charm', Math.round(o.gain / 3)); feed({ mood: 3 }); hearts(P.x, P.z, 3); await talk.say(o.beach ? pick(['Mmm, maybe I do need help with the sunscreen...', '*bites lip* You\'re trouble, aren\'t you?']) : pick(YES_FLIRT)); }
+    else {
+      p.interest -= 6 + o.risk * 16; s.rap -= s.rap < 15 ? 4 : 1; feed({ mood: -2 });
+      await talk.say(s.rap < 15 ? pick(NO_FLIRT) : pick(['Haha, slow down. I barely know you.', 'Cute. Maybe. Talk to me a bit first.', 'Easy, tiger.']));
+      if (p.interest < -25) { await talk.say('Okay, I\'m done here.'); if (o.risk >= 0.35) { hurt(2); sfx.punch?.(); toast('Slapped!'); } return 'left'; }
+    }
+    return;
+  }
+  if (mood === 'cheeky') {
+    if (k === 'tease') {
+      const c = socChance(p, 0.2) + (s.rap >= 25 ? 0.25 : 0) - n * 0.15;
+      if (Math.random() < c) { p.interest += fem ? 14 : 0; s.rap += 5; await talk.say(pick(['Excuse me?! ...okay, that was a bit funny.', 'Wow. Rude. *trying not to smile*', 'Oh, you think you\'re clever, don\'t you?'])); gainXP('charm', 10); ok(); }
+      else { s.rap -= 9; p.interest -= 4; await talk.say(pick(['Who do you think you are?', 'Wow. Okay. Rude.', 'Do you talk to everyone like that?'])); }
+    } else if (k === 'brag') {
+      const rich = money > 5000 || !!ride, c = socChance(p, rich ? 0.35 : 0.15) - n * 0.2;
+      if (Math.random() < c) { p.interest += fem ? 10 : 0; s.rap += 2; await talk.say(pick(['Oh yeah? Prove it.', 'Big talk. I kind of like it.', 'Mm. Confident.'])); ok(); }
+      else { s.rap -= 5; await talk.say(pick(['Every guy in this city says that.', 'Okay, Mr Big Deal.', 'Humble, too.'])); }
+    } else if (k === 'dare') {
+      if (n > 0) { await talk.say(pick(AGAIN)); return; }
+      const c = socChance(p, 0.1) + p.interest * 0.004 - (s.taken ? 0.2 : 0);
+      if (Math.random() < c && fem) { p.interest += 12; if (!p.gotNumber) { p.gotNumber = true; addDateContact(p); await talk.say('...Fine. Give me your phone. Happy now?'); gainXP('charm', 20); } else await talk.say('You\'re lucky you\'re cute.'); }
+      else { s.rap -= 4; await talk.say(pick(['Ha. You\'re right, I won\'t.', 'Nice try.', 'I don\'t do dares, sorry.'])); }
+    } else if (k === 'man') {
+      if (n > 0) { await talk.say('Stop.'); s.rap -= 6; p.interest -= 6; return; }
+      if (p.interest >= 50 && s.rap >= 40 && Math.random() < socChance(p, 0.3)) { p.interest += 20; await talk.say(pick(['...You\'re bad. You know that?', 'He doesn\'t, actually. ...Forget I said that.', 'Don\'t look at me like that.'])); s.taken = 'wavering'; }
+      else { s.rap -= 12; p.interest -= 10; await talk.say(pick(['Wow. Not cool.', 'Seriously? Bye.', 'I\'d never do that to him.'])); if (s.rap < 0) return 'left'; }
+    }
+    return;
+  }
+  if (mood === 'deep') {
+    if (k === 'share') { if (s.rap < 10 && n === 0) { s.rap += 3; await talk.say('Oh. That\'s... a lot for a stranger. But okay.'); } else { s.rap += n < 2 ? 10 : 2; p.interest += fem ? 3 : 0; await talk.say(pick(['That\'s real. I respect that.', 'Wow. Most people just talk rubbish to me. Thanks for being real.', 'I get that. More than you know.'])); ok(); } }
+    else if (k === 'dream') { if (s.rap < 20) { s.rap += 1; await talk.say('That\'s a bit personal, no?'); } else { s.rap += n < 1 ? 12 : 2; p.interest += fem ? 4 : 0; await talk.say(pick(o.say)); gainXP('charm', 8); ok(); } }
+    else if (k === 'honest') { s.rap += n < 1 ? 6 : 0; if (fem && s.rap >= 25) { p.interest += 10; await talk.say(pick(['That\'s actually really sweet.', 'Honestly? That works better than any line.'])); } else await talk.say(pick(['Ha. Okay. Well, hi.', 'That\'s refreshing.'])); ok(); }
+    else if (k === 'respect') { s.respected = true; s.rap += 18; p.interest += 4; s.patience += 3; await talk.say(pick(['Thank you. Honestly, most guys get weird about it.', 'Ha, you\'re alright, you know that?'])); gainXP('charm', 12); ok(); }
+  }
+}
+
 function addDateContact(p) { stats.dates ||= {}; const id = 'date:' + p.name; stats.dates[id] = { name: p.name, cfg: p.look.cfg }; stats.rel[id] = Math.max(stats.rel[id] || 0, 20); relNames[id] = p.name; saveGame(); }
 function startDate(p) {
   peds.release(p); const i = peds.list.indexOf(p); if (i >= 0) peds.list.splice(i, 1); dyn.remove(p.root);
@@ -3025,14 +3183,12 @@ async function talkToPed(p) {
   let done = false;
   while (!done) {
     const have = GOODS.filter(g => stash[g.id] > 0);
-    const opts = [{ label: I('chat', 'Chat'), id: 'chat' }];
-    if (lookIsFem(p.look)) opts.push({ label: I('heart', p.interest >= 35 ? 'Flirt <small>(she\'s into you)</small>' : 'Flirt'), id: 'flirt' });
+    const opts = [{ label: I('chat', lookIsFem(p.look) && p.interest >= 35 ? 'Chat <small>(she\'s into you)</small>' : 'Chat'), id: 'chat' }];
     if (have.length) opts.push({ label: I('deal', 'Offer something'), id: 'sell' });
     opts.push({ label: I('cash', 'Rob them'), id: 'rob' }, { label: I('x', 'Bye'), id: 'bye' });
     const c = opts[await talk.choose(opts)].id;
-    if (c === 'flirt') { const r = await flirtLoop(p, bg); if (r === 'date') { endTalk(); return; } if (r === 'left') { endTalk(); peds.release(p); peds.flee(p, P.x, P.z); return; } continue; }
-    if (c === 'chat') { p.chats++; gainXP('charm', 3); await talk.say(p.chats > 3 ? "Okay, I really have to go." : pick([...(PED_LINES[bg] || []), ...PED_LINES.city])); if (p.chats > 3) done = true; }
-    else if (c === 'sell') {
+    if (c === 'chat') { const r = await socialTalk(p, bg); $('talkTag').textContent = vibe(p); if (r === 'date') { endTalk(); return; } if (r === 'left') { endTalk(); peds.release(p); peds.flee(p, P.x, P.z); return; } if (r === 'done') break; continue; }
+    if (c === 'sell') {
       await talk.say("Psst. You looking for something?", 'you');
       if (!p.buyer) { await talk.say(pick(["What? No! Get away from me!", "I'm calling my mom.", "Not interested, weirdo."])); peds.release(p); peds.flee(p, P.x, P.z); endTalk(); return; }
       const g = pick(have), n = Math.min(stash[g.id], 1 + Math.floor(Math.random() * (2 + lvl('dealing') / 3))), price = Math.round(g.base * rand(1.15, 1.6) * (1 + (lvl('charm') - 1) * 0.02)) * n;
@@ -3205,16 +3361,17 @@ function attachCustomer(c) {
 }
 function removeCustomer(c) { customers.splice(customers.indexOf(c), 1); if (c.npc?.fig) dyn.remove(c.npc.fig.root); if (c.marker) { G.scene.remove(c.marker.g); markers.splice(markers.indexOf(c.marker), 1); } if (waypoint && waypoint.cust === c.id) clearWaypoint(); }
 let custT = 90;
-const CUST_MODES = { on: 'On', quiet: 'Quiet (no pop-ups)', off: 'Off' };
+const CUST_MODES = { on: 'On', quiet: 'Silent', off: 'Off' };
 const custMode = () => settings.custTexts || 'on';
 function cycleCustMode() {
   const k = Object.keys(CUST_MODES), m = k[(k.indexOf(custMode()) + 1) % k.length]; settings.custTexts = m; applySettings();
   if (m === 'off') for (const c of [...customers]) removeCustomer(c);
-  toast(m === 'off' ? 'Phone off the hook. No more customer texts.' : m === 'quiet' ? 'Customer texts go quietly to your inbox.' : 'Customer texts on.', 2.4);
+  toast(m === 'off' ? 'Burner switched off. No customer texts.' : m === 'quiet' ? 'Burner on silent. Texts land in your inbox.' : 'Burner on.', 2.4);
 }
 function updateCustomers(dt) {
   custT -= dt;
-  if (custT <= 0 && !inside) { custT = rand(160, 300); if (custMode() !== 'off' && customers.length < 2 && (stashCount() > 0 || lvl('dealing') > 1)) newCustomer(); }
+  if (stats.burner === undefined) stats.burner = lvl('dealing') > 1; // old saves that were already dealing keep their texts
+  if (custT <= 0 && !inside) { custT = rand(160, 300); if (stats.burner && custMode() !== 'off' && customers.length < 2 && (stashCount() > 0 || lvl('dealing') > 1)) newCustomer(); }
   for (const c of [...customers]) if (gameHours() > c.exp) {
     const near = c.npc && Math.hypot(c.npc.x - P.x, c.npc.z - P.z) < 60;
     if (near && !c.graced) { c.graced = true; c.exp = gameHours() + 1.5; toast(`${c.name}: "I was about to leave! Hurry up."`, 2.5); continue; }
@@ -3903,8 +4060,8 @@ function renderPhone() {
     const ms = messages();
     const chatIds = [...new Set([...(fam().partner ? [fam().partner.id] : []), ...Object.keys(stats.texts || {}), ...Object.keys(stats.dates || {}), ...fam().kids.filter(k => ['Teen', 'Adult'].includes(kidStage(k))).map(k => k.id)])];
     const chats = chatIds.map(id => { const T = stats.texts?.[id] || [], last = T[T.length - 1]; return `<button class="ph-row" data-thr="${id}"><span>${svg(id.startsWith('kid:') ? 'smile' : 'heart', 'sm')} <b>${nameOf(id)}</b> <small style="white-space:normal">${last ? (last.me ? 'You: ' : '') + last.t : 'Tap to text'}</small></span></button>`; }).join('');
-    el.innerHTML = `${back}<h4>Messages</h4>${chats ? `<div class="ph-sec">Chats</div>${chats}<div class="ph-sec">Inbox</div>` : ''}<button class="ph-row" id="msCust"><span>${svg('deal', 'sm')} Customer texts</span><b>${CUST_MODES[custMode()]}</b></button><div class="ph-list">${ms.map((m, i) => `<div class="ph-msg"><div class="av">${svg(m.av)}</div><div><b>${m.from}</b><p>${m.text}</p>${m.at ? `<button class="ph-mini" data-wp="${i}">${svg('pin', 'sm')} Set waypoint</button>` : ''}</div></div>`).join('')}</div>`;
-    $('msCust').onclick = () => { cycleCustMode(); renderPhone(); };
+    el.innerHTML = `${back}<h4>Messages</h4>${chats ? `<div class="ph-sec">Chats</div>${chats}<div class="ph-sec">Inbox</div>` : ''}${stats.burner ? `<button class="ph-row" id="msCust"><span>${svg('phone', 'sm')} Burner phone</span><b>${CUST_MODES[custMode()]}</b></button>` : ''}<div class="ph-list">${ms.map((m, i) => `<div class="ph-msg"><div class="av">${svg(m.av)}</div><div><b>${m.from}</b><p>${m.text}</p>${m.at ? `<button class="ph-mini" data-wp="${i}">${svg('pin', 'sm')} Set waypoint</button>` : ''}</div></div>`).join('')}</div>`;
+    if ($('msCust')) $('msCust').onclick = () => { cycleCustMode(); renderPhone(); };
     el.querySelectorAll('[data-thr]').forEach(b => b.onclick = () => { phoneThread = b.dataset.thr; phoneGo('thread'); });
     el.querySelectorAll('[data-wp]').forEach(b => b.onclick = () => { const m = ms[+b.dataset.wp]; setWaypoint(m.at.x, m.at.z, m.at.name); toast(m.at.name); closePhone(); });
   } else if (phoneApp === 'contacts') {
@@ -3978,12 +4135,14 @@ function renderPhone() {
   } else if (phoneApp === 'settings') {
     el.innerHTML = `${back}<h4>Settings</h4>
       <button class="ph-row" id="stSound"><span>Sound</span><b>${settings.sound ? 'On' : 'Off'}</b></button>
-      <button class="ph-row" id="stCust"><span>Customer texts</span><b>${CUST_MODES[custMode()]}</b></button>
+      ${stats.burner ? `<button class="ph-row" id="stCust"><span>Burner phone</span><b>${CUST_MODES[custMode()]}</b></button>` : ''}
+      <button class="ph-row" id="stSteer"><span>Car steering</span><b>${(settings.steer || 'screen') === 'screen' ? 'Point where you go' : 'Classic (left/right)'}</b></button>
       <button class="ph-row" id="stShadow"><span>Shadows (off = smoother)</span><b>${settings.shadows ? 'On' : 'Off'}</b></button>
       <div class="ph-sec">Danger zone</div><button class="ph-row danger" id="stReset"><span>Reset all progress</span></button>
       <p class="ph-hint">Bay City ${VERSION}</p>`;
     $('stSound').onclick = () => { settings.sound = !settings.sound; applySettings(); renderPhone(); };
-    $('stCust').onclick = () => { cycleCustMode(); renderPhone(); };
+    if ($('stCust')) $('stCust').onclick = () => { cycleCustMode(); renderPhone(); };
+    $('stSteer').onclick = () => { settings.steer = (settings.steer || 'screen') === 'screen' ? 'car' : 'screen'; applySettings(); renderPhone(); };
     $('stShadow').onclick = () => { settings.shadows = !settings.shadows; applySettings(); renderPhone(); };
     let armed = false; $('stReset').onclick = () => { if (!armed) { armed = true; $('stReset').querySelector('span').textContent = 'Tap again to wipe everything'; return; } for (const k of ['bc_save', 'bc_arsenal', 'rr_char', 'rr_gun', 'bc_car', 'bc_cars']) localStorage.removeItem(k); location.reload(); };
   }
@@ -4000,7 +4159,7 @@ function saveGame() {
   store.set('bc_save', save); store.set('bc_arsenal', arsenal); store.set('bc_cars', garage);
 }
 // auto-update: bookmarks and home-screen apps can hold on to an old copy. Check version.json (never cached) and reload once if newer.
-const BUILD = 53;
+const BUILD = 54;
 function checkUpdate() {
   fetch('version.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(j => {
     if (!(j.v > BUILD)) return;
