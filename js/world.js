@@ -17,6 +17,7 @@ for (const c of CITIES) {
 export const SIGN = { x: -446, z: -268, text: 'BAYWOOD' };
 // the Bay Line railway: north of downtown, from the Hidden Hills to the farmland, with three stations
 export const RAIL = { z: -318, x0: -284, x1: 444, stations: [{ name: 'Baywood Hills', x: -252 }, { name: 'Downtown North', x: 72 }, { name: 'Farmland', x: 412 }] };
+export const onBridge = (x, z) => Math.abs(x - UNDERPASS.x) < UNDERPASS.half + 5.2 && Math.abs(z - RAIL.z) < 3.3;
 export const onRail = (x, z, m = 0) => x > RAIL.x0 - m && x < RAIL.x1 + m && Math.abs(z - RAIL.z) < 2.2 + m;
 export const AIRPORT = { x0: -240, x1: 280, z0: -780, z1: -575 };
 export const sandLine = x => 352 + 6 * Math.sin(x / 41) + 3 * Math.sin(x / 13);
@@ -434,7 +435,7 @@ function genBlock(city, bx0, bz0, r) {
 function genWorld() {
   for (let x = RAIL.x0; x < RAIL.x1; x += 8) addObj({ t: 'rail', x: x + 4, z: RAIL.z });
   { const U = UNDERPASS; addObj({ t: 'ubridge', x: U.x, z: U.z });
-    for (const sx of [-1, 1]) addCollider({ x0: U.x + sx * (U.half + 0.2) - 0.4, x1: U.x + sx * (U.half + 0.2) + 0.4, z0: U.z1 + 6, z1: U.z0 - 4, h: 1.2 }); } // retaining walls keep cars in the cutting
+    for (const sx of [-1, 1]) for (const [z0, z1] of [[U.z1 + 6, U.z - 3.6], [U.z + 3.6, U.z0 - 4]]) addCollider({ x0: U.x + sx * (U.half + 0.2) - 0.4, x1: U.x + sx * (U.half + 0.2) + 0.4, z0, z1, h: 1.2 }); } // retaining walls keep cars in the cutting (with a gap where the rail bridge crosses, so you can drive the tracks over it)
   for (const st of RAIL.stations) { addObj({ t: 'platform', x: st.x, z: RAIL.z + 4.4, name: st.name }); addCollider({ x0: st.x - 15, x1: st.x + 15, z0: RAIL.z + 2.4, z1: RAIL.z + 6.4, h: 0.45, top: 0.48 }); }
   // city blocks + street lamps
   for (const city of CITIES) {
