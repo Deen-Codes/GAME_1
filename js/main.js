@@ -1,25 +1,25 @@
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas } from './character.js?v=83';
-import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=83';
-import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=83';
-import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=83';
-import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=83';
-import { buildPanel, renderStats } from './ui.js?v=83';
-import { Input } from './input.js?v=83';
-import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime } from './audio.js?v=83';
-import { runMinigame } from './minigames.js?v=83';
-import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk } from './peds.js?v=83';
-import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=83';
-import { findRoute } from './nav.js?v=83';
-import { COURSES, CAREERS, QUIZ } from './careers.js?v=83';
-import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=83';
-import { attachWheel } from './wheel.js?v=83';
-import { Animals } from './animals.js?v=83';
-import { Talk } from './talk.js?v=83';
-import { svg, drawIcon } from './icons.js?v=83';
-import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=83';
-import { FURN, CATALOG } from './furniture.js?v=83';
-import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=83';
+import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas } from './character.js?v=84';
+import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=84';
+import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=84';
+import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=84';
+import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=84';
+import { buildPanel, renderStats } from './ui.js?v=84';
+import { Input } from './input.js?v=84';
+import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime } from './audio.js?v=84';
+import { runMinigame } from './minigames.js?v=84';
+import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk } from './peds.js?v=84';
+import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=84';
+import { findRoute } from './nav.js?v=84';
+import { COURSES, CAREERS, QUIZ } from './careers.js?v=84';
+import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=84';
+import { attachWheel } from './wheel.js?v=84';
+import { Animals } from './animals.js?v=84';
+import { Talk } from './talk.js?v=84';
+import { svg, drawIcon } from './icons.js?v=84';
+import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=84';
+import { FURN, CATALOG } from './furniture.js?v=84';
+import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=84';
 
 const $ = id => document.getElementById(id);
 let inside = null, editMode = false, held = null, pendingCar = false, homeMusic = false, phoneBadge = 0;
@@ -2108,7 +2108,7 @@ function makeMarker(x, z, icon, color, data, parent = G.scene) {
   if (!data.interior) markers.push(m);
   return m;
 }
-const PLACE_COLORS = { ride: '#ff6fb5', carny: '#ffd23f', stadium: '#2f80ed', marina: '#38e8ff', tattoo: '#ff5a8a', dealer: '#4cd964', clothes: '#ff6fb5', barber: '#38e8ff', game: '#ffd23f', chop: '#ff8a2a', race: '#ff3b4a', property: '#b26bff', guns: '#ff5a3c', venue: '#ffb35c', job: '#ffd23f', customer: '#7dff9a' };
+const PLACE_COLORS = { biz: '#ff8a2a', ride: '#ff6fb5', carny: '#ffd23f', stadium: '#2f80ed', marina: '#38e8ff', tattoo: '#ff5a8a', dealer: '#4cd964', clothes: '#ff6fb5', barber: '#38e8ff', game: '#ffd23f', chop: '#ff8a2a', race: '#ff3b4a', property: '#b26bff', guns: '#ff5a3c', venue: '#ffb35c', job: '#ffd23f', customer: '#7dff9a' };
 const NPC_ROLE = { dealer: 'dealer', job: 'dispatcher' };
 const npcs = [];
 PLACES.forEach((p, i) => {
@@ -2118,12 +2118,70 @@ PLACES.forEach((p, i) => {
   makeMarker(p.x, p.z, p.interior ? p.icon : p.icon, PLACE_COLORS[p.kind], { place: p, car: !!p.car, npc: outdoorNpc });
 });
 for (const p of PROPERTIES) p.marker = makeMarker(p.x, p.z, 'house', PLACE_COLORS.property, { place: { ...p, kind: 'property' } });
+// ================================================================ BUSINESSES you can buy: daily takings pile up in the till, go there to collect
+const BIZ = {
+  burger: { name: 'Bay Burger', price: 35000, base: 340, mgr: 'Dee', mgrFem: true, shift: true, pitch: 'Grill\'s hot, fries are crispy, and the owner\'s retiring to Florida.', upg: ['New neon sign', 'Second grill', 'Delivery bikes', 'Late-night hours'] },
+  laundry: { name: 'Suds Laundromat', price: 15000, base: 150, mgr: 'Mr Okafor', mgrFem: false, shift: false, pitch: 'Coin machines, steady money. Nobody gets rich, nobody goes broke.', upg: ['New dryers', 'Wi-Fi and coffee', 'Wash-and-fold service', 'Second shop front'] },
+  carwash: { name: 'Shine Hand Car Wash', price: 22000, base: 230, mgr: 'Javi', mgrFem: false, shift: false, pitch: 'Sunny days we\'re rammed. Rainy days... we sit about.', upg: ['Pressure washers', 'Wax and valet', 'Second bay', 'Detailing service'] },
+};
+const bizOf = k => (stats.biz ||= {})[k];
+const bizIncome = k => { const B = BIZ[k], b = bizOf(k); return Math.round(B.base * (0.55 + (b.rep ?? 50) / 100) * (1 + (b.upg || 0) * 0.2)); };
+function bizNewDay() {
+  const out = [];
+  for (const k in (stats.biz || {})) { const b = stats.biz[k], B = BIZ[k], P2 = PLACES.find(p => p.biz === k); if (!B || !P2) continue;
+    let inc = bizIncome(k); if (k === 'carwash' && wet > 0.3) inc = Math.round(inc * 0.35);
+    b.rep = clamp((b.rep ?? 50) + ((50 - (b.rep ?? 50)) * 0.05), 0, 100); // drifts back toward average if you never show up
+    const g = turfAt(P2.x, P2.z); // butterfly: on gang turf, they want their cut unless they respect you
+    if (g && gangRep(g) < 20 && Math.random() < 0.3) { const cut = Math.round(inc * 0.4); inc -= cut; b.taxed = (b.taxed || 0) + cut; out.push(`${B.mgr}: "${GANGS[g].name} came by for 'protection' again. Took ${fmt(cut)} out the till."`); }
+    else if (Math.random() < 0.05) { const lost = Math.round(Math.min(b.till || 0, inc * 2)); if (lost > 0) { b.till -= lost; out.push(`${B.mgr}: "We got broken into last night. They cleaned out ${fmt(lost)}. Police are useless."`); } }
+    b.till = Math.min((b.till || 0) + inc, bizIncome(k) * 7); b.days = (b.days || 0) + 1;
+    if (b.till >= bizIncome(k) * 7 && !b.fullWarn) { b.fullWarn = true; out.push(`${B.mgr}: "Boss, the safe's full. Come grab the takings before someone else does."`); }
+  }
+  out.forEach((t, i) => setTimeout(() => { const k = Object.keys(BIZ).find(q => t.startsWith(BIZ[q].mgr)); textMe('biz_' + k, BIZ[k].mgr, t.replace(/^[^:]+: "|"$/g, '')); }, 4000 + i * 2500));
+}
+function bizLook(B, seed) { return { ...npcCfg('clerk', seed), fem: B.mgrFem }; }
+async function openBiz(p) {
+  const k = p.biz, B = BIZ[k], b = bizOf(k), mine = !!b;
+  beginTalk(bizLook(B, k.length * 77), mine ? B.mgr : 'Mr Feld', mine ? `Manager · ${B.name}` : 'Owner · retiring', B.mgrFem && mine ? 230 : 150, null);
+  if (!mine) {
+    await talk.say(`${B.name}'s for sale. ${B.pitch} ${fmt(B.price)} and it's yours.`);
+    const k2 = await talk.choose([I('cash', `Buy it (${fmt(B.price)})`), I('chat', 'What does it make?'), I('x', 'Not today')]);
+    if (k2 === 1) { await talk.say(`Good week, about ${fmt(B.base)} a day after wages. Takings go in the safe; you come collect. Treat the place right and it grows.`); const k3 = await talk.choose([I('cash', `Buy it (${fmt(B.price)})`), I('x', 'I\'ll think about it')]); if (k3 !== 0) return endTalk(); }
+    else if (k2 !== 0) return endTalk();
+    if (money < B.price) { await talk.say('Come back when you\'ve got the money, kid.'); return endTalk(); }
+    spend(B.price); stats.biz[k] = { rep: 50, till: 0, upg: 0, days: 0 }; feed({ mood: 25 }); refreshBizSigns(); saveGame();
+    await talk.say(`Keys are yours. ${B.mgr} runs the floor, good worker. Look after the place.`); endTalk();
+    toast(`You own ${B.name}! Takings build up in the safe every day. Come back to collect.`, 3.5); return;
+  }
+  const till = Math.round(b.till || 0), lines = till > 0 ? [`Hey boss. Safe's got ${fmt(till)} in it.`, `Boss! ${fmt(till)} waiting for you.`] : ['Boss! Quiet one. Nothing in the safe yet.'];
+  await talk.say(pick(lines) + (b.rep > 70 ? ' Customers love us right now.' : b.rep < 35 ? ' Reviews have been rough, not gonna lie.' : ''));
+  for (;;) {
+    const opts = []; if (till > 0 && b.till > 0) opts.push(['collect', I('cash', `Collect ${fmt(Math.round(b.till))}`)]);
+    if (B.shift) opts.push(['shift', I('food', 'Work a shift on the grill')]);
+    if (k === 'laundry') opts.push(['wash', I('wave', 'Do your own laundry (free)')]);
+    if (k === 'carwash' && myCar) opts.push(['wash', I('car', 'Wash your car (free)')]);
+    if ((b.upg || 0) < B.upg.length) opts.push(['upg', I('wrench', `${B.upg[b.upg || 0]} (${fmt(5000 * ((b.upg || 0) + 1))}, more customers)`)]);
+    opts.push(['how', I('chat', 'How\'s business?')], ['bye', I('x', 'Leave')]);
+    const c = opts[await talk.choose(opts.map(o => o[1]))][0];
+    if (c === 'collect') { const a = Math.round(b.till); b.till = 0; b.fullWarn = false; addMoney(a); saveGame(); await talk.say(pick(['Counted twice. All there.', 'Don\'t spend it all at once.', 'There you go, boss.'])); continue; }
+    if (c === 'upg') { const cost = 5000 * ((b.upg || 0) + 1); if (money < cost) { await talk.say('We\'ll need the cash first, boss.'); continue; } spend(cost); const what = B.upg[b.upg || 0]; b.upg = (b.upg || 0) + 1; b.rep = clamp((b.rep ?? 50) + 8, 0, 100); saveGame(); await talk.say(`${what}! Customers are gonna notice. Should be about ${fmt(bizIncome(k))} a day now.`); continue; }
+    if (c === 'how') { await talk.say(`About ${fmt(bizIncome(k))} a day. ${b.rep > 70 ? 'People are queueing round the block.' : b.rep < 35 ? 'Few bad reviews. A good shift from you would help.' : 'Steady.'}${b.taxed ? ` The ${pick(Object.values(GANGS)).name.split(' ')[1]} keep taking a cut though. ${fmt(b.taxed)} so far.` : ''}`); continue; }
+    if (c === 'wash') { endTalk(); fade(() => { advanceTime(k === 'laundry' ? 1 : 0.3); if (k === 'laundry') { stats.hygiene = Math.min(100, (stats.hygiene ?? 80) + 15); feed({ mood: 3 }); toast('Fresh clothes. You smell like a meadow.', 2.4); } else { if (myCar) repairCar?.(myCar); toast('Your car\'s gleaming.', 2.2); } }); return; }
+    if (c === 'shift') { endTalk(); const r = await runMinigame('burger', { title: `${B.name} shift`, level: b.upg || 0, skin: charCfg.skin });
+      if (r.score || r.missed) { const pay = r.money || 0; addMoney(pay); b.rep = clamp((b.rep ?? 50) + r.score * 2.5 - (r.missed || 0) * 4, 0, 100); advanceTime(1.5); feed({ hunger: 10, energy: -10 }); saveGame();
+        toast(r.score >= 6 ? `Killer shift! ${r.score} orders out, ${fmt(pay)} in sales. Reviews are flying in.` : r.score ? `${r.score} orders served, ${fmt(pay)} taken.${r.missed ? ` ${r.missed} walked out, though.` : ''}` : 'Rough shift. People walked out hungry.', 3.4); }
+      return; }
+    break;
+  }
+  endTalk();
+}
+function refreshBizSigns() { for (const p of PLACES) if (p.biz && p.saleSign) p.saleSign.visible = !bizOf(p.biz); }
 // "For Sale" boards on the lawn of every home you don't own yet
 function saleTex(p) { const c = document.createElement('canvas'); c.width = 256; c.height = 192; const x = c.getContext('2d');
   x.fillStyle = '#ffffff'; x.fillRect(0, 0, 256, 192); x.fillStyle = '#c9302c'; x.fillRect(0, 0, 256, 70); x.fillStyle = '#ffffff'; x.font = 'bold 46px system-ui, sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText('FOR SALE', 128, 37);
-  x.fillStyle = '#16161b'; x.font = 'bold 40px system-ui, sans-serif'; let pr; try { pr = homePrice(p); } catch { pr = p.price; } x.fillText('$' + Math.round(pr).toLocaleString('en-US'), 128, 112); x.font = '24px system-ui, sans-serif'; x.fillStyle = '#5a5d66'; x.fillText('Bay Realty', 128, 160);
+  x.fillStyle = '#16161b'; x.font = 'bold 40px system-ui, sans-serif'; let pr; try { pr = p.biz ? BIZ[p.biz].price : homePrice(p); } catch { pr = p.price; } x.fillText('$' + Math.round(pr).toLocaleString('en-US'), 128, 112); x.font = '24px system-ui, sans-serif'; x.fillStyle = '#5a5d66'; x.fillText('Bay Realty', 128, 160);
   const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t; }
-for (const p of PROPERTIES) { if (p.starter) continue;
+for (const p of [...PROPERTIES, ...PLACES.filter(q => q.biz)]) { if (p.starter) continue;
   const g = new THREE.Group(), sx = p.x + 3.2, sz = p.z + 0.6; g.position.set(sx, cityAt(sx, sz, -6) ? 0.17 : groundH(sx, sz), sz); G.scene.add(g);
   evBox(g, 0.1, 1.9, 0.1, '#e8e8ea', -0.55, 0.95, 0); evBox(g, 1.3, 0.08, 0.08, '#e8e8ea', 0, 1.75, 0);
   const b = new THREE.Mesh(new THREE.PlaneGeometry(1.1, 0.82), new THREE.MeshStandardMaterial({ map: saleTex(p), side: THREE.DoubleSide })); b.position.set(0.05, 1.25, 0.02); b.rotation.x = -0.45; g.add(b); g.scale.setScalar(1.5);
@@ -2282,7 +2340,7 @@ function openStorage() {
 
 // ================================================================ ACTIONS (context button)
 let action = null;
-const VERB = { ride: 'Ride', carny: 'Play', stadium: 'Match', marina: 'Boats', tattoo: 'Get inked', dealer: 'Talk', clothes: 'Enter', barber: 'Enter', guns: 'Enter', venue: 'Enter', game: 'Play', chop: 'Sell car', mods: 'Customise', service: 'Repair', race: 'Race', property: 'View', job: 'Talk', customer: 'Talk' };
+const VERB = { biz: 'Talk', ride: 'Ride', carny: 'Play', stadium: 'Match', marina: 'Boats', tattoo: 'Get inked', dealer: 'Talk', clothes: 'Enter', barber: 'Enter', guns: 'Enter', venue: 'Enter', game: 'Play', chop: 'Sell car', mods: 'Customise', service: 'Repair', race: 'Race', property: 'View', job: 'Talk', customer: 'Talk' };
 const SPOT_VERB = s => s.label;
 function findAction() {
   if (P.dead) return null;
@@ -2356,6 +2414,7 @@ function openPlace(p) {
   else if (p.kind === 'mods') { if (!ride || !ride.personal) { toast('Bay Customs only works on your own cars. Drive one in.'); sfx.fail(); return; } ride.s.v = 0; openCustom('car'); }
   else if (p.kind === 'race') openRace(p);
   else if (p.kind === 'tattoo') openTattoo(p);
+  else if (p.kind === 'biz') openBiz(p);
   else if (p.kind === 'ride') openRide(p);
   else if (p.kind === 'carny') openCarny(p);
   else if (p.kind === 'stadium') openStadium(p);
@@ -5437,7 +5496,8 @@ function renderPhone() {
     $('phFind').onclick = () => { setWaypoint(myCar.s.x, myCar.s.z, 'My car'); closePhone(); };
   } else if (phoneApp === 'homes') {
     const f = fam(), hasFam = !!(f.partner?.livesIn || f.kids.length);
-    el.innerHTML = `${back}<h4>Homes</h4><p class="ph-hint">Live in a home, rent it out for daily income, or sell it. Your family lives in your family home. Storage: ${storage.length} item${storage.length === 1 ? '' : 's'}.</p>${PROPERTIES.filter(p => owned.has(p.id)).map(p => { const m = propMode(p.id), isFam = f.home === p.id, sell = p.price ? Math.round(p.price * 0.75) : 2000; return `<div class="ph-row col ${isFam ? 'on' : ''}"><span><b>${svg('house', 'sm')} ${p.name}</b><small>${isFam ? 'Family home' : m === 'rent' ? `Rented · +${fmt(p.income)}/day` : 'Vacant'}</small></span><small>${INTERIORS[p.home].name} · ${(homes[p.id] || []).length} items</small><span class="rowbtns">${!isFam ? `<button class="ph-mini" data-fam="${p.id}">Make family home</button>` : ''}${!isFam && p.income ? `<button class="ph-mini" data-rent="${p.id}">${m === 'rent' ? 'Stop renting' : 'Rent out'}</button>` : ''}<button class="ph-mini" data-go2="${p.id}">GPS</button>${!(isFam && hasFam) ? `<button class="ph-mini" data-sell="${p.id}">Sell ${fmt(sell)}</button>` : ''}</span></div>`; }).join('')}`;
+    el.innerHTML = `${back}<h4>Homes</h4><p class="ph-hint">Live in a home, rent it out for daily income, or sell it. Your family lives in your family home. Storage: ${storage.length} item${storage.length === 1 ? '' : 's'}.</p>${PROPERTIES.filter(p => owned.has(p.id)).map(p => { const m = propMode(p.id), isFam = f.home === p.id, sell = p.price ? Math.round(p.price * 0.75) : 2000; return `<div class="ph-row col ${isFam ? 'on' : ''}"><span><b>${svg('house', 'sm')} ${p.name}</b><small>${isFam ? 'Family home' : m === 'rent' ? `Rented · +${fmt(p.income)}/day` : 'Vacant'}</small></span><small>${INTERIORS[p.home].name} · ${(homes[p.id] || []).length} items</small><span class="rowbtns">${!isFam ? `<button class="ph-mini" data-fam="${p.id}">Make family home</button>` : ''}${!isFam && p.income ? `<button class="ph-mini" data-rent="${p.id}">${m === 'rent' ? 'Stop renting' : 'Rent out'}</button>` : ''}<button class="ph-mini" data-go2="${p.id}">GPS</button>${!(isFam && hasFam) ? `<button class="ph-mini" data-sell="${p.id}">Sell ${fmt(sell)}</button>` : ''}</span></div>`; }).join('')}<h4>Businesses</h4>${Object.keys(BIZ).map(k => { const B = BIZ[k], b = bizOf(k), pl = PLACES.find(q => q.biz === k); return `<div class="ph-row col ${b ? 'on' : ''}"><span><b>${svg(pl.icon, 'sm')} ${B.name}</b><small>${b ? `~${fmt(bizIncome(k))}/day · safe ${fmt(Math.round(b.till || 0))}` : `For sale · ${fmt(B.price)}`}</small></span><span class="rowbtns"><button class="ph-mini" data-go3="${pl.id}">GPS</button></span></div>`; }).join('')}`;
+    el.querySelectorAll('[data-go3]').forEach(b => b.onclick = () => { const p = PLACES.find(q => q.id === b.dataset.go3); setWaypoint(p.x, p.z, p.name); closePhone(); });
     el.querySelectorAll('[data-go2]').forEach(b => b.onclick = () => { const p = PROPERTIES.find(q => q.id === b.dataset.go2); setWaypoint(p.x, p.z, p.name); closePhone(); });
     el.querySelectorAll('[data-fam]').forEach(b => b.onclick = () => { const id = b.dataset.fam; if (inside?.prop?.id === id || inside?.prop?.id === f.home) { toast('Step outside first'); return; } f.home = id; stats.propMode[id] = 'live'; if (hasFam) toast(`Your family moved into ${PROPERTIES.find(q => q.id === id).name}.`, 3); saveGame(); renderPhone(); });
     el.querySelectorAll('[data-rent]').forEach(b => b.onclick = () => { const id = b.dataset.rent; if (inside?.prop?.id === id) { toast('Step outside first'); return; } stats.propMode[id] = propMode(id) === 'rent' ? 'vacant' : 'rent'; saveGame(); renderPhone(); });
@@ -5478,7 +5538,7 @@ function saveGame() {
   store.set('bc_save', save); store.set('bc_arsenal', arsenal); store.set('bc_cars', garage);
 }
 // auto-update: bookmarks and home-screen apps can hold on to an old copy. Check version.json (never cached) and reload once if newer.
-const BUILD = 83;
+const BUILD = 84;
 function checkUpdate() {
   fetch('version.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(j => {
     if (!(j.v > BUILD)) return;
@@ -5524,7 +5584,7 @@ function startGame() {
   placeVehicle(myCar);
   if (save?.inCar) enterVehicle(myCar, false);
   P.y = baseY(P.x, P.z); heroRoot.visible = !ride;
-  refreshPropertyMarkers();
+  refreshPropertyMarkers(); refreshBizSigns();
   for (const c of customers) attachCustomer(c);
   if (waypoint) setWaypoint(waypoint.x, waypoint.z, waypoint.label);
   loadBudget = 60; updateChunks(P.x, P.z, 2); loadBudget = 2;
@@ -5581,7 +5641,7 @@ function newDay() {
   { const B = body(); if (dayN - (B.lastGym || 0) > 3) B.muscle = clamp(B.muscle - 0.01, 0, 1); bodyCheck(); }
   if (stats.gymUntil && dayN >= stats.gymUntil && stats.gymAuto) { if (money >= 120) { spend(120); stats.gymUntil = dayN + 30; setTimeout(() => toast('Iron Temple membership renewed: $120 for 30 days.', 3), 1500); } else { stats.gymAuto = false; setTimeout(() => toast('Your Iron Temple membership lapsed. Not enough money to renew.', 3), 1500); } }
   const inc = PROPERTIES.filter(p => owned.has(p.id) && propMode(p.id) === 'rent').reduce((a, p) => a + p.income, 0);
-  famNewDay();
+  famNewDay(); bizNewDay();
   if (inc) { money += inc; floatMoney(inc); toast(`New day · property income +${fmt(inc)}`, 3.5); } else toast('New day · dealer prices changed', 3);
   phoneBadge++;
 }
@@ -5769,4 +5829,4 @@ function frame(now) {
 }
 startGame();
 requestAnimationFrame(frame);
-window.__game = { get animals() { return animals; }, crime, WANT, copCars, cops, pitFight, busted, fam, famNewDay, makeOfficial, talkFamily, get dayN() { return dayN; }, set dayN(v) { dayN = v; }, scene: G.scene, cam: G.cam, snap: () => updateCamera(0, true), get state() { return state; }, P, input, get ride() { return ride; }, get myCar() { return myCar; }, get traffic() { return traffic; }, peds, setTime: h => { clockH = h; }, openCustom, enterVehicle, exitCar, get money() { return money; }, set money(v) { money = v; }, openPlace, PLACES, PROPERTIES, runMinigame, get action() { return action; }, arsenal, selectWeapon, openPhone, setWaypoint, get route() { return route; }, talkToPed, talk, doAction, stats, get inside() { return inside; }, enterInterior, exitInterior, get customers() { return customers; }, newCustomer, startEdit, endEdit, get job() { return job; }, gainXP, storage, doSpot, useFurn, phoneGo, talkVenue, talkJob, openPlace, talkCustomer, startJob, openCarShop, damageCar, repairCar, addFire, get fires() { return fires; }, get ems() { return ems; }, get vehicles() { return vehicles; }, makeVehicle, makeCop, prisonFight, life, startDealMeet, get lifeAct() { return lifeAct; }, get train() { return train; }, get trainRide() { return trainRide; }, boardTrain, eventReset: () => { eventOpen = false; }, bodyCheck, attendClass, talkAdmissions, edu, startDance, get dance() { return dance; }, radioSet: i => { radioSet(i); radioOn(true); }, get zoom() { return zoom; }, set zoom(z) { zoom = z; }, DEFAULT_CAR, setState: x => setState(x), get jail() { return stats.jail; }, witness, personOf, dealHeat, trafficStop, carNear, carTop, startDate, talkDate, get date() { return date; }, get carAnim() { return carAnim; }, lifeApi, startShower, ev: { evChase, evMug, evRobbery, evGang, evBusk, evCrash, evFire, evMarket, evParade, evProtest, streetEvents } };
+window.__game = { get animals() { return animals; }, crime, WANT, copCars, cops, pitFight, busted, fam, famNewDay, makeOfficial, talkFamily, get dayN() { return dayN; }, set dayN(v) { dayN = v; }, scene: G.scene, cam: G.cam, snap: () => updateCamera(0, true), get state() { return state; }, P, input, get ride() { return ride; }, get myCar() { return myCar; }, get traffic() { return traffic; }, peds, setTime: h => { clockH = h; }, openCustom, enterVehicle, exitCar, get money() { return money; }, set money(v) { money = v; }, openPlace, PLACES, PROPERTIES, runMinigame, get action() { return action; }, arsenal, selectWeapon, openPhone, setWaypoint, get route() { return route; }, talkToPed, talk, doAction, stats, get inside() { return inside; }, enterInterior, exitInterior, get customers() { return customers; }, newCustomer, startEdit, endEdit, get job() { return job; }, gainXP, storage, doSpot, useFurn, phoneGo, talkVenue, talkJob, openPlace, talkCustomer, startJob, openCarShop, damageCar, repairCar, addFire, get fires() { return fires; }, get ems() { return ems; }, get vehicles() { return vehicles; }, makeVehicle, makeCop, prisonFight, life, startDealMeet, get lifeAct() { return lifeAct; }, get train() { return train; }, get trainRide() { return trainRide; }, boardTrain, eventReset: () => { eventOpen = false; }, bodyCheck, attendClass, talkAdmissions, edu, startDance, get dance() { return dance; }, radioSet: i => { radioSet(i); radioOn(true); }, get zoom() { return zoom; }, set zoom(z) { zoom = z; }, DEFAULT_CAR, setState: x => setState(x), get jail() { return stats.jail; }, witness, personOf, dealHeat, trafficStop, carNear, carTop, startDate, talkDate, get date() { return date; }, get carAnim() { return carAnim; }, lifeApi, startShower, bizNewDay, ev: { evChase, evMug, evRobbery, evGang, evBusk, evCrash, evFire, evMarket, evParade, evProtest, streetEvents } };

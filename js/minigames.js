@@ -1,9 +1,10 @@
 // Touch minigames in the spirit of Chinatown Wars. Each one draws on a 2D canvas overlay.
-import { sfx, audio } from './audio.js?v=83';
-import { drawIcon } from './icons.js?v=83';
+import { sfx, audio } from './audio.js?v=84';
+import { drawIcon } from './icons.js?v=84';
 
 const rnd = (a, b) => a + Math.random() * (b - a);
 const pick = a => a[Math.floor(Math.random() * a.length)];
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 function emoji(ctx, e, x, y, size) { ctx.fillStyle = '#000'; ctx.font = `${size}px "Apple Color Emoji","Segoe UI Emoji",sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(e, x, y); }
 function ballDraw(c, x, y, r) { c.fillStyle = '#e8762c'; c.beginPath(); c.arc(x, y, r, 0, 7); c.fill(); c.strokeStyle = '#3a1a08'; c.lineWidth = Math.max(1.5, r * 0.08); c.beginPath(); c.arc(x, y, r, 0, 7); c.moveTo(x - r, y); c.lineTo(x + r, y); c.moveTo(x, y - r); c.lineTo(x, y + r); c.stroke(); c.beginPath(); c.arc(x - r * 1.35, y, r * 0.95, -0.75, 0.75); c.stroke(); c.beginPath(); c.arc(x + r * 1.35, y, r * 0.95, Math.PI - 0.75, Math.PI + 0.75); c.stroke(); }
 function surfer(c, x, y, s) { c.save(); c.translate(x, y); c.fillStyle = '#ffd23f'; c.beginPath(); c.ellipse(0, s * 0.45, s * 0.75, s * 0.14, 0, 0, 7); c.fill(); c.fillStyle = '#1fb5a8'; c.fillRect(-s * 0.12, -s * 0.3, s * 0.24, s * 0.55); c.fillStyle = '#e8b088'; c.beginPath(); c.arc(0, -s * 0.45, s * 0.16, 0, 7); c.fill(); c.strokeStyle = '#e8b088'; c.lineWidth = s * 0.08; c.beginPath(); c.moveTo(-s * 0.1, -s * 0.2); c.lineTo(-s * 0.5, -s * 0.05); c.moveTo(s * 0.1, -s * 0.2); c.lineTo(s * 0.5, -s * 0.3); c.moveTo(-s * 0.08, s * 0.25); c.lineTo(-s * 0.22, s * 0.4); c.moveTo(s * 0.08, s * 0.25); c.lineTo(s * 0.22, s * 0.4); c.stroke(); c.restore(); }
@@ -470,6 +471,114 @@ const GAMES = {
         txt(c, `${score}`, W / 2, H * 0.06, 28, '#ffd23f'); if (combo > 4) txt(c, `combo x${combo}`, W / 2, H * 0.88, 16, '#fff');
       },
       result() { return { win: score > 10, score, money: score * 3 }; },
+    };
+  },
+
+  // ---------------------------------------------------------------- burger kitchen (your own shop): run between stations, Overcooked-style
+  burger: (o = {}) => {
+    let W, H, chef, hand = null, plate = [], grill = [null, null], fryer = null, orders = [], served = 0, earned = 0, tips = 0, missed = 0, pops = [], spawnT = 1, oid = 0, smoke = [];
+    const lvl = o.level || 0, RECIPES = [
+      { n: 'Burger', items: ['bun', 'patty'], pay: 8 },
+      { n: 'Cheeseburger', items: ['bun', 'patty', 'cheese'], pay: 10 },
+      { n: 'Deluxe', items: ['bun', 'patty', 'cheese', 'lettuce', 'tomato'], pay: 15 },
+      { n: 'Meal', items: ['bun', 'patty', 'cheese', 'fries'], pay: 16 },
+      { n: 'Fries', items: ['fries'], pay: 4 },
+    ];
+    const ST = {}; // stations: id -> {x,y,w,h,label}
+    const layout = () => {
+      const u = W / 10, top = H * 0.25, mid = H * 0.58;
+      const s = (id, x, y, w, h, label) => ST[id] = { id, x: x - w / 2, y: y - h / 2, w, h, cx: x, cy: y, label };
+      s('fridge', u * 1.4, top, u * 2.2, u * 1.6, 'Patties'); s('grill0', u * 4, top, u * 1.9, u * 1.6, 'Grill'); s('grill1', u * 6.1, top, u * 1.9, u * 1.6, 'Grill'); s('fryer', u * 8.6, top, u * 2.2, u * 1.6, 'Fryer');
+      s('bun', u * 1, mid - u * 2.1, u * 1.8, u * 1.6, 'Buns'); s('cheese', u * 1, mid, u * 1.8, u * 1.6, 'Cheese'); s('lettuce', u * 1, mid + u * 2.1, u * 1.8, u * 1.6, 'Lettuce');
+      s('tomato', u * 9, mid - u * 2.1, u * 1.8, u * 1.6, 'Tomato'); s('bin', u * 9, mid, u * 1.8, u * 1.6, 'Bin'); s('board', u * 5, mid, u * 3, u * 2.2, 'Board');
+      s('window', u * 5, H * 0.92, u * 5, u * 1.2, 'Serve');
+      chef = chef || { x: u * 5, y: H * 0.75, tx: u * 5, ty: H * 0.75, go: null };
+    };
+    const COOK = 3.6, BURN = 9, FRY = 3;
+    const newOrder = () => { const pool = RECIPES.slice(0, Math.min(RECIPES.length, 2 + Math.floor(served / 2) + lvl)); const r = pick(pool.concat(RECIPES[4])); const pat = 38 - Math.min(12, served) + r.items.length * 3; orders.push({ id: ++oid, r, t: pat, max: pat }); };
+    const pop = (s, col = '#5ee07a', x = chef.x, y = chef.y - 30) => pops.push({ s, col, x, y, l: 1 });
+    const same = (a, b) => a.length === b.length && [...a].sort().join() === [...b].sort().join();
+    const act = id => {
+      if (id === 'fridge') { if (!hand) { hand = 'raw'; sfx.click(); } else pop('Hands full!', '#ff6a74'); return; }
+      if (id === 'grill0' || id === 'grill1') { const k = +id[5], g = grill[k];
+        if (hand === 'raw' && !g) { grill[k] = { t: 0 }; hand = null; sfx.click(); return; }
+        if (!hand && g) { hand = g.t >= BURN ? 'burnt' : g.t >= COOK ? 'patty' : null; if (hand) { grill[k] = null; sfx.click(); } else pop('Not cooked yet', '#ffd23f'); return; }
+        pop(hand ? 'Grill is busy' : 'Grill is empty', '#ffd23f'); return; }
+      if (id === 'fryer') { if (!fryer && !hand) { fryer = { t: 0 }; sfx.click(); return; } if (fryer && !hand) { if (fryer.t >= FRY) { hand = 'fries'; fryer = null; sfx.click(); } else pop('Still frying', '#ffd23f'); return; } pop('Hands full!', '#ff6a74'); return; }
+      if (['bun', 'cheese', 'lettuce', 'tomato'].includes(id)) { if (!hand) { hand = id; sfx.click(); } else pop('Hands full!', '#ff6a74'); return; }
+      if (id === 'bin') { if (hand) { hand = null; sfx.fail(); pop('Binned', '#aaa'); } else if (plate.length) { plate = []; sfx.fail(); pop('Board cleared', '#aaa'); } return; }
+      if (id === 'board') {
+        if (hand === 'raw') { pop('Cook it first!', '#ff6a74'); return; }
+        if (hand === 'plate') { plate = hand2; hand = null; hand2 = null; return; }
+        if (hand) { if (plate.includes(hand)) { pop('Already on there', '#ffd23f'); return; } plate.push(hand); hand = null; sfx.click(); return; }
+        if (plate.length) { hand = 'plate'; hand2 = plate; plate = []; sfx.click(); } return; }
+      if (id === 'window') {
+        const items = hand === 'plate' ? hand2 : hand === 'fries' ? ['fries'] : null; if (!items) { pop('Bring a finished order', '#ffd23f'); return; }
+        if (items.includes('burnt')) { pop('Burnt! Customer refused', '#ff6a74'); hand = null; hand2 = null; sfx.fail(); return; }
+        const i = orders.findIndex(q => same(q.r.items, items));
+        if (i < 0) { pop('Nobody ordered that', '#ff6a74'); sfx.fail(); return; }
+        const q = orders[i], tip = Math.round(q.r.pay * 0.6 * q.t / q.max); orders.splice(i, 1); served++; earned += q.r.pay + tip; tips += tip; hand = null; hand2 = null;
+        pop(`+$${q.r.pay + tip}${tip ? ' (tip!)' : ''}`); sfx.coin(); bonusT += 3; return; }
+    };
+    let hand2 = null, bonusT = 0;
+    const ITEM_COL = { raw: '#e8798a', patty: '#7a4a2a', burnt: '#222', bun: '#e8b060', cheese: '#ffd23f', lettuce: '#5fbf4a', tomato: '#e23b3b', fries: '#ffcc33' };
+    const drawItem = (c, k, x, y, s) => {
+      c.save(); c.translate(x, y); c.strokeStyle = 'rgba(0,0,0,.35)'; c.lineWidth = 2; c.fillStyle = ITEM_COL[k] || '#fff';
+      if (k === 'bun') { c.beginPath(); c.ellipse(0, 0, s * 0.5, s * 0.3, 0, Math.PI, 0); c.closePath(); c.fill(); c.stroke(); c.fillStyle = '#fff6'; for (let i = 0; i < 3; i++) { c.beginPath(); c.arc(-s * 0.2 + i * s * 0.2, -s * 0.15, s * 0.03, 0, 7); c.fill(); } }
+      else if (k === 'raw' || k === 'patty' || k === 'burnt') { c.beginPath(); c.ellipse(0, 0, s * 0.46, s * 0.2, 0, 0, 7); c.fill(); c.stroke(); }
+      else if (k === 'cheese') { c.beginPath(); c.moveTo(-s * 0.4, -s * 0.15); c.lineTo(s * 0.4, -s * 0.15); c.lineTo(s * 0.3, s * 0.2); c.lineTo(-s * 0.3, s * 0.2); c.closePath(); c.fill(); c.stroke(); }
+      else if (k === 'lettuce') { c.beginPath(); for (let i = 0; i < 4; i++) c.arc(-s * 0.3 + i * s * 0.2, 0, s * 0.15, 0, 7); c.fill(); }
+      else if (k === 'tomato') { c.beginPath(); c.arc(0, 0, s * 0.28, 0, 7); c.fill(); c.stroke(); c.fillStyle = '#ff9a9a'; c.beginPath(); c.arc(0, 0, s * 0.14, 0, 7); c.fill(); }
+      else if (k === 'fries') { c.fillStyle = '#e23b3b'; c.fillRect(-s * 0.25, -s * 0.05, s * 0.5, s * 0.35); c.fillStyle = ITEM_COL.fries; for (let i = 0; i < 5; i++) c.fillRect(-s * 0.22 + i * s * 0.1, -s * 0.35 + (i % 2) * s * 0.06, s * 0.07, s * 0.32); }
+      c.restore(); };
+    const ORDER_STACK = ['tomato', 'lettuce', 'cheese', 'burnt', 'patty', 'bun'];
+    const drawStack = (c, items, x, y, s) => { const st = [...items].sort((a, b) => ORDER_STACK.indexOf(a) - ORDER_STACK.indexOf(b)); const burger = st.filter(k => k !== 'fries'); if (burger.length) { const bun = burger.includes('bun'); if (bun) drawItem(c, 'bun', x, y + s * 0.22, s); burger.filter(k => k !== 'bun').forEach((k, i) => drawItem(c, k, x, y + s * 0.1 - i * s * 0.14, s)); if (bun) { c.save(); c.translate(x, y - s * 0.12 - (burger.length - 1) * s * 0.14); c.scale(1, -1); drawItem(c, 'bun', 0, 0, s * 0.95); c.restore(); } } if (items.includes('fries')) drawItem(c, 'fries', x + (burger.length ? s * 0.55 : 0), y, s * 0.7); };
+    return {
+      title: o.title || 'Burger Rush', hint: 'Tap a station to run there. Cook patties on the grill (don\'t burn them!), build the order on the board, then serve it at the window.', time: 75,
+      init(w, h) { W = w; H = h; layout(); newOrder(); },
+      down(x, y) { for (const s of Object.values(ST)) if (x > s.x - 6 && x < s.x + s.w + 6 && y > s.y - 6 && y < s.y + s.h + 6) { chef.go = s.id; const ax = clamp(s.cx, W * 0.15, W * 0.85), ay = clamp(s.cy + (s.cy < H * 0.4 ? s.h * 0.9 : s.cy > H * 0.85 ? -s.h * 0.9 : 0), H * 0.3, H * 0.85); chef.tx = s.id === 'bun' || s.id === 'cheese' || s.id === 'lettuce' ? s.x + s.w + 18 : s.id === 'tomato' || s.id === 'bin' ? s.x - 18 : s.id === 'board' ? s.cx : ax; chef.ty = s.id === 'board' ? s.y + s.h + 18 : ay; return; } },
+      update(dt) {
+        const dx = chef.tx - chef.x, dy = chef.ty - chef.y, d = Math.hypot(dx, dy), sp = W * 1.1 * dt;
+        if (d > sp) { chef.x += dx / d * sp; chef.y += dy / d * sp; chef.walk = (chef.walk || 0) + dt * 14; } else { chef.x = chef.tx; chef.y = chef.ty; if (chef.go) { const g = chef.go; chef.go = null; act(g); } }
+        for (const g of grill) if (g) { g.t += dt; if (g.t > BURN && Math.random() < dt * 6) smoke.push({ x: 0, y: 0, l: 1, g }); }
+        if (fryer) fryer.t += dt;
+        grill.forEach((g, k) => { if (g && g.t >= COOK && g.t - dt < COOK) sfx.click(); });
+        spawnT -= dt; if (spawnT <= 0 && orders.length < 3) { newOrder(); spawnT = Math.max(6, 13 - served * 0.5); }
+        for (let i = orders.length - 1; i >= 0; i--) { orders[i].t -= dt; if (orders[i].t <= 0) { orders.splice(i, 1); missed++; pop('Customer walked out', '#ff6a74', W / 2, H * 0.16); sfx.fail(); } }
+        if (!orders.length && spawnT > 2) spawnT = 2;
+        for (const p of pops) { p.l -= dt; p.y -= dt * 30; } pops = pops.filter(p => p.l > 0);
+        const b = bonusT; bonusT = 0; return { addTime: b };
+      },
+      draw(c, t) {
+        c.fillStyle = '#2a2d36'; c.fillRect(0, H * 0.18, W, H * 0.82);
+        for (let i = 0; i < 12; i++) for (let j = 0; j < 14; j++) if ((i + j) % 2) { c.fillStyle = 'rgba(255,255,255,.03)'; c.fillRect(i * W / 10, H * 0.18 + j * W / 10, W / 10, W / 10); }
+        // orders
+        orders.forEach((q, i) => { const w = W * 0.3, x = W * 0.035 + i * (w + W * 0.02), y = H * 0.02, h = H * 0.14; rr(c, x, y, w, h, 10); c.fillStyle = '#fff4dc'; c.fill(); c.fillStyle = q.t / q.max < 0.3 ? '#ff3b4a' : q.t / q.max < 0.6 ? '#ffb020' : '#4cd964'; c.fillRect(x + 6, y + h - 9, (w - 12) * q.t / q.max, 5); txt(c, q.r.n, x + w / 2, y + 13, 11, '#8a5a35', 900); drawStack(c, q.r.items, x + w / 2, y + h * 0.55, Math.min(40, w * 0.4)); });
+        // stations
+        for (const s of Object.values(ST)) {
+          rr(c, s.x, s.y, s.w, s.h, 10); c.fillStyle = s.id === 'window' ? '#3a5fa0' : s.id === 'bin' ? '#3a3d45' : s.id.startsWith('grill') ? '#1a1a1e' : s.id === 'fryer' ? '#5a5d66' : s.id === 'board' ? '#c9a27a' : '#8a8e96'; c.fill(); c.strokeStyle = chef.go === s.id ? '#ffd23f' : 'rgba(255,255,255,.2)'; c.lineWidth = chef.go === s.id ? 3 : 1.5; c.stroke();
+          const sz = Math.min(s.w, s.h) * 0.8;
+          if (['bun', 'cheese', 'lettuce', 'tomato'].includes(s.id)) drawItem(c, s.id, s.cx, s.cy - 4, sz);
+          if (s.id === 'fridge') { drawItem(c, 'raw', s.cx - sz * 0.25, s.cy - 6, sz * 0.7); drawItem(c, 'raw', s.cx + sz * 0.25, s.cy - 2, sz * 0.7); }
+          if (s.id.startsWith('grill')) { const g = grill[+s.id[5]]; c.strokeStyle = '#444'; c.lineWidth = 2; for (let k = 1; k < 5; k++) { c.beginPath(); c.moveTo(s.x + 6, s.y + k * s.h / 5); c.lineTo(s.x + s.w - 6, s.y + k * s.h / 5); c.stroke(); }
+            if (g) { const k = g.t >= BURN ? 'burnt' : g.t >= COOK ? 'patty' : 'raw'; drawItem(c, k, s.cx, s.cy - 2, sz); const f = Math.min(1, g.t / COOK); c.fillStyle = g.t >= BURN ? '#ff3b4a' : g.t >= COOK ? '#4cd964' : '#ffb020'; c.fillRect(s.x + 6, s.y + s.h - 8, (s.w - 12) * (g.t >= COOK ? Math.min(1, (g.t - COOK) / (BURN - COOK)) : f), 4); if (g.t >= COOK && g.t < BURN && Math.floor(t * 4) % 2) txt(c, 'READY', s.cx, s.y - 8, 10, '#4cd964'); if (g.t > BURN - 2 && g.t < BURN) txt(c, '!!', s.cx + s.w / 2 - 8, s.y + 10, 14, '#ff3b4a'); } }
+          if (s.id === 'fryer') { c.fillStyle = '#c99a3a'; rr(c, s.x + 8, s.y + 8, s.w - 16, s.h - 16, 6); c.fill(); if (fryer) { drawItem(c, 'fries', s.cx, s.cy, sz * 0.8); c.fillStyle = fryer.t >= FRY ? '#4cd964' : '#ffb020'; c.fillRect(s.x + 6, s.y + s.h - 8, (s.w - 12) * Math.min(1, fryer.t / FRY), 4); } }
+          if (s.id === 'board' && plate.length) drawStack(c, plate, s.cx, s.cy, sz * 0.9);
+          if (s.id === 'bin') txt(c, '🗑', s.cx, s.cy - 4, sz * 0.6);
+          txt(c, s.label, s.cx, s.y + s.h - (s.id.startsWith('grill') || s.id === 'fryer' ? -12 : 10), 10, s.id === 'window' ? '#fff' : 'rgba(255,255,255,.75)', 800);
+        }
+        for (const sm of smoke) { sm.l -= 0.02; } smoke = smoke.filter(s => s.l > 0); grill.forEach((g, k) => { if (g && g.t > BURN) { const s = ST['grill' + k]; for (let i = 0; i < 3; i++) { c.fillStyle = `rgba(80,80,80,${0.35 - i * 0.1})`; c.beginPath(); c.arc(s.cx + Math.sin(t * 3 + i) * 8, s.y - 6 - ((t * 30 + i * 12) % 36), 7 + i * 3, 0, 7); c.fill(); } } });
+        // chef
+        const bob = Math.sin(chef.walk || 0) * 2; c.save(); c.translate(chef.x, chef.y + bob);
+        c.fillStyle = 'rgba(0,0,0,.3)'; c.beginPath(); c.ellipse(0, 16 - bob, 14, 5, 0, 0, 7); c.fill();
+        c.fillStyle = '#ffffff'; rr(c, -11, -6, 22, 20, 6); c.fill(); c.fillStyle = o.skin || '#c68642'; c.beginPath(); c.arc(0, -13, 9, 0, 7); c.fill(); c.fillStyle = '#ffffff'; rr(c, -8, -30, 16, 12, 4); c.fill(); c.fillRect(-10, -21, 20, 4);
+        if (hand) { if (hand === 'plate') { c.fillStyle = '#fff'; c.beginPath(); c.ellipse(0, -44, 18, 6, 0, 0, 7); c.fill(); drawStack(c, hand2 || [], 0, -50, 30); } else drawItem(c, hand, 0, -44, 26); }
+        c.restore();
+        for (const p of pops) { c.globalAlpha = Math.min(1, p.l * 2); txt(c, p.s, p.x, p.y, 15, p.col); c.globalAlpha = 1; }
+        txt(c, `Served ${served} · $${earned}${missed ? ` · ${missed} walked out` : ''}`, W / 2, H * 0.195, 13, '#ffd23f');
+      },
+      result() { return { win: served > 0, score: served, money: earned, tips, missed }; },
+      keepOnQuit: true,
     };
   },
 

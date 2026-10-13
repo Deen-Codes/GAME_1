@@ -1,5 +1,5 @@
 // Everything you can walk or drive up to: shops, barbers, property, dealers, minigames, chop shop, race.
-import { blockSide, attachDoor, addStructure } from './world.js?v=83';
+import { blockSide, attachDoor, addStructure } from './world.js?v=84';
 
 const S = (city, i, j, side) => blockSide(city, i, j, side);
 
@@ -46,6 +46,9 @@ export const PLACES = [
   { id: 'l_marina', kind: 'marina', name: 'Bay Marina', icon: 'wave', desc: 'Harbour cruises and boats for sale.', x: -239.5, z: 421 },
   { id: 't_rose', kind: 'tattoo', name: 'Needle & Rose Tattoo', icon: 'edit', desc: 'Tattoos, cover-ups and laser removal.', ...S('main', 2, 0, 's') },
   { id: 't_east', kind: 'tattoo', name: 'Eastport Ink', icon: 'edit', desc: 'Walk-ins welcome. Laser removal too.', ...S('east', 2, 0, 's') },
+  { id: 'z_burger', kind: 'biz', biz: 'burger', name: 'Bay Burger', icon: 'food', desc: 'A burger joint. For sale.', ...S('main', 1, 2, 's') },
+  { id: 'z_laundry', kind: 'biz', biz: 'laundry', name: 'Suds Laundromat', icon: 'wave', desc: 'Coin laundry. For sale.', ...S('east', -1, 1, 's') },
+  { id: 'z_carwash', kind: 'biz', biz: 'carwash', name: 'Shine Hand Car Wash', icon: 'car', desc: 'Hand car wash. For sale.', ...S('north', 1, 1, 's') },
   { id: 'g_club', kind: 'venue', interior: 'club', name: 'Neon Room Club', icon: 'music', ...S('main', -2, -1, 's') },
 
   // ---- outdoor activities & jobs
