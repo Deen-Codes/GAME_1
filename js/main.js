@@ -1,25 +1,25 @@
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA } from './character.js?v=41';
-import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=41';
-import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=41';
-import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide } from './world.js?v=41';
-import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=41';
-import { buildPanel, renderStats } from './ui.js?v=41';
-import { Input } from './input.js?v=41';
-import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime } from './audio.js?v=41';
-import { runMinigame } from './minigames.js?v=41';
-import { Peds, bakeCfg, figure, setWalk } from './peds.js?v=41';
-import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=41';
-import { findRoute } from './nav.js?v=41';
-import { COURSES, CAREERS, QUIZ } from './careers.js?v=41';
-import { EVENTS, EVENT_BY_ID } from './events.js?v=41';
-import { attachWheel } from './wheel.js?v=41';
-import { Animals } from './animals.js?v=41';
-import { Talk } from './talk.js?v=41';
-import { svg, drawIcon } from './icons.js?v=41';
-import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=41';
-import { FURN, CATALOG } from './furniture.js?v=41';
-import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE } from './interiors.js?v=41';
+import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA } from './character.js?v=42';
+import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=42';
+import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=42';
+import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide } from './world.js?v=42';
+import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=42';
+import { buildPanel, renderStats } from './ui.js?v=42';
+import { Input } from './input.js?v=42';
+import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime } from './audio.js?v=42';
+import { runMinigame } from './minigames.js?v=42';
+import { Peds, bakeCfg, figure, setWalk } from './peds.js?v=42';
+import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=42';
+import { findRoute } from './nav.js?v=42';
+import { COURSES, CAREERS, QUIZ } from './careers.js?v=42';
+import { EVENTS, EVENT_BY_ID } from './events.js?v=42';
+import { attachWheel } from './wheel.js?v=42';
+import { Animals } from './animals.js?v=42';
+import { Talk } from './talk.js?v=42';
+import { svg, drawIcon } from './icons.js?v=42';
+import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=42';
+import { FURN, CATALOG } from './furniture.js?v=42';
+import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE } from './interiors.js?v=42';
 
 const $ = id => document.getElementById(id);
 let inside = null, editMode = false, held = null, pendingCar = false, homeMusic = false, phoneBadge = 0;
@@ -1766,7 +1766,7 @@ function lifeArrive() {
 }
 function deliverEvent(ev, data) {
   const api = lifeApi(), who = ev.who ? ev.who(api, data) : {};
-  if (ev.via === 'thought') return runEventTalk(ev, data, { cfg: charCfg, name: 'You', tag: 'Thinking...', think: true });
+  if (ev.via === 'thought') return runEventTalk(ev, data, { cfg: charCfg, name: 'You', tag: ev.scene === 'car' ? 'Behind the wheel' : 'Thinking...', think: true, seat: ev.scene === 'car' });
   if (ev.via === 'call') {
     eventOpen = true; const A = audio(); if (A) for (let i = 0; i < 4; i++) sfx.note(i % 2 ? 1180 : 940, A.currentTime + i * 0.18, 0.15, 'square', 0.03, 3000);
     navigator.vibrate?.([200, 100, 200]); toast(`Phone ringing: ${who.name || 'Unknown'}`, 1.8);
@@ -1810,7 +1810,7 @@ function endLifePed(A2) { const p = A2.p; if (!p) return; peds.release?.(p); p.s
 function pickupObject() { const A2 = lifeAct; if (!A2 || A2.kind !== 'object') return; dyn.remove(A2.g); lifeAct = null; sfx.coin(); runEventTalk(A2.ev, A2.data, { cfg: charCfg, name: 'You', tag: 'Thinking...', think: true }); }
 async function runEventTalk(ev, data, spk, after) {
   const api = lifeApi(); eventOpen = true;
-  beginTalk(spk.cfg, spk.name, spk.tag, spk.think ? 200 : 160 + Math.random() * 120, null, null, null, spk.think);
+  beginTalk(spk.cfg, spk.name, spk.tag, spk.think ? 200 : 160 + Math.random() * 120, null, null, null, spk.think, !!spk.seat);
   const lines = [].concat(ev.text(api, data));
   for (const l of lines) await talk.say(l);
   const ch = ev.choices(api, data), k = await talk.choose(ch.map(c => I('chat', c.label)));
@@ -1869,7 +1869,7 @@ function setTalkRel(id) { const el = $('talkRel'); if (!id) { el.classList.add('
 
 // ================================================================ CONVERSATIONS
 function zoneBg(x, z) { if (inside) return 'interior'; if (onPier(x, z)) return 'pier'; const n = zoneName(x, z); return n === 'Bay Beach' ? 'beach' : n === 'Hidden Hills' || n === 'Countryside' || n === 'Farmland' ? 'hills' : n.includes('Airport') ? 'airport' : n === 'Eastport' || n === 'Northfield' ? 'suburb' : 'city'; }
-function beginTalk(cfg, name, tag, pitch, relId, pet = null, pose = null, think = false) { talk.layout(W, H); talk.begin({ npcCfg: cfg, youCfg: charCfg, name, tag, pitch, bg: zoneBg(P.x, P.z), night, pet, pose, think, wall: inside ? INTERIORS[inside.id].wall : null, floor: inside ? INTERIORS[inside.id].floor : null }); if (relId) relNames[relId] = name; setTalkRel(relId); setState('talk'); }
+function beginTalk(cfg, name, tag, pitch, relId, pet = null, pose = null, think = false, seat = false) { talk.layout(W, H); talk.begin({ npcCfg: cfg, youCfg: charCfg, name, tag, pitch, bg: zoneBg(P.x, P.z), night, pet, pose, think, seat, wall: inside ? INTERIORS[inside.id].wall : null, floor: inside ? INTERIORS[inside.id].floor : null }); if (relId) relNames[relId] = name; setTalkRel(relId); setState('talk'); }
 function endTalk() { talk.end(); setState('play'); }
 const I = (n, t) => `${svg(n, 'sm')} ${t}`;
 const DEALER_HI = { Stranger: ["Do I know you? ...What you need.", "Keep it quick, cops roll through here.", "New face. Prices are prices."], Known: ["You again. What you need?", "Ayy, back for more?"], Friendly: ["My guy! What we doing today?", "Good to see you. Fresh stock in."], Trusted: ["There's my best customer. I got you.", "For you? Always open."], Family: ["Family! Sit down, sit down.", "Anything you need, it's yours."] };
@@ -3816,7 +3816,7 @@ function saveGame() {
   store.set('bc_save', save); store.set('bc_arsenal', arsenal); store.set('bc_cars', garage);
 }
 // auto-update: bookmarks and home-screen apps can hold on to an old copy. Check version.json (never cached) and reload once if newer.
-const BUILD = 41;
+const BUILD = 42;
 function checkUpdate() {
   fetch('version.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(j => {
     if (!(j.v > BUILD)) return;
@@ -4105,4 +4105,4 @@ function frame(now) {
 }
 startGame();
 requestAnimationFrame(frame);
-window.__game = { get animals() { return animals; }, crime, WANT, copCars, cops, pitFight, busted, fam, famNewDay, makeOfficial, talkFamily, get dayN() { return dayN; }, set dayN(v) { dayN = v; }, scene: G.scene, cam: G.cam, snap: () => updateCamera(0, true), get state() { return state; }, P, input, get ride() { return ride; }, get myCar() { return myCar; }, get traffic() { return traffic; }, peds, setTime: h => { clockH = h; }, openCustom, enterVehicle, exitCar, get money() { return money; }, set money(v) { money = v; }, openPlace, PLACES, PROPERTIES, runMinigame, get action() { return action; }, arsenal, selectWeapon, openPhone, setWaypoint, get route() { return route; }, talkToPed, talk, doAction, stats, get inside() { return inside; }, enterInterior, exitInterior, get customers() { return customers; }, newCustomer, startEdit, endEdit, get job() { return job; }, gainXP, storage, doSpot, useFurn, phoneGo, talkVenue, talkJob, openPlace, talkCustomer, startJob, openCarShop, damageCar, repairCar, addFire, get fires() { return fires; }, get ems() { return ems; }, get vehicles() { return vehicles; }, makeVehicle, makeCop, prisonFight, life, bodyCheck, attendClass, talkAdmissions, edu, startDance, get dance() { return dance; }, radioSet: i => { radioSet(i); radioOn(true); }, get zoom() { return zoom; }, set zoom(z) { zoom = z; }, DEFAULT_CAR, setState: x => setState(x), get jail() { return stats.jail; } };
+window.__game = { get animals() { return animals; }, crime, WANT, copCars, cops, pitFight, busted, fam, famNewDay, makeOfficial, talkFamily, get dayN() { return dayN; }, set dayN(v) { dayN = v; }, scene: G.scene, cam: G.cam, snap: () => updateCamera(0, true), get state() { return state; }, P, input, get ride() { return ride; }, get myCar() { return myCar; }, get traffic() { return traffic; }, peds, setTime: h => { clockH = h; }, openCustom, enterVehicle, exitCar, get money() { return money; }, set money(v) { money = v; }, openPlace, PLACES, PROPERTIES, runMinigame, get action() { return action; }, arsenal, selectWeapon, openPhone, setWaypoint, get route() { return route; }, talkToPed, talk, doAction, stats, get inside() { return inside; }, enterInterior, exitInterior, get customers() { return customers; }, newCustomer, startEdit, endEdit, get job() { return job; }, gainXP, storage, doSpot, useFurn, phoneGo, talkVenue, talkJob, openPlace, talkCustomer, startJob, openCarShop, damageCar, repairCar, addFire, get fires() { return fires; }, get ems() { return ems; }, get vehicles() { return vehicles; }, makeVehicle, makeCop, prisonFight, life, eventReset: () => { eventOpen = false; }, bodyCheck, attendClass, talkAdmissions, edu, startDance, get dance() { return dance; }, radioSet: i => { radioSet(i); radioOn(true); }, get zoom() { return zoom; }, set zoom(z) { zoom = z; }, DEFAULT_CAR, setState: x => setState(x), get jail() { return stats.jail; } };
