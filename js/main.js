@@ -1,25 +1,25 @@
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA } from './character.js?v=54';
-import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=54';
-import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=54';
-import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=54';
-import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=54';
-import { buildPanel, renderStats } from './ui.js?v=54';
-import { Input } from './input.js?v=54';
-import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime } from './audio.js?v=54';
-import { runMinigame } from './minigames.js?v=54';
-import { Peds, bakeCfg, figure, setWalk } from './peds.js?v=54';
-import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=54';
-import { findRoute } from './nav.js?v=54';
-import { COURSES, CAREERS, QUIZ } from './careers.js?v=54';
-import { EVENTS, EVENT_BY_ID } from './events.js?v=54';
-import { attachWheel } from './wheel.js?v=54';
-import { Animals } from './animals.js?v=54';
-import { Talk } from './talk.js?v=54';
-import { svg, drawIcon } from './icons.js?v=54';
-import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=54';
-import { FURN, CATALOG } from './furniture.js?v=54';
-import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE } from './interiors.js?v=54';
+import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA } from './character.js?v=55';
+import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=55';
+import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=55';
+import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=55';
+import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=55';
+import { buildPanel, renderStats } from './ui.js?v=55';
+import { Input } from './input.js?v=55';
+import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime } from './audio.js?v=55';
+import { runMinigame } from './minigames.js?v=55';
+import { Peds, bakeCfg, figure, setWalk, setTownSource } from './peds.js?v=55';
+import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=55';
+import { findRoute } from './nav.js?v=55';
+import { COURSES, CAREERS, QUIZ } from './careers.js?v=55';
+import { EVENTS, EVENT_BY_ID } from './events.js?v=55';
+import { attachWheel } from './wheel.js?v=55';
+import { Animals } from './animals.js?v=55';
+import { Talk } from './talk.js?v=55';
+import { svg, drawIcon } from './icons.js?v=55';
+import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=55';
+import { FURN, CATALOG } from './furniture.js?v=55';
+import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE } from './interiors.js?v=55';
 
 const $ = id => document.getElementById(id);
 let inside = null, editMode = false, held = null, pendingCar = false, homeMusic = false, phoneBadge = 0;
@@ -586,7 +586,7 @@ function shoot(origin, aimAng) {
   am().mag--; P.recoil = Math.min(1, P.recoil + s.recoil * 0.5); shake = Math.max(shake, s.recoil * 0.1);
   flash(tmpV, (s.quiet ? 0.4 : 0.8) * (0.8 + s.dmg / 80), s.energy ? s.tracer : '#ffffff', s.quiet ? 3 : 8);
   sfx.shot(s.quiet, s.energy);
-  if (!s.quiet) { peds.scare(P.x, P.z, 26); crime(0.25); }
+  if (!s.quiet) { witness('gun'); peds.scare(P.x, P.z, 26); crime(0.25); }
   if (!s.energy) spawnParticles(tmpV.x, tmpV.y, tmpV.z, '#e6b422', 1, 2, 0.5, 0.05, 14);
 }
 function flash(pos, size, col, light) { P.flash = 0.05; muzzleFlash.position.copy(pos); muzzleFlash.scale.set(size, size, 1); muzzleFlash.material.color.set(col); muzzleLight.position.copy(pos); muzzleLight.intensity = light; }
@@ -600,7 +600,7 @@ function updateBullets(dt) {
       for (const t of traffic) if (Math.hypot(t.rx - b.x, t.rz - b.z) < 1.6 && b.y < 2) { dead = true; t.stun = 3; }
       if (!dead) for (const v of vehicles) if ((b.cop ? v === ride : v !== ride) && Math.hypot(v.s.x - b.x, v.s.z - b.z) < Math.max(1.2, v.b.length * 0.45) && b.y < 2) { dead = true; damageCar(v, 4, b.x, b.z); break; }
       for (const p of peds.list) if (p.state !== 'down' && Math.hypot(p.x - b.x, p.z - b.z) < 0.6) {
-        if (b.cop) continue; dead = true; const d = Math.hypot(b.vx, b.vz); if (peds.knock(p, b.vx / d, b.vz / d, 4)) { p.injured = true; p.t = 40; } crime(p.kind === 'cop' ? 2 : 1); peds.scare(p.x, p.z, 20); gainXP('gun_' + b.slot, 3);
+        if (b.cop) continue; dead = true; const d = Math.hypot(b.vx, b.vz); if (peds.knock(p, b.vx / d, b.vz / d, 4)) { p.injured = true; p.t = 40; } crime(p.kind === 'cop' ? 2 : 1); witness('gun', P.x, P.z, p); peds.scare(p.x, p.z, 20); gainXP('gun_' + b.slot, 3);
         spawnParticles(b.x, b.y, b.z, ['#ffffff', '#ffd23f'], 4, 2, 0.3, 0.08); if (Math.random() < 0.5) dropCash(p.x, p.z, 5 + Math.floor(Math.random() * 30)); break;
       }
       if (dead) {
@@ -681,7 +681,7 @@ function meleeHit(step = 0) {
     if (floored) { if (Math.random() < 0.35) dropCash(p.x, p.z, 5 + Math.floor(Math.random() * 30)); peds.scare(p.x, p.z, 12); }
     else if (!p.angry && p.kind !== 'cop' && p.kind !== 'homeless' && (p.brave ??= Math.random() < 0.45)) { p.angry = true; p.angryT = 14; p.name ??= pick(NPC_NAMES); toast(`${p.name} fights back!`, 1.4); }
     else if (!p.angry && p.kind !== 'cop') peds.flee(p, P.x, P.z);
-    if (p.kind === 'cop') crime(1.2); else crime(floored ? 0.45 : 0.2);
+    if (p.kind === 'cop') crime(1.2); else { crime(floored ? 0.45 : 0.2); witness('fight', P.x, P.z, p); }
     if (p.state === 'talk') peds.release(p);
   }
   for (const t of traffic) if (Math.hypot(t.rx - P.x, t.rz - P.z) < reach + 1.4) { t.stun = 2; t.honk = 0; hit = true; }
@@ -996,7 +996,7 @@ function jackTraffic(t) {
   driver.state = 'held'; driver.root.visible = false; driver.name = pick(NPC_NAMES);
   driver.brave = Math.random() < 0.4 + (night > 0.5 ? 0.1 : 0) - (ws.kind === 'gun' && !holstered() ? 0.3 : 0);
   carAnim = { type: 'jack', v, side, t: 0, from: { x: P.x, z: P.z }, door, d1: clamp(Math.hypot(door.x - P.x, door.z - P.z) / 6.5, 0.12, 0.5), d2: 0.75, d3: 0.5, driver };
-  peds.scare(t.rx, t.rz, 15); sfx.click(); gainXP('strength', 3); crime(0.8);
+  witness('jack', t.rx, t.rz, driver); peds.scare(t.rx, t.rz, 15); sfx.click(); gainXP('strength', 3); crime(0.8);
 }
 function holstered() { return arsenal.cur === 'fist' || !!P.holster; }
 // the driver you dragged out: brave ones try to get their car back, the rest run off
@@ -1189,7 +1189,7 @@ function updateVehicles(dt) {
     for (const o of vehicles) if (o !== v && (o.s.x - c.x) ** 2 + (o.s.z - c.z) ** 2 < 81) collideCars(v, o, spd);
     if (hit && spd > 7) damageCar(v, (spd - 6) * 1.6, c.x + fx * b.length * 0.5 * Math.sign(c.v || 1), c.z + fz * b.length * 0.5 * Math.sign(c.v || 1));
     if (hit) { if (spd > 9) { spawnParticles(c.x + fx * 2, 0.7, c.z + fz * 2, ['#ffd23f', '#ffffff', '#888'], 10, 5, 0.4, 0.1); shake = Math.max(shake, Math.min(0.6, spd / 40)); sfx.thud(); } if (driving && spd > 15) hurt((spd - 15) * 1.6); c.v *= -0.25; c.vx *= 0.2; c.vz *= 0.2; }
-    if ((driving || v.coast > 0) && spd > 4) for (const p of peds.list) if (Math.hypot(p.x - c.x, p.z - c.z) < r + 0.9 && peds.knock(p, c.vx / spd, c.vz / spd, spd * 0.8)) { sfx.thud(); c.v *= 0.85; if (spd > 9) { p.injured = true; p.t = 40; } if (driving) crime(p.kind === 'cop' ? 2 : 0.6); if (Math.random() < 0.4) dropCash(p.x, p.z, 5 + Math.floor(Math.random() * 25)); peds.scare(p.x, p.z, 20); }
+    if ((driving || v.coast > 0) && spd > 4) for (const p of peds.list) if (Math.hypot(p.x - c.x, p.z - c.z) < r + 0.9 && peds.knock(p, c.vx / spd, c.vz / spd, spd * 0.8)) { sfx.thud(); c.v *= 0.85; if (spd > 9) { p.injured = true; p.t = 40; } if (driving) { crime(p.kind === 'cop' ? 2 : 0.6); witness('runover', p.x, p.z, p); } if (Math.random() < 0.4) dropCash(p.x, p.z, 5 + Math.floor(Math.random() * 25)); peds.scare(p.x, p.z, 20); }
     if (c.braking && spd > 12) spawnParticles(c.x - fx * 1.8, 0.2, c.z - fz * 1.8, '#d8d8d8', 1, 1, 0.6, 0.35, -1);
     placeVehicle(v);
     b.group.rotation.z = b.two ? -c.steer * clamp(spd / 8, 0, 1) * 0.38 : clamp((-c.vx * fz + c.vz * fx) * 0.012, -0.08, 0.08);
@@ -2254,7 +2254,7 @@ async function talkHomeless(p) {
   let done = false;
   while (!done) {
     const c = await talk.choose([I('cash', 'Give $5'), I('cash', 'Give $20'), I('food', `Share a meal ${stats.groceries ? '' : '<small>(no groceries)</small>'}`), I('chat', 'How did you end up here?'), I('star', 'Know anything useful?'), I('x', 'Bye')]);
-    if (c === 0 || c === 1) { const a = c ? 20 : 5; if (money < a) { await talk.say("It's alright, friend. Looks like you're as broke as me."); continue; } spend(a); p.helped++; feed({ mood: c ? 10 : 5 }); gainXP('charm', c ? 12 : 4); bumpRel('street', c ? 2 : 1); await talk.say(c ? "Twenty?! God bless you. Seriously." : "Thank you. Means more than you know."); }
+    if (c === 0 || c === 1) { const a = c ? 20 : 5; if (money < a) { await talk.say("It's alright, friend. Looks like you're as broke as me."); continue; } spend(a); witness('kind', p.x, p.z); p.helped++; feed({ mood: c ? 10 : 5 }); gainXP('charm', c ? 12 : 4); bumpRel('street', c ? 2 : 1); await talk.say(c ? "Twenty?! God bless you. Seriously." : "Thank you. Means more than you know."); }
     else if (c === 2) { if (!stats.groceries) { await talk.say("That's kind, but you've got nothing on you. QuickMart sells groceries."); continue; } stats.groceries--; p.helped += 2; feed({ mood: 14 }); gainXP('charm', 15); await talk.say("A real meal... I haven't had one in days. Thank you."); }
     else if (c === 3) await talk.say(pick(["Lost my job at the docks, then the apartment. Happens faster than you'd think.", "Came out here for the sun. Stayed for the... well. The sun's still nice.", "Served two tours. Came home and nothing fit anymore.", "Long story. Bad landlord, worse luck."]));
     else if (c === 4) {
@@ -2323,13 +2323,14 @@ function crime(amt, x = P.x, z = P.z) {
 // drug deals: a cop who can see the deal calls it in; otherwise there's a small chance someone snitches later
 function dealHeat(x, z, value) {
   if (inside) return;
+  witness('deal', x, z);
   const seen = copSees(x, z);
   if (seen) { setTimeout(() => { crime(1.6, x, z); toast('A cop saw the deal!', 2.5); }, 400); return; }
   // a snitch has to be a real person who saw it: someone nearby with a clear view
   let wit = null, wd = 24;
   for (const p of peds.list) { if (p.state === 'down' || p.kind === 'cop' || p.kind === 'life' || p.kind === 'homeless' || p.custNpc) continue; const d = Math.hypot(p.x - x, p.z - z); if (d < wd && d > 2.5 && losClear(p.x, p.z, x, z)) { wd = d; wit = p; } }
   if (!wit) return;
-  const chance = 0.18 + Math.min(0.15, value / 15000) - (lvl('dealing') - 1) * 0.012;
+  const wp = wit.person, chance = (0.18 + Math.min(0.15, value / 15000) - (lvl('dealing') - 1) * 0.012) * (wp ? { straight: 1.6, normal: 1, edgy: 0.25 }[wp.att] : 1) + (wp && wp.rap <= -40 ? 0.3 : 0) - (wp && wp.rap >= 40 ? 1 : 0);
   if (Math.random() > chance) return;
   wit.name ??= pick(NPC_NAMES); wit.snitch = true; peds.flee(wit, x, z);
   toast(`${wit.name} saw the deal and is running off to call the cops! Stop them!`, 3.5);
@@ -2937,18 +2938,20 @@ const AGAIN = ['You already said that.', 'Is that your only move?', 'Okay, new m
 
 function socialInit(p, bg) {
   if (p.soc) return p.soc;
-  const keys = Object.keys(TOPICS).sort(() => Math.random() - 0.5);
-  const fem = lookIsFem(p.look);
-  p.interest ??= Math.floor(rand(0, 12)) + (bg === 'beach' ? 8 : 0) + (night > 0.5 ? 6 : 0);
-  return p.soc = { rap: Math.floor(rand(0, 10)), love: keys.slice(0, 2), hate: keys[2], known: [], used: {}, turns: 0, patience: Math.floor(rand(5, 9)), taken: fem && Math.random() < 0.3, saidTaken: false, respected: false, job: pick(JOBS_SAID), fem };
+  const keys = Object.keys(TOPICS).sort(() => Math.random() - 0.5), fem = lookIsFem(p.look);
+  const r = personOf(p) || { rap: Math.floor(rand(0, 8)), love: keys.slice(0, 2), hate: keys[2], known: [], taken: fem && Math.random() < 0.3, saidTaken: false, respected: false, job: pick(JOBS_SAID), att: 'normal', fem };
+  p.interest ??= r.int ?? Math.floor(rand(0, 12)) + (bg === 'beach' ? 8 : 0) + (night > 0.5 ? 6 : 0);
+  r.used = {}; r.turns = 0; r.patience = Math.floor(rand(5, 9)) + (r.met ? 2 : 0); r.met = true;
+  return p.soc = r;
 }
 function vibe(p) {
-  const s = p.soc, r = s.rap, a = p.interest;
-  const rw = r < 12 ? 'Guarded' : r < 30 ? 'Polite' : r < 55 ? 'Friendly' : r < 80 ? 'Warm' : 'Close';
+  const s = p.soc || p.person; if (!s) return '';
+  const r = s.rap, a = p.interest ?? 0;
+  const rw = opWord(r);
   const aw = !s.fem ? '' : a < 15 ? '' : a < 35 ? ' · curious' : a < 60 ? ' · into you' : ' · really into you';
   return `${rw}${aw}${s.taken && s.saidTaken ? ' · has a man' : ''}`;
 }
-function socTag(p) { $('talkTag').textContent = vibe(p); }
+function socTag(p) { const s = p.soc; s.rap = clamp(s.rap, -100, 100); if (p.person) { p.person.int = p.interest; p.person.seen = dayN; } $('talkTag').textContent = vibe(p); }
 // The more she likes you as a person, the better everything lands.
 function socChance(p, base) {
   const s = p.soc, b = body();
@@ -3058,6 +3061,74 @@ async function socialMove(p, mood, k, bg) {
   }
 }
 
+// ================================================================ TOWNSFOLK (everyone in the city has their own opinion of you)
+// A person is remembered once you talk to them or they see you do something. Opinion runs -100 (hates you) to 100 (close).
+// Each has an attitude: straight-laced people hate crime, edgy ones think dealing is cool, most are somewhere in between.
+// Known people keep turning up around town, and how they feel changes what they do: friends won't snitch, enemies will.
+const TOWN_MAX = 160, townLooks = {};
+const town = () => stats.town ||= {};
+const ATTITUDE = { straight: 'Straight-laced', normal: 'Easy-going', edgy: 'Street' };
+const WITNESS = {
+  deal: { straight: -14, normal: -5, edgy: 8, say: { good: ['Saw you doing business earlier. Respect.', 'You\'re the guy with the good stuff, right? Cool.'], bad: ['I saw you dealing on my street. Disgusting.', 'I know what you were doing earlier. Stay away from me.'] } },
+  fight: { straight: -10, normal: -6, edgy: 4, say: { good: ['Saw you scrap earlier. You can handle yourself.', 'That fight was mad, bro.'], bad: ['You\'re the one who was beating people up.', 'I saw you hit someone. What is wrong with you?'] } },
+  gun: { straight: -16, normal: -12, edgy: -2, say: { good: ['You were the one shooting? Crazy.'], bad: ['You were shooting in the street. People live here!', 'Gun nut. Get away from me.'] } },
+  rob: { straight: -18, normal: -12, edgy: -3, say: { good: ['Saw you shake someone down. Cold.'], bad: ['You rob people. I saw you.', 'Thief. I saw everything.'] } },
+  jack: { straight: -12, normal: -8, edgy: 3, say: { good: ['Saw you take that car. Smooth.'], bad: ['You stole that guy\'s car! I saw you!'] } },
+  runover: { straight: -18, normal: -14, edgy: -6, say: { good: [], bad: ['You ran someone over and drove off.', 'Maniac driver. I saw you.'] } },
+  kind: { straight: 7, normal: 5, edgy: 2, say: { good: ['Saw you help that guy out. That was decent of you.', 'You gave that man money. Not many people do that.'], bad: [] } },
+};
+function opWord(v) { return v <= -60 ? 'Hates you' : v <= -25 ? 'Dislikes you' : v < 0 ? 'Wary' : v < 12 ? 'Neutral' : v < 30 ? 'Polite' : v < 55 ? 'Friendly' : v < 80 ? 'Warm' : 'Close'; }
+const canKnow = p => p && ['city', 'beach', 'loose'].includes(p.kind) && p.look && !p.look.homeless;
+function personOf(p) {
+  if (p.person) return p.person;
+  if (!canKnow(p)) return null;
+  const T = town(), keys = Object.keys(TOPICS).sort(() => Math.random() - 0.5), fem = !!p.look.fem;
+  stats.townSeq = (stats.townSeq || 0) + 1;
+  const r = { id: 't' + stats.townSeq, name: p.name, fem, beach: !!p.look.beach, cfg: p.look.cfg, rap: Math.floor(rand(0, 8)), int: null, att: pick(['straight', 'straight', 'normal', 'normal', 'normal', 'edgy', 'edgy']), love: keys.slice(0, 2), hate: keys[2], known: [], taken: fem && Math.random() < 0.3, saidTaken: false, respected: false, job: pick(JOBS_SAID), met: false, seen: dayN, wit: null };
+  T[r.id] = r; townLooks[r.id] = { ...p.look, person: r }; p.person = r;
+  const all = Object.values(T);
+  if (all.length > TOWN_MAX) { all.sort((a, b) => (Math.abs(a.rap) + (a.met ? 30 : 0) + a.seen) - (Math.abs(b.rap) + (b.met ? 30 : 0) + b.seen)); for (const x of all.slice(0, all.length - TOWN_MAX)) { delete T[x.id]; delete townLooks[x.id]; } }
+  return r;
+}
+// people you know keep crossing your path
+setTownSource(beach => {
+  if (Math.random() > 0.2) return null;
+  const pool = Object.values(town()).filter(r => r.beach === beach && (r.met || Math.abs(r.rap) >= 8) && !peds.list.some(p => p.person === r));
+  if (!pool.length) return null;
+  const r = pick(pool); r.seen = dayN;
+  return townLooks[r.id] ||= { ...bakeCfg(r.cfg), beach: r.beach, fem: r.fem, person: r };
+});
+const REACT_TEX = {};
+const reacts = [];
+function react(p, good) {
+  const key = good ? 'g' : 'b', tex = REACT_TEX[key] ||= iconTex(good ? 'smile' : 'x', good ? 'rgba(47,191,85,.92)' : 'rgba(226,59,59,.92)', '#fff');
+  const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, depthWrite: false, transparent: true })); sp.scale.set(1.3, 1.3, 1);
+  sp.position.set(p.x, (p.h || 1.8) + 0.9, p.z); dyn.add(sp); reacts.push({ sp, t: 1.6, p });
+}
+function updateReacts(dt) { for (let i = reacts.length - 1; i >= 0; i--) { const r = reacts[i]; r.t -= dt; r.sp.position.set(r.p.x, (r.p.h || 1.8) + 0.9 + (1.6 - r.t) * 0.5, r.p.z); r.sp.material.opacity = Math.min(1, r.t * 2); if (r.t <= 0) { dyn.remove(r.sp); r.sp.material.dispose(); reacts.splice(i, 1); } } }
+function bumpPerson(r, d) { r.rap = clamp(r.rap + d, -100, 100); r.seen = dayN; }
+// everyone nearby with a clear view of what you just did forms an opinion
+function witness(kind, x = P.x, z = P.z, victim = null) {
+  if (inside) return;
+  const W = WITNESS[kind], now = time;
+  if (victim && canKnow(victim) && now - (victim.vicT || -99) > 10) { victim.vicT = now; const r = personOf(victim); bumpPerson(r, kind === 'kind' ? 12 : -35); r.wit = { k: kind, victim: true, d: dayN }; react(victim, kind === 'kind'); }
+  let shown = 0;
+  for (const p of peds.list) {
+    if (p === victim || !canKnow(p) || p.state === 'down') continue;
+    const d = Math.hypot(p.x - x, p.z - z); if (d > 24 || d < 0.5) continue;
+    p.witT ||= {}; if (now - (p.witT[kind] || -99) < 10) continue; p.witT[kind] = now;
+    if (d > 6 && !losClear(p.x, p.z, x, z)) continue;
+    const r = personOf(p), dv = W[r.att];
+    bumpPerson(r, dv); if (W.say[dv > 0 ? 'good' : 'bad'].length) r.wit = { k: kind, d: dayN };
+    if (shown++ < 5 && Math.abs(dv) >= 3) react(p, dv > 0);
+  }
+}
+
+function townHtml() {
+  const ppl = Object.values(stats.town || {}).filter(r => r.met || Math.abs(r.rap) >= 8).sort((a, b) => Math.abs(b.rap) - Math.abs(a.rap)).slice(0, 40);
+  if (!ppl.length) return '';
+  return `<div class="ph-sec">People around town</div><p class="ph-hint">What locals think of you. They remember what they see you do.</p>` + ppl.map(r => `<div class="ph-row col"><span><b>${r.name}</b> <small>${opWord(r.rap)}${r.met ? ' · ' + ATTITUDE[r.att] : ' · seen you around'}</small></span>${bar(Math.abs(r.rap), r.rap < 0 ? '#e23b3b' : '#2fbf55')}</div>`).join('');
+}
 function addDateContact(p) { stats.dates ||= {}; const id = 'date:' + p.name; stats.dates[id] = { name: p.name, cfg: p.look.cfg }; stats.rel[id] = Math.max(stats.rel[id] || 0, 20); relNames[id] = p.name; saveGame(); }
 function startDate(p) {
   peds.release(p); const i = peds.list.indexOf(p); if (i >= 0) peds.list.splice(i, 1); dyn.remove(p.root);
@@ -3179,7 +3250,23 @@ async function talkToPed(p) {
   p.chats ??= 0;
   const bg = zoneBg(p.x, p.z);
   beginTalk(p.look.cfg, p.name || 'Stranger', p.dog ? `${zoneName(p.x, p.z)} · walking the dog` : zoneName(p.x, p.z), lookIsFem(p.look) ? 300 + Math.random() * 120 : 140 + Math.random() * 120, null, p.dog ? (() => { const d = p.dog.root.clone(true); d.position.set(0, 0, 0); return d; })() : null);
-  await talk.say(pick(night > 0.5 && Math.random() < 0.5 ? PED_LINES.night : PED_LINES[bg] || PED_LINES.city));
+  const per = personOf(p);
+  if (per) {
+    $('talkTag').textContent = per.met || per.rap ? vibe(p) : zoneName(p.x, p.z);
+    const w = per.wit; per.wit = null;
+    if (w && w.d >= dayN - 2) {
+      const W = WITNESS[w.k];
+      await talk.say(w.victim ? (w.k === 'kind' ? 'You\'re the one who helped me. Thank you, honestly.' : pick(['YOU. You\'re the one who did that to me!', 'I remember your face. You\'ve got some nerve.'])) : pick(W.say[W[per.att] > 0 ? 'good' : 'bad']));
+    } else await talk.say(per.rap <= -60 ? pick(['Get away from me.', 'Not you again.']) : per.rap < 0 ? pick(['...What do you want?', 'Oh. It\'s you.']) : per.met && per.rap >= 55 ? pick(['Hey! Good to see you!', 'There they are! How you been?']) : per.met ? pick(['Oh hey, you again.', 'Hey, how\'s it going?']) : pick(night > 0.5 && Math.random() < 0.5 ? PED_LINES.night : PED_LINES[bg] || PED_LINES.city));
+    if (per.rap <= -60) {
+      if (!per.fem && per.rap <= -80 && Math.random() < 0.35) { endTalk(); peds.release(p); p.angry = true; p.angryT = 14; toast(`${p.first || p.name} wants to fight you!`, 2); return; }
+      const k = await talk.choose([I('hand', 'I\'m sorry about before'), I('x', 'Whatever')]);
+      if (k === 0 && per.sorry !== dayN) { per.sorry = dayN; bumpPerson(per, 10 + lvl('charm')); await talk.say(pick(['...Fine. But I\'m watching you.', 'Words are cheap. We\'ll see.'])); }
+      else await talk.say(k === 0 ? 'You said that already.' : 'Yeah. Whatever.');
+      endTalk(); peds.release(p); return;
+    }
+  } else await talk.say(pick(night > 0.5 && Math.random() < 0.5 ? PED_LINES.night : PED_LINES[bg] || PED_LINES.city));
+  if (per) p.buyer = p.buyer && per.att !== 'straight' || (per.att === 'edgy' && per.rap >= 20);
   let done = false;
   while (!done) {
     const have = GOODS.filter(g => stash[g.id] > 0);
@@ -3190,11 +3277,11 @@ async function talkToPed(p) {
     if (c === 'chat') { const r = await socialTalk(p, bg); $('talkTag').textContent = vibe(p); if (r === 'date') { endTalk(); return; } if (r === 'left') { endTalk(); peds.release(p); peds.flee(p, P.x, P.z); return; } if (r === 'done') break; continue; }
     if (c === 'sell') {
       await talk.say("Psst. You looking for something?", 'you');
-      if (!p.buyer) { await talk.say(pick(["What? No! Get away from me!", "I'm calling my mom.", "Not interested, weirdo."])); peds.release(p); peds.flee(p, P.x, P.z); endTalk(); return; }
+      if (!p.buyer) { if (per) bumpPerson(per, per.att === 'straight' ? -20 : -6); await talk.say(pick(["What? No! Get away from me!", "I'm calling my mom.", "Not interested, weirdo."])); peds.release(p); peds.flee(p, P.x, P.z); endTalk(); return; }
       const g = pick(have), n = Math.min(stash[g.id], 1 + Math.floor(Math.random() * (2 + lvl('dealing') / 3))), price = Math.round(g.base * rand(1.15, 1.6) * (1 + (lvl('charm') - 1) * 0.02)) * n;
       await talk.say(`...Maybe. I'll give you ${fmt(price)} for ${n} ${g.name}.`);
       const k = await talk.choose([I('check', 'Deal'), I('x', 'No way')]);
-      if (k === 0) { stash[g.id] -= n; addMoney(price); gainXP('dealing', Math.round(price / 40)); bumpRel('street', 2); await talk.say(pick(["Pleasure. We never met.", "Sweet. Later."])); p.buyer = false; done = true; }
+      if (k === 0) { stash[g.id] -= n; addMoney(price); gainXP('dealing', Math.round(price / 40)); bumpRel('street', 2); if (per) bumpPerson(per, 6); p.custNpc = true; dealHeat(p.x, p.z, price); p.custNpc = false; await talk.say(pick(["Pleasure. We never met.", "Sweet. Later."])); p.buyer = false; done = true; }
       else await talk.say('Your loss.');
     }
     else if (c === 'rob') {
@@ -3203,7 +3290,7 @@ async function talkToPed(p) {
       if (fight) { await talk.say("Ha! With what, your fists? Get lost!"); peds.release(p); endTalk(); hurt(12); return; }
       const amt = 20 + Math.floor(Math.random() * 110);
       await talk.say(pick(["Okay okay! Take it! Don't hurt me!", "Seriously?! Fine!", "This city, man..."]));
-      endTalk(); peds.release(p); dropCash(p.x, p.z, amt); peds.flee(p, P.x, P.z); peds.scare(P.x, P.z, 16); feed({ mood: -2 }); crime(0.8); return;
+      endTalk(); peds.release(p); dropCash(p.x, p.z, amt); peds.flee(p, P.x, P.z); peds.scare(P.x, P.z, 16); feed({ mood: -2 }); crime(0.8); witness('rob', p.x, p.z, p); return;
     }
     else { await talk.say(pick(['See ya.', 'Take care!', 'Bye.'])); done = true; }
   }
@@ -4066,7 +4153,7 @@ function renderPhone() {
     el.querySelectorAll('[data-wp]').forEach(b => b.onclick = () => { const m = ms[+b.dataset.wp]; setWaypoint(m.at.x, m.at.z, m.at.name); toast(m.at.name); closePhone(); });
   } else if (phoneApp === 'contacts') {
     const people = Object.entries(stats.rel).filter(([, v]) => v > 0).sort((a, b) => b[1] - a[1]);
-    el.innerHTML = `${back}<h4>Contacts</h4><p class="ph-hint">Relationships grow when you trade, chat and spend time with people. Friends give better prices, tips and texts.</p>${people.length ? people.map(([id, v]) => { const p = PLACES.find(q => q.id === id); const dt8 = stats.dates?.[id]; return `<div class="ph-row col"><span><b>${dt8?.name || relNames[id] || p?.npcName || (id === 'street' ? 'Street rep' : nameFor(id))}</b> <small>${p ? p.name : id === 'street' ? 'Your customers' : (dt8 ? 'Dating' : id.split(':')[0].replace(/^[a-z]_/, ''))}</small></span>${bar(v, '#ff6fb5')}<small>${relName(v)} · ${Math.round(v)}</small>${p ? `<button class="ph-mini" data-wp="${id}">${svg('pin', 'sm')} Find</button>` : ''}${dt8 && !date ? `<button class="ph-mini" data-call="${id}">${svg('heart', 'sm')} Ask her out</button>` : ''}</div>`; }).join('') : '<p class="ph-hint">No contacts yet. Go talk to people!</p>'}`;
+    el.innerHTML = `${back}<h4>Contacts</h4><p class="ph-hint">Relationships grow when you trade, chat and spend time with people. Friends give better prices, tips and texts.</p>${people.length ? people.map(([id, v]) => { const p = PLACES.find(q => q.id === id); const dt8 = stats.dates?.[id]; return `<div class="ph-row col"><span><b>${dt8?.name || relNames[id] || p?.npcName || (id === 'street' ? 'Street rep' : nameFor(id))}</b> <small>${p ? p.name : id === 'street' ? 'Your customers' : (dt8 ? 'Dating' : id.split(':')[0].replace(/^[a-z]_/, ''))}</small></span>${bar(v, '#ff6fb5')}<small>${relName(v)} · ${Math.round(v)}</small>${p ? `<button class="ph-mini" data-wp="${id}">${svg('pin', 'sm')} Find</button>` : ''}${dt8 && !date ? `<button class="ph-mini" data-call="${id}">${svg('heart', 'sm')} Ask her out</button>` : ''}</div>`; }).join('') : '<p class="ph-hint">No contacts yet. Go talk to people!</p>'}${townHtml()}`;
     el.querySelectorAll('[data-wp]').forEach(b => b.onclick = () => { const p = PLACES.find(q => q.id === b.dataset.wp); setWaypoint(p.x, p.z, p.name); closePhone(); });
     el.querySelectorAll('[data-call]').forEach(b => b.onclick = () => { const id = b.dataset.call, d = stats.dates[id], r = rel(id); closePhone(); if (r < 30 && Math.random() < 0.5) { toast(`${d.name}: "Sorry, busy tonight!"`, 3); bumpRel(id, 2); return; } toast(`${d.name}: "Omw! Where are you?"`, 3); setTimeout(() => { if (date || inside) return; const look = { ...bakeCfg(d.cfg), fem: true }, a = rand(0, 6.28); startDate({ name: d.name, look, x: P.x + Math.sin(a) * 20, z: P.z + Math.cos(a) * 20, face: 0, interest: 40 + r * 0.6, root: new THREE.Group() }); }, 4000); });
   } else if (phoneApp === 'me') {
@@ -4159,7 +4246,7 @@ function saveGame() {
   store.set('bc_save', save); store.set('bc_arsenal', arsenal); store.set('bc_cars', garage);
 }
 // auto-update: bookmarks and home-screen apps can hold on to an old copy. Check version.json (never cached) and reload once if newer.
-const BUILD = 54;
+const BUILD = 55;
 function checkUpdate() {
   fetch('version.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(j => {
     if (!(j.v > BUILD)) return;
@@ -4282,7 +4369,7 @@ function step(dt) {
     updateNpcList(npcs, dt); updateFlyer(dt);
   } else { updateNpcList(inside.npcs, dt); if (inside.id === 'prison') { peds.update(dt, P.x, P.z, null, false); updateAngry(dt); updateBrawl(dt); if (inside.h.upper?.length) { const o = P.y < 2 ? 0.16 : 1; if (inside.fadeO !== o) { inside.fadeO = o; inside.h.fadeUpper(o); } } } }
   lifeTick(dt); updateDate(dt); famTexts(dt); updateFx(dt); updatePolice(dt); updatePrison(dt); updateFarm(dt); updateTrain(dt); if (!inside) updateEmergency(dt);
-  updateBullets(dt); updateProjectiles(dt); updateParticles(dt); updateCash(dt); updateMarkers(); updateRace(dt); updateRoute(dt); updateCustomers(dt); updateJob(dt);
+  updateBullets(dt); updateProjectiles(dt); updateParticles(dt); updateCash(dt); updateMarkers(); updateRace(dt); updateRoute(dt); updateCustomers(dt); updateReacts(dt); updateJob(dt);
   if (input.consume('map') || input.consume('pause')) openPhone('maps');
   for (let i = 1; i <= 9; i++) if (input.keys.has('Digit' + i)) { input.keys.delete('Digit' + i); selectWeapon(SLOTS[i - 1].id); }
   if (input.keys.has('KeyH')) { input.keys.delete('KeyH'); holsterToggle(); }
@@ -4448,4 +4535,4 @@ function frame(now) {
 }
 startGame();
 requestAnimationFrame(frame);
-window.__game = { get animals() { return animals; }, crime, WANT, copCars, cops, pitFight, busted, fam, famNewDay, makeOfficial, talkFamily, get dayN() { return dayN; }, set dayN(v) { dayN = v; }, scene: G.scene, cam: G.cam, snap: () => updateCamera(0, true), get state() { return state; }, P, input, get ride() { return ride; }, get myCar() { return myCar; }, get traffic() { return traffic; }, peds, setTime: h => { clockH = h; }, openCustom, enterVehicle, exitCar, get money() { return money; }, set money(v) { money = v; }, openPlace, PLACES, PROPERTIES, runMinigame, get action() { return action; }, arsenal, selectWeapon, openPhone, setWaypoint, get route() { return route; }, talkToPed, talk, doAction, stats, get inside() { return inside; }, enterInterior, exitInterior, get customers() { return customers; }, newCustomer, startEdit, endEdit, get job() { return job; }, gainXP, storage, doSpot, useFurn, phoneGo, talkVenue, talkJob, openPlace, talkCustomer, startJob, openCarShop, damageCar, repairCar, addFire, get fires() { return fires; }, get ems() { return ems; }, get vehicles() { return vehicles; }, makeVehicle, makeCop, prisonFight, life, startDealMeet, get lifeAct() { return lifeAct; }, get train() { return train; }, get trainRide() { return trainRide; }, boardTrain, eventReset: () => { eventOpen = false; }, bodyCheck, attendClass, talkAdmissions, edu, startDance, get dance() { return dance; }, radioSet: i => { radioSet(i); radioOn(true); }, get zoom() { return zoom; }, set zoom(z) { zoom = z; }, DEFAULT_CAR, setState: x => setState(x), get jail() { return stats.jail; } };
+window.__game = { get animals() { return animals; }, crime, WANT, copCars, cops, pitFight, busted, fam, famNewDay, makeOfficial, talkFamily, get dayN() { return dayN; }, set dayN(v) { dayN = v; }, scene: G.scene, cam: G.cam, snap: () => updateCamera(0, true), get state() { return state; }, P, input, get ride() { return ride; }, get myCar() { return myCar; }, get traffic() { return traffic; }, peds, setTime: h => { clockH = h; }, openCustom, enterVehicle, exitCar, get money() { return money; }, set money(v) { money = v; }, openPlace, PLACES, PROPERTIES, runMinigame, get action() { return action; }, arsenal, selectWeapon, openPhone, setWaypoint, get route() { return route; }, talkToPed, talk, doAction, stats, get inside() { return inside; }, enterInterior, exitInterior, get customers() { return customers; }, newCustomer, startEdit, endEdit, get job() { return job; }, gainXP, storage, doSpot, useFurn, phoneGo, talkVenue, talkJob, openPlace, talkCustomer, startJob, openCarShop, damageCar, repairCar, addFire, get fires() { return fires; }, get ems() { return ems; }, get vehicles() { return vehicles; }, makeVehicle, makeCop, prisonFight, life, startDealMeet, get lifeAct() { return lifeAct; }, get train() { return train; }, get trainRide() { return trainRide; }, boardTrain, eventReset: () => { eventOpen = false; }, bodyCheck, attendClass, talkAdmissions, edu, startDance, get dance() { return dance; }, radioSet: i => { radioSet(i); radioOn(true); }, get zoom() { return zoom; }, set zoom(z) { zoom = z; }, DEFAULT_CAR, setState: x => setState(x), get jail() { return stats.jail; }, witness, personOf, dealHeat };

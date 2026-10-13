@@ -1,7 +1,7 @@
 // Pedestrians: baked low-poly people who stroll sidewalks, wander the beach, flee from trouble.
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, randomChar, disposeObject } from './character.js?v=54';
-import { CITIES, sandLine, shoreLine, groundH, walkable as worldWalkable, resolve } from './world.js?v=54';
+import { buildCharacter, randomChar, disposeObject } from './character.js?v=55';
+import { CITIES, sandLine, shoreLine, groundH, walkable as worldWalkable, resolve } from './world.js?v=55';
 // interiors swap in their own floor test so brawlers can move around inside
 let walkable = worldWalkable; export function setWalk(fn) { walkable = fn || worldWalkable; }
 
@@ -84,7 +84,9 @@ function homelessLook() {
 function ensureLooks() { if (LOOKS.length) return; for (let i = 0; i < 12; i++) LOOKS.push(makeLook(false, i % 2 === 0)); for (let i = 0; i < 8; i++) LOOKS.push(makeLook(true, i % 2 === 0)); for (let i = 0; i < 3; i++) LOOKS.push(homelessLook()); }
 const cityLooks = () => LOOKS.filter(l => !l.beach && !l.homeless);
 // keep inventing new people: most spawns get a brand-new look (face, body, hair, clothes) until there are 200 of them
+let townSource = null; export function setTownSource(fn) { townSource = fn; }
 function freshLook(beach) {
+  const known = townSource?.(beach); if (known) return known;
   const pool = LOOKS.filter(l => !l.homeless && !!l.beach === beach);
   if (LOOKS.length < 200 && (Math.random() < 0.7 || pool.length < 6)) { const l = makeLook(beach, Math.random() < 0.5); LOOKS.push(l); return l; }
   return pick(pool);
@@ -111,7 +113,7 @@ export class Peds {
     const body = new THREE.Mesh(look.body, MAT); body.castShadow = true; inner.add(body);
     const limbs = look.parts.map(p => { const g = new THREE.Group(); g.position.copy(p.pos); const m = new THREE.Mesh(p.geo, MAT); m.castShadow = true; g.add(m); inner.add(g); return g; });
     this.parent.add(root);
-    return { root, inner, limbs, phase: Math.random() * 6, face: 0, speed: rand(1.1, 1.7), state: 'walk', t: 0, h: look.h, look, name: personName(look.fem) };
+    return { root, inner, limbs, phase: Math.random() * 6, face: 0, speed: rand(1.1, 1.7), state: 'walk', t: 0, h: look.h, look, name: look.person ? look.person.name : personName(look.fem), person: look.person || null };
   }
   spawnCity(c, px, pz) {
     for (let k = 0; k < 10; k++) {
