@@ -278,3 +278,17 @@ function playStep(S, t, bar, pos, sp) {
       break;
   }
 }
+// ---------------- dance floor: play one random song from a random music station, report its timing
+let danceSave = null;
+export function audioTime() { return A ? A.currentTime : 0; }
+export function danceStart() {
+  if (!audio()) return null;
+  danceSave = { on: radio.on, station: radio.station };
+  const opts = STATIONS.map((s, i) => i).filter(i => STATIONS[i].songs && STATIONS[i].style !== 'classical'), si = opts[Math.floor(Math.random() * opts.length)], st = STATIONS[si];
+  stopTalk(); radio.station = si; radio.song = st.songs[Math.floor(Math.random() * st.songs.length)]; radio.step = 0; radio.hadSong = false;
+  radio.on = true; radio.next = A.currentTime + 0.8; if (rbus) rbus.gain.setTargetAtTime(0.95, A.currentTime, 0.05);
+  return { song: radio.song, station: st.name, t0: radio.next, spb16: 60 / radio.song.bpm / 4 };
+}
+export function danceStop() {
+  if (!danceSave) return; radio.song = null; radio.station = danceSave.station; radio.step = 0; radioOn(danceSave.on); danceSave = null;
+}

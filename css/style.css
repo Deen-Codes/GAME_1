@@ -387,3 +387,8 @@ input[type=text] { width: 100%; padding: 10px 12px; border-radius: 10px; border:
 #jailCut b { display: block; font-size: 28px; font-weight: 900; color: #ff8a2a; }
 #jailCut i { display: block; font-style: normal; margin-top: 10px; font-size: 22px; font-weight: 900; color: #fff; font-variant-numeric: tabular-nums; }
 #jailCut span { display: block; margin-top: 10px; color: var(--dim); font-size: 14px; font-weight: 700; line-height: 1.35; }
+
+/* dance floor overlay */
+#danceUI { position: fixed; inset: 0; z-index: 7; }
+#danceCv { position: absolute; inset: 0; width: 100%; height: 100%; touch-action: none; }
+#danceQuit { position: absolute; right: calc(14px + var(--sar)); top: calc(var(--sat) + 160px); }

@@ -151,6 +151,9 @@ Walk into shops, venues and homes:
 - Lifting builds visible muscle (shoulders, arms, chest). Muscle fades if you skip the gym for days.
 - Junk food (burgers, fries, shakes, pancakes) adds visible fat, worse if you eat when already full. Salads, home cooking and cardio burn it off.
 
+## Club dancing
+- On the Neon Room dance floor, arrows fall into a ring in time with a random track. Swipe their direction as they land. Perfect timing builds combos, your character busts the matching move, and great runs earn tips.
+
 ## Radio
 - 10 stations with 10 original songs each, written live by the game: chill, hip-hop, synthwave, drum & bass, classical, rock, R&B (with a talking DJ between songs), dancehall, UK drill, pop.
 

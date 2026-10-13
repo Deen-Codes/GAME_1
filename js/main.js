@@ -1,23 +1,23 @@
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA } from './character.js?v=32';
-import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=32';
-import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=32';
-import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide } from './world.js?v=32';
-import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=32';
-import { buildPanel, renderStats } from './ui.js?v=32';
-import { Input } from './input.js?v=32';
-import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying } from './audio.js?v=32';
-import { runMinigame } from './minigames.js?v=32';
-import { Peds, bakeCfg, figure, setWalk } from './peds.js?v=32';
-import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=32';
-import { findRoute } from './nav.js?v=32';
-import { attachWheel } from './wheel.js?v=32';
-import { Animals } from './animals.js?v=32';
-import { Talk } from './talk.js?v=32';
-import { svg, drawIcon } from './icons.js?v=32';
-import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=32';
-import { FURN, CATALOG } from './furniture.js?v=32';
-import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE } from './interiors.js?v=32';
+import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA } from './character.js?v=33';
+import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=33';
+import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=33';
+import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide } from './world.js?v=33';
+import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=33';
+import { buildPanel, renderStats } from './ui.js?v=33';
+import { Input } from './input.js?v=33';
+import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime } from './audio.js?v=33';
+import { runMinigame } from './minigames.js?v=33';
+import { Peds, bakeCfg, figure, setWalk } from './peds.js?v=33';
+import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=33';
+import { findRoute } from './nav.js?v=33';
+import { attachWheel } from './wheel.js?v=33';
+import { Animals } from './animals.js?v=33';
+import { Talk } from './talk.js?v=33';
+import { svg, drawIcon } from './icons.js?v=33';
+import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=33';
+import { FURN, CATALOG } from './furniture.js?v=33';
+import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE } from './interiors.js?v=33';
 
 const $ = id => document.getElementById(id);
 let inside = null, editMode = false, held = null, pendingCar = false, homeMusic = false, phoneBadge = 0;
@@ -1475,7 +1475,105 @@ async function doSpot(s) {
   if (s.kind === 'rest') { if (money < 150) { toast('A bed costs $150. Talk to reception if you are hurt.'); return; } spend(150); fade(() => { advanceTime(2); P.hp = maxHP(); feed({ energy: 30, hunger: 20, mood: 5 }); toast('You rested in the ward. Fully healed.', 3); }); }
   if (s.kind === 'fight') return pitFight();
   if (s.kind === 'pray') { const first = !stats.relDay['pray:' + dayN]; stats.relDay['pray:' + dayN] = 1; fade(() => { advanceTime(0.5); feed({ mood: first ? 22 : 5, energy: 4 }); P.hp = Math.min(maxHP(), P.hp + 20); toast(first ? 'You sit in silence for a while. You feel lighter. Mood up.' : 'You sit quietly for a bit.', 3); }); }
-  if (s.kind === 'dance') { fade(() => { advanceTime(0.5); feed({ mood: 14, energy: -8 }); gainXP('charm', 12); gainXP('stamina', 8); toast('You owned the dance floor. Mood up, Charm up.'); }); }
+  if (s.kind === 'dance') return startDance();
+  if (s.kind === 'dance_old') { fade(() => { advanceTime(0.5); feed({ mood: 14, energy: -8 }); gainXP('charm', 12); gainXP('stamina', 8); toast('You owned the dance floor. Mood up, Charm up.'); }); }
+  saveGame();
+}
+
+// ================================================================ DANCE FLOOR: swipe the arrow's direction when it lands in the ring, on the beat
+let dance = null;
+const DIRS = { up: [0, -1], down: [0, 1], left: [-1, 0], right: [1, 0] }, DIR_COL = { up: '#ff3b8a', down: '#38e8ff', left: '#ffd23f', right: '#4cd964' };
+function startDance() {
+  if (dance) return;
+  const tr = danceStart(); if (!tr) { toast('Tap the screen once to enable sound, then try again.'); return; }
+  const w = inside.h.toWorld(0, 0.5); Object.assign(P, { x: w.x, z: w.z, y: 0, face: 0 });
+  const beats = tr.song.bpm > 150 ? 8 : 4, total = 44, notes = [];
+  let step = 16 * 2; // two bars of intro
+  const dirs = Object.keys(DIRS);
+  for (let i = 0; i < total; i++) { notes.push({ t: tr.t0 + step * tr.spb16, dir: dirs[Math.floor(Math.random() * 4)], done: false }); step += i > 20 && Math.random() < 0.35 ? beats / 2 : beats; }
+  dance = { tr, notes, score: 0, combo: 0, best: 0, hits: 0, perfect: 0, judge: '', judgeT: 0, move: null, moveT: 0, zoom0: zoom, end: notes[notes.length - 1].t + 1.5 };
+  zoom = 0.42;
+  const ui = $('danceUI'); ui.classList.remove('hidden'); $('pad').classList.add('hidden');
+  const cv = $('danceCv'); cv.width = innerWidth * Math.min(devicePixelRatio, 2); cv.height = innerHeight * Math.min(devicePixelRatio, 2);
+  let sx = 0, sy = 0, down = false;
+  cv.onpointerdown = e => { down = true; sx = e.clientX; sy = e.clientY; };
+  cv.onpointerup = e => { if (!down) return; down = false; const dx = e.clientX - sx, dy = e.clientY - sy; if (Math.hypot(dx, dy) < 24) return; danceSwipe(Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 'right' : 'left') : (dy > 0 ? 'down' : 'up')); };
+  onkeydown_dance = e => { const k = { ArrowUp: 'up', ArrowDown: 'down', ArrowLeft: 'left', ArrowRight: 'right' }[e.key]; if (k) danceSwipe(k); };
+  addEventListener('keydown', onkeydown_dance);
+  $('danceQuit').onclick = () => endDance(true);
+  for (const n of inside.npcs) if (n.role === 'guest') n.dance = true;
+  for (const m of inside.marks) m.g.visible = false;
+  toast(`${tr.station.split(' — ')[1]}: ${tr.song.title} · ${tr.song.artist}`, 3);
+}
+let onkeydown_dance = null;
+function danceSwipe(dir) {
+  const D2 = dance; if (!D2) return; const now = audioTime();
+  let best = null, bd = 1e9; for (const n of D2.notes) if (!n.done) { const d = Math.abs(n.t - now); if (d < bd) { bd = d; best = n; } }
+  if (!best || bd > 0.3) { D2.judge = 'MISS'; D2.judgeT = 0.5; D2.combo = 0; return; }
+  best.done = true;
+  if (best.dir !== dir) { D2.judge = 'WRONG WAY'; D2.judgeT = 0.6; D2.combo = 0; return; }
+  const perfect = bd < 0.08, good = bd < 0.17;
+  if (!good) { D2.judge = 'LATE'; D2.judgeT = 0.5; D2.combo = 0; return; }
+  D2.combo++; D2.best = Math.max(D2.best, D2.combo); D2.hits++; if (perfect) D2.perfect++;
+  D2.score += (perfect ? 100 : 60) * (1 + Math.min(D2.combo, 20) * 0.05);
+  D2.judge = perfect ? 'PERFECT' : 'GOOD'; D2.judgeT = 0.5; D2.move = dir; D2.moveT = 0.45; navigator.vibrate?.(perfect ? 14 : 8);
+  if (D2.combo % 10 === 0) spawnParticles(P.x, 2, P.z, ['#ff3b8a', '#38e8ff', '#ffd23f', '#4cd964'], 18, 4, 0.8, 0.12);
+}
+function updateDance(dt) {
+  const D2 = dance, now = audioTime(), tr = D2.tr, beat = (now - tr.t0) / (tr.spb16 * 4);
+  for (const n of D2.notes) if (!n.done && now - n.t > 0.2) { n.done = true; D2.combo = 0; D2.judge = 'MISS'; D2.judgeT = 0.5; }
+  D2.judgeT -= dt; D2.moveT -= dt;
+  // the hero dances: a bounce on the beat plus the move you just hit
+  const ph = beat * Math.PI, bob = Math.abs(Math.sin(ph)) * 0.1, H = hero, m = D2.moveT > 0 ? D2.move : null, k = Math.max(0, D2.moveT / 0.45);
+  heroRoot.position.set(P.x, P.y + bob + (m === 'up' ? Math.sin(k * Math.PI) * 0.45 : 0), P.z);
+  H.root.rotation.set(0, P.face + (m === 'left' ? 0.5 * k : m === 'right' ? -0.5 * k : Math.sin(ph * 0.5) * 0.2), m === 'left' ? 0.18 * k : m === 'right' ? -0.18 * k : 0);
+  H.hips.position.y = H.legLen - (m === 'down' ? 0.3 * k : bob * 0.4);
+  const sw = Math.sin(ph);
+  if (m === 'up') { H.armR.pivot.rotation.set(-2.9, 0, 0.2); H.armL.pivot.rotation.set(-2.9, 0, -0.2); }
+  else if (m === 'left') { H.armL.pivot.rotation.set(-1.6, 0, -1.2); H.armR.pivot.rotation.set(-0.4, 0, 0.6); }
+  else if (m === 'right') { H.armR.pivot.rotation.set(-1.6, 0, 1.2); H.armL.pivot.rotation.set(-0.4, 0, -0.6); }
+  else if (m === 'down') { H.armR.pivot.rotation.set(-1.4, 0, 0.3); H.armL.pivot.rotation.set(-1.4, 0, -0.3); }
+  else { H.armR.pivot.rotation.set(-1.2 + sw * 0.6, 0, 0.3); H.armL.pivot.rotation.set(-1.2 - sw * 0.6, 0, -0.3); }
+  H.legL.pivot.rotation.x = m === 'down' ? -0.9 * k : sw * 0.25; H.legR.pivot.rotation.x = m === 'down' ? -0.9 * k : -sw * 0.25;
+  if (H.legL.knee) { H.legL.knee.rotation.x = m === 'down' ? 1.6 * k : 0; H.legR.knee.rotation.x = m === 'down' ? 1.6 * k : 0; }
+  drawDance(now);
+  if (now > D2.end) endDance(false);
+}
+function drawDance(now) {
+  const D2 = dance, cv = $('danceCv'), c = cv.getContext('2d'), Wc = cv.width, Hc = cv.height, s = Wc / 390;
+  c.clearRect(0, 0, Wc, Hc);
+  const rx = Wc / 2, ry = Hc * 0.74, R = 46 * s, speed = Hc * 0.55; // pixels per second
+  // the ring pulses on the beat
+  const pulse = 1 + Math.max(0, Math.cos(((now - D2.tr.t0) / (D2.tr.spb16 * 4)) * Math.PI * 2)) * 0.06;
+  c.lineWidth = 6 * s; c.strokeStyle = 'rgba(255,255,255,.85)'; c.beginPath(); c.arc(rx, ry, R * pulse, 0, 7); c.stroke();
+  c.lineWidth = 2 * s; c.strokeStyle = 'rgba(255,255,255,.35)'; c.beginPath(); c.arc(rx, ry, R * 1.55, 0, 7); c.stroke();
+  for (const n of D2.notes) {
+    if (n.done) continue; const dtn = n.t - now; if (dtn > 2.2) continue;
+    const y = ry - dtn * speed; if (y < -60) continue;
+    const [dx, dy] = DIRS[n.dir], col = DIR_COL[n.dir];
+    c.save(); c.translate(rx, y); c.rotate(Math.atan2(dy, dx) + Math.PI / 2);
+    c.fillStyle = col; c.strokeStyle = '#141428'; c.lineWidth = 4 * s; c.beginPath();
+    c.moveTo(0, -30 * s); c.lineTo(26 * s, 4 * s); c.lineTo(10 * s, 4 * s); c.lineTo(10 * s, 26 * s); c.lineTo(-10 * s, 26 * s); c.lineTo(-10 * s, 4 * s); c.lineTo(-26 * s, 4 * s); c.closePath(); c.stroke(); c.fill(); c.restore();
+  }
+  c.textAlign = 'center'; c.font = `900 ${22 * s}px ui-rounded, system-ui, sans-serif`;
+  if (D2.judgeT > 0) { c.fillStyle = D2.judge === 'PERFECT' ? '#ffd23f' : D2.judge === 'GOOD' ? '#4cd964' : '#ff3b4a'; c.fillText(D2.judge, rx, ry + R * 1.9); }
+  c.font = `900 ${18 * s}px ui-rounded, system-ui, sans-serif`; c.fillStyle = '#fff';
+  c.fillText(`${Math.round(D2.score)}`, rx, Hc * 0.33); if (D2.combo > 2) { c.fillStyle = '#ff6fb5'; c.fillText(`${D2.combo}x combo`, rx, Hc * 0.33 + 26 * s); }
+  c.font = `800 ${13 * s}px ui-rounded, system-ui, sans-serif`; c.fillStyle = 'rgba(255,255,255,.75)'; c.fillText('Swipe the arrow\'s direction when it hits the ring', rx, Hc * 0.94);
+}
+function endDance(quit) {
+  const D2 = dance; if (!D2) return; dance = null;
+  removeEventListener('keydown', onkeydown_dance); danceStop(); zoom = D2.zoom0;
+  $('danceUI').classList.add('hidden'); $('pad').classList.remove('hidden');
+  for (const n of inside?.npcs || []) if (n.role === 'guest') n.dance = inside?.id === 'club';
+  for (const m of inside?.marks || []) m.g.visible = true;
+  hero.root.rotation.set(0, P.face, 0); hero.hips.position.y = hero.legLen;
+  const acc = D2.hits / D2.notes.length;
+  if (quit && D2.hits < 5) { toast('You left the dance floor.'); return; }
+  const tips = acc > 0.85 ? Math.round(D2.score / 40) : 0;
+  advanceTime(0.5); feed({ mood: Math.round(6 + acc * 20), energy: -10 }); gainXP('charm', Math.round(8 + acc * 30)); gainXP('stamina', 8);
+  if (tips) addMoney(tips);
+  modal(`<h3>${acc > 0.9 ? 'You owned the floor!' : acc > 0.6 ? 'Nice moves' : 'You... tried'}</h3><p>Score <b>${Math.round(D2.score)}</b> · ${D2.hits}/${D2.notes.length} hits · ${D2.perfect} perfect · best combo ${D2.best}</p><p>Mood up, Charm up.${tips ? ` The crowd threw you ${fmt(tips)} in tips!` : ''}</p>`, [{ label: 'Dance again', cls: 'big', fn: () => { closeModal(); startDance(); } }, { label: 'Done', fn: closeModal }]);
   saveGame();
 }
 
@@ -3413,7 +3511,7 @@ function saveGame() {
   store.set('bc_save', save); store.set('bc_arsenal', arsenal); store.set('bc_cars', garage);
 }
 // auto-update: bookmarks and home-screen apps can hold on to an old copy. Check version.json (never cached) and reload once if newer.
-const BUILD = 32;
+const BUILD = 33;
 function checkUpdate() {
   fetch('version.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(j => {
     if (!(j.v > BUILD)) return;
@@ -3502,7 +3600,7 @@ function step(dt) {
   updateNeeds(dh, dt);
   updateHealth(dt);
   action = findAction();
-  if (woo) { for (const k of ['a', 'b', 'x', 'y']) input.consume(k); if (ride) { ride.s.v = 0; updateVehicles(dt); } updateWoo(dt); } else if (ride) { updateVehicles(dt); P.x = ride.s.x; P.z = ride.s.z; } else if (carAnim) { updateCarAnim(dt); updateVehicles(dt); } else { updateFoot(dt); if (!inside) updateVehicles(dt); }
+  if (woo) { for (const k of ['a', 'b', 'x', 'y']) input.consume(k); if (ride) { ride.s.v = 0; updateVehicles(dt); } updateWoo(dt); } else if (ride) { updateVehicles(dt); P.x = ride.s.x; P.z = ride.s.z; } else if (carAnim) { updateCarAnim(dt); updateVehicles(dt); } else if (dance) { updateDance(dt); } else { updateFoot(dt); if (!inside) updateVehicles(dt); }
   if (!inside) {
     updateTraffic(dt); updateTrafficLights(dt); updateTwoWheelers(dt);
     const f = focusPos(), nc = cityNear(f.x, f.z, 30), nb = f.z > sandLine(f.x) - 60 && f.x > -330;
@@ -3678,4 +3776,4 @@ function frame(now) {
 }
 startGame();
 requestAnimationFrame(frame);
-window.__game = { get animals() { return animals; }, crime, WANT, copCars, cops, pitFight, busted, fam, famNewDay, makeOfficial, talkFamily, get dayN() { return dayN; }, set dayN(v) { dayN = v; }, scene: G.scene, cam: G.cam, snap: () => updateCamera(0, true), get state() { return state; }, P, input, get ride() { return ride; }, get myCar() { return myCar; }, get traffic() { return traffic; }, peds, setTime: h => { clockH = h; }, openCustom, enterVehicle, exitCar, get money() { return money; }, set money(v) { money = v; }, openPlace, PLACES, PROPERTIES, runMinigame, get action() { return action; }, arsenal, selectWeapon, openPhone, setWaypoint, get route() { return route; }, talkToPed, talk, doAction, stats, get inside() { return inside; }, enterInterior, exitInterior, get customers() { return customers; }, newCustomer, startEdit, endEdit, get job() { return job; }, gainXP, storage, doSpot, useFurn, phoneGo, talkVenue, talkJob, openPlace, talkCustomer, startJob, openCarShop, damageCar, repairCar, addFire, get fires() { return fires; }, get ems() { return ems; }, get vehicles() { return vehicles; }, makeVehicle, makeCop, prisonFight, bodyCheck, radioSet: i => { radioSet(i); radioOn(true); }, get zoom() { return zoom; }, set zoom(z) { zoom = z; }, DEFAULT_CAR, setState: x => setState(x), get jail() { return stats.jail; } };
+window.__game = { get animals() { return animals; }, crime, WANT, copCars, cops, pitFight, busted, fam, famNewDay, makeOfficial, talkFamily, get dayN() { return dayN; }, set dayN(v) { dayN = v; }, scene: G.scene, cam: G.cam, snap: () => updateCamera(0, true), get state() { return state; }, P, input, get ride() { return ride; }, get myCar() { return myCar; }, get traffic() { return traffic; }, peds, setTime: h => { clockH = h; }, openCustom, enterVehicle, exitCar, get money() { return money; }, set money(v) { money = v; }, openPlace, PLACES, PROPERTIES, runMinigame, get action() { return action; }, arsenal, selectWeapon, openPhone, setWaypoint, get route() { return route; }, talkToPed, talk, doAction, stats, get inside() { return inside; }, enterInterior, exitInterior, get customers() { return customers; }, newCustomer, startEdit, endEdit, get job() { return job; }, gainXP, storage, doSpot, useFurn, phoneGo, talkVenue, talkJob, openPlace, talkCustomer, startJob, openCarShop, damageCar, repairCar, addFire, get fires() { return fires; }, get ems() { return ems; }, get vehicles() { return vehicles; }, makeVehicle, makeCop, prisonFight, bodyCheck, startDance, get dance() { return dance; }, radioSet: i => { radioSet(i); radioOn(true); }, get zoom() { return zoom; }, set zoom(z) { zoom = z; }, DEFAULT_CAR, setState: x => setState(x), get jail() { return stats.jail; } };
