@@ -1,25 +1,25 @@
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas } from './character.js?v=82';
-import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=82';
-import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=82';
-import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=82';
-import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=82';
-import { buildPanel, renderStats } from './ui.js?v=82';
-import { Input } from './input.js?v=82';
-import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime } from './audio.js?v=82';
-import { runMinigame } from './minigames.js?v=82';
-import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk } from './peds.js?v=82';
-import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=82';
-import { findRoute } from './nav.js?v=82';
-import { COURSES, CAREERS, QUIZ } from './careers.js?v=82';
-import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=82';
-import { attachWheel } from './wheel.js?v=82';
-import { Animals } from './animals.js?v=82';
-import { Talk } from './talk.js?v=82';
-import { svg, drawIcon } from './icons.js?v=82';
-import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=82';
-import { FURN, CATALOG } from './furniture.js?v=82';
-import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=82';
+import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas } from './character.js?v=83';
+import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=83';
+import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=83';
+import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=83';
+import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=83';
+import { buildPanel, renderStats } from './ui.js?v=83';
+import { Input } from './input.js?v=83';
+import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime } from './audio.js?v=83';
+import { runMinigame } from './minigames.js?v=83';
+import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk } from './peds.js?v=83';
+import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=83';
+import { findRoute } from './nav.js?v=83';
+import { COURSES, CAREERS, QUIZ } from './careers.js?v=83';
+import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=83';
+import { attachWheel } from './wheel.js?v=83';
+import { Animals } from './animals.js?v=83';
+import { Talk } from './talk.js?v=83';
+import { svg, drawIcon } from './icons.js?v=83';
+import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=83';
+import { FURN, CATALOG } from './furniture.js?v=83';
+import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=83';
 
 const $ = id => document.getElementById(id);
 let inside = null, editMode = false, held = null, pendingCar = false, homeMusic = false, phoneBadge = 0;
@@ -2118,7 +2118,17 @@ PLACES.forEach((p, i) => {
   makeMarker(p.x, p.z, p.interior ? p.icon : p.icon, PLACE_COLORS[p.kind], { place: p, car: !!p.car, npc: outdoorNpc });
 });
 for (const p of PROPERTIES) p.marker = makeMarker(p.x, p.z, 'house', PLACE_COLORS.property, { place: { ...p, kind: 'property' } });
-function refreshPropertyMarkers() { for (const p of PROPERTIES) p.marker.sp.material.map = iconTex(owned.has(p.id) ? 'key' : 'house', owned.has(p.id) ? 'rgba(178,107,255,.95)' : 'rgba(20,18,38,.88)', owned.has(p.id) ? '#fff' : PLACE_COLORS.property); }
+// "For Sale" boards on the lawn of every home you don't own yet
+function saleTex(p) { const c = document.createElement('canvas'); c.width = 256; c.height = 192; const x = c.getContext('2d');
+  x.fillStyle = '#ffffff'; x.fillRect(0, 0, 256, 192); x.fillStyle = '#c9302c'; x.fillRect(0, 0, 256, 70); x.fillStyle = '#ffffff'; x.font = 'bold 46px system-ui, sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText('FOR SALE', 128, 37);
+  x.fillStyle = '#16161b'; x.font = 'bold 40px system-ui, sans-serif'; let pr; try { pr = homePrice(p); } catch { pr = p.price; } x.fillText('$' + Math.round(pr).toLocaleString('en-US'), 128, 112); x.font = '24px system-ui, sans-serif'; x.fillStyle = '#5a5d66'; x.fillText('Bay Realty', 128, 160);
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t; }
+for (const p of PROPERTIES) { if (p.starter) continue;
+  const g = new THREE.Group(), sx = p.x + 3.2, sz = p.z + 0.6; g.position.set(sx, cityAt(sx, sz, -6) ? 0.17 : groundH(sx, sz), sz); G.scene.add(g);
+  evBox(g, 0.1, 1.9, 0.1, '#e8e8ea', -0.55, 0.95, 0); evBox(g, 1.3, 0.08, 0.08, '#e8e8ea', 0, 1.75, 0);
+  const b = new THREE.Mesh(new THREE.PlaneGeometry(1.1, 0.82), new THREE.MeshStandardMaterial({ map: saleTex(p), side: THREE.DoubleSide })); b.position.set(0.05, 1.25, 0.02); b.rotation.x = -0.45; g.add(b); g.scale.setScalar(1.5);
+  p.saleSign = g; p.saleBoard = b; addCollider(p.saleCol = { x: sx - 0.55, z: sz, r: 0.15 }); }
+function refreshPropertyMarkers() { for (const p of PROPERTIES) { p.marker.sp.material.map = iconTex(owned.has(p.id) ? 'key' : 'house', owned.has(p.id) ? 'rgba(178,107,255,.95)' : 'rgba(20,18,38,.88)', owned.has(p.id) ? '#fff' : PLACE_COLORS.property); if (p.saleSign) { const sale = !owned.has(p.id); if (sale !== p.saleSign.visible) { p.saleSign.visible = sale; sale ? addCollider(p.saleCol) : removeCollider(p.saleCol); } if (sale) { p.saleBoard.material.map?.dispose(); p.saleBoard.material.map = saleTex(p); } } } }
 function updateNpcList(list, dt) {
   for (const n of list) {
     const d = Math.hypot(n.x - P.x, n.z - P.z);
@@ -5468,7 +5478,7 @@ function saveGame() {
   store.set('bc_save', save); store.set('bc_arsenal', arsenal); store.set('bc_cars', garage);
 }
 // auto-update: bookmarks and home-screen apps can hold on to an old copy. Check version.json (never cached) and reload once if newer.
-const BUILD = 82;
+const BUILD = 83;
 function checkUpdate() {
   fetch('version.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(j => {
     if (!(j.v > BUILD)) return;
