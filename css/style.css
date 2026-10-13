@@ -453,4 +453,5 @@ input[type=text] { width: 100%; padding: 10px 12px; border-radius: 10px; border:
 .speedo .lim::before { content: 'LIMIT'; font-size: 5px; font-weight: 900; color: #141428; letter-spacing: .02em; }
 .speedo .lim em { font-style: normal; font-size: 11px; font-weight: 900; color: #141428; line-height: 1; }
 .speedo .lim.hidden { display: none; }
-.speedo.over b { color: #ff5a5a; animation: lowPulse .5s infinite alternate; }
+.speedo.over b, .speedo.over span { color: #ff5a5a; animation: spdFlash .45s steps(1) infinite; }
+@keyframes spdFlash { 50% { opacity: .25; } }
