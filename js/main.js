@@ -1,25 +1,25 @@
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA } from './character.js?v=62';
-import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=62';
-import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=62';
-import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, onBridge, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=62';
-import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=62';
-import { buildPanel, renderStats } from './ui.js?v=62';
-import { Input } from './input.js?v=62';
-import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime } from './audio.js?v=62';
-import { runMinigame } from './minigames.js?v=62';
-import { Peds, bakeCfg, figure, setWalk, setTownSource } from './peds.js?v=62';
-import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=62';
-import { findRoute } from './nav.js?v=62';
-import { COURSES, CAREERS, QUIZ } from './careers.js?v=62';
-import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=62';
-import { attachWheel } from './wheel.js?v=62';
-import { Animals } from './animals.js?v=62';
-import { Talk } from './talk.js?v=62';
-import { svg, drawIcon } from './icons.js?v=62';
-import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=62';
-import { FURN, CATALOG } from './furniture.js?v=62';
-import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE } from './interiors.js?v=62';
+import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA } from './character.js?v=63';
+import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=63';
+import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=63';
+import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, onBridge, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=63';
+import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=63';
+import { buildPanel, renderStats } from './ui.js?v=63';
+import { Input } from './input.js?v=63';
+import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime } from './audio.js?v=63';
+import { runMinigame } from './minigames.js?v=63';
+import { Peds, bakeCfg, figure, setWalk, setTownSource } from './peds.js?v=63';
+import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=63';
+import { findRoute } from './nav.js?v=63';
+import { COURSES, CAREERS, QUIZ } from './careers.js?v=63';
+import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=63';
+import { attachWheel } from './wheel.js?v=63';
+import { Animals } from './animals.js?v=63';
+import { Talk } from './talk.js?v=63';
+import { svg, drawIcon } from './icons.js?v=63';
+import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=63';
+import { FURN, CATALOG } from './furniture.js?v=63';
+import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE } from './interiors.js?v=63';
 
 const $ = id => document.getElementById(id);
 let inside = null, editMode = false, held = null, pendingCar = false, homeMusic = false, phoneBadge = 0;
@@ -771,7 +771,7 @@ function carTop(x, z, y) {
   return t;
 }
 // ---------------- showers (home, gym, prison): step in, steam, Sims-style pixel blur, come out clean
-let showerTex = null;
+let showerTex = null, carLabelT = 0;
 function startShower(x, z, r, prison = false) {
   if (P.shower) return;
   if (!showerTex) { const c = document.createElement('canvas'); c.width = c.height = 8; const g = c.getContext('2d'); for (let i = 0; i < 8; i++) for (let j = 0; j < 8; j++) { g.fillStyle = ['#e8b088', '#d39a6a', '#f6c9a4', '#b77a4b', '#c98f62'][(i * 3 + j * 5) % 5]; g.fillRect(i, j, 1, 1); } showerTex = new THREE.CanvasTexture(c); showerTex.magFilter = THREE.NearestFilter; showerTex.minFilter = THREE.NearestFilter; }
@@ -973,13 +973,13 @@ function updateDoors(dt) {
 function seatSpot(v, side) { const s = v.s, h = s.h; return { x: s.x + Math.cos(h) * 0.35 * side + Math.sin(h) * 0.2, z: s.z - Math.sin(h) * 0.35 * side + Math.cos(h) * 0.2 }; }
 function sitIn(v) {
   ride = v; heroRoot.visible = !!v.b.two; muzzleFlash.visible = false; audio();
-  setTimeout(() => { const n = nowPlaying(); if (n && ride === v) peek('radioBtn', `<b>${n.title}</b><small>${n.artist} · ${STATIONS[radioIndex()]?.name || ''}</small>`, 5); }, 900);
+  setTimeout(() => { const n = nowPlaying(); if (n && ride === v) peek('radioBtn', `<b>${n.title}</b><small>${n.artist}</small>`, 3); }, 900);
   // every car remembers its own station: yours keeps what you left on, other people's are on whatever their owner liked
   if (v === myCar && v.radio == null) v.radio = stats.carRadio ?? 0;
   if (v.radio == null) v.radio = v.b.two ? STATIONS.length - 1 : Math.floor(Math.random() * STATIONS.length);
   if (v.radio !== radioIndex()) radioSet(v.radio);
   radioOn(!v.b.two);
-  $('carLabel').textContent = v.personal ? (carCfg.name || 'Your car') : v.taxi ? 'Bay Cab' : `${BODIES[v.cfg.body]?.label || 'Car'} · stolen`; // shown under the stick you drive with
+  carLabelT = time + 2.6; $('carLabel').textContent = v.personal ? (carCfg.name || 'Your car') : v.taxi ? 'Bay Cab' : `${BODIES[v.cfg.body]?.label || 'Car'} · stolen`; // shown under the stick you drive with
 }
 function enterVehicle(v, anim = true) {
   if (!anim || P.dead || carAnim) { if (!carAnim) sitIn(v); return; }
@@ -1252,7 +1252,7 @@ function updateVehicles(dt) {
       // full stick driving: push where you want to go and the car drives there; pull back against it to brake, then reverse
       let thr = 1, stickDrive = false;
       if ((settings.steer || 'screen') === 'screen' && !gas && !brk && !dead && st.m > 0.3) {
-        const fwd = Math.cos(wrapA(Math.atan2(st.x, -st.y) - c.h)); thr = clamp((st.m - 0.2) / 0.6, 0.25, 1);
+        const fwd = Math.cos(wrapA(Math.atan2(st.x, -st.y) - c.h)); thr = clamp((st.m - 0.3) / 0.62, 0, 1);
         // moving forward: pull back (more than ~110° from where you're going) to brake; once slow, the same pull reverses.
         // reversing: you keep reversing until you push clearly forward again
         if (c.v > 2) { if (fwd > -0.35) gas = true; else brk = true; }
@@ -1281,7 +1281,11 @@ function updateVehicles(dt) {
         v.launch = 0; v.launchReady = false;
       } else { v.launch = 0; v.launchReady = false; v.donut = false; }
       if (v.launch > 0) { /* revving on the spot */ }
-      else if (gas && !brk) { const topT = top * (0.4 + 0.6 * thr); if (c.v < -0.3) c.v = Math.min(0, c.v + 16 * dt); else if (c.v < topT) c.v = Math.min(topT, c.v + s.acc * dt * (1 - Math.max(0, c.v) / (s.top * 1.15))); else c.v = damp(c.v, topT, stickDrive ? 2.5 : 1.2, dt); }
+      else if (gas && !brk) {
+        // stick driving: how far you push sets a target speed. Up to about three-quarters of the stick is the local
+        // speed limit (easy to cruise at); only the last quarter goes faster than that.
+        let topT = top;
+        if (stickDrive) { const lim = speedLimit(c.x, c.z) / 2.237; topT = lim ? (thr < 0.78 ? 3 + (Math.min(lim, top) - 3) * (thr / 0.78) : Math.min(lim, top) + (top - Math.min(lim, top)) * ((thr - 0.78) / 0.22)) : Math.max(3, top * thr); } if (c.v < -0.3) c.v = Math.min(0, c.v + 16 * dt); else if (c.v < topT) c.v = Math.min(topT, c.v + s.acc * dt * (1 - Math.max(0, c.v) / (s.top * 1.15))); else c.v = damp(c.v, topT, stickDrive ? 2.5 : 1.2, dt); }
       else if (brk) { if (c.v > 0.3) { c.v = Math.max(0, c.v - 18 * dt); c.braking = true; } else c.v = Math.max(-s.top * 0.32, c.v - s.acc * 0.6 * dt); }
       else c.v = damp(c.v, 0, (settings.steer || 'screen') === 'screen' ? 1.6 : 0.8, dt); // let go of the stick and the car slows down properly
       if (c.v > top + 0.5) c.v = damp(c.v, top, 1.5, dt);
@@ -4374,7 +4378,7 @@ function updateHUD(dt) {
   $('wpnBtn').classList.toggle('hidden', !!ride || !!inside);
   $('editBtn').classList.toggle('hidden', !(inside && inside.prop) || editMode);
   $('radioBtn').classList.toggle('hidden', !ride);
-  $('carLabel').classList.toggle('on', !!ride);
+  $('carLabel').classList.toggle('on', !!ride && time < carLabelT);
   $('speedo').classList.toggle('hidden', !ride || !!ride.b.two && ride.cfg?.body === 'bike');
   $('phoneBtn').classList.toggle('badge', phoneBadge > 0); $('phoneBtn').classList.toggle('hidden', !!stats.jail);
   if (ride) { const mph = Math.round(Math.abs(ride.s.v) * 2.237), lim = speedLimit(ride.s.x, ride.s.z); setText('speedTxt', String(mph)); setText('limTxt', lim ? String(lim) : ''); $('speedo').classList.toggle('over', !!lim && mph > lim + 4); $('limSign').classList.toggle('hidden', !lim); }
@@ -4411,7 +4415,7 @@ attachWheel($('wpnBtn'), {
   onOpen: () => { timeScale = 0.2; }, onClose: () => { timeScale = 1; },
 });
 const ST_ICON = ['sun', 'music', 'moon', 'bolt', 'book', 'fist', 'heart', 'wave', 'mic', 'star', 'x'];
-onSong((song, st) => { if (ride) peek('radioBtn', `<b>${song.title}</b><small>${song.artist} · ${st.name}</small>`, 6); else if (homeMusic) toast(`Now playing: ${song.title} · ${song.artist}`, 3); });
+onSong((song, st) => { if (ride) peek('radioBtn', `<b>${song.title}</b><small>${song.artist}</small>`, 3.2); else if (homeMusic) toast(`Now playing: ${song.title} · ${song.artist}`, 3); });
 attachWheel($('radioBtn'), {
   items: () => STATIONS.map((s, i) => ({ icon: svg(ST_ICON[i] || 'radio', 'wheel'), label: s.name.split(' — ')[0], sub: s.name.split(' — ')[1] || '', current: radioIndex() === i })),
   onSelect: (it, i) => { radioSet(i); radioOn(!!ride); toast(STATIONS[i].name, 1.4); },
@@ -4635,7 +4639,7 @@ function saveGame() {
   store.set('bc_save', save); store.set('bc_arsenal', arsenal); store.set('bc_cars', garage);
 }
 // auto-update: bookmarks and home-screen apps can hold on to an old copy. Check version.json (never cached) and reload once if newer.
-const BUILD = 62;
+const BUILD = 63;
 function checkUpdate() {
   fetch('version.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(j => {
     if (!(j.v > BUILD)) return;
