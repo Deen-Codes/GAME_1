@@ -321,7 +321,7 @@ input[type=text] { width: 100%; padding: 10px 12px; border-radius: 10px; border:
 .need { --v: 50%; position: relative; width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; background: conic-gradient(var(--c) var(--v), rgba(255,255,255,.16) 0); box-shadow: 0 2px 6px rgba(0,0,0,.35); }
 .need::before { content: ''; position: absolute; inset: 4px; border-radius: 50%; background: rgba(14,14,30,.88); }
 .need i { display: none; }
-#nHunger, .tn-h { --c: #ff8a2a; } #nEnergy, .tn-e { --c: #ffd23f; } #nMood, .tn-m { --c: #ff6fb5; } #nHygiene, .tn-y { --c: #38c8ff; }
+#nHunger, .tn-h { --c: #ff8a2a; } #nEnergy, .tn-e { --c: #ffd23f; } #nMood, .tn-m { --c: #ff6fb5; } #nHygiene, .tn-y { --c: #38c8ff; } #nBladder, .tn-b { --c: #e8d34a; }
 .need .ic { position: relative; z-index: 1; width: 14px; height: 14px; margin: 0; color: var(--c); }
 .need.low { animation: lowPulse .8s infinite alternate; }
 .talk-needs { display: flex; gap: 6px; margin-top: 6px; }

@@ -1,9 +1,9 @@
 // Enterable interiors. Rooms are built far away from the city (at ORIGIN) and the player is moved
 // there, so the normal movement, camera and collision code keeps working. South wall is cut away.
 import * as THREE from '../lib/three.module.min.js';
-import { FURN, buildFurn } from './furniture.js?v=73';
-import { addCollider, removeCollider } from './world.js?v=73';
-import { buildCar } from './car.js?v=73';
+import { FURN, buildFurn } from './furniture.js?v=74';
+import { addCollider, removeCollider } from './world.js?v=74';
+import { buildCar } from './car.js?v=74';
 
 export const ORIGIN = { x: 0, z: 2600 };
 const T = (name, w, d, floor, wall, items, npcs, spots, extra = {}) => ({ name, w, d, floor, wall, items, npcs, spots, ...extra });
@@ -58,10 +58,20 @@ export const INTERIORS = {
   office: T('Bay Corp Tower', 20, 14, '#3a3d45', '#dfe3ea', [['counter', 0, -4.2, 0, '#e8e2d6'], ['sign', 0, -6.9, 0, '#38e8ff'], ['desk', -6.5, -0.5, 0, '#e8e2d6'], ['desk', -3.5, -0.5, 0, '#e8e2d6'], ['desk', 3.5, -0.5, 0, '#e8e2d6'], ['desk', 6.5, -0.5, 0, '#e8e2d6'], ['desk', -6.5, 3, 0, '#e8e2d6'], ['desk', 6.5, 3, 0, '#e8e2d6'], ['chair', -6.5, 0.4], ['chair', -3.5, 0.4], ['chair', 3.5, 0.4], ['chair', 6.5, 0.4], ['chair', -6.5, 3.9], ['chair', 6.5, 3.9], ['plant', -9, -6], ['plant', 9, -6], ['couch', -6, 6, Math.PI, '#3a3d45']],
     [{ role: 'sales', x: 0, z: -5.1 }, { role: 'guest', x: -6.5, z: 0.5 }, { role: 'guest', x: 3.5, z: 0.5 }, { role: 'guest', x: 6.5, z: 3.9 }], [{ kind: 'staff', x: 0, z: -2.8, label: 'Reception: jobs', icon: 'case' }], { light: '#eef4ff' }),
   // homes
-  studio: T('Studio', 10, 8, '#c9b89a', '#e8e2d6', [], [], [], { home: true }),
+  // starter flat: open-plan kitchen/living room, and a bedroom with its own en-suite (shower + toilet)
+  studio: T('Studio', 14, 10, '#c9b89a', '#e8e2d6', [], [], [], { home: true, layout: 2,
+    walls: [[1.9, -5, 2.1, 1.2, 2.6, '#e8e2d6'], [1.9, 2.8, 2.1, 5, 2.6, '#e8e2d6'], [4.2, -5, 4.4, -1.8, 2.6, '#dfe8ec'], [4.3, -1.9, 5.2, -1.7, 2.6, '#dfe8ec'], [6.3, -1.9, 7, -1.7, 2.6, '#dfe8ec']],
+    floors: [[-7, -5, -1.5, -2.6, '#d9d2c6'], [4.4, -5, 7, -1.9, '#cfe0e8'], [2.1, -5, 4.2, 5, '#a89bb8'], [4.2, -1.7, 7, 5, '#a89bb8']] }),
   apartment: T('Apartment', 14, 10, '#b89a7a', '#e6e9f0', [], [], [], { home: true }),
-  house: T('House', 18, 12, '#a0805a', '#efe6d6', [], [], [], { home: true }),
+  house: T('House', 18, 12, '#a0805a', '#efe6d6', [], [], [], { home: true, layout: 2,
+    walls: [[3.9, -6, 4.1, 1.5, 2.6, '#efe6d6'], [3.9, 3.1, 4.1, 6, 2.6, '#efe6d6'], [6.1, -6, 6.3, -2.6, 2.6, '#dfe8ec'], [6.2, -2.7, 7.1, -2.5, 2.6, '#dfe8ec'], [8.2, -2.7, 9, -2.5, 2.6, '#dfe8ec']],
+    floors: [[-9, -6, -3, -3, '#d9d2c6'], [6.3, -6, 9, -2.7, '#cfe0e8'], [4.1, -6, 6.1, 6, '#9a8a7a'], [6.1, -2.5, 9, 6, '#9a8a7a']] }),
   mansion: T('Mansion', 26, 18, '#e8e2d6', '#fff8ee', [], [], [], { home: true }),
+};
+// default furniture for each home layout: kitchen along the back, sofa facing the TV, bed in the bedroom, en-suite fittings
+export const HOME_DEFAULTS = {
+  studio: [{ t: 'fridge', x: -6.4, z: -4.5, r: 0 }, { t: 'stove', x: -5.3, z: -4.5, r: 0 }, { t: 'table', x: -3.6, z: -3.4, r: 0 }, { t: 'tv', x: -6.6, z: 1.8, r: Math.PI / 2 }, { t: 'couch', x: -3.4, z: 1.8, r: -Math.PI / 2, c: '#5a6b7a' }, { t: 'plant', x: 1.4, z: -4.5, r: 0 }, { t: 'single', x: 5.4, z: 2.5, r: 0, c: '#3a5fa0' }, { t: 'shower', x: 6.3, z: -4.3, r: 0 }, { t: 'toilet', x: 4.95, z: -4.5, r: 0, c: '#f4f6f8' }],
+  house: [{ t: 'fridge', x: -8.4, z: -5.5, r: 0 }, { t: 'stove', x: -7.3, z: -5.5, r: 0 }, { t: 'table', x: -5.4, z: -4.2, r: 0 }, { t: 'tv', x: -8.6, z: 2.6, r: Math.PI / 2 }, { t: 'couch', x: -5.4, z: 2.6, r: -Math.PI / 2, c: '#5a6b7a' }, { t: 'plant', x: 3.4, z: -5.5, r: 0 }, { t: 'bed', x: 6.8, z: 2.8, r: 0, c: '#a03a4f' }, { t: 'shower', x: 8.3, z: -5.3, r: 0 }, { t: 'toilet', x: 6.9, z: -5.5, r: 0, c: '#f4f6f8' }],
 };
 export const STARTER_FURNITURE = [{ t: 'single', x: -3, z: -2.2, r: 0, c: '#3a5fa0' }, { t: 'fridge', x: 3.6, z: -3.4, r: 0 }, { t: 'plant', x: 4.2, z: 2.6, r: 0 }, { t: 'armchair', x: 0.5, z: -2.6, r: 0 }];
 

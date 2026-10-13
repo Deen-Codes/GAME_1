@@ -1,25 +1,25 @@
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas } from './character.js?v=73';
-import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=73';
-import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=73';
-import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=73';
-import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=73';
-import { buildPanel, renderStats } from './ui.js?v=73';
-import { Input } from './input.js?v=73';
-import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime } from './audio.js?v=73';
-import { runMinigame } from './minigames.js?v=73';
-import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk } from './peds.js?v=73';
-import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=73';
-import { findRoute } from './nav.js?v=73';
-import { COURSES, CAREERS, QUIZ } from './careers.js?v=73';
-import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=73';
-import { attachWheel } from './wheel.js?v=73';
-import { Animals } from './animals.js?v=73';
-import { Talk } from './talk.js?v=73';
-import { svg, drawIcon } from './icons.js?v=73';
-import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=73';
-import { FURN, CATALOG } from './furniture.js?v=73';
-import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE } from './interiors.js?v=73';
+import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas } from './character.js?v=74';
+import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=74';
+import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=74';
+import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=74';
+import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=74';
+import { buildPanel, renderStats } from './ui.js?v=74';
+import { Input } from './input.js?v=74';
+import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime } from './audio.js?v=74';
+import { runMinigame } from './minigames.js?v=74';
+import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk } from './peds.js?v=74';
+import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=74';
+import { findRoute } from './nav.js?v=74';
+import { COURSES, CAREERS, QUIZ } from './careers.js?v=74';
+import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=74';
+import { attachWheel } from './wheel.js?v=74';
+import { Animals } from './animals.js?v=74';
+import { Talk } from './talk.js?v=74';
+import { svg, drawIcon } from './icons.js?v=74';
+import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=74';
+import { FURN, CATALOG } from './furniture.js?v=74';
+import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=74';
 
 const $ = id => document.getElementById(id);
 let inside = null, editMode = false, held = null, pendingCar = false, homeMusic = false, phoneBadge = 0;
@@ -339,7 +339,7 @@ function gainXP(id, amt) {
 }
 function feed(f) { // apply a food/drink/activity effect object
   if (f.fat) { const B = body(); B.fat = clamp(B.fat + f.fat * (stats.hunger > 85 ? 1.8 : 1), 0, 1); bodyCheck(); }
-  if (f.hunger) stats.hunger = clamp(stats.hunger + f.hunger, 0, 100);
+  if (f.hunger) { stats.hunger = clamp(stats.hunger + f.hunger, 0, 100); if (f.hunger > 0) stats.bladder = clamp((stats.bladder ?? 85) - f.hunger * 0.12, 0, 100); } // what goes in...
   if (f.energy) stats.energy = clamp(stats.energy + f.energy, 0, 100);
   if (f.mood) stats.mood = clamp(stats.mood + f.mood, 0, 100);
   if (f.health) P.hp = Math.min(maxHP(), P.hp + f.health);
@@ -350,6 +350,8 @@ let needWarnT = 0;
 function updateNeeds(dtHours, dt) {
   stats.hunger = Math.max(0, stats.hunger - dtHours * 4);
   const running = !ride && input.stick.m > 0.85;
+  stats.bladder = clamp((stats.bladder ?? 85) - dtHours * 5.5, 0, 100);
+  if (stats.bladder <= 0 && !P.dead) bladderAccident();
   stats.hygiene = clamp((stats.hygiene ?? 80) - dtHours * (2.2 + (running ? 2 : 0)) - (inWater(P.x, P.z) ? -dtHours * 30 : 0), 0, 100); // a swim in the sea rinses you off a bit
   stats.energy = Math.max(0, stats.energy - dtHours * (2.6 + (running ? 2 / (1 + lvl('stamina') * 0.15) : 0)));
   const moodGoal = 50 + (stats.hunger > 60 ? 10 : 0) + (stats.energy > 60 ? 10 : 0) + (stats.hunger > 85 && stats.energy > 85 ? 6 : 0) + (P.hp >= maxHP() * 0.9 ? 4 : 0) - (stats.hygiene < 25 ? 8 : 0) + (stats.hygiene > 85 ? 3 : 0); // fed + rested + healthy + clean = happier
@@ -359,6 +361,7 @@ function updateNeeds(dtHours, dt) {
   if (needWarnT <= 0) {
     if (stats.hunger < 15) { toast('You are starving. Eat something! (diner, taco truck, or your fridge)', 3); needWarnT = 40; }
     else if (stats.energy < 10) { toast('You are exhausted. Sleep in a bed at home.', 3); needWarnT = 40; }
+    else if ((stats.bladder ?? 85) < 18) { toast('You really need the toilet! Home, or a restroom at the diner, bar, gym...', 3); needWarnT = 30; }
     else if (stats.hygiene < 12) { toast('You stink. People can smell you coming. Take a shower.', 3); needWarnT = 60; }
   }
 }
@@ -770,6 +773,26 @@ function carTop(x, z, y) {
   let t = -99;
   for (const v of vehicles) { if (v === ride || (v.s.x - x) ** 2 + (v.s.z - z) ** 2 > 64) continue; const B = carBox(v, x, z); if (Math.abs(B.lx) < B.hw - 0.05 && Math.abs(B.lz) < B.hl - 0.1 && y >= B.top - 0.5) t = Math.max(t, B.top); }
   return t;
+}
+// ---------------- toilet: sit, relief. Hold it too long and you have an accident (and need a shower)
+function useToilet(x, z, r) {
+  P.sit = { x, z, face: r, t: 0, toilet: true }; P.face = r; sfx.click();
+  setTimeout(() => { if (P.sit?.toilet) { P.sit = null; stats.bladder = 100; P.y = 0; hero.hips.position.y = hero.legLen; for (const L of [hero.legL, hero.legR]) { L.pivot.rotation.x = 0; L.knee.rotation.x = 0; } toast(pick(['Ahh. Much better.', 'Relief.', '*flush*']), 2); } }, 2200);
+}
+let accidentCd = 0;
+async function bladderAccident() {
+  if (accidentCd > time || talk.active || state !== 'play' || woo || dance) return; accidentCd = time + 30;
+  const poo = Math.random() < 0.3;
+  stats.bladder = 100; stats.hygiene = 0; feed({ mood: poo ? -28 : -18 });
+  if (!ride) { const m = new THREE.Mesh(new THREE.CircleGeometry(0.55, 18), new THREE.MeshBasicMaterial({ color: poo ? '#6b4a2a' : '#e8d34a', transparent: true, opacity: 0.75, depthWrite: false })); m.rotation.x = -Math.PI / 2; m.position.set(P.x, (inside ? 0 : baseY(P.x, P.z)) + 0.02, P.z); dyn.add(m); setTimeout(() => dyn.remove(m), 60000); }
+  else ride.smelly = true;
+  for (const p of peds.list) if (Math.hypot(p.x - P.x, p.z - P.z) < 14 && p.state !== 'down') { const pr = personOf(p); if (pr) bumpPerson(pr, -4); react(p, false); }
+  if (date) { date.interest -= 25; }
+  beginTalk(charCfg, 'You', 'Uh oh', 200, null, null, null, true);
+  await talk.say(poo ? pick(['Oh no. Oh no no no.', 'That was NOT just a fart.']) : pick(['I... didn\'t make it.', 'Oh no. I really should have gone earlier.']));
+  await talk.say(poo ? 'Everyone is staring. I need a shower. Immediately.' : 'Soaked. I need a shower and a change of clothes.');
+  endTalk();
+  if (date) toast(`${date.name}: "${pick(['Ew. EW. I\'m going home.', 'Did you just...? Okay, I\'m leaving.'])}"`, 3), endDate();
 }
 // ---------------- showers (home, gym, prison): step in, steam, Sims-style pixel blur, come out clean
 let showerTex = null, carLabelT = 0;
@@ -1572,7 +1595,14 @@ function enterInterior(place, prop) {
   const id = prop ? prop.home : place.interior;
   fade(() => {
     if (prop && !homes[prop.id]) homes[prop.id] = (prop.starter ? STARTER_FURNITURE : [{ t: 'single', x: -2.5, z: -2, r: 0, c: '#3a5fa0' }, { t: 'fridge', x: 2.5, z: -2.8, r: 0 }]).map(f => ({ ...f }));
+    if (prop && HOME_DEFAULTS[prop.home] && (stats.homeLayout ||= {})[prop.id] !== INTERIORS[prop.home].layout) { // homes upgraded to the new layout (rooms + en-suite); anything extra you bought lines the living room wall
+      const def = HOME_DEFAULTS[prop.home].map(f => ({ ...f })), kept = homes[prop.id].filter(f => !def.some(d => d.t === f.t) && f.t !== 'single' && f.t !== 'bed');
+      kept.forEach((f, i) => { f.x = -INTERIORS[prop.home].w / 2 + 1.2 + (i % 5) * 1.3; f.z = INTERIORS[prop.home].d / 2 - 1.4 - Math.floor(i / 5) * 1.3; f.r = 0; });
+      const hadBed = homes[prop.id].find(f => f.t === 'bed'); if (hadBed) { const b = def.find(f => f.t === 'single' || f.t === 'bed'); b.t = 'bed'; b.c = hadBed.c || b.c; }
+      homes[prop.id] = [...def, ...kept]; stats.homeLayout[prop.id] = INTERIORS[prop.home].layout;
+    }
     if (prop && !homes[prop.id].some(f => f.t === 'shower')) { const T0 = INTERIORS[prop.home]; homes[prop.id].push({ t: 'shower', x: -T0.w / 2 + 0.75, z: -T0.d / 2 + 0.75, r: 0 }); } // every home has a shower
+    if (prop && !homes[prop.id].some(f => f.t === 'toilet')) { const T0 = INTERIORS[prop.home]; homes[prop.id].push({ t: 'toilet', x: -T0.w / 2 + 1.75, z: -T0.d / 2 + 0.55, r: 0, c: '#f4f6f8' }); } // ...and a toilet
     const h = buildInterior(id, prop ? homes[prop.id] : null, id === 'motors' ? showroomCfgs() : []);
     G.scene.add(h.group);
     inside = { id, place: place || prop, prop, h, back: { x: (place || prop).x, z: (place || prop).z }, npcs: [], marks: [] };
@@ -1594,7 +1624,8 @@ function enterInterior(place, prop) {
       spots.forEach(([x, z, f, y], i) => { const w = h.toWorld(x, z); inside.npcs.push({ x: w.x, z: w.z, y, role: 'guest', cfg: npcCfg('inmate', 1200 + i), fig: null, face: f, homeFace: f, t: rand(0, 6), parent: dyn, name: 'Inmate', dance: false }); });
     }
     if (id === 'club') for (let i = 0; i < 6; i++) { const w = h.toWorld(-2 + (i % 3) * 2, -0.8 + Math.floor(i / 3) * 2.4); inside.npcs.push({ x: w.x, z: w.z, role: 'guest', cfg: npcCfg('guest', 900 + i), fig: null, face: rand(0, 6), homeFace: rand(0, 6), t: rand(0, 6), parent: dyn, name: 'Clubber', dance: true }); }
-    for (const s of tpl.spots) { const w = h.toWorld(s.x, s.z); inside.marks.push({ ...makeMarker(w.x, w.z, s.icon, '#ffd23f', { interior: true, small: true }, G.scene), spot: s }); }
+    const WC = ['diner', 'bar', 'club', 'gym', 'casino', 'mart', 'office', 'college', 'hospital', 'police', 'motors', 'casa', 'clothes'].includes(id) ? [{ kind: 'restroom', x: tpl.w / 2 - 1.1, z: -tpl.d / 2 + 1.1, label: 'Restroom', icon: 'door' }] : [];
+    for (const s of [...tpl.spots, ...WC]) { const w = h.toWorld(s.x, s.z); inside.marks.push({ ...makeMarker(w.x, w.z, s.icon, '#ffd23f', { interior: true, small: true }, G.scene), spot: s }); }
     const door = h.toWorld(0, h.d / 2 - 1.3);
     Object.assign(P, { x: door.x, z: door.z, face: Math.PI, y: 0, vy: 0 });
     for (const t of traffic) dyn.remove(t.mesh); traffic.length = 0; peds.clear(); animals?.clear(); setWalk((x, z) => h.inside(x, z));
@@ -1621,7 +1652,7 @@ function exitInterior(silent) {
 }
 
 // ---------------- home: furniture use & edit mode
-const FURN_VERB = { sleep: 'Sleep', eat: 'Eat', cook: 'Cook', sit: 'Sit', tv: 'Watch TV', read: 'Read', laptop: 'Laptop', lift: 'Lift', run: 'Run', music: 'Music', relax: 'Relax', arcade: 'Play' };
+const FURN_VERB = { shower: 'Shower', toilet: 'Use toilet', sleep: 'Sleep', eat: 'Eat', cook: 'Cook', sit: 'Sit', tv: 'Watch TV', read: 'Read', laptop: 'Laptop', lift: 'Lift', run: 'Run', music: 'Music', relax: 'Relax', arcade: 'Play' };
 const FURN_ICON = { sleep: 'bed', eat: 'fridge', cook: 'food', sit: 'sofa', tv: 'tv', read: 'book', laptop: 'chart', lift: 'dumbbell', run: 'run', music: 'music', relax: 'smile', arcade: 'play' };
 let useCd = {};
 function advanceTime(h) { const steps = Math.ceil(h * 4); for (let i = 0; i < steps; i++) { const before = clockH; clockH += h / steps; if (clockH >= 24) clockH -= 24; if (before < 6 && clockH >= 6) newDay(); } }
@@ -1630,6 +1661,7 @@ async function useFurn(item) {
   if (act === 'sleep') {
     const hrs = clockH >= 20 || clockH < 6 ? ((31 - clockH) % 24) : 3;
     fade(() => { advanceTime(hrs); stats.energy = 100; stats.mood = clamp(stats.mood + 6, 0, 100); P.hp = maxHP(); saveGame(); toast(hrs > 4 ? 'Good morning! Fully rested.' : 'You took a nap. Energy restored.', 3); });
+  } else if (act === 'toilet') { const w = inside.h.toWorld(item.x, item.z), r = item.r || 0; return useToilet(w.x + Math.sin(r) * 0.05, w.z + Math.cos(r) * 0.05, r);
   } else if (act === 'shower') { const w = inside.h.toWorld(item.x, item.z); return startShower(w.x, w.z, item.r || 0);
   } else if (act === 'eat' || act === 'cook') {
     if (stats.groceries <= 0) { toast('The fridge is empty. Buy groceries at QuickMart.'); sfx.fail(); return; }
@@ -1755,6 +1787,7 @@ function openPlace(p) {
 }
 async function doSpot(s) {
   const place = inside.place, id = inside.id;
+  if (s.kind === 'restroom') { fade(() => { advanceTime(0.1); stats.bladder = 100; stats.hygiene = Math.min(100, (stats.hygiene ?? 80) + 4); toast(pick(['Ahh. Much better.', 'Washed your hands too. Good.', 'Public toilets. Never again. ...Until next time.']), 2.2); }); return; }
   if (id === 'prison') return prisonSpot(s);
   if (s.kind === 'admissions') return talkAdmissions();
   if (s.kind === 'class') return attendClass();
@@ -3416,6 +3449,7 @@ function endDate(msg) {
   if (d.inCar && ride) { d.fig.root.visible = true; const ds = doorSpot(ride, -DRIVER); d.fig.root.position.set(ds.x, baseY(ds.x, ds.z), ds.z); }
   if (msg) toast(msg, 3);
   const leave = { fig: d.fig, t: 0, fx: Math.sin(d.face + 2.5), fz: Math.cos(d.face + 2.5) };
+  if (inside && !d.inCar) { leave.tx = ORIGIN.x; leave.tz = ORIGIN.z + inside.h.d / 2 + 0.8; leave.fig.root.position.set(d.x, 0, d.z); } // walks out of the front door
   leaving.push(leave);
 }
 const leaving = [];
@@ -3443,7 +3477,10 @@ function dateLimbs(mv) {
   date.fig.inner.position.y = 0;
 }
 function updateDate(dt) {
-  for (let i = leaving.length - 1; i >= 0; i--) { const l = leaving[i]; l.t += dt; l.fig.root.position.x += l.fx * 1.6 * dt; l.fig.root.position.z += l.fz * 1.6 * dt; l.fig.root.rotation.y = Math.atan2(l.fx, l.fz); const ph = l.t * 9; l.fig.limbs[0].rotation.x = -Math.sin(ph) * 0.5; l.fig.limbs[1].rotation.x = Math.sin(ph) * 0.5; if (l.t > 6) { dyn.remove(l.fig.root); leaving.splice(i, 1); } }
+  for (let i = leaving.length - 1; i >= 0; i--) { const l = leaving[i]; l.t += dt;
+    if (l.tx != null) { const q = l.fig.root.position, dx = l.tx - q.x, dz = l.tz - q.z, dd = Math.hypot(dx, dz); if (dd < 0.4 || !inside) { dyn.remove(l.fig.root); leaving.splice(i, 1); continue; } l.fx = dx / dd; l.fz = dz / dd; const o = { x: q.x + l.fx * 1.5 * dt, z: q.z + l.fz * 1.5 * dt }; q.x = o.x; q.z = o.z; }
+    else { l.fig.root.position.x += l.fx * 1.6 * dt; l.fig.root.position.z += l.fz * 1.6 * dt; }
+    l.fig.root.rotation.y = Math.atan2(l.fx, l.fz); const ph = l.t * 9; l.fig.limbs[0].rotation.x = -Math.sin(ph) * 0.5; l.fig.limbs[1].rotation.x = Math.sin(ph) * 0.5; if (l.t > 6) { dyn.remove(l.fig.root); leaving.splice(i, 1); } }
   dateCalls(dt);
   if (!date || woo) return;
   if (gameHours() - date.since > (partner()?.id === date.id ? 16 : 7)) { endDate(partner()?.id === date.id ? `${date.name} headed home. "See you later, babe."` : `${date.name} had to head home. "Text me!"`); return; }
@@ -3612,10 +3649,12 @@ async function talkDate() {
     }
     if (o.k === 'go') {
       const known = pr.love.filter(l => pr.known.includes(l));
-      const opts = [{ label: I('chat', 'What do you want to do?'), k: 'ask' }, ...DATE_SPOTS.filter(s => s.beach || PLACES.some(q => q.interior === s.interior)).map(s => ({ label: I('pin', `Let's go to ${s.name}` + (s.loves.some(l => known.includes(l)) ? ' <small>♥</small>' : '')), k: 'spot', s })), { label: I('x', 'Back'), k: 'back' }];
+      const opts = [{ label: I('chat', 'What do you want to do?'), k: 'ask' }, ...DATE_SPOTS.filter(s => s.beach || PLACES.some(q => q.interior === s.interior)).map(s => ({ label: I('pin', `Let's go to ${s.name}` + (s.loves.some(l => known.includes(l)) ? ' <small>♥</small>' : '') + (s.beach || PLACES.some(p2 => p2.interior === s.interior && isOpen(p2)) ? '' : ' <small>closed</small>')), k: 'spot', s })), { label: I('x', 'Back'), k: 'back' }];
       const c = opts[await talk.choose(opts)]; if (c.k === 'back') continue;
       let s = c.s;
-      if (c.k === 'ask') { const l = pick(pr.love); s = DATE_SPOTS.find(q => q.loves.includes(l) && (q.beach || PLACES.some(p2 => p2.interior === q.interior))) || DATE_SPOTS[2]; if (!pr.known.includes(l)) pr.known.push(l); await talk.say(`Ooh. Can we go to ${s.name}? I love ${TOPICS[l].label.toLowerCase()}.`); }
+      const spotOpen = q => q.beach || PLACES.some(p2 => p2.interior === q.interior && isOpen(p2));
+      if (c.k === 'spot' && !spotOpen(s)) { await talk.say(`${s.name[0].toUpperCase() + s.name.slice(1)}'s closed right now. Somewhere else?`); continue; }
+      if (c.k === 'ask') { const ls = pr.love.filter(l => DATE_SPOTS.some(q => q.loves.includes(l) && spotOpen(q))), l = ls.length ? pick(ls) : null; s = l ? DATE_SPOTS.find(q => q.loves.includes(l) && spotOpen(q)) : DATE_SPOTS.find(q => spotOpen(q) && !q.loves.includes(pr.hate)) || DATE_SPOTS.find(q => q.beach); if (!l) { await talk.say(`Hmm, everything good is shut right now. ${s.name[0].toUpperCase() + s.name.slice(1)}?`); dateGo(s); continue; } if (!pr.known.includes(l)) pr.known.push(l); await talk.say(`Ooh. Can we go to ${s.name}? I love ${TOPICS[l].label.toLowerCase()}.`); }
       else await talk.say(s.loves.includes(pr.hate) ? 'Eh... if you want.' : s.loves.some(l => pr.love.includes(l)) ? 'Yes! Let\'s go!' : 'Sure, why not.');
       dateGo(s); continue;
     }
@@ -4513,7 +4552,7 @@ function setBtn(id, icon, label) {
 function talkNeeds(on) {
   const el = $('talkNeeds'); if (!on) { el.classList.add('hidden'); return; }
   const ring = (cls, ic, v) => `<div class="need ${cls}${v < 25 ? ' low' : ''}" style="--v:${Math.round(v)}%">${$(ic).querySelector('svg').outerHTML}</div>`;
-  el.innerHTML = ring('tn-h', 'nHunger', stats.hunger) + ring('tn-e', 'nEnergy', stats.energy) + ring('tn-m', 'nMood', stats.mood) + ring('tn-y', 'nHygiene', stats.hygiene ?? 80); el.classList.remove('hidden');
+  el.innerHTML = ring('tn-h', 'nHunger', stats.hunger) + ring('tn-e', 'nEnergy', stats.energy) + ring('tn-m', 'nMood', stats.mood) + ring('tn-y', 'nHygiene', stats.hygiene ?? 80) + ring('tn-b', 'nBladder', stats.bladder ?? 85); el.classList.remove('hidden');
 }
 function needBar(id, v) { if (!$(id)) return; const el = $(id); el.style.setProperty('--v', v + '%'); el.classList.toggle('low', v < 25); }
 function updateHUD(dt) {
@@ -4525,7 +4564,7 @@ function updateHUD(dt) {
   setText('zoneTxt', inside ? (inside.prop ? inside.prop.name : inside.place.name) : zoneName(f.x, f.z));
   if (waypoint && !inside) { const d = Math.hypot(f.x - waypoint.x, f.z - waypoint.z); setText('wpTxt', `${d > 1000 ? (d / 1000).toFixed(1) + ' km' : Math.round(d / 10) * 10 + ' m'}${waypoint.label ? ' · ' + waypoint.label : ''}`); } else setText('wpTxt', '');
   { const wh = $('wantedHud'), key = WANT.stars; if (hudCache.want !== key) { hudCache.want = key; wh.innerHTML = WANT.stars ? Array.from({ length: 5 }, (_, i) => `<i class="${i < WANT.stars ? '' : 'off'}"></i>`).join('') + '<u><s></s></u>' : ''; } wh.classList.toggle('flash', WANT.stars > 0 && !WANT.seen); wh.classList.toggle('seen', WANT.stars > 0 && WANT.seen); const bar = wh.querySelector('s'); if (bar) bar.style.width = (WANT.seen ? 0 : Math.min(100, WANT.loseT / evadeNeed() * 100)) + '%'; }
-  needBar('nHunger', stats.hunger); needBar('nEnergy', stats.energy); needBar('nMood', stats.mood); needBar('nHygiene', stats.hygiene ?? 80);
+  needBar('nHunger', stats.hunger); needBar('nEnergy', stats.energy); needBar('nMood', stats.mood); needBar('nHygiene', stats.hygiene ?? 80); needBar('nBladder', stats.bladder ?? 85);
   const a = am(), id = arsenal.cur, wk = id + '|' + a.mag + '|' + a.res + '|' + (P.reload > 0);
   if (hudCache.wpn !== wk) { hudCache.wpn = wk; $('wpnBtn').innerHTML = iconSVG(id) + (ws.kind === 'melee' ? '' : ws.kind === 'grenade' ? `<b>${a.res}</b>` : P.reload > 0 ? '<b class="rl">RELOAD</b>' : `<b>${a.mag}</b><span>${a.res}</span>`); }
   $('wpnBtn').classList.toggle('hidden', !!ride || !!inside);
@@ -4685,7 +4724,15 @@ function renderPhone() {
   } else if (phoneApp === 'thread') {
     const id = phoneThread, name = nameOf(id), T = stats.texts[id] || [];
     const f = fam(), isKid = id.startsWith('kid:'), isP = f.partner?.id === id;
-    const opts = isKid ? ['How was school?', 'Love you, kiddo.', 'Need anything?', 'Be home by 10.'] : isP ? ['Love you.', 'On my way home.', 'Want to go out tonight?', 'Thinking about you.', 'Sorry, busy day.'] : ['Hey you.', 'Want to hang out?', 'Thinking about you...', 'You looked amazing the other day.'];
+    // reply options fit what she just said, if she texted last
+    const lastT = T[T.length - 1], theirs = lastT && !lastT.me ? lastT.t.toLowerCase() : '';
+    let opts = isKid ? ['How was school?', 'Love you, kiddo.', 'Need anything?', 'Be home by 10.'] : isP ? ['Love you.', 'On my way home.', 'Want to go out tonight?', 'Thinking about you.', 'Sorry, busy day.'] : ['Hey you.', 'Want to hang out?', 'Thinking about you...', 'You looked amazing the other day.'];
+    if (!isKid && theirs) {
+      if (/stood me up|not coming|forget it|whatever|priority/.test(theirs)) opts = ['I\'m so sorry, something came up.', 'Let me make it up to you.', 'Want to hang out?'];
+      else if (/come (get|see)|hang out|free|tonight|pick me up|bored/.test(theirs)) opts = ['Want to hang out?', 'Sorry, busy day.', 'Maybe later.'];
+      else if (/miss you|thinking about you|love you/.test(theirs)) opts = ['Miss you too.', 'Love you.', 'Thinking about you too.', 'Want to hang out?'];
+      else opts = [...opts.slice(0, 3), 'Haha.'];
+    }
     el.innerHTML = `<button class="ph-back" data-go="msgs">‹ Messages</button><h4>${name}</h4><div class="ph-thread" id="phThr">${T.map(m => `<div class="bub ${m.me ? 'me' : ''}">${m.t}</div>`).join('') || '<p class="ph-hint">No messages yet. Say hi.</p>'}</div><div class="ph-replies">${opts.map((o, i) => `<button class="ph-mini" data-rep="${i}">${o}</button>`).join('')}</div>`;
     const thr = $('phThr'); thr.scrollTop = 1e6;
     el.querySelectorAll('[data-rep]').forEach(b => b.onclick = () => {
@@ -4695,7 +4742,15 @@ function renderPhone() {
         let rep;
         if (/hang out|go out/.test(msg)) { if (!date && !cold && Math.random() < 0.75) { rep = pick(["Yes! Come get me.", "Omw, where are you?", "Finally. See you soon."]); setTimeout(() => { if (date || inside) return; const d = stats.dates[id]; const a = rand(0, 6.28); startDate({ name: d.name, look: { ...bakeCfg(d.cfg), fem: true }, x: P.x + Math.sin(a) * 20, z: P.z + Math.cos(a) * 20, face: 0, interest: 40 + r * 0.6, root: new THREE.Group() }); }, 4000); } else rep = pick(["Can't tonight, sorry!", "Maybe another time."]); }
         else if (isKid) rep = pick(["Fine.", "Love you too, Dad.", "Can I get $20?", "lol ok", "School was boring."]);
-        else rep = cold ? pick(["k.", "Who is this?", "..."]) : pick(["Aww. You're sweet.", "Miss you too.", "Haha stop it.", "Come see me later?", "Love you too."]);
+        else if (cold) rep = pick(["k.", "Who is this?", "..."]);
+        else if (/^love you/i.test(msg)) rep = isP || r > 55 ? pick(['Love you too.', 'Love you more.', 'Aww. Love you too babe.']) : pick(['Woah... that\'s a big word.', 'Haha. Slow down, you.']);
+        else if (/thinking about you|miss you/i.test(msg)) rep = pick(['Aww, I was just thinking about you too.', 'Stop, you\'re making me blush.', 'Come see me then.']);
+        else if (/on my way/i.test(msg)) rep = pick(['Yay! See you soon.', 'Drive safe.']);
+        else if (/sorry|busy|maybe later/i.test(msg)) { const pr = stats.dates?.[id] ? prefsOf(id) : { temper: 0.3 }; pr.temper ??= Math.random(); rep = pr.temper > 0.72 ? pick(['You\'re always busy.', 'Fine.', 'Whatever.']) : pick(['No worries.', 'All good. Another time.', 'Okay, don\'t work too hard.']); if (pr.temper > 0.72) bumpRel(id, -3, false); }
+        else if (/make it up/i.test(msg)) rep = pick(['You better.', 'Hmm. Dinner. Your treat.', 'Okay... I\'ll let it slide this once.']);
+        else if (/amazing|looked/i.test(msg)) rep = pick(['Haha, thank you!', 'Stop it. ...Don\'t stop.']);
+        else if (/^hey/i.test(msg)) rep = pick(['Hey! What you up to?', 'Heyyy.', 'Hi you.']);
+        else rep = pick(['Haha.', 'lol', 'You\'re funny.']);
         bumpRel(id, cold ? 1 : 3); textMe(id, name, rep); if (phoneApp === 'thread' && phoneThread === id) renderPhone();
       }, rand(1800, 3500));
     });
@@ -4722,6 +4777,7 @@ function renderPhone() {
     el.innerHTML = `${back}<h4>Me</h4>${famHtml}
       <div class="ph-sec">Needs</div>
       <div class="ph-row col"><span><b>Hunger</b> <small>${Math.round(stats.hunger)}%</small></span>${bar(stats.hunger, '#ff8a2a')}</div>
+      <div class="ph-row col"><span><b>Bladder</b> <small>${Math.round(stats.bladder ?? 85)}%${(stats.bladder ?? 85) < 25 ? ' · find a toilet!' : ''}</small></span>${bar(stats.bladder ?? 85, '#e8d34a')}</div>
       <div class="ph-row col"><span><b>Hygiene</b> <small>${Math.round(stats.hygiene ?? 80)}%${(stats.hygiene ?? 80) < 25 ? ' · you smell' : ''}</small></span>${bar(stats.hygiene ?? 80, '#38c8ff')}</div>
       <div class="ph-row col"><span><b>Energy</b> <small>${Math.round(stats.energy)}%</small></span>${bar(stats.energy, '#ffd23f')}</div>
       <div class="ph-row col"><span><b>Mood</b> <small>${Math.round(stats.mood)}%</small></span>${bar(stats.mood, '#ff6fb5')}</div>
@@ -4809,7 +4865,7 @@ function saveGame() {
   store.set('bc_save', save); store.set('bc_arsenal', arsenal); store.set('bc_cars', garage);
 }
 // auto-update: bookmarks and home-screen apps can hold on to an old copy. Check version.json (never cached) and reload once if newer.
-const BUILD = 73;
+const BUILD = 74;
 function checkUpdate() {
   fetch('version.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(j => {
     if (!(j.v > BUILD)) return;
