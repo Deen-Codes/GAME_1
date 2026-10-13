@@ -1,25 +1,25 @@
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas } from './character.js?v=74';
-import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=74';
-import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=74';
-import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=74';
-import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=74';
-import { buildPanel, renderStats } from './ui.js?v=74';
-import { Input } from './input.js?v=74';
-import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime } from './audio.js?v=74';
-import { runMinigame } from './minigames.js?v=74';
-import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk } from './peds.js?v=74';
-import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=74';
-import { findRoute } from './nav.js?v=74';
-import { COURSES, CAREERS, QUIZ } from './careers.js?v=74';
-import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=74';
-import { attachWheel } from './wheel.js?v=74';
-import { Animals } from './animals.js?v=74';
-import { Talk } from './talk.js?v=74';
-import { svg, drawIcon } from './icons.js?v=74';
-import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=74';
-import { FURN, CATALOG } from './furniture.js?v=74';
-import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=74';
+import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas } from './character.js?v=75';
+import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=75';
+import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=75';
+import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=75';
+import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=75';
+import { buildPanel, renderStats } from './ui.js?v=75';
+import { Input } from './input.js?v=75';
+import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime } from './audio.js?v=75';
+import { runMinigame } from './minigames.js?v=75';
+import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk } from './peds.js?v=75';
+import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=75';
+import { findRoute } from './nav.js?v=75';
+import { COURSES, CAREERS, QUIZ } from './careers.js?v=75';
+import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=75';
+import { attachWheel } from './wheel.js?v=75';
+import { Animals } from './animals.js?v=75';
+import { Talk } from './talk.js?v=75';
+import { svg, drawIcon } from './icons.js?v=75';
+import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=75';
+import { FURN, CATALOG } from './furniture.js?v=75';
+import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=75';
 
 const $ = id => document.getElementById(id);
 let inside = null, editMode = false, held = null, pendingCar = false, homeMusic = false, phoneBadge = 0;
@@ -821,7 +821,7 @@ function updateFoot(dt) {
   if (P.shower) return updateShower(dt);
   if (P.sit) { // sitting on a sofa / armchair: relax until you move
     const S = P.sit; S.t += dt;
-    if (input.stick.m > 0.35 || input.consume('a') || input.consume('b') || P.dead) { P.sit = null; P.y = 0; hero.hips.position.y = hero.legLen; for (const L of [hero.legL, hero.legR]) { L.pivot.rotation.x = 0; L.knee.rotation.x = 0; } }
+    if (input.stick.m > 0.35 || (!P.sit.tv && input.consume('a')) || input.consume('b') || P.dead) { P.sit = null; P.y = 0; hero.hips.position.y = hero.legLen; for (const L of [hero.legL, hero.legR]) { L.pivot.rotation.x = 0; L.knee.rotation.x = 0; } }
     else {
       P.x = S.x; P.z = S.z; P.face = S.face;
       heroRoot.position.set(P.x, 0, P.z); hero.root.rotation.set(0, P.face, 0);
@@ -1668,7 +1668,9 @@ async function useFurn(item) {
     stats.groceries--; feed(FOODS.meal); if (act === 'cook') feed({ mood: hasDegree('culinary') ? 14 : 6 }); sfx.coin(); toast(`Ate a home-cooked meal. ${stats.groceries} meals left.`);
   } else if (act === 'sit') { // actually sit down on it, facing out
     const w = inside.h.toWorld(item.x, item.z), r = item.r || 0, back = item.t === 'couch' ? 0.12 : 0.08;
-    P.sit = { x: w.x + Math.sin(r) * back, z: w.z + Math.cos(r) * back, face: r, t: 0 }; P.face = r; sfx.click(); toast('You kick back. Move the stick to get up.', 2);
+    // a TV in front of you (within ~7m, roughly facing it) = Watch TV right from the sofa
+    const tv = inside.h.furn.find(f => { if (FURN[f.t].act !== 'tv') return false; const tw = inside.h.toWorld(f.x, f.z), dx = tw.x - w.x, dz = tw.z - w.z, d = Math.hypot(dx, dz); return d < 7 && (dx * Math.sin(r) + dz * Math.cos(r)) / d > 0.6; });
+    P.sit = { x: w.x + Math.sin(r) * back, z: w.z + Math.cos(r) * back, face: r, t: 0, tv }; P.face = r; sfx.click(); toast(tv ? 'You kick back. Tap Watch TV, or move the stick to get up.' : 'You kick back. Move the stick to get up.', 2.4);
   }
   else if (act === 'tv') { fade(() => { advanceTime(1); feed({ mood: 10, energy: 4 }); toast('You watched an episode of "Bay Housewives". Mood up.'); }); }
   else if (act === 'read') { if ((useCd.read || 0) > gameHours()) { toast('You already read today. Try tomorrow.'); return; } useCd.read = gameHours() + 12; fade(() => { advanceTime(1); feed({ energy: -4, mood: 3 }); gainXP('charm', 40); toast('You read "How to Talk to Anyone". Charm up.'); }); }
@@ -1697,8 +1699,8 @@ function placeHeld(force) { const p = holdPos(); if (!force && !fits(held.t, p.x
 function updateEdit(dt) {
   if (held) { const p = holdPos(); held.ghost.position.set(p.x, 0, p.z); held.ghost.rotation.y = held.r; const ok = fits(held.t, p.x, p.z, held.r); if (ok !== held.ok) { held.ok = ok; held.ghost.traverse(o => { if (o.isMesh && o.material.emissive) o.material.emissive.set(ok ? '#000000' : '#c01010'); }); } }
   if (input.consume('a')) { if (held) placeHeld(); else { const f = nearestFurn(); if (f) pickUp(f); else toast('Walk up to a piece of furniture'); } }
-  if (input.consume('x')) { if (held) { held.r = (held.r + Math.PI / 2) % (Math.PI * 2); sfx.click(); } else { const f = nearestFurn(); if (f) { const n = inside.h.move(f, f.x, f.z, (f.r + Math.PI / 2) % (Math.PI * 2)); saveHome(); sfx.click(); } } }
-  if (input.consume('y')) { if (held) { storage.push({ t: held.t, c: held.c }); inside.h.group.remove(held.ghost); held = null; saveHome(); toast('Put into storage'); } else { const f = nearestFurn(); if (f) { storage.push({ t: f.t, c: f.c }); inside.h.remove(f); saveHome(); toast(`${FURN[f.t].name} put into storage`); } } }
+  if (input.consume('x') && held) { if (held) { held.r = (held.r + Math.PI / 2) % (Math.PI * 2); sfx.click(); } else { const f = nearestFurn(); if (f) { const n = inside.h.move(f, f.x, f.z, (f.r + Math.PI / 2) % (Math.PI * 2)); saveHome(); sfx.click(); } } }
+  if (input.consume('y') && held) { if (held) { storage.push({ t: held.t, c: held.c }); inside.h.group.remove(held.ghost); held = null; saveHome(); toast('Put into storage'); } else { const f = nearestFurn(); if (f) { storage.push({ t: f.t, c: f.c }); inside.h.remove(f); saveHome(); toast(`${FURN[f.t].name} put into storage`); } } }
   if (input.consume('b')) endEdit();
 }
 function openStorage() {
@@ -1716,7 +1718,7 @@ function findAction() {
   if (P.dead) return null;
   if (inside) {
     if (editMode) return null;
-    if (P.sit) return { kind: 'stand', icon: 'run', label: 'Stand up' };
+    if (P.sit) return P.sit.tv ? { kind: 'furn', item: P.sit.tv, icon: 'chat', label: 'Watch TV' } : { kind: 'stand', icon: 'run', label: 'Stand up' };
     let best = null, bd = 1.9;
     for (const m of inside.marks) { const d = Math.hypot(m.x - P.x, m.z - P.z); if (d < bd) { bd = d; best = { kind: 'spot', spot: m.spot, icon: m.spot.icon === 'chat' ? 'chat' : 'door', label: SPOT_VERB(m.spot) }; } }
     if (inside.prop) for (const f of inside.h.furn) { const a = FURN[f.t].act; if (!a) continue; const w = inside.h.toWorld(f.x, f.z), d = Math.hypot(w.x - P.x, w.z - P.z) - Math.max(FURN[f.t].w, FURN[f.t].d) / 2 + 0.3; if (d < bd) { bd = d; best = { kind: 'furn', item: f, icon: 'chat', label: FURN_VERB[a] }; } }
@@ -3483,6 +3485,8 @@ function updateDate(dt) {
     l.fig.root.rotation.y = Math.atan2(l.fx, l.fz); const ph = l.t * 9; l.fig.limbs[0].rotation.x = -Math.sin(ph) * 0.5; l.fig.limbs[1].rotation.x = Math.sin(ph) * 0.5; if (l.t > 6) { dyn.remove(l.fig.root); leaving.splice(i, 1); } }
   dateCalls(dt);
   if (!date || woo) return;
+  { const gh = gameHours(); if (date.lastH != null) stats.energy = Math.max(0, stats.energy - (gh - date.lastH) * 3.5); date.lastH = gh; } // keeping her entertained is tiring
+  if (stats.energy < 8 && !date.tired) { date.tired = 1; toast(`You're exhausted. ${date.name}: "You look wiped out. Wanna call it a night?"`, 3); }
   if (gameHours() - date.since > (partner()?.id === date.id ? 16 : 7)) { endDate(partner()?.id === date.id ? `${date.name} headed home. "See you later, babe."` : `${date.name} had to head home. "Text me!"`); return; }
   const D = date;
   // dancing next to you at the club
@@ -3610,6 +3614,7 @@ async function talkDate() {
     const o = top[await talk.choose(top)];
     if (o.k === 'done') break;
     if (o.k === 'bye') { endTalk(); bumpRel(D.id, 4); return endDate(`${D.name}: "Tonight was fun. Text me."`); }
+    feed({ energy: -1.5 });
     if (o.k === 'sweet') {
       const opts = [{ label: I('heart', 'Kiss her'), k: 'kiss' }, { label: I('people', inCar ? 'Lean in for a hug' : 'Hug her'), k: 'hug' }];
       if (inCar) opts.push({ label: I('hand', 'Hand on her knee'), k: 'knee' }, { label: I('hand', 'Hold her hand'), k: 'hand' });
@@ -4576,7 +4581,7 @@ function updateHUD(dt) {
   if (ride) { const mph = Math.round(Math.abs(ride.s.v) * 2.237), lim = speedLimit(ride.s.x, ride.s.z); setText('speedTxt', String(mph)); $('speedo').classList.toggle('over', !!lim && mph > lim + 4); } // the number flashes red when you're over the limit
   const jt = race ? `Race ${race.i}/${RACE.points.length} · ${Math.ceil(race.t)}s` : job ? (job.type === 'bins' ? (job.stage === 'return' ? 'Bins · return the lorry' : `Bins · ${8 - job.bins.length}/8 · ${fmt(job.earned)}`) : job.type === 'taxi' ? (job.stage === 'pickup' ? `Cab · pick up fare · ${fmt(job.earned)}` : `Cab · drop off · ${Math.ceil(job.t)}s · ${fmt(job.pay)}`) : `Courier · ${Math.ceil(job.t)}s · ${fmt(job.pay)}`) : '';
   setText('raceTxt', jt); $('raceTxt').classList.toggle('hidden', !jt);
-  if (editMode) { setBtn('btnA', held ? 'check' : 'hand', held ? 'Place' : 'Pick up'); setBtn('btnB', 'check', 'Done'); setBtn('btnX', 'rotate', 'Rotate'); setBtn('btnY', 'box', 'Store'); }
+  if (editMode) { setBtn('btnA', held ? 'check' : 'hand', held ? 'Place' : 'Pick up'); setBtn('btnB', 'check', 'Done'); setBtn('btnX', held ? 'rotate' : 'none', held ? 'Rotate' : ''); setBtn('btnY', held ? 'box' : 'none', held ? 'Store' : ''); } // rotate/store only while you're holding something
   else if (ride && (settings.steer || 'screen') === 'screen') { setBtn('btnA', 'horn', 'Horn'); setBtn('btnX', 'lights', stats.lights === 'off' ? 'Lights off' : 'Lights auto'); setBtn('btnB', ws.kind === 'gun' ? 'fire' : 'burnout', ws.kind === 'gun' ? 'Shoot' : ride.launchReady ? 'Let go!' : 'Burnout'); setBtn('btnY', action ? action.icon : 'exit', action ? action.label : 'Get out'); }
   else if (ride) { setBtn('btnA', 'gas', 'Drive'); setBtn('btnX', 'brake', ride.s.v > 0.5 ? 'Brake' : 'Reverse'); setBtn('btnB', ws.kind === 'gun' ? 'fire' : 'none', ws.kind === 'gun' ? 'Shoot' : ''); setBtn('btnY', action ? action.icon : 'exit', action ? action.label : 'Get out'); }
   else {
@@ -4617,7 +4622,7 @@ attachWheel($('radioBtn'), {
 $('editBtn').addEventListener('pointerdown', e => { e.stopPropagation(); startEdit(); });
 $('loveBtn').addEventListener('pointerdown', e => { e.stopPropagation(); e.preventDefault(); talkDate(); });
 $('editAdd').onclick = () => { openStorage(); };
-$('editDone').onclick = () => endEdit();
+// (Done lives on the B button in edit mode)
 
 // ================================================================ PHONE
 let phoneApp = 'home';
@@ -4865,7 +4870,7 @@ function saveGame() {
   store.set('bc_save', save); store.set('bc_arsenal', arsenal); store.set('bc_cars', garage);
 }
 // auto-update: bookmarks and home-screen apps can hold on to an old copy. Check version.json (never cached) and reload once if newer.
-const BUILD = 74;
+const BUILD = 75;
 function checkUpdate() {
   fetch('version.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(j => {
     if (!(j.v > BUILD)) return;
