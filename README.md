@@ -151,6 +151,18 @@ Walk into shops, venues and homes:
 - Lifting builds visible muscle (shoulders, arms, chest). Muscle fades if you skip the gym for days.
 - Junk food (burgers, fries, shakes, pancakes) adds visible fat, worse if you eat when already full. Salads, home cooking and cardio burn it off.
 
+## New lives and life events (butterfly effects)
+- A new game starts with **Choose your story**: Fresh Start, Trust Fund Kid, Fresh Out (ex-con), Corner Hustler, College Grad, Single Parent, or Random.
+- Every few in-game hours a **life event** pops up. Which ones can happen depends on who you are (night-time on foot, owning a car, having kids, your job, prison record, wealth, body, dating history).
+- **Choices ripple forward.** Some examples:
+  - Lend a friend money and they may pay you back double and become a loyal friend, or ghost you.
+  - Return a lost wallet and the owner turns out to be a lawyer who halves your next sentence.
+  - Cook the books for your boss and an audit comes later.
+  - High-five your kid for fighting and later the police come knocking.
+  - Ignore chest pains and you collapse.
+  - Buy a homeless man a meal and he tips you off about a stash under the pier.
+- A hidden karma score tilts how some things turn out.
+
 ## Bay City College and careers
 - Enrol at Admissions:
 

@@ -399,3 +399,9 @@ input[type=text] { width: 100%; padding: 10px 12px; border-radius: 10px; border:
 .story span { display: flex; flex-direction: column; gap: 3px; }
 .story b { font-size: 15px; } .story small { opacity: .75; font-size: 12px; line-height: 1.35; }
 .story:active { background: rgba(255,210,63,.2); }
+
+/* life event cards */
+.ev-card { text-align: center; }
+.ev-ico { width: 64px; height: 64px; margin: 2px auto 8px; border-radius: 20px; display: grid; place-items: center; background: linear-gradient(135deg, #ffd23f, #ff6fb5); color: #1c1a2e; }
+.ev-ico svg { width: 34px; height: 34px; }
+.ev-card p { line-height: 1.45; }

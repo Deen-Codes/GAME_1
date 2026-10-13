@@ -1,24 +1,25 @@
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA } from './character.js?v=35';
-import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=35';
-import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=35';
-import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide } from './world.js?v=35';
-import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=35';
-import { buildPanel, renderStats } from './ui.js?v=35';
-import { Input } from './input.js?v=35';
-import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime } from './audio.js?v=35';
-import { runMinigame } from './minigames.js?v=35';
-import { Peds, bakeCfg, figure, setWalk } from './peds.js?v=35';
-import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=35';
-import { findRoute } from './nav.js?v=35';
-import { COURSES, CAREERS, QUIZ } from './careers.js?v=35';
-import { attachWheel } from './wheel.js?v=35';
-import { Animals } from './animals.js?v=35';
-import { Talk } from './talk.js?v=35';
-import { svg, drawIcon } from './icons.js?v=35';
-import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=35';
-import { FURN, CATALOG } from './furniture.js?v=35';
-import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE } from './interiors.js?v=35';
+import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA } from './character.js?v=36';
+import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=36';
+import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=36';
+import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide } from './world.js?v=36';
+import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=36';
+import { buildPanel, renderStats } from './ui.js?v=36';
+import { Input } from './input.js?v=36';
+import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime } from './audio.js?v=36';
+import { runMinigame } from './minigames.js?v=36';
+import { Peds, bakeCfg, figure, setWalk } from './peds.js?v=36';
+import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=36';
+import { findRoute } from './nav.js?v=36';
+import { COURSES, CAREERS, QUIZ } from './careers.js?v=36';
+import { EVENTS, EVENT_BY_ID } from './events.js?v=36';
+import { attachWheel } from './wheel.js?v=36';
+import { Animals } from './animals.js?v=36';
+import { Talk } from './talk.js?v=36';
+import { svg, drawIcon } from './icons.js?v=36';
+import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=36';
+import { FURN, CATALOG } from './furniture.js?v=36';
+import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE } from './interiors.js?v=36';
 
 const $ = id => document.getElementById(id);
 let inside = null, editMode = false, held = null, pendingCar = false, homeMusic = false, phoneBadge = 0;
@@ -339,7 +340,7 @@ function feed(f) { // apply a food/drink/activity effect object
   if (f.mood) stats.mood = clamp(stats.mood + f.mood, 0, 100);
   if (f.health) P.hp = Math.min(maxHP(), P.hp + f.health);
   if (f.groceries) stats.groceries += f.groceries;
-  if (f.drunk) addDrunk(f.drunk);
+  if (f.drunk) { addDrunk(f.drunk); life().drinks++; }
 }
 let needWarnT = 0;
 function updateNeeds(dtHours, dt) {
@@ -1575,7 +1576,7 @@ function endDance(quit) {
   for (const n of inside?.npcs || []) if (n.role === 'guest') n.dance = inside?.id === 'club';
   for (const m of inside?.marks || []) m.g.visible = true;
   hero.root.rotation.set(0, P.face, 0); hero.hips.position.y = hero.legLen;
-  const acc = D2.hits / D2.notes.length;
+  const acc = D2.hits / D2.notes.length; if (acc > 0.6) life().flags.danced = 1;
   if (quit && D2.hits < 5) { toast('You left the dance floor.'); return; }
   const tips = acc > 0.85 ? Math.round(D2.score / 40) : 0;
   advanceTime(0.5); feed({ mood: Math.round(6 + acc * 20), energy: -10 }); gainXP('charm', Math.round(8 + acc * 30)); gainXP('stamina', 8);
@@ -1678,6 +1679,54 @@ async function talkCareer(placeId) {
     }
   }
   endTalk(); saveGame();
+}
+
+// ================================================================ LIFE EVENTS: random moments with choices that ripple forward (butterfly effects)
+const life = () => stats.life ||= { flags: {}, queue: [], karma: 0, nextAt: 0, recent: [], drinks: 0 };
+function forceWanted(st) { WANT.v = Math.max(WANT.v, STAR_AT[st]); WANT.stars = Math.max(WANT.stars, st); WANT.seen = true; WANT.lx = P.x; WANT.lz = P.z; WANT.coolT = 7; WANT.spawnT = 1.5; }
+function lifeApi() {
+  const L = life(), f = fam();
+  return {
+    fmt, money: () => money, give: n => addMoney(Math.round(n)), take: n => { money = Math.max(0, money - Math.round(n)); }, mood: d => feed({ mood: d }), energy: d => feed({ energy: d }), hp: d => { if (d < 0) { P.hp = Math.max(5, P.hp + d); hurtFlash = 0.35; } else P.hp = Math.min(maxHP(), P.hp + d); },
+    karma: d => { L.karma = clamp(L.karma + d, -100, 100); }, karmaV: () => L.karma, flag: (k, v) => { L.flags[k] = v; }, has: k => !!L.flags[k],
+    schedule: (id, days, data) => L.queue.push({ id, at: gameHours() + days * 6, data }),
+    lvl, lvlUp: (k, x) => gainXP(k, x), rel: (id, d) => bumpRel(id, d, false), relV: id => rel(id),
+    night: () => clockH < 5 || clockH >= 21, driving: () => !!ride, hasCar: () => !!myCar, ownsHome: () => owned.size > 0,
+    career: () => career(), careerName: () => career() ? CAREERS[career().id].name.toLowerCase() : '', perf: d => { if (career()) career().perf = clamp(career().perf + d, 0, 100); },
+    fire: () => { stats.career = null; }, promote: () => { const c = career(); if (c && c.lvl < CAREERS[c.id].ladder.length - 1) { c.lvl++; c.perf = 60; } }, hire: id => { stats.career = { id, lvl: 0, perf: 55, shifts: 0, lastDay: 0 }; },
+    crime: st => forceWanted(st), kidAge: (...st) => f.kids.find(k => st.includes(kidStage(k))) || null, partner: () => f.partner, hasDated: () => Object.keys(stats.dates || {}).length > 0,
+    breakup: () => { const p = f.partner; if (p) { stats.rel[p.id] = 5; f.partner = null; } }, fat: () => body().fat, muscle: () => body().muscle, drinker: () => L.drinks > 12,
+    hospital: () => { P.hp = 1; die(); }, wasInside: () => stats.jailRecord != null, loseStash: () => { for (const g of GOODS) stash[g.id] = 0; },
+    dealerRel: d => { for (const p of PLACES) if (p.kind === 'dealer') stats.rel[p.id] = clamp(rel(p.id) + d, 0, 100); }, carDamage: n => { if (myCar) damageCar(myCar, n, myCar.s.x + 1, myCar.s.z); }, drunk: x => addDrunk(x),
+  };
+}
+let eventOpen = false;
+function lifeTick() {
+  if (eventOpen || state !== 'play' || dance || brawl || cutting || woo || stats.jail || P.dead || carAnim || (ride && Math.abs(ride.s.v) > 3) || inside?.id === 'prison') return;
+  const L = life(), now = gameHours();
+  if (!L.nextAt) L.nextAt = now + rand(3, 6);
+  const due = L.queue.findIndex(q => q.at <= now);
+  if (due < 0 && now < L.nextAt) return;
+  const api = lifeApi(); let ev, data;
+  if (due >= 0) { const q = L.queue.splice(due, 1)[0]; ev = EVENT_BY_ID[q.id]; data = q.data || {}; }
+  else {
+    L.nextAt = now + rand(5, 12);
+    const pool = EVENTS.filter(e => !e.follow && !L.recent.includes(e.id)).map(e => [e, e.when ? e.when(api) : (e.w ?? 1)]).filter(([, w]) => w > 0);
+    let tot = pool.reduce((a, [, w]) => a + w, 0), r = Math.random() * tot;
+    for (const [e, w] of pool) { if ((r -= w) <= 0) { ev = e; break; } }
+    if (!ev) return; data = ev.init ? ev.init(api) : {};
+    L.recent.push(ev.id); if (L.recent.length > 5) L.recent.shift();
+  }
+  if (!ev) return;
+  showEvent(ev, data, api);
+}
+function showEvent(ev, data, api) {
+  eventOpen = true; navigator.vibrate?.([15, 30, 15]); sfx.coin?.();
+  const ch = ev.choices(api, data);
+  modal(`<div class="ev-card"><div class="ev-ico">${svg(ev.icon || 'star', 'lg')}</div><h3>${ev.title}</h3><p>${ev.text(api, data)}</p></div>`, ch.map(c => ({ label: c.label, cls: 'big', fn: () => {
+    const res = c.go(api, data);
+    modal(`<div class="ev-card"><div class="ev-ico">${svg(ev.icon || 'star', 'lg')}</div><h3>${ev.title}</h3><p>${res}</p></div>`, [{ label: 'OK', cls: 'big', fn: () => { closeModal(); eventOpen = false; saveGame(); } }]);
+  } })));
 }
 
 // ================================================================ RELATIONSHIPS
@@ -3014,7 +3063,8 @@ function wearJumpsuit(on) {
 }
 function goToPrison(stars, coop) {
   stats.jailRecord = dayN; if (career()?.id === 'cop') { stats.career = null; setTimeout(() => toast('You were fired from the police force.', 3), 6000); }
-  const lawyer = hasDegree('law'), h = (PRISON_SENT[Math.min(5, stars)] || 12) * (coop ? 0.5 : 1) * (lawyer ? 0.5 : 1);
+  const L0 = life(), friendLaw = !!L0.flags.lawyer_friend; if (friendLaw) { delete L0.flags.lawyer_friend; setTimeout(() => toast('Your lawyer friend took the case for free. Sentence halved.', 4), 4500); }
+  const lawyer = hasDegree('law') || friendLaw, h = (PRISON_SENT[Math.min(5, stars)] || 12) * (coop ? 0.5 : 1) * (lawyer ? 0.5 : 1);
   if (lawyer) setTimeout(() => toast('You defended yourself in court. Sentence halved.', 3.5), 4000);
   stats.jail = { until: gameHours() + h, total: h, outfit: { ...charCfg }, shiv: false, spoon: false, dig: 0, plan: false, snitch: false, fights: 0, debt: 0, meals: {}, lawyer: false, csAsked: false };
   if (arsenal.cur !== 'fist') { arsenal.last = arsenal.cur; arsenal.cur = 'fist'; }
@@ -3627,7 +3677,7 @@ function saveGame() {
   store.set('bc_save', save); store.set('bc_arsenal', arsenal); store.set('bc_cars', garage);
 }
 // auto-update: bookmarks and home-screen apps can hold on to an old copy. Check version.json (never cached) and reload once if newer.
-const BUILD = 35;
+const BUILD = 36;
 function checkUpdate() {
   fetch('version.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(j => {
     if (!(j.v > BUILD)) return;
@@ -3750,7 +3800,7 @@ function step(dt) {
     updateAngry(dt);
     updateNpcList(npcs, dt); updateFlyer(dt);
   } else { updateNpcList(inside.npcs, dt); if (inside.id === 'prison') { peds.update(dt, P.x, P.z, null, false); updateAngry(dt); updateBrawl(dt); if (inside.h.upper?.length) { const o = P.y < 2 ? 0.16 : 1; if (inside.fadeO !== o) { inside.fadeO = o; inside.h.fadeUpper(o); } } } }
-  updateDate(dt); famTexts(dt); updateFx(dt); updatePolice(dt); updatePrison(dt); updateFarm(dt); if (!inside) updateEmergency(dt);
+  lifeTick(); updateDate(dt); famTexts(dt); updateFx(dt); updatePolice(dt); updatePrison(dt); updateFarm(dt); if (!inside) updateEmergency(dt);
   updateBullets(dt); updateProjectiles(dt); updateParticles(dt); updateCash(dt); updateMarkers(); updateRace(dt); updateRoute(dt); updateCustomers(dt); updateJob(dt);
   if (input.consume('map') || input.consume('pause')) openPhone('maps');
   for (let i = 1; i <= 9; i++) if (input.keys.has('Digit' + i)) { input.keys.delete('Digit' + i); selectWeapon(SLOTS[i - 1].id); }
@@ -3916,4 +3966,4 @@ function frame(now) {
 }
 startGame();
 requestAnimationFrame(frame);
-window.__game = { get animals() { return animals; }, crime, WANT, copCars, cops, pitFight, busted, fam, famNewDay, makeOfficial, talkFamily, get dayN() { return dayN; }, set dayN(v) { dayN = v; }, scene: G.scene, cam: G.cam, snap: () => updateCamera(0, true), get state() { return state; }, P, input, get ride() { return ride; }, get myCar() { return myCar; }, get traffic() { return traffic; }, peds, setTime: h => { clockH = h; }, openCustom, enterVehicle, exitCar, get money() { return money; }, set money(v) { money = v; }, openPlace, PLACES, PROPERTIES, runMinigame, get action() { return action; }, arsenal, selectWeapon, openPhone, setWaypoint, get route() { return route; }, talkToPed, talk, doAction, stats, get inside() { return inside; }, enterInterior, exitInterior, get customers() { return customers; }, newCustomer, startEdit, endEdit, get job() { return job; }, gainXP, storage, doSpot, useFurn, phoneGo, talkVenue, talkJob, openPlace, talkCustomer, startJob, openCarShop, damageCar, repairCar, addFire, get fires() { return fires; }, get ems() { return ems; }, get vehicles() { return vehicles; }, makeVehicle, makeCop, prisonFight, bodyCheck, attendClass, talkAdmissions, edu, startDance, get dance() { return dance; }, radioSet: i => { radioSet(i); radioOn(true); }, get zoom() { return zoom; }, set zoom(z) { zoom = z; }, DEFAULT_CAR, setState: x => setState(x), get jail() { return stats.jail; } };
+window.__game = { get animals() { return animals; }, crime, WANT, copCars, cops, pitFight, busted, fam, famNewDay, makeOfficial, talkFamily, get dayN() { return dayN; }, set dayN(v) { dayN = v; }, scene: G.scene, cam: G.cam, snap: () => updateCamera(0, true), get state() { return state; }, P, input, get ride() { return ride; }, get myCar() { return myCar; }, get traffic() { return traffic; }, peds, setTime: h => { clockH = h; }, openCustom, enterVehicle, exitCar, get money() { return money; }, set money(v) { money = v; }, openPlace, PLACES, PROPERTIES, runMinigame, get action() { return action; }, arsenal, selectWeapon, openPhone, setWaypoint, get route() { return route; }, talkToPed, talk, doAction, stats, get inside() { return inside; }, enterInterior, exitInterior, get customers() { return customers; }, newCustomer, startEdit, endEdit, get job() { return job; }, gainXP, storage, doSpot, useFurn, phoneGo, talkVenue, talkJob, openPlace, talkCustomer, startJob, openCarShop, damageCar, repairCar, addFire, get fires() { return fires; }, get ems() { return ems; }, get vehicles() { return vehicles; }, makeVehicle, makeCop, prisonFight, life, bodyCheck, attendClass, talkAdmissions, edu, startDance, get dance() { return dance; }, radioSet: i => { radioSet(i); radioOn(true); }, get zoom() { return zoom; }, set zoom(z) { zoom = z; }, DEFAULT_CAR, setState: x => setState(x), get jail() { return stats.jail; } };

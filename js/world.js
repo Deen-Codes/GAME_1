@@ -72,7 +72,7 @@ ROADS.push({ x0: 288, x1: 760, z0: 336 - HR, z1: 336 + HR, axis: 'x', hwy: true 
 ROADS.push({ x0: -340, x1: -288, z0: 336 - HR, z1: 336 + HR, axis: 'x', hwy: true });
 ROADS.push({ x0: 600 - HR, x1: 600 + HR, z0: 144, z1: 336, axis: 'z', hwy: true }); // eastport to coast
 ROADS.push({ x0: -HR, x1: HR, z0: -620, z1: -568, axis: 'z', hwy: true });         // airport access
-ROADS.push({ x0: -540, x1: -288, z0: -3.5, z1: 3.5, axis: 'x', dirt: true });       // forest trail
+ROADS.push({ x0: -540, x1: -288 - HR - 0.2, z0: -3.5, z1: 3.5, axis: 'x', dirt: true }); // forest trail (stops at the city road so the surfaces don't z-fight)
 export function roadAt(x, z) { for (const r of ROADS) if (inR(r, x, z)) return r; return null; }
 function nearRoad(x, z, m) { for (const r of ROADS) if (inR(r, x, z, m)) return true; return false; }
 export function cityAt(x, z, m = 0) { for (const c of CITIES) if (inR(c, x, z, m)) return c; return null; }
