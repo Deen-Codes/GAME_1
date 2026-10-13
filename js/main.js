@@ -1,25 +1,25 @@
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=89';
-import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=89';
-import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=89';
-import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=89';
-import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=89';
-import { buildPanel, renderStats } from './ui.js?v=89';
-import { Input } from './input.js?v=89';
-import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime } from './audio.js?v=89';
-import { runMinigame } from './minigames.js?v=89';
-import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk } from './peds.js?v=89';
-import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=89';
-import { findRoute } from './nav.js?v=89';
-import { COURSES, CAREERS, QUIZ } from './careers.js?v=89';
-import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=89';
-import { attachWheel } from './wheel.js?v=89';
-import { Animals } from './animals.js?v=89';
-import { Talk } from './talk.js?v=89';
-import { svg, drawIcon } from './icons.js?v=89';
-import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=89';
-import { FURN, CATALOG } from './furniture.js?v=89';
-import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=89';
+import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=90';
+import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=90';
+import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=90';
+import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=90';
+import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=90';
+import { buildPanel, renderStats } from './ui.js?v=90';
+import { Input } from './input.js?v=90';
+import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime } from './audio.js?v=90';
+import { runMinigame } from './minigames.js?v=90';
+import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk } from './peds.js?v=90';
+import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=90';
+import { findRoute } from './nav.js?v=90';
+import { COURSES, CAREERS, QUIZ } from './careers.js?v=90';
+import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=90';
+import { attachWheel } from './wheel.js?v=90';
+import { Animals } from './animals.js?v=90';
+import { Talk } from './talk.js?v=90';
+import { svg, drawIcon } from './icons.js?v=90';
+import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=90';
+import { FURN, CATALOG } from './furniture.js?v=90';
+import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=90';
 
 const $ = id => document.getElementById(id);
 let inside = null, editMode = false, held = null, pendingCar = false, homeMusic = false, phoneBadge = 0;
@@ -198,7 +198,7 @@ let animals = null; // created once baseY exists (see below)
 { const sc = peds.scare.bind(peds); peds.scare = (x, z, r = 18) => { sc(x, z, r); animals?.scare(x, z, r * 1.6); }; }
 const talk = new Talk();
 function applySettings() {
-  $('pad').classList.toggle('righty', settings.stickSide === 'right');
+  $('pad').classList.toggle('righty', settings.stickSide === 'right'); document.body.classList.toggle('righty', settings.stickSide === 'right');
   $('speedo').classList.toggle('righty', settings.stickSide === 'right');
   setMuted(!settings.sound);
   renderer.shadowMap.enabled = settings.shadows; sun.castShadow = settings.shadows;
@@ -328,10 +328,10 @@ const subs = (() => {
     cur = line; t = 0; cur.shown = -1; cur.len = line.text.length; cur.hold = Math.max(1.6, cur.len * 0.035 + 1.2);
     const f = figFor(line.who.key, line.who.cfg); f.root.visible = true; cur.fig = f;
     nameEl.textContent = line.who.name + (line.tag ? ` · ${line.tag}` : line.radio ? ' · radio' : ''); txtEl.textContent = '';
-    el.classList.toggle('radio', line.radio); el.classList.toggle('me', !!line.who.me); el.classList.remove('hidden'); frameT = 0;
+    el.classList.toggle('radio', line.radio); el.classList.toggle('me', !!line.who.me); el.classList.remove('hidden'); slotSync(); frameT = 0;
     if (line.radio) { const A = audio(); if (A) { sfx.note(1400, A.currentTime, 0.05, 'square', 0.02, 3000); sfx.note(1100, A.currentTime + 0.06, 0.05, 'square', 0.02, 3000); } }
   }
-  function stop() { if (cur?.fig) cur.fig.root.visible = false; cur = null; el.classList.add('hidden'); }
+  function stop() { if (cur?.fig) cur.fig.root.visible = false; cur = null; el.classList.add('hidden'); slotSync(); }
   function update(dt) {
     if (state !== 'play') { if (cur) stop(); return; }
     if (!cur) { if (queue.length) start(queue.shift()); else return; }
@@ -342,7 +342,7 @@ const subs = (() => {
     const f = cur.fig, mouth = talking ? Math.abs(Math.sin(t * 15)) * (0.5 + 0.5 * Math.abs(Math.sin(t * 4.3))) : 0;
     setFace(f, cur.expr, mouth);
     f.head.rotation.x = talking ? Math.sin(t * 9) * 0.05 : Math.sin(t * 1.4) * 0.02; f.head.rotation.y = Math.sin(t * 1.7) * 0.12 + (cur.expr === 'flirty' ? 0.15 : 0); f.head.rotation.z = cur.expr === 'flirty' ? 0.1 : cur.expr === 'sad' ? -0.06 : 0;
-    const hp = f.hp; cam.position.set(hp.x + 0.07, hp.y + 0.03, hp.z + 1.0); cam.lookAt(hp.x, hp.y - 0.02, hp.z);
+    const hp = f.hp; cam.position.set(hp.x + 0.1, hp.y + 0.06, hp.z + 1.9); cam.lookAt(hp.x, hp.y + 0.02, hp.z);
     for (const [k, g] of cache) g.root.visible = g === f;
     R.render(scene, cam);
   }
@@ -1249,7 +1249,10 @@ function meleeHit(step = 0) {
 // ---------------- health
 let time = 0, clockH = 8, dayN = 1, shake = 0, saveT = 0, toastT = 0, hurtFlash = 0, timeScale = 1;
 const gameHours = () => dayN * 24 + clockH;
-function toast(msg, dur = 2.4) { const t = $('toast'); t.textContent = msg; t.classList.add('on'); toastT = dur; }
+function toast(msg, dur = 2.4) { const t = $('toast'); t.textContent = msg; t.classList.add('on'); toastT = dur; slotSync(); }
+let noteT = 0;
+function slotNote(icon, title, sub, dur = 4, cls = '') { const n = $('note'); $('noteIco').innerHTML = svg(icon, 'sm'); $('noteT').textContent = title; $('noteS').textContent = sub || ''; n.className = 'note ' + cls; noteT = dur; slotSync(); }
+function slotSync() { $('hud').classList.toggle('slot', toastT > 0 || noteT > 0 || !$('subs').classList.contains('hidden')); }
 function hurt(d) { if (P.dead || d <= 0) return; P.hp = Math.max(0, P.hp - d);
   if (P.hp <= 0 && WANT.stars && !stats.jail && nearestCop(P.x, P.z) < 45) { P.hp = maxHP() * 0.25; toast('You went down. The police cuffed you.', 2.5); if (ride) exitCar(); busted(); return; } // taken down by police = arrested, not the morgue
   P.hurtT = 0; hurtFlash = 0.35; shake = Math.max(shake, 0.3); navigator.vibrate?.(30); if (P.hp <= 0) die(); }
@@ -3837,7 +3840,7 @@ function peek(id, html, dur = 4.5) {
   let pl = b.querySelector('.peek'); if (!pl) { pl = document.createElement('span'); pl.className = 'peek'; b.appendChild(pl); }
   pl.innerHTML = html; b.classList.add('open'); clearTimeout(peekT[id]); peekT[id] = setTimeout(() => b.classList.remove('open'), dur * 1000);
 }
-function notify(from, text, dur = 4.5) { const t = text.length > 52 ? text.slice(0, 50) + '…' : text; peek('phoneBtn', `<b>${from}</b><small>${t}</small>`, dur); }
+function notify(from, text, dur = 4.5) { slotNote('phone', from, text, dur); }
 function nameOf(id) { if (stats.dates?.[id]) return stats.dates[id].name; const k = fam().kids.find(k => k.id === id); return k ? k.name : id; }
 // called from WooHoo
 function maybePregnant(withId, tryForBaby) {
@@ -5500,7 +5503,7 @@ function updateHUD(dt) {
   needBar('nHunger', stats.hunger); needBar('nEnergy', stats.energy); needBar('nMood', stats.mood); needBar('nHygiene', stats.hygiene ?? 80); needBar('nBladder', stats.bladder ?? 85);
   const a = am(), id = arsenal.cur, wk = id + '|' + a.mag + '|' + a.res + '|' + (P.reload > 0);
   if (hudCache.wpn !== wk) { hudCache.wpn = wk; $('wpnBtn').innerHTML = iconSVG(id) + (ws.kind === 'melee' ? '' : ws.kind === 'grenade' ? `<b>${a.res}</b>` : P.reload > 0 ? '<b class="rl">RELOAD</b>' : `<b>${a.mag}</b><span>${a.res}</span>`); }
-  $('wpnBtn').classList.toggle('hidden', !!ride || !!inside);
+  $('wpnBtn').classList.toggle('hidden', !!inside);
   $('editBtn').classList.toggle('hidden', !(inside && inside.prop) || editMode);
   $('radioBtn').classList.toggle('hidden', !ride);
   $('carLabel').classList.toggle('on', !!ride && time < carLabelT);
@@ -5524,7 +5527,8 @@ function updateHUD(dt) {
   $('btnX').classList.toggle('idle', !ride && !editMode && (inside || false));
   $('btnY').classList.toggle('idle', !ride && !editMode && !(!inside && (ws.kind === 'gun' || ws.kind === 'rpg')));
   $('pad').classList.toggle('driving', !!ride && (settings.steer || 'screen') !== 'screen');
-  if (toastT > 0) { toastT -= dt; if (toastT <= 0) $('toast').classList.remove('on'); }
+  if (toastT > 0) { toastT -= dt; if (toastT <= 0) { $('toast').classList.remove('on'); slotSync(); } }
+  if (noteT > 0) { noteT -= dt; if (noteT <= 0) { $('note').classList.add('hidden'); slotSync(); } }
   drawMinimap();
 }
 
@@ -5540,7 +5544,7 @@ attachWheel($('wpnBtn'), {
   onOpen: () => { timeScale = 0.2; }, onClose: () => { timeScale = 1; },
 });
 const ST_ICON = ['sun', 'music', 'moon', 'bolt', 'book', 'fist', 'heart', 'wave', 'mic', 'star', 'x'];
-onSong((song, st) => { if (ride) peek('radioBtn', `<b>${song.title}</b><small>${song.artist}</small>`, 3.2); else if (homeMusic) toast(`Now playing: ${song.title} · ${song.artist}`, 3); });
+onSong((song, st) => { if (ride || homeMusic) slotNote('music', song.title, `${song.artist}${st?.name ? ' · ' + st.name : ''}`, 3.4, 'radio'); });
 attachWheel($('radioBtn'), {
   items: () => STATIONS.map((s, i) => ({ icon: svg(ST_ICON[i] || 'radio', 'wheel'), label: s.name.split(' — ')[0], sub: s.name.split(' — ')[1] || '', current: radioIndex() === i })),
   onSelect: (it, i) => { radioSet(i); radioOn(!!ride); toast(STATIONS[i].name, 1.4); },
@@ -5847,7 +5851,7 @@ function saveGame() {
   store.set('bc_save', save); store.set('bc_arsenal', arsenal); store.set('bc_cars', garage);
 }
 // auto-update: bookmarks and home-screen apps can hold on to an old copy. Check version.json (never cached) and reload once if newer.
-const BUILD = 89;
+const BUILD = 90;
 function checkUpdate() {
   fetch('version.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(j => {
     if (!(j.v > BUILD)) return;

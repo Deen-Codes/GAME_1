@@ -489,3 +489,28 @@ input[type=text] { width: 100%; padding: 10px 12px; border-radius: 10px; border:
 .ph-msg.main { border: 1px solid rgba(255,210,63,.55); background: rgba(255,210,63,.12); border-radius: 14px; }
 .mainpill { display: table; font-size: 10px; font-weight: 900; letter-spacing: .05em; color: #16161b; background: #ffd23f; border-radius: 999px; padding: 2px 8px; margin-bottom: 4px; }
 .ph-msg .goal { font-weight: 800; color: #ffd23f; display: flex; gap: 6px; align-items: center; }
+
+/* ---- HUD v2: the top-left slot. Needs rings step aside when someone talks, a notification lands or a song changes. ---- */
+.hud-l { width: calc(100vw - 172px - var(--sal) - var(--sar)); max-width: 330px; }
+.hud-l .needs, .hud-l .wanted { transition: opacity .18s; }
+#hud.slot .hud-l .needs { display: none; }
+#subs { position: static; margin: 0; width: 100%; max-width: none; bottom: auto; left: auto; right: auto; padding: 6px 10px 6px 6px; gap: 8px; border-radius: 16px; }
+#subs.hidden { display: none !important; }
+.subFaceWrap { flex: 0 0 54px; width: 54px; height: 54px; }
+#subFace { width: 54px; height: 54px; }
+#subTxt { font-size: 13px; }
+.toast { position: static; margin: 0; width: auto; max-width: 100%; top: auto; left: auto; right: auto; text-align: left; border-radius: 14px; padding: 7px 12px; display: none; }
+.toast.on { display: block; }
+.note { pointer-events: none; display: flex; align-items: center; gap: 9px; width: 100%; padding: 6px 12px 6px 6px; border-radius: 16px; background: rgba(10,10,24,.72); border: 1px solid rgba(255,255,255,.12); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+.note.hidden { display: none; }
+.note .nico { flex: 0 0 38px; height: 38px; border-radius: 12px; display: grid; place-items: center; background: #2f80ed; }
+.note.radio .nico { background: #9b51e0; }
+.note .nbody { display: flex; flex-direction: column; min-width: 0; }
+.note b { font-size: 13px; font-weight: 900; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.note small { font-size: 12px; font-weight: 700; opacity: .8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* where you are: bottom-left corner, under the stick */
+#zoneTxt { position: fixed; left: calc(14px + var(--sal)); bottom: calc(8px + var(--sab)); margin: 0; z-index: 7; pointer-events: none; }
+/* weapon: just above the action buttons, in reach of your thumb (on foot and in the car) */
+#wpnBtn { position: fixed; right: calc(14px + var(--sar)); bottom: calc(var(--pad) + var(--sab) + 2px); margin: 0; z-index: 7; }
+#pad.righty ~ #hud #wpnBtn, body.righty #wpnBtn { right: auto; left: calc(14px + var(--sal)); }
+body.righty #zoneTxt { left: auto; right: calc(14px + var(--sar)); }
