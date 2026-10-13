@@ -2,7 +2,7 @@
 // stray cats, dogs out on walks with their owners, squirrels, deer in the hills by day, and raccoons,
 // possums, coyotes and owls at night. All low-poly, baked into a few meshes each so they're cheap to draw.
 import * as THREE from '../lib/three.module.min.js';
-import { CITIES, LAMPS, FIELDS, sandLine, shoreLine, walkable, groundH, cityAt, roadAt, wallTop } from './world.js?v=87';
+import { CITIES, LAMPS, FIELDS, sandLine, shoreLine, walkable, groundH, cityAt, roadAt, wallTop } from './world.js?v=88';
 // a spot on a nearby rooftop (roof edge-ish), or null
 function roofSpot(x, z, rMin = 8, rMax = 45) { for (let i = 0; i < 10; i++) { const a = Math.random() * 6.28, d = rMin + Math.random() * (rMax - rMin), px = x + Math.sin(a) * d, pz = z + Math.cos(a) * d, t = wallTop(px, pz); if (t != null && t > 3 && t < 40) return { x: px, z: pz, y: t + 0.02 }; } return null; }
 
@@ -76,7 +76,7 @@ const RUN = { cow: 3, horse: 9, sheep: 4.5, pig: 3.5, goat: 5, dog: 6, cat: 6.5,
 const FEAR = { cow: 2.5, horse: 4, sheep: 5, pig: 3, goat: 3, chicken: 3, dog: 0, cat: 6, raccoon: 6, possum: 5, coyote: 12, deer: 18, squirrel: 5, pigeon: 4.5, crow: 6, seagull: 5, owl: 5 };
 
 export class Animals {
-  constructor(parent, peds, ground) { this.parent = parent; this.peds = peds; this.ground = ground; this.list = []; this.t = 0; this.leash = []; }
+  constructor(parent, peds, ground) { this.parent = parent; this.peds = peds; this.ground = ground; this.list = []; this.t = 0; }
   add(kind, x, z, o = {}) {
     const m = makeMesh(kind);
     const a = { kind, ...m, x, z, y: o.y ?? this.ground(x, z), face: rand(0, 6.28), state: o.state || (m.bird ? 'ground' : 'idle'), t: rand(0.5, 4), phase: rand(0, 6), hx: x, hz: z, vy: 0, ...o };

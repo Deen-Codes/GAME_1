@@ -1,25 +1,25 @@
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=87';
-import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=87';
-import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=87';
-import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=87';
-import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=87';
-import { buildPanel, renderStats } from './ui.js?v=87';
-import { Input } from './input.js?v=87';
-import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime } from './audio.js?v=87';
-import { runMinigame } from './minigames.js?v=87';
-import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk } from './peds.js?v=87';
-import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=87';
-import { findRoute } from './nav.js?v=87';
-import { COURSES, CAREERS, QUIZ } from './careers.js?v=87';
-import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=87';
-import { attachWheel } from './wheel.js?v=87';
-import { Animals } from './animals.js?v=87';
-import { Talk } from './talk.js?v=87';
-import { svg, drawIcon } from './icons.js?v=87';
-import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=87';
-import { FURN, CATALOG } from './furniture.js?v=87';
-import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=87';
+import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=88';
+import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=88';
+import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=88';
+import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=88';
+import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=88';
+import { buildPanel, renderStats } from './ui.js?v=88';
+import { Input } from './input.js?v=88';
+import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime } from './audio.js?v=88';
+import { runMinigame } from './minigames.js?v=88';
+import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk } from './peds.js?v=88';
+import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=88';
+import { findRoute } from './nav.js?v=88';
+import { COURSES, CAREERS, QUIZ } from './careers.js?v=88';
+import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=88';
+import { attachWheel } from './wheel.js?v=88';
+import { Animals } from './animals.js?v=88';
+import { Talk } from './talk.js?v=88';
+import { svg, drawIcon } from './icons.js?v=88';
+import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=88';
+import { FURN, CATALOG } from './furniture.js?v=88';
+import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=88';
 
 const $ = id => document.getElementById(id);
 let inside = null, editMode = false, held = null, pendingCar = false, homeMusic = false, phoneBadge = 0;
@@ -104,7 +104,7 @@ const carLib = [];
 function ensureCarLib() {
   if (carLib.length) return;
   let s = 12345; const r = () => (s = (s * 16807) % 2147483647) / 2147483647;
-  for (let i = 0; i < 18; i++) { const cfg = trafficCar(r), car = buildCar(cfg); carLib.push({ cfg, geo: bakeGroup(car.group), len: car.length, wid: car.width }); disposeObject(car.group); }
+  for (let i = 0; i < 26; i++) { const cfg = trafficCar(r), car = buildCar(cfg); carLib.push({ cfg, geo: bakeGroup(car.group), len: car.length, wid: car.width }); disposeObject(car.group); }
 }
 
 // ================================================================ see-through fade
@@ -1001,8 +1001,8 @@ function libOf(cfg) { const car = buildCar(cfg), L = { cfg, geo: bakeGroup(car.g
 function districtCar(c) {
   const r = Math.random();
   if (c.id === 'main' && r < 0.24) { distLibs.taxi ||= libOf({ ...DEFAULT_CAR, ...CAR_PRESETS.Taxi }); return distLibs.taxi; }
-  if (c.id === 'east' && r < 0.45) { distLibs.east ||= Array.from({ length: 6 }, () => libOf({ ...trafficCar(), body: pick(['hatch', 'classic', 'lowrider', 'pickup', 'sedan', 'van']), finish: pick(['matte', 'gloss']), bodyColor: pick(['#7c828d', '#55602f', '#8b1e3f', '#c2b280', '#3a3d45', '#5a3a22']) })); return pick(distLibs.east); }
-  if (c.id === 'north' && r < 0.3) { distLibs.rich ||= Array.from({ length: 5 }, () => libOf({ ...trafficCar(), body: pick(['sports', 'hyper', 'convertible', 'suv', 'coupe']), finish: pick(['metallic', 'gloss']), bodyColor: pick(['#16161b', '#ffffff', '#e23b3b', '#ffd23f', '#2f80ed', '#c9ccd2']) })); return pick(distLibs.rich); }
+  if (c.id === 'east' && r < 0.45) { distLibs.east ||= Array.from({ length: 6 }, () => libOf({ ...trafficCar(), body: pick(['hatch', 'classic', 'lowrider', 'pickup', 'sedan', 'van', 'compact', 'jeep']), finish: pick(['matte', 'gloss']), bodyColor: pick(['#7c828d', '#55602f', '#8b1e3f', '#c2b280', '#3a3d45', '#5a3a22']) })); return pick(distLibs.east); }
+  if (c.id === 'north' && r < 0.3) { distLibs.rich ||= Array.from({ length: 5 }, () => libOf({ ...trafficCar(), body: pick(['sports', 'hyper', 'convertible', 'suv', 'coupe', 'gt', 'jeep']), finish: pick(['metallic', 'gloss']), bodyColor: pick(['#16161b', '#ffffff', '#e23b3b', '#ffd23f', '#2f80ed', '#c9ccd2']) })); return pick(distLibs.rich); }
   return carLib[Math.floor(Math.random() * carLib.length)];
 }
 function updateTraffic(dt) {
@@ -4267,7 +4267,7 @@ const DATE_SPOTS = [
   { id: 'beach', beach: true, name: 'the beach', loves: ['travel', 'fitness'] },
 ];
 const LOVE_STATION = { music: 1, nightlife: 3, art: 2, travel: 0, fitness: 3, cars: 2, food: 0, money: 1 };
-function seatsFor(v) { const b = v.cfg?.body; if (v.b.two) return v.b.two === 'moto' ? 2 : 1; return { coupe: 2, sports: 2, hyper: 2, convertible: 2, buggy: 2, tractor: 1, boxtruck: 3, pickup: 3, van: 6, limo: 8 }[b] || 4; }
+function seatsFor(v) { const b = v.cfg?.body; if (v.b.two) return v.b.two === 'moto' ? 2 : 1; return { coupe: 2, sports: 2, hyper: 2, convertible: 2, buggy: 2, tractor: 1, boxtruck: 3, pickup: 3, van: 6, limo: 8, compact: 2, gt: 2, minivan: 7 }[b] || 4; }
 function prefsOf(id, src) {
   stats.dates ||= {}; const d = stats.dates[id] ||= {};
   if (!d.prefs) { const keys = Object.keys(TOPICS).sort(() => Math.random() - 0.5); d.prefs = src && src.love ? { love: [...src.love], hate: src.hate, known: [...(src.known || [])], att: src.att || 'normal' } : { love: keys.slice(0, 2), hate: keys[2], known: [], att: pick(['straight', 'normal', 'normal', 'edgy']) }; }
@@ -5772,7 +5772,7 @@ function saveGame() {
   store.set('bc_save', save); store.set('bc_arsenal', arsenal); store.set('bc_cars', garage);
 }
 // auto-update: bookmarks and home-screen apps can hold on to an old copy. Check version.json (never cached) and reload once if newer.
-const BUILD = 87;
+const BUILD = 88;
 function checkUpdate() {
   fetch('version.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(j => {
     if (!(j.v > BUILD)) return;

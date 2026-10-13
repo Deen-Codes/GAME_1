@@ -1,5 +1,5 @@
 // Everything you can walk or drive up to: shops, barbers, property, dealers, minigames, chop shop, race.
-import { blockSide, attachDoor, addStructure } from './world.js?v=87';
+import { blockSide, attachDoor, addStructure } from './world.js?v=88';
 
 const S = (city, i, j, side) => blockSide(city, i, j, side);
 
@@ -175,7 +175,7 @@ export const RACE = {
   points: [[0, -288], [192, -288], [192, -96], [96, -96], [96, 96], [-96, 96], [-96, -96], [0, -96]],
 };
 
-export const CHOP_VALUE = { moto: 900, bike: 60, scooter: 80, hatch: 350, sedan: 500, coupe: 700, sports: 1400, muscle: 950, pickup: 650, van: 450, buggy: 400, limo: 1600, suv: 800, convertible: 1100, wagon: 450, lowrider: 900, classic: 1000, boxtruck: 600, hyper: 2600 };
+export const CHOP_VALUE = { compact: 280, hothatch: 800, jeep: 900, minivan: 500, gt: 1300, moto: 900, bike: 60, scooter: 80, hatch: 350, sedan: 500, coupe: 700, sports: 1400, muscle: 950, pickup: 650, van: 450, buggy: 400, limo: 1600, suv: 800, convertible: 1100, wagon: 450, lowrider: 900, classic: 1000, boxtruck: 600, hyper: 2600 };
 
 // Shops, venues and homes get a real front door on their building; the marker moves to stand in front of it.
 const DOOR_COL = { tattoo: '#ff5a8a', burgershop: '#ffd23f', laundry: '#38e8ff', clothes: '#ff6fb5', barber: '#2f80ed', guns: '#e23b3b', diner: '#ffd23f', mart: '#4cd964', gym: '#ff8a2a', casino: '#d4af37', motors: '#38e8ff', casa: '#c98a4a', bar: '#1fb5a8', club: '#9b51e0', church: '#c9a24a', hospital: '#e23b3b', police: '#2a6aff', pit: '#ff3b3b', college: '#2f80ed', office: '#38e8ff' };

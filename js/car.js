@@ -1,7 +1,7 @@
 // Modular car builder. Car faces +Z, sits on y=0, origin at the centre of the wheelbase.
 import * as THREE from '../lib/three.module.min.js';
-import { BASIC } from './character.js?v=87';
-import { patternTexture } from './gun.js?v=87';
+import { BASIC } from './character.js?v=88';
+import { patternTexture } from './gun.js?v=88';
 
 export const BODIES = {
   hatch:  { label: 'Hatchback', L: 3.8, W: 1.75, bh: 0.55, cl: 2.0, ch: 0.62, co: -0.4,  wr: 0.34, mass: 1.0 },
@@ -19,6 +19,11 @@ export const BODIES = {
   lowrider: { label: 'Lowrider', L: 5.2, W: 1.95, bh: 0.46, cl: 2.2, ch: 0.48, co: -0.35, wr: 0.33, mass: 1.15 },
   classic: { label: 'Classic',  L: 5.1, W: 1.95, bh: 0.6,  cl: 2.0, ch: 0.52, co: -0.25, wr: 0.38, mass: 1.1, fins: true },
   boxtruck: { label: 'Box Truck', L: 6.3, W: 2.2, bh: 0.8, cl: 1.4, ch: 0.95, co: 2.0, wr: 0.45, mass: 1.6, box: true },
+  compact: { label: 'City Car', L: 2.9, W: 1.6, bh: 0.55, cl: 1.75, ch: 0.72, co: -0.2, wr: 0.3, mass: 0.75, boxy: true },
+  hothatch: { label: 'Hot Hatch', L: 4.0, W: 1.85, bh: 0.5, cl: 1.9, ch: 0.56, co: -0.45, wr: 0.36, mass: 0.95 },
+  jeep:   { label: '4x4',       L: 4.2, W: 1.95, bh: 0.72, cl: 2.1, ch: 0.82, co: -0.35, wr: 0.46, mass: 1.25, boxy: true, spare: true },
+  minivan: { label: 'Minivan',  L: 4.9, W: 1.95, bh: 0.68, cl: 3.5, ch: 0.85, co: -0.25, wr: 0.37, mass: 1.25, boxy: true },
+  gt:     { label: 'Grand Tourer', L: 4.95, W: 1.95, bh: 0.46, cl: 1.7, ch: 0.46, co: -0.65, wr: 0.38, mass: 1.0 },
   hyper:  { label: 'Hypercar',  L: 4.7, W: 2.05, bh: 0.38, cl: 1.5, ch: 0.38, co: -0.05, wr: 0.38, mass: 0.85 },
   tractor: { label: 'Tractor', L: 3.8, W: 2.1, bh: 0.9, cl: 1.2, ch: 1.1, co: -0.6, wr: 0.75, mass: 1.6, tractor: true },
   moto:   { label: 'Motorbike', L: 2.1, W: 0.7, bh: 0.5, cl: 0, ch: 0, co: 0, wr: 0.33, mass: 0.45, two: 'moto' },
@@ -32,6 +37,8 @@ export const CAR_PARTS = {
   suspension: { lowered: o('Lowered', { grip: 1.08, off: 0.8 }), stock: o('Stock'), lifted: o('Lifted', { grip: 0.92, off: 1.25 }) },
   wheels: { steel: o('Steel'), fivespoke: o('Five-spoke'), mesh: o('Mesh'), deepdish: o('Deep dish'), offroad: o('Beadlock'), turbine: o('Turbine'), wire: o('Wire spoke'), aero: o('Aero disc'), split: o('Split spoke') },
   wheelSize: { s: o('Small'), m: o('Medium'), l: o('Large', { off: 1.1 }) },
+  lamps: { square: o('Square'), round: o('Round'), slim: o('Slim LED'), quad: o('Quad') },
+  grille: { stock: o('Stock'), mesh: o('Mesh'), chrome: o('Chrome bars'), wide: o('Wide mouth') },
   front: { stock: o('Stock'), lip: o('Splitter', { grip: 1.03 }), bullbar: o('Bull bar', { off: 1.05 }), pushbar: o('Push bar') },
   rear: { stock: o('Stock'), diffuser: o('Diffuser', { grip: 1.02 }), hitch: o('Tow hitch') },
   spoiler: { none: o('None'), lip: o('Lip'), ducktail: o('Ducktail', { grip: 1.02 }), wing: o('Wing', { grip: 1.05 }), gt: o('GT wing', { grip: 1.08, top: 0.97 }) },
@@ -54,6 +61,8 @@ export const CAR_SCHEMA = [
     { key: 'front', type: 'choice', label: 'Front bumper', options: opts(CAR_PARTS.front) },
     { key: 'rear', type: 'choice', label: 'Rear', options: opts(CAR_PARTS.rear) },
     { key: 'skirts', type: 'choice', label: 'Side skirts', options: opts(CAR_PARTS.skirts) },
+    { key: 'lamps', type: 'choice', label: 'Headlights', options: opts(CAR_PARTS.lamps) },
+    { key: 'grille', type: 'choice', label: 'Grille', options: opts(CAR_PARTS.grille) },
   ] },
   { tab: 'Parts', items: [
     { key: 'spoiler', type: 'choice', label: 'Spoiler', options: opts(CAR_PARTS.spoiler) },
@@ -116,7 +125,7 @@ export function randomCar(r = Math.random) {
 export function trafficCar(r = Math.random) {
   const p = a => a[Math.floor(r() * a.length)];
   return {
-    ...DEFAULT_CAR, body: p(['hatch', 'hatch', 'sedan', 'sedan', 'sedan', 'coupe', 'pickup', 'van', 'muscle', 'sports', 'suv', 'suv', 'wagon', 'convertible', 'classic', 'lowrider', 'boxtruck']),
+    ...DEFAULT_CAR, body: p(['hatch', 'hatch', 'sedan', 'sedan', 'sedan', 'coupe', 'pickup', 'van', 'muscle', 'sports', 'suv', 'suv', 'wagon', 'convertible', 'classic', 'lowrider', 'boxtruck', 'compact', 'compact', 'hothatch', 'jeep', 'minivan', 'minivan', 'gt']), lamps: p(['square', 'square', 'round', 'slim', 'slim', 'quad']), grille: p(['stock', 'stock', 'mesh', 'chrome', 'wide']),
     front: 'stock', rear: 'stock', skirts: 'none', spoiler: p(['none', 'none', 'none', 'lip']), hood: 'stock', roof: p(['none', 'none', 'none', 'none', 'rack', 'taxi']),
     exhaust: 'single', wheels: p(['steel', 'fivespoke', 'mesh']), wheelSize: 'm', rimColor: p(['#c9ccd2', '#2a2b30']), suspension: 'stock',
     finish: p(['gloss', 'metallic', 'metallic', 'matte']), bodyColor: p(['#ffffff', '#d9d9de', '#7c828d', '#16161b', '#3a3d45', '#e23b3b', '#2f80ed', '#3a3fbf', '#55602f', '#8b1e3f', '#c2b280', '#1fb5a8', '#ffd23f']),
@@ -309,10 +318,11 @@ export function buildCar(cfg) {
       for (const sx of [-1, 1]) { bx(0.48, 0.12, 0.5, dark, sx * 0.38, top + 0.02, B.co); bx(0.48, 0.5, 0.12, dark, sx * 0.38, top + 0.25, B.co - 0.28); }
       bx(W * 0.9, 0.06, 0.9, dark, 0, top + 0.01, B.co - 0.85);
     } else {
-    const cab = add(taper(W * 0.86, ch, cl, c.body === 'van' ? 0.96 : 0.68, 0.86, c.body === 'van' ? -0.05 : -0.08), glass, 0, top + ch / 2, B.co);
+    const boxy = c.body === 'van' || B.boxy;
+    const cab = add(taper(W * 0.86, ch, cl, boxy ? 0.92 : 0.68, boxy ? 0.92 : 0.86, boxy ? -0.04 : -0.08), glass, 0, top + ch / 2, B.co);
     // roof panel
-    const roofL = c.body === 'van' ? cl * 0.94 : cl * 0.62;
-    const roofZ = B.co - (c.body === 'van' ? 0.05 : 0.08);
+    const roofL = boxy ? cl * 0.9 : cl * 0.62;
+    const roofZ = B.co - (boxy ? 0.04 : 0.08);
     bx(W * 0.74, 0.06, roofL, bodyM, 0, top + ch + 0.02, roofZ);
     // pillars
     for (const sx of [-1, 1]) bx(0.05, ch * 0.9, 0.08, bodyM, sx * W * 0.37, top + ch / 2, roofZ);
@@ -324,6 +334,7 @@ export function buildCar(cfg) {
       bx(W * 1.04, 0.08, boxL + 0.04, accM, 0, top + 1.9, bz);
       bx(W * 0.9, 1.7, 0.04, dark, 0, top + 0.9, -halfL + 0.03);
     }
+    if (B.spare) { const s = add(new THREE.CylinderGeometry(B.wr * 1.05, B.wr * 1.05, 0.26, 14), dark, 0, top + 0.1, -halfL - 0.14); s.rotation.x = Math.PI / 2; const hb = add(new THREE.CylinderGeometry(B.wr * 0.5, B.wr * 0.5, 0.28, 10), rimM, 0, top + 0.1, -halfL - 0.15); hb.rotation.x = Math.PI / 2; for (const sx of [-1, 1]) bx(0.06, 0.06, 0.06, chrome, sx * W * 0.42, top + 0.02, halfL - 0.2); }
     if (B.fins) for (const sx of [-1, 1]) { const f = bx(0.08, 0.32, 1.1, bodyM, sx * (W / 2 - 0.08), top + 0.12, -halfL + 0.6); f.rotation.x = 0.18; }
     if (B.bed) {
       const bedL = halfL - (B.co + cl / 2) - 0.1, bz = -halfL + bedL / 2 + 0.05;
@@ -338,10 +349,17 @@ export function buildCar(cfg) {
       }
     }
   }
-  // grille & lights
-  bx(W * 0.5, bh * 0.35, 0.04, dark, 0, by - 0.02, halfL + 0.01);
+  // grille & lights (shapes vary so traffic doesn't all look the same)
+  const gr = c.grille || 'stock', lp = c.lamps || 'square';
+  if (gr === 'wide') bx(W * 0.72, bh * 0.45, 0.04, dark, 0, by - 0.05, halfL + 0.01);
+  else bx(W * 0.5, bh * 0.35, 0.04, dark, 0, by - 0.02, halfL + 0.01);
+  if (gr === 'chrome') for (let i = 0; i < 3; i++) bx(W * 0.5, 0.025, 0.05, chrome, 0, by - 0.08 + i * 0.06, halfL + 0.02);
+  if (gr === 'mesh') for (let i = -3; i <= 3; i++) bx(0.02, bh * 0.33, 0.05, chrome, i * W * 0.07, by - 0.02, halfL + 0.02);
   for (const sx of [-1, 1]) {
-    bx(W * 0.2, 0.1, 0.05, headM, sx * W * 0.33, by + 0.08, halfL + 0.01);
+    if (lp === 'round') { const r = add(new THREE.CylinderGeometry(0.085, 0.085, 0.05, 12), headM, sx * W * 0.34, by + 0.06, halfL + 0.02); r.rotation.x = Math.PI / 2; }
+    else if (lp === 'slim') bx(W * 0.26, 0.045, 0.05, headM, sx * W * 0.31, by + 0.12, halfL + 0.01);
+    else if (lp === 'quad') { for (const k of [0, 1]) { const r = add(new THREE.CylinderGeometry(0.06, 0.06, 0.05, 10), headM, sx * W * (0.26 + k * 0.13), by + 0.07, halfL + 0.02); r.rotation.x = Math.PI / 2; } }
+    else bx(W * 0.2, 0.1, 0.05, headM, sx * W * 0.33, by + 0.08, halfL + 0.01);
     bx(W * 0.2, 0.09, 0.05, tailM, sx * W * 0.33, by + 0.1, -halfL - 0.01);
     bx(W * 0.07, 0.07, 0.05, revM, sx * W * 0.18, by + 0.1, -halfL - 0.012); // reverse light
   }
@@ -464,4 +482,4 @@ export function buildCar(cfg) {
   return { group: grp, wheels, headM, tailM, revM, glow, length: L, width: W, height: top + B.ch, wr, doors };
 }
 
-export const CAR_PRICES = { tractor: 12000, scooter: 800, bike: 400, moto: 9000, hatch: 6000, sedan: 9000, wagon: 11000, coupe: 16000, van: 14000, pickup: 18000, suv: 26000, classic: 30000, lowrider: 24000, convertible: 38000, muscle: 42000, buggy: 15000, boxtruck: 22000, sports: 85000, limo: 70000, hyper: 160000 };
+export const CAR_PRICES = { compact: 5000, hothatch: 21000, jeep: 28000, minivan: 15000, gt: 64000, tractor: 12000, scooter: 800, bike: 400, moto: 9000, hatch: 6000, sedan: 9000, wagon: 11000, coupe: 16000, van: 14000, pickup: 18000, suv: 26000, classic: 30000, lowrider: 24000, convertible: 38000, muscle: 42000, buggy: 15000, boxtruck: 22000, sports: 85000, limo: 70000, hyper: 160000 };
