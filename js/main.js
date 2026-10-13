@@ -1,25 +1,25 @@
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA } from './character.js?v=61';
-import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=61';
-import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=61';
-import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, onBridge, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=61';
-import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=61';
-import { buildPanel, renderStats } from './ui.js?v=61';
-import { Input } from './input.js?v=61';
-import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime } from './audio.js?v=61';
-import { runMinigame } from './minigames.js?v=61';
-import { Peds, bakeCfg, figure, setWalk, setTownSource } from './peds.js?v=61';
-import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=61';
-import { findRoute } from './nav.js?v=61';
-import { COURSES, CAREERS, QUIZ } from './careers.js?v=61';
-import { EVENTS, EVENT_BY_ID } from './events.js?v=61';
-import { attachWheel } from './wheel.js?v=61';
-import { Animals } from './animals.js?v=61';
-import { Talk } from './talk.js?v=61';
-import { svg, drawIcon } from './icons.js?v=61';
-import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=61';
-import { FURN, CATALOG } from './furniture.js?v=61';
-import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE } from './interiors.js?v=61';
+import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA } from './character.js?v=62';
+import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=62';
+import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=62';
+import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, onBridge, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=62';
+import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=62';
+import { buildPanel, renderStats } from './ui.js?v=62';
+import { Input } from './input.js?v=62';
+import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime } from './audio.js?v=62';
+import { runMinigame } from './minigames.js?v=62';
+import { Peds, bakeCfg, figure, setWalk, setTownSource } from './peds.js?v=62';
+import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=62';
+import { findRoute } from './nav.js?v=62';
+import { COURSES, CAREERS, QUIZ } from './careers.js?v=62';
+import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=62';
+import { attachWheel } from './wheel.js?v=62';
+import { Animals } from './animals.js?v=62';
+import { Talk } from './talk.js?v=62';
+import { svg, drawIcon } from './icons.js?v=62';
+import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=62';
+import { FURN, CATALOG } from './furniture.js?v=62';
+import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE } from './interiors.js?v=62';
 
 const $ = id => document.getElementById(id);
 let inside = null, editMode = false, held = null, pendingCar = false, homeMusic = false, phoneBadge = 0;
@@ -349,14 +349,16 @@ let needWarnT = 0;
 function updateNeeds(dtHours, dt) {
   stats.hunger = Math.max(0, stats.hunger - dtHours * 4);
   const running = !ride && input.stick.m > 0.85;
+  stats.hygiene = clamp((stats.hygiene ?? 80) - dtHours * (2.2 + (running ? 2 : 0)) - (inWater(P.x, P.z) ? -dtHours * 30 : 0), 0, 100); // a swim in the sea rinses you off a bit
   stats.energy = Math.max(0, stats.energy - dtHours * (2.6 + (running ? 2 / (1 + lvl('stamina') * 0.15) : 0)));
-  const moodGoal = 50 + (stats.hunger > 60 ? 10 : 0) + (stats.energy > 60 ? 10 : 0) + (stats.hunger > 85 && stats.energy > 85 ? 6 : 0) + (P.hp >= maxHP() * 0.9 ? 4 : 0); // fed + rested + healthy = happier
+  const moodGoal = 50 + (stats.hunger > 60 ? 10 : 0) + (stats.energy > 60 ? 10 : 0) + (stats.hunger > 85 && stats.energy > 85 ? 6 : 0) + (P.hp >= maxHP() * 0.9 ? 4 : 0) - (stats.hygiene < 25 ? 8 : 0) + (stats.hygiene > 85 ? 3 : 0); // fed + rested + healthy + clean = happier
   stats.mood = clamp(stats.mood + (moodGoal - stats.mood) * dtHours * (stats.mood < moodGoal ? 0.12 : 0.05) - (stats.hunger < 20 ? dtHours * 3 : 0) - (stats.energy < 15 ? dtHours * 2 : 0), 0, 100);
   needWarnT -= dt;
   if (stats.hunger <= 0) { stats.starveT = (stats.starveT || 0) + dt; P.hp -= dt * 0.6; if (stats.starveT > 90 || P.hp <= 0) { stats.starveT = 0; toast('You collapsed from hunger...', 3); die(); } } else stats.starveT = 0;
   if (needWarnT <= 0) {
     if (stats.hunger < 15) { toast('You are starving. Eat something! (diner, taco truck, or your fridge)', 3); needWarnT = 40; }
     else if (stats.energy < 10) { toast('You are exhausted. Sleep in a bed at home.', 3); needWarnT = 40; }
+    else if (stats.hygiene < 12) { toast('You stink. People can smell you coming. Take a shower.', 3); needWarnT = 60; }
   }
 }
 
@@ -768,7 +770,31 @@ function carTop(x, z, y) {
   for (const v of vehicles) { if (v === ride || (v.s.x - x) ** 2 + (v.s.z - z) ** 2 > 64) continue; const B = carBox(v, x, z); if (Math.abs(B.lx) < B.hw - 0.05 && Math.abs(B.lz) < B.hl - 0.1 && y >= B.top - 0.5) t = Math.max(t, B.top); }
   return t;
 }
+// ---------------- showers (home, gym, prison): step in, steam, Sims-style pixel blur, come out clean
+let showerTex = null;
+function startShower(x, z, r, prison = false) {
+  if (P.shower) return;
+  if (!showerTex) { const c = document.createElement('canvas'); c.width = c.height = 8; const g = c.getContext('2d'); for (let i = 0; i < 8; i++) for (let j = 0; j < 8; j++) { g.fillStyle = ['#e8b088', '#d39a6a', '#f6c9a4', '#b77a4b', '#c98f62'][(i * 3 + j * 5) % 5]; g.fillRect(i, j, 1, 1); } showerTex = new THREE.CanvasTexture(c); showerTex.magFilter = THREE.NearestFilter; showerTex.minFilter = THREE.NearestFilter; }
+  const blur = new THREE.Sprite(new THREE.SpriteMaterial({ map: showerTex, depthTest: false })); blur.scale.set(0.62, 0.62, 1); dyn.add(blur);
+  P.shower = { t: 0, x, z, r, blur, prison, dur: prison ? 3.2 : 4 }; P.x = x; P.z = z; P.face = r + Math.PI; sfx.whoosh?.();
+}
+function updateShower(dt) {
+  const S = P.shower; S.t += dt;
+  P.x = S.x; P.z = S.z; heroRoot.position.set(P.x, 0.08, P.z); hero.root.rotation.set(0, P.face, 0);
+  poseCharacter(hero, { phase: 0, speed: 0, air: false, aim: -0.55, recoil: 0, t: time });
+  hero.armR.pivot.rotation.set(-2.6 + Math.sin(S.t * 9) * 0.3, 0, 0.3); hero.armL.pivot.rotation.set(-2.6 - Math.sin(S.t * 9) * 0.3, 0, -0.3); hero.head.rotation.x = -0.3;
+  S.blur.position.set(P.x, hero.legLen + 0.12, P.z); S.blur.visible = Math.floor(S.t * 10) % 7 !== 0;
+  if (Math.random() < dt * 22) spawnParticles(P.x + rand(-0.4, 0.4), 2.2, P.z + rand(-0.4, 0.4), ['#ffffff', '#dff2ff', '#e8f4ff'], 1, 0.6, 1.2, 0.3, 0.6);
+  for (const k of ['a', 'b', 'x', 'y']) input.consume(k);
+  if (S.t >= S.dur || input.stick.m > 0.6 && S.t > 0.8) {
+    dyn.remove(S.blur); S.blur.material.dispose(); P.shower = null; hero.head.rotation.x = 0;
+    const full = S.t >= S.dur; stats.hygiene = full ? 100 : Math.max(stats.hygiene ?? 0, 60); feed({ mood: full ? 5 : 2 }); advanceTime(full ? 0.25 : 0.1);
+    P.x = S.x + Math.sin(S.r) * 1.1; P.z = S.z + Math.cos(S.r) * 1.1;
+    toast(S.prison ? pick(['Cold water, thin soap, no privacy. But clean.', 'Five minutes of lukewarm water. Better than nothing.']) : full ? 'Squeaky clean. Hygiene full.' : 'Quick rinse.', 2.4);
+  }
+}
 function updateFoot(dt) {
+  if (P.shower) return updateShower(dt);
   if (P.sit) { // sitting on a sofa / armchair: relax until you move
     const S = P.sit; S.t += dt;
     if (input.stick.m > 0.35 || input.consume('a') || input.consume('b') || P.dead) { P.sit = null; P.y = 0; hero.hips.position.y = hero.legLen; for (const L of [hero.legL, hero.legR]) { L.pivot.rotation.x = 0; L.knee.rotation.x = 0; } }
@@ -1517,6 +1543,7 @@ function enterInterior(place, prop) {
   const id = prop ? prop.home : place.interior;
   fade(() => {
     if (prop && !homes[prop.id]) homes[prop.id] = (prop.starter ? STARTER_FURNITURE : [{ t: 'single', x: -2.5, z: -2, r: 0, c: '#3a5fa0' }, { t: 'fridge', x: 2.5, z: -2.8, r: 0 }]).map(f => ({ ...f }));
+    if (prop && !homes[prop.id].some(f => f.t === 'shower')) { const T0 = INTERIORS[prop.home]; homes[prop.id].push({ t: 'shower', x: -T0.w / 2 + 0.75, z: -T0.d / 2 + 0.75, r: 0 }); } // every home has a shower
     const h = buildInterior(id, prop ? homes[prop.id] : null, id === 'motors' ? showroomCfgs() : []);
     G.scene.add(h.group);
     inside = { id, place: place || prop, prop, h, back: { x: (place || prop).x, z: (place || prop).z }, npcs: [], marks: [] };
@@ -1574,6 +1601,7 @@ async function useFurn(item) {
   if (act === 'sleep') {
     const hrs = clockH >= 20 || clockH < 6 ? ((31 - clockH) % 24) : 3;
     fade(() => { advanceTime(hrs); stats.energy = 100; stats.mood = clamp(stats.mood + 6, 0, 100); P.hp = maxHP(); saveGame(); toast(hrs > 4 ? 'Good morning! Fully rested.' : 'You took a nap. Energy restored.', 3); });
+  } else if (act === 'shower') { const w = inside.h.toWorld(item.x, item.z); return startShower(w.x, w.z, item.r || 0);
   } else if (act === 'eat' || act === 'cook') {
     if (stats.groceries <= 0) { toast('The fridge is empty. Buy groceries at QuickMart.'); sfx.fail(); return; }
     stats.groceries--; feed(FOODS.meal); if (act === 'cook') feed({ mood: hasDegree('culinary') ? 14 : 6 }); sfx.coin(); toast(`Ate a home-cooked meal. ${stats.groceries} meals left.`);
@@ -1931,6 +1959,17 @@ function lifeApi() {
     hospital: () => { P.hp = 1; die(); }, wasInside: () => stats.jailRecord != null, loseStash: () => { for (const g of GOODS) stash[g.id] = 0; },
     dealMeet: () => startDealMeet(),
     dayTime: () => clockH >= 8 && clockH < 14.5, inCar: () => !!ride, atHome: () => !!inside?.prop, moodV: () => stats.mood, waypoint: id => { const p = PLACES.find(q => q.id === id); if (p) setWaypoint(p.x, p.z, p.name); },
+    // send the player somewhere: sets the GPS, and the outcome only happens when you get there
+    errand: (where, key, data = {}, label = 'Errand', needCar = false) => {
+      let x, z, name = label;
+      if (where === 'pier') { x = 94; z = 360; }
+      else if (where === 'northfield' || where === 'random') { const c = where === 'northfield' ? CITIES.find(q => q.id === 'north') : cityNear(P.x, P.z, 400) || CITIES[0]; for (let i = 0; i < 30; i++) { const ix = c.kx[0] + Math.floor(Math.random() * (c.kx[1] - c.kx[0])), iz = c.kz[0] + Math.floor(Math.random() * (c.kz[1] - c.kz[0])); x = c.cx + (ix + 0.5) * 48 + 16.6; z = c.cz + (iz + 0.5) * 48; if (walkable(x, z) && Math.hypot(x - P.x, z - P.z) > 60) break; } }
+      else { const p = PLACES.find(q => q.id === where); x = p.x; z = p.z; name = label || p.name; }
+      L.errands ||= []; L.errands.push({ key, x, z, label: name, data, needCar, until: gameHours() + 30 });
+      setWaypoint(x, z, name);
+    },
+    hotCar: hot => { ensureCarLib(); const s2 = L.errands?.find(e => e.key === 'hot_car_pickup') || { x: P.x, z: P.z }; let sx = s2.x, sz = s2.z; for (let r = 3; r < 40; r += 3) if (roadAt(s2.x, s2.z + r)) { sz = s2.z + r; break; } const v = makeVehicle(pick(carLib).cfg, sx, sz, 0, false); v.hot = true; if (hot) setTimeout(() => forceWanted(2), 6000); },
+    dropHotCar: () => { const v = ride?.hot ? ride : vehicles.find(q => q.hot); if (v) { if (v === ride) exitCar(); setTimeout(() => removeVehicle(v), 1200); } },
     dealerRel: d => { for (const p of PLACES) if (p.kind === 'dealer') stats.rel[p.id] = clamp(rel(p.id) + d, 0, 100); }, carDamage: n => { if (myCar) damageCar(myCar, n, myCar.s.x + 1, myCar.s.z); }, drunk: x => addDrunk(x),
   };
 }
@@ -1950,7 +1989,21 @@ function canDeliver(via, api) {
   if (via === 'pickup') return !inside;
   return false; // home / place / work events wait until you arrive there
 }
+// errands from life events: arrive at the place and the thing actually happens there
+function updateErrands() {
+  const L = life(); if (!L.errands?.length || state !== 'play' || talk.active) return;
+  for (const e of [...L.errands]) {
+    if (gameHours() > e.until) { L.errands.splice(L.errands.indexOf(e), 1); toast(`Too late: ${e.label}.`, 2.5); continue; }
+    const f = focusPos(); if (inside || Math.hypot(f.x - e.x, f.z - e.z) > (e.needCar ? 12 : 9)) continue;
+    if (e.needCar && !ride?.hot) continue;
+    L.errands.splice(L.errands.indexOf(e), 1); if (waypoint && Math.hypot(waypoint.x - e.x, waypoint.z - e.z) < 2) clearWaypoint();
+    const msg = ARRIVE[e.key]?.(lifeApi(), e.data); if (!msg) continue;
+    beginTalk(charCfg, 'You', e.label, 220, null, null, null, true); talk.say(msg).then(() => { endTalk(); saveGame(); });
+    return;
+  }
+}
 function lifeTick(dt) {
+  updateErrands();
   updateLifeAct(dt);
   if (lifeBusy() || lifeAct) return;
   const L = life(), now = gameHours(), api = lifeApi();
@@ -3115,7 +3168,7 @@ function socTag(p) { const s = p.soc; s.rap = clamp(s.rap, -100, 100); if (p.per
 // The more she likes you as a person, the better everything lands.
 function socChance(p, base) {
   const s = p.soc, b = body();
-  return base + (lvl('charm') - 1) * 0.04 + (stats.mood - 50) / 400 + s.rap * 0.006 + p.interest * 0.002 + (b.muscle || 0) * 0.0008 - (b.fat || 0) * 0.0008;
+  return base - ((stats.hygiene ?? 80) < 25 ? 0.15 : 0) + (lvl('charm') - 1) * 0.04 + (stats.mood - 50) / 400 + s.rap * 0.006 + p.interest * 0.002 + (b.muscle || 0) * 0.0008 - (b.fat || 0) * 0.0008;
 }
 function reused(p, k) { const n = p.soc.used[k] || 0; p.soc.used[k] = n + 1; return n; }
 
@@ -3371,6 +3424,7 @@ function updateDate(dt) {
   if (D.holding) { D.face = P.face; D.fig.limbs[3].rotation.set(-0.25, 0, -0.5); hero.armL.pivot.rotation.set(-0.25, 0, 0.5); }
   D.fig.root.position.set(D.x, inside ? (inside.h.floorY ? inside.h.floorY(D.x, D.z, P.y) : 0) : baseY(D.x, D.z), D.z); D.fig.root.rotation.y = D.face; D.fig.root.visible = !P.dead;
   dateSpotCheck();
+  if ((stats.hygiene ?? 80) < 18 && !D.smelt && Math.random() < dt * 0.05) { D.smelt = 1; D.interest -= 10; toast(`${D.name}: "${pick(['Erm... did you shower today?', 'Babe, you kind of smell.', 'Is that... you?'])}"`, 2.6); }
 }
 // how you drive matters: tearing around scares her, a calm cruise is nice
 function carDateTick(dt) {
@@ -3590,6 +3644,7 @@ async function talkToPed(p) {
       endTalk(); peds.release(p); return;
     }
   } else await talk.say(pick(night > 0.5 && Math.random() < 0.5 ? PED_LINES.night : PED_LINES[bg] || PED_LINES.city));
+  if ((stats.hygiene ?? 80) < 15 && Math.random() < 0.5) { await talk.say(pick(['Whoa. When did you last shower?', 'No offence, but you smell like a gym bag.', '*steps back* ...Hi.'])); if (per) bumpPerson(per, -3); }
   if (per) p.buyer = p.buyer && per.att !== 'straight' || (per.att === 'edgy' && per.rap >= 20);
   let done = false;
   while (!done) {
@@ -4050,6 +4105,7 @@ async function prisonSpot(s) {
     btns.push({ label: 'Cancel', fn: closeModal });
     modal(`<h3>Cell 5</h3><p>${hrs(left)} left on your sentence.${J.dig ? ` Tunnel: ${J.dig}%.` : ''}</p>`, btns); return;
   }
+  if (s.kind === 'shower') { const w = inside.h.toWorld(29.2, [3.2, 5.4, 7.6, 9.8][Math.floor(Math.random() * 4)]); return startShower(w.x, w.z, -Math.PI / 2, true); }
   if (s.kind === 'canteen') {
     const k = 'meal:' + dayN; J.meals[k] ||= 0;
     if (J.meals[k] >= 3) { toast('Three trays a day. Mama Joy says come back tomorrow.'); return; }
@@ -4300,9 +4356,9 @@ function setBtn(id, icon, label) {
 function talkNeeds(on) {
   const el = $('talkNeeds'); if (!on) { el.classList.add('hidden'); return; }
   const ring = (cls, ic, v) => `<div class="need ${cls}${v < 25 ? ' low' : ''}" style="--v:${Math.round(v)}%">${$(ic).querySelector('svg').outerHTML}</div>`;
-  el.innerHTML = ring('tn-h', 'nHunger', stats.hunger) + ring('tn-e', 'nEnergy', stats.energy) + ring('tn-m', 'nMood', stats.mood); el.classList.remove('hidden');
+  el.innerHTML = ring('tn-h', 'nHunger', stats.hunger) + ring('tn-e', 'nEnergy', stats.energy) + ring('tn-m', 'nMood', stats.mood) + ring('tn-y', 'nHygiene', stats.hygiene ?? 80); el.classList.remove('hidden');
 }
-function needBar(id, v) { const el = $(id); el.style.setProperty('--v', v + '%'); el.classList.toggle('low', v < 25); }
+function needBar(id, v) { if (!$(id)) return; const el = $(id); el.style.setProperty('--v', v + '%'); el.classList.toggle('low', v < 25); }
 function updateHUD(dt) {
   const hh = Math.floor(clockH), m10 = Math.floor((clockH - hh) * 6) * 10;
   setText('clockTxt', `${String(hh).padStart(2, '0')}:${String(m10).padStart(2, '0')}`);
@@ -4312,7 +4368,7 @@ function updateHUD(dt) {
   setText('zoneTxt', inside ? (inside.prop ? inside.prop.name : inside.place.name) : zoneName(f.x, f.z));
   if (waypoint && !inside) { const d = Math.hypot(f.x - waypoint.x, f.z - waypoint.z); setText('wpTxt', `${d > 1000 ? (d / 1000).toFixed(1) + ' km' : Math.round(d / 10) * 10 + ' m'}${waypoint.label ? ' · ' + waypoint.label : ''}`); } else setText('wpTxt', '');
   { const wh = $('wantedHud'), key = WANT.stars; if (hudCache.want !== key) { hudCache.want = key; wh.innerHTML = WANT.stars ? Array.from({ length: 5 }, (_, i) => `<i class="${i < WANT.stars ? '' : 'off'}"></i>`).join('') + '<u><s></s></u>' : ''; } wh.classList.toggle('flash', WANT.stars > 0 && !WANT.seen); wh.classList.toggle('seen', WANT.stars > 0 && WANT.seen); const bar = wh.querySelector('s'); if (bar) bar.style.width = (WANT.seen ? 0 : Math.min(100, WANT.loseT / evadeNeed() * 100)) + '%'; }
-  needBar('nHunger', stats.hunger); needBar('nEnergy', stats.energy); needBar('nMood', stats.mood);
+  needBar('nHunger', stats.hunger); needBar('nEnergy', stats.energy); needBar('nMood', stats.mood); needBar('nHygiene', stats.hygiene ?? 80);
   const a = am(), id = arsenal.cur, wk = id + '|' + a.mag + '|' + a.res + '|' + (P.reload > 0);
   if (hudCache.wpn !== wk) { hudCache.wpn = wk; $('wpnBtn').innerHTML = iconSVG(id) + (ws.kind === 'melee' ? '' : ws.kind === 'grenade' ? `<b>${a.res}</b>` : P.reload > 0 ? '<b class="rl">RELOAD</b>' : `<b>${a.mag}</b><span>${a.res}</span>`); }
   $('wpnBtn').classList.toggle('hidden', !!ride || !!inside);
@@ -4493,6 +4549,7 @@ function renderPhone() {
     el.innerHTML = `${back}<h4>Me</h4>${famHtml}
       <div class="ph-sec">Needs</div>
       <div class="ph-row col"><span><b>Hunger</b> <small>${Math.round(stats.hunger)}%</small></span>${bar(stats.hunger, '#ff8a2a')}</div>
+      <div class="ph-row col"><span><b>Hygiene</b> <small>${Math.round(stats.hygiene ?? 80)}%${(stats.hygiene ?? 80) < 25 ? ' · you smell' : ''}</small></span>${bar(stats.hygiene ?? 80, '#38c8ff')}</div>
       <div class="ph-row col"><span><b>Energy</b> <small>${Math.round(stats.energy)}%</small></span>${bar(stats.energy, '#ffd23f')}</div>
       <div class="ph-row col"><span><b>Mood</b> <small>${Math.round(stats.mood)}%</small></span>${bar(stats.mood, '#ff6fb5')}</div>
       <div class="ph-row col"><span><b>Health</b> <small>${Math.round(P.hp)}/${maxHP()}</small></span>${bar(P.hp / maxHP() * 100, '#4cd964')}</div>
@@ -4578,7 +4635,7 @@ function saveGame() {
   store.set('bc_save', save); store.set('bc_arsenal', arsenal); store.set('bc_cars', garage);
 }
 // auto-update: bookmarks and home-screen apps can hold on to an old copy. Check version.json (never cached) and reload once if newer.
-const BUILD = 61;
+const BUILD = 62;
 function checkUpdate() {
   fetch('version.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(j => {
     if (!(j.v > BUILD)) return;
@@ -4668,7 +4725,7 @@ const GYM_DAILY = 3;
 function workout(score, kind = 'lift') {
   const B = body(), k = 'gym:' + dayN; stats.relDay[k] ||= 0;
   if (stats.relDay[k] >= GYM_DAILY) { toast(`Your muscles are fried. ${GYM_DAILY} workouts a day max. Rest and come back tomorrow.`, 3); return false; }
-  stats.relDay[k]++; B.lastGym = dayN;
+  stats.relDay[k]++; B.lastGym = dayN; stats.hygiene = Math.max(0, (stats.hygiene ?? 80) - 14); // sweaty
   if (kind === 'cardio') B.fat = clamp(B.fat - 0.012 - score * 0.0008, 0, 1);
   else { B.muscle = clamp(B.muscle + Math.min(0.035, 0.008 + score * 0.0012) * (1 - B.muscle * 0.5), 0, 1); B.fat = clamp(B.fat - 0.004, 0, 1); }
   bodyCheck(); return true;
@@ -4867,4 +4924,4 @@ function frame(now) {
 }
 startGame();
 requestAnimationFrame(frame);
-window.__game = { get animals() { return animals; }, crime, WANT, copCars, cops, pitFight, busted, fam, famNewDay, makeOfficial, talkFamily, get dayN() { return dayN; }, set dayN(v) { dayN = v; }, scene: G.scene, cam: G.cam, snap: () => updateCamera(0, true), get state() { return state; }, P, input, get ride() { return ride; }, get myCar() { return myCar; }, get traffic() { return traffic; }, peds, setTime: h => { clockH = h; }, openCustom, enterVehicle, exitCar, get money() { return money; }, set money(v) { money = v; }, openPlace, PLACES, PROPERTIES, runMinigame, get action() { return action; }, arsenal, selectWeapon, openPhone, setWaypoint, get route() { return route; }, talkToPed, talk, doAction, stats, get inside() { return inside; }, enterInterior, exitInterior, get customers() { return customers; }, newCustomer, startEdit, endEdit, get job() { return job; }, gainXP, storage, doSpot, useFurn, phoneGo, talkVenue, talkJob, openPlace, talkCustomer, startJob, openCarShop, damageCar, repairCar, addFire, get fires() { return fires; }, get ems() { return ems; }, get vehicles() { return vehicles; }, makeVehicle, makeCop, prisonFight, life, startDealMeet, get lifeAct() { return lifeAct; }, get train() { return train; }, get trainRide() { return trainRide; }, boardTrain, eventReset: () => { eventOpen = false; }, bodyCheck, attendClass, talkAdmissions, edu, startDance, get dance() { return dance; }, radioSet: i => { radioSet(i); radioOn(true); }, get zoom() { return zoom; }, set zoom(z) { zoom = z; }, DEFAULT_CAR, setState: x => setState(x), get jail() { return stats.jail; }, witness, personOf, dealHeat, trafficStop, carNear, carTop, startDate, talkDate, get date() { return date; }, get carAnim() { return carAnim; } };
+window.__game = { get animals() { return animals; }, crime, WANT, copCars, cops, pitFight, busted, fam, famNewDay, makeOfficial, talkFamily, get dayN() { return dayN; }, set dayN(v) { dayN = v; }, scene: G.scene, cam: G.cam, snap: () => updateCamera(0, true), get state() { return state; }, P, input, get ride() { return ride; }, get myCar() { return myCar; }, get traffic() { return traffic; }, peds, setTime: h => { clockH = h; }, openCustom, enterVehicle, exitCar, get money() { return money; }, set money(v) { money = v; }, openPlace, PLACES, PROPERTIES, runMinigame, get action() { return action; }, arsenal, selectWeapon, openPhone, setWaypoint, get route() { return route; }, talkToPed, talk, doAction, stats, get inside() { return inside; }, enterInterior, exitInterior, get customers() { return customers; }, newCustomer, startEdit, endEdit, get job() { return job; }, gainXP, storage, doSpot, useFurn, phoneGo, talkVenue, talkJob, openPlace, talkCustomer, startJob, openCarShop, damageCar, repairCar, addFire, get fires() { return fires; }, get ems() { return ems; }, get vehicles() { return vehicles; }, makeVehicle, makeCop, prisonFight, life, startDealMeet, get lifeAct() { return lifeAct; }, get train() { return train; }, get trainRide() { return trainRide; }, boardTrain, eventReset: () => { eventOpen = false; }, bodyCheck, attendClass, talkAdmissions, edu, startDance, get dance() { return dance; }, radioSet: i => { radioSet(i); radioOn(true); }, get zoom() { return zoom; }, set zoom(z) { zoom = z; }, DEFAULT_CAR, setState: x => setState(x), get jail() { return stats.jail; }, witness, personOf, dealHeat, trafficStop, carNear, carTop, startDate, talkDate, get date() { return date; }, get carAnim() { return carAnim; }, lifeApi, startShower };

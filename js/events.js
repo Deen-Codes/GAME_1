@@ -26,7 +26,7 @@ export const EVENTS = [
   { id: 'loan_gone', via: 'thought', follow: true,
     text: (a, d) => [`It's been over a week. ${d.name} still isn't answering...`, `And now their Instagram's full of a new watch and a holiday in Cabo. With MY money.`],
     choices: (a, d) => [
-      { label: 'Track them down', go: () => { if (roll(0.5 + a.lvl('strength') * 0.04)) { a.give(d.amt); a.mood(6); return `Found ${d.name} at the Anchor. One look at my face and they paid up in full.`; } a.hp(-25); a.mood(-8); return `${d.name}'s new "friends" jumped me in the car park. Great.`; } },
+      { label: 'Track them down', go: () => { a.errand('v_anchor', 'track_debtor', d, `Find ${d.name}`); return `Word is ${d.name} drinks at the Anchor Bar. Time to pay them a visit.`; } },
       { label: 'Let it go', go: () => { a.mood(-6); a.karma(4); return 'Lesson learned. Some people never change.'; } },
     ] },
   { id: 'loan_grudge', via: 'thought', follow: true,
@@ -44,7 +44,7 @@ export const EVENTS = [
     text: (a, d) => [`Someone's wallet. ${a.fmt(d.cash)} in cash, and an ID: ${d.owner}. There's an address in Northfield.`, 'Nobody saw me pick it up...'],
     choices: (a, d) => [
       { label: 'Keep the cash', go: () => { a.give(d.cash); a.karma(-6); if (roll(0.25)) a.schedule('wallet_caught', 3 + Math.random() * 5, d); return 'Finders keepers.'; } },
-      { label: 'Hand it in', go: () => { a.karma(8); a.mood(6); a.schedule('wallet_reward', 2 + Math.random() * 4, d); return 'I\'ll drop it at their address. It\'s the right thing to do.'; } },
+      { label: 'Hand it in', go: () => { a.errand('northfield', 'wallet_return', d, `${d.owner}'s house`); return 'I\'ll drop it at their address in Northfield. It\'s the right thing to do.'; } },
     ] },
   { id: 'wallet_reward', via: 'call', follow: true, who: (a, d) => ({ role: 'sales', seed: 4242, name: d.owner, tag: 'Calling' }),
     text: (a, d) => ['Hi, is this the person who returned my wallet? Thank you, honestly.', 'I\'m a defence lawyer. If you EVER get into trouble, call me. Free of charge. You\'re a good person.'],
@@ -117,7 +117,7 @@ export const EVENTS = [
   { id: 'kid_trouble', via: 'call', follow: true, who: () => ({ role: 'cop', seed: 55, name: 'Officer Diaz', tag: 'Calling' }),
     text: (a, d) => ['This is Officer Diaz, Bay City PD.', `We picked up ${d.kid.name} spraying graffiti on the Bay Bridge. There's a $400 fine.`],
     choices: (a, d) => [
-      { label: 'I\'ll pay it', go: () => { a.take(400); a.rel(d.kid.id, 4); return 'Paid. Come collect them from the station.'; } },
+      { label: 'I\'ll pay it', go: () => { a.take(400); a.errand('v_police', 'collect_kid', d, `Collect ${d.kid.name}`); return 'Paid. Come collect them from the station.'; } },
       { label: 'Let them face it', go: () => { a.rel(d.kid.id, -12); return 'Community service, then. Your kid won\'t like it.'; } },
     ] },
   { id: 'pickup', via: 'pickup', when: a => a.kidAge('Child') && a.dayTime() ? 3 : 0,
@@ -125,7 +125,7 @@ export const EVENTS = [
   { id: 'ex_text', via: 'call', when: a => a.hasDated() ? 2 : 0, who: a => ({ role: 'guest', seed: 2020, name: 'Your ex', tag: 'Late-night call', fem: true }),
     text: a => ['Hey... it\'s me. Sorry it\'s so late.', `I can't stop thinking about you. Can we meet up?${a.partner() ? ' I know you\'re with someone. I don\'t care.' : ''}`],
     choices: a => [
-      { label: 'Meet up', go: () => { a.mood(8); if (a.partner()) a.schedule(roll(0.5) ? 'caught_cheating' : 'secret_kept', 3 + Math.random() * 5, {}); return 'I\'ll text you where. Don\'t tell anyone.'; } },
+      { label: 'Meet up', go: () => { a.errand('f_diner2', 'ex_meet', {}, 'Meet your ex'); return 'Eastport Grill. Tonight. Don\'t tell anyone.'; } },
       { label: 'It\'s over. Bye.', go: () => { a.karma(3); if (a.partner()) a.rel(a.partner().id, 3); return '...Okay. I get it.'; } },
     ] },
   { id: 'caught_cheating', via: 'home', speaker: 'partner', follow: true,
@@ -142,7 +142,7 @@ export const EVENTS = [
   { id: 'chest', via: 'thought', when: a => (a.fat() > 0.55 || a.drinker()) ? 3 : 0,
     text: () => ['Ow... sharp pain in my chest. And my left arm feels weird.', 'That can\'t be good.'],
     choices: a => [
-      { label: 'See a doctor ($200)', go: () => { a.take(200); return 'Doctor says early warning signs. Less junk food, less booze, more cardio. Message received.'; } },
+      { label: 'See a doctor ($200)', go: () => { a.errand('v_hospital', 'doctor_check', {}, 'See a doctor'); return 'Bay General. I\'m getting this looked at.'; } },
       { label: 'Walk it off', go: () => { a.schedule('collapse', 2 + Math.random() * 4, {}); return 'It\'s passing. Probably nothing.'; } },
     ] },
   { id: 'collapse', via: 'thought', follow: true,
@@ -162,7 +162,7 @@ export const EVENTS = [
   { id: 'prison_mate', via: 'approach', who: () => ({ role: 'dealer', seed: 616, name: 'Vinnie', tag: 'From Bay County' }), when: a => a.wasInside() ? 3 : 0,
     text: () => ['Well well. Look who\'s out. Remember me? Cell block B.', 'I got a car that needs to disappear. Drive it to Lucky\'s chop shop: two grand, no questions.'],
     choices: a => [
-      { label: 'I\'m in', go: () => { if (roll(0.6)) { a.give(2000); a.karma(-5); return 'Smooth. Here\'s your cut. $2,000.'; } a.crime(3); return 'Oh... the car was already reported. RUN!'; } },
+      { label: 'I\'m in', go: () => { a.errand('random', 'hot_car_pickup', {}, 'Pick up the car'); return 'It\'s parked up. I\'ll send you the spot. Get it to Lucky\'s, he\'ll pay you.'; } },
       { label: 'I\'m done with that life', go: () => { a.karma(6); a.mood(4); return 'Respect. For real. Stay out, man.'; } },
     ] },
   { id: 'homeless_help', via: 'approach', who: () => ({ role: 'homeless', seed: 4040, name: 'Walt', tag: 'Homeless' }), w: 2,
@@ -175,7 +175,7 @@ export const EVENTS = [
   { id: 'homeless_tip', via: 'approach', follow: true, who: () => ({ role: 'homeless', seed: 4040, name: 'Walt', tag: 'Homeless' }),
     text: () => ['Hey! It\'s me, Walt! You helped me out.', 'I sleep under the pier. Yesterday I saw a guy stash a gym bag there. Never came back for it. Figured you should know.'],
     choices: a => [
-      { label: 'Check it out', go: () => { const g = 400 + Math.floor(Math.random() * 1600); a.give(g); return `(Under the pier: a bag with ${a.fmt(g)} in it.) Told you! Good things come back around.`; } },
+      { label: 'Check it out', go: () => { a.errand('pier', 'pier_bag', {}, 'Under the pier'); return 'Under the pier, by the beach end. Go take a look before someone else does!'; } },
       { label: 'Not my business', go: () => 'Suit yourself!' },
     ] },
   { id: 'deal_gone_bad', via: 'call', when: a => a.lvl('dealing') >= 2 ? 2 : 0, who: () => ({ role: 'dealer', seed: 3131, name: 'Unknown number', tag: 'Calling' }),
@@ -200,7 +200,7 @@ export const EVENTS = [
   { id: 'car_noise', via: 'thought', scene: 'car', when: a => a.inCar() ? 3 : 0,
     text: () => ['What is that noise? Some kind of grinding when I brake...'],
     choices: a => [
-      { label: 'Get it checked ($250)', go: () => { a.take(250); return 'Worn brake pads. Fixed. Glad I didn\'t ignore that.'; } },
+      { label: 'Get it checked ($250)', go: () => { a.errand('mods', 'brake_fix', {}, 'Bay Customs'); return 'Bay Customs can look at it. Head over.'; } },
       { label: 'Ignore it', go: () => { a.schedule('car_break', 2 + Math.random() * 3, {}); return 'It\'s fine. Cars make noises.'; } },
     ] },
   { id: 'car_break', via: 'thought', scene: 'car', follow: true,
@@ -227,4 +227,16 @@ export const EVENTS = [
       { label: 'Call someone', go: () => { a.mood(10); return 'Talking it out helps. I\'m not alone in this.'; } },
     ] },
 ];
+// what happens when you actually get to the place an event sent you (errands). Return the line you think/say there.
+export const ARRIVE = {
+  pier_bag: a => { const g = 400 + Math.floor(Math.random() * 1600); a.give(g); a.mood(8); return `There it is, wedged behind a post: a gym bag with ${a.fmt(g)} inside. Walt was right.`; },
+  wallet_return: (a, d) => { a.karma(8); a.mood(6); a.schedule('wallet_reward', 2 + Math.random() * 4, d); return `${d.owner} opens the door and nearly cries. "You brought it back? With the cash still in it?"`; },
+  track_debtor: (a, d) => { if (roll(0.5 + a.lvl('strength') * 0.04)) { a.give(d.amt); a.mood(6); return `${d.name} is at the bar. One look at my face and they pay up in full.`; } a.hp(-25); a.mood(-8); return `${d.name}'s new "friends" jumped me in the car park. Great.`; },
+  collect_kid: (a, d) => { a.rel(d.kid.id, 6); return `${d.kid.name} shuffles out of the station, staring at the floor. "...Thanks for coming."`; },
+  ex_meet: a => { a.mood(8); if (a.partner()) a.schedule(roll(0.5) ? 'caught_cheating' : 'secret_kept', 3 + Math.random() * 5, {}); return 'We talk for hours. Old feelings. This is a bad idea.'; },
+  doctor_check: a => { a.take(200); return 'Doctor says early warning signs. Less junk food, less booze, more cardio. Message received.'; },
+  brake_fix: a => { a.take(250); return 'Worn brake pads. Fixed. Glad I didn\'t ignore that.'; },
+  hot_car_pickup: a => { const hot = roll(0.4); a.hotCar(hot); a.errand('chop', 'hot_car_drop', { hot }, 'Lucky\'s Chop Shop', true); return hot ? 'Keys are in it... wait, is that a police scanner chirping? Just drive.' : 'Keys in the sun visor. Easy. Now get it to Lucky\'s.'; },
+  hot_car_drop: a => { a.give(2000); a.karma(-5); a.dropHotCar(); return 'Lucky looks it over and peels off $2,000. "Vinnie\'s friend? Pleasure."'; },
+};
 export const EVENT_BY_ID = Object.fromEntries(EVENTS.map(e => [e.id, e]));
