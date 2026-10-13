@@ -128,7 +128,16 @@ export function buildCharacter(cfg) {
     if (c.top === 'crop') torso.add(box(torsoW * 0.82, 0.05, torsoD * 0.94, bodyM, 0, torsoH * 0.44, 0));
     torso.add(box(chestW * 0.92, torsoH * 0.56, torsoD * 0.96, bodyM, 0, torsoH * 0.72, 0));
     const chestM = c.top === 'swimtop' ? topM : swim ? skin : topM, bd = 0.05 + 0.08 * bust;
-    for (const sx of [-1, 1]) { const bm = box(torsoW * 0.36, torsoH * (0.17 + 0.06 * bust), bd, chestM, sx * torsoW * 0.19, torsoH * 0.58, torsoD * 0.48 + bd / 2 - 0.02); bm.rotation.x = 0.12; torso.add(bm); }
+    // rounded, sits on the chest (never up near the chin)
+    const r = torsoW * (0.15 + 0.035 * bust);
+    for (const sx of [-1, 1]) {
+      const sm = chestM.clone(); sm.flatShading = false;
+      const bm = new THREE.Mesh(new THREE.SphereGeometry(1, 12, 9), sm); bm.castShadow = true;
+      bm.scale.set(r * 1.05, r * 0.85, r * (0.42 + 0.3 * bust));
+      bm.position.set(sx * torsoW * 0.135, torsoH * 0.57, torsoD * 0.44);
+      torso.add(bm);
+    }
+    if (c.top === 'swimtop') { const st = box(torsoW * 0.06, torsoH * 0.18, 0.02, chestM, 0, torsoH * 0.62, torsoD * 0.48); torso.add(st); }
   } else torso.add(box(chestW, torsoH, torsoD, swim ? skin : topM, 0, torsoH / 2, 0));
   if (c.belly > 0) { const bd = 0.06 + 0.22 * c.belly; torso.add(box(chestW * (0.7 + 0.15 * c.belly), torsoH * (0.35 + 0.2 * c.belly), bd, swim ? skin : topM, 0, torsoH * 0.18, torsoD / 2 + bd / 2 - 0.01)); }
   if (c.top === 'swimtop') torso.add(box(chestW * (adultF ? 0.94 : 1.02), torsoH * (adultF ? 0.06 : 0.16), torsoD * 1.0, topM, 0, torsoH * (adultF ? 0.68 : 0.72), 0)); // swim top strap

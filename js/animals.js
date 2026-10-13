@@ -2,7 +2,7 @@
 // stray cats, dogs out on walks with their owners, squirrels, deer in the hills by day, and raccoons,
 // possums, coyotes and owls at night. All low-poly, baked into a few meshes each so they're cheap to draw.
 import * as THREE from '../lib/three.module.min.js';
-import { CITIES, LAMPS, sandLine, shoreLine, walkable, groundH, cityAt, roadAt } from './world.js?v=12';
+import { CITIES, LAMPS, sandLine, shoreLine, walkable, groundH, cityAt, roadAt } from './world.js?v=13';
 
 const rand = (a, b) => a + Math.random() * (b - a), pick = a => a[Math.floor(Math.random() * a.length)];
 const MAT = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.85, flatShading: true });
