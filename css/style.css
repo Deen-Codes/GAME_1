@@ -484,3 +484,8 @@ input[type=text] { width: 100%; padding: 10px 12px; border-radius: 10px; border:
 #subName { font-size: 11px; font-weight: 900; color: #ffd23f; letter-spacing: .03em; text-transform: uppercase; }
 #subs.radio #subName { color: #8ab4ff; }
 #subTxt { font-size: 14px; font-weight: 700; color: #fff; line-height: 1.3; }
+
+/* main story texts: pinned, can't be swiped away until they're done */
+.ph-msg.main { border: 1px solid rgba(255,210,63,.55); background: rgba(255,210,63,.12); border-radius: 14px; }
+.mainpill { display: table; font-size: 10px; font-weight: 900; letter-spacing: .05em; color: #16161b; background: #ffd23f; border-radius: 999px; padding: 2px 8px; margin-bottom: 4px; }
+.ph-msg .goal { font-weight: 800; color: #ffd23f; display: flex; gap: 6px; align-items: center; }

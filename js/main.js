@@ -1,25 +1,25 @@
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=86';
-import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=86';
-import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=86';
-import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=86';
-import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=86';
-import { buildPanel, renderStats } from './ui.js?v=86';
-import { Input } from './input.js?v=86';
-import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime } from './audio.js?v=86';
-import { runMinigame } from './minigames.js?v=86';
-import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk } from './peds.js?v=86';
-import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=86';
-import { findRoute } from './nav.js?v=86';
-import { COURSES, CAREERS, QUIZ } from './careers.js?v=86';
-import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=86';
-import { attachWheel } from './wheel.js?v=86';
-import { Animals } from './animals.js?v=86';
-import { Talk } from './talk.js?v=86';
-import { svg, drawIcon } from './icons.js?v=86';
-import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=86';
-import { FURN, CATALOG } from './furniture.js?v=86';
-import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=86';
+import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=87';
+import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=87';
+import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=87';
+import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=87';
+import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=87';
+import { buildPanel, renderStats } from './ui.js?v=87';
+import { Input } from './input.js?v=87';
+import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime } from './audio.js?v=87';
+import { runMinigame } from './minigames.js?v=87';
+import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk } from './peds.js?v=87';
+import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=87';
+import { findRoute } from './nav.js?v=87';
+import { COURSES, CAREERS, QUIZ } from './careers.js?v=87';
+import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=87';
+import { attachWheel } from './wheel.js?v=87';
+import { Animals } from './animals.js?v=87';
+import { Talk } from './talk.js?v=87';
+import { svg, drawIcon } from './icons.js?v=87';
+import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=87';
+import { FURN, CATALOG } from './furniture.js?v=87';
+import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=87';
 
 const $ = id => document.getElementById(id);
 let inside = null, editMode = false, held = null, pendingCar = false, homeMusic = false, phoneBadge = 0;
@@ -2423,6 +2423,7 @@ function enterInterior(place, prop) {
       inside.npcs.push({ x: w.x, z: w.z, role: n.role, cfg, fig: null, face: 0, homeFace: 0, t: Math.random() * 5, parent: dyn, name: nameFor((place?.id || id) + n.role + i), relId: (place?.id || id) + ':' + n.role, dance: false });
     });
     if (prop) addFamilyNpcs(prop);
+    if (prop) story().f.home = true;
     if (prop && WANT.stars) clearWanted('You laid low at home. The heat is off.');
     setTimeout(lifeArrive, 1500);
     if (prop && stats.escaped) { charCfg = { ...stats.escaped }; stats.escaped = null; buildHero(); toast('You burned the jumpsuit and changed into your own clothes.', 3); }
@@ -3828,7 +3829,7 @@ function kidCfg(k) {
 function partner() { return fam().partner; }
 function famHome() { const f = fam(); if (f.home && owned.has(f.home)) return PROPERTIES.find(p => p.id === f.home); return null; }
 function propMode(id) { const f = fam(); return stats.propMode[id] || (id === f.home || id === 'p_studio' ? 'live' : 'rent'); }
-function textMe(id, from, text, me = false) { const T = stats.texts; (T[id] ||= []).push({ me, t: text, d: dayN }); if (T[id].length > 40) T[id].shift(); if (!me) { phoneBadge++; notify(from, text); sfx.coin(); } }
+function textMe(id, from, text, me = false) { const T = (stats.texts ||= {}); (T[id] ||= []).push({ me, t: text, d: dayN }); if (T[id].length > 40) T[id].shift(); if (!me) { phoneBadge++; notify(from, text); sfx.coin(); } }
 // side buttons stretch out into a pill to show what's new: the phone shows a message summary, the radio shows the song
 const peekT = {};
 function peek(id, html, dur = 4.5) {
@@ -3864,8 +3865,9 @@ let famTextT = 120;
 function famTexts(dt) { // random incoming texts from people who care about you
   famTextT -= dt; if (famTextT > 0) return; famTextT = rand(90, 200);
   const f = fam(), cands = [];
-  if (f.partner && rel(f.partner.id) > 15) cands.push([f.partner.id, f.partner.name, f.partner.status === 'married' ? ["Miss you. Coming home soon?", "Can you grab groceries on the way back?", "Love you.", "Dinner's ready when you are."] : ["Thinking about you.", "What are you up to?", "Last night was fun.", "Come see me later?"]]);
-  for (const id of Object.keys(stats.dates || {})) if (id !== f.partner?.id && rel(id) > 25 && Math.random() < 0.3) cands.push([id, nameOf(id), ["Hey stranger.", "You still alive?", "Bored. Entertain me.", "Saw you drive past earlier ;)"]]);
+  const withMe = id => date?.id === id || (inside?.prop && inside.prop.id === f.home && id === f.partner?.id && f.partner?.livesIn); // no "what are you up to?" from someone standing next to you
+  if (f.partner && rel(f.partner.id) > 15 && !withMe(f.partner.id)) cands.push([f.partner.id, f.partner.name, f.partner.status === 'married' || f.partner.livesIn ? ["Miss you. Coming home soon?", "Can you grab groceries on the way back?", "Love you.", "Dinner's ready when you are.", "Wanna chill at home tonight?"] : ["Thinking about you.", "What are you up to?", "Last night was fun.", "Come see me later?"]]);
+  for (const id of Object.keys(stats.dates || {})) if (id !== f.partner?.id && !withMe(id) && rel(id) > 25 && Math.random() < 0.3) cands.push([id, nameOf(id), ["Hey stranger.", "You still alive?", "Bored. Entertain me.", "Saw you drive past earlier ;)"]]);
   for (const k of f.kids) if (['Teen', 'Adult'].includes(kidStage(k))) cands.push([k.id, k.name, kidStage(k) === 'Teen' ? ["Can I borrow $50?", "Can you drive me to the beach later?", "Mom says you have to come home for dinner.", "I got an A on my test!"] : ["Hey, how are you doing?", "Got a job interview tomorrow, wish me luck.", "Miss you, call me sometime."]]);
   if (!cands.length || inside?.prop?.id === f.home) return;
   const [id, name, lines] = pick(cands); textMe(id, name, pick(lines));
@@ -4403,7 +4405,7 @@ function dateCalls(dt) {
   if (gameHours() < stats.nextDateCall || date || state !== 'play' || talk.active || stats.jail || inside || dance || woo) return;
   stats.nextDateCall = gameHours() + rand(8, 16);
   stats.lastCall ||= {};
-  const ids = Object.keys(stats.dates || {}).filter(id => rel(id) >= 35 && stats.lastCall[id] !== dayN && (stats.lastCall[id] || 0) < dayN - 1); if (!ids.length) return; // nobody rings you two days running
+  const ids = Object.keys(stats.dates || {}).filter(id => rel(id) >= 35 && !(fam().partner?.id === id && fam().partner.livesIn) && stats.lastCall[id] !== dayN && (stats.lastCall[id] || 0) < dayN - 1); if (!ids.length) return; // nobody rings you two days running
   const id = pick(ids), d = stats.dates[id]; if (!d?.cfg) return;
   stats.lastCall[id] = dayN; dateCall(id, d);
 }
@@ -4440,13 +4442,13 @@ async function talkDate() {
     if (atBar) top.push({ label: I('drink', `Buy her a drink <small>$18</small>`), k: 'drink' });
     if (atClub && !dance) top.push({ label: I('music', 'Dance with me'), k: 'dance' });
     if (inside?.id === 'clothes') top.push({ label: I('shirt', 'Buy her an outfit'), k: 'shop' });
-    if (!partner() && rel(D.id) >= 45) top.push({ label: I('star', 'Be my girlfriend?'), k: 'official' });
+    if (!partner() && rel(D.id) >= 45) top.push({ label: I('heart', 'Be my girlfriend?'), k: 'official' });
     if (bed || parked) top.push({ label: I('heart', bed ? 'WooHoo (bed)' : 'WooHoo (in the car)'), k: 'woo' });
-    else { const h = nearestHome(); if (h) top.push({ label: I('house', 'Come back to my place?'), k: 'home', h }); }
+    else { const live = partner()?.id === D.id && fam().partner?.livesIn, h = famHome() || nearestHome(); if (h && !(inside?.prop && inside.prop.id === h.id)) top.push({ label: I('house', live ? 'Wanna chill at home?' : 'Come back to my place?'), k: 'home', h, live }); }
     top.push({ label: I('check', 'That\'s all'), k: 'done' }, { label: I('x', 'Call it a night'), k: 'bye' });
     const o = top[await talk.choose(top)];
     if (o.k === 'done') break;
-    if (o.k === 'bye') { endTalk(); bumpRel(D.id, 4); return endDate(`${D.name}: "Tonight was fun. Text me."`); }
+    if (o.k === 'bye') { endTalk(); bumpRel(D.id, 4); return endDate(partner()?.id === D.id && fam().partner?.livesIn ? `${D.name}: "Okay. See you at home. Don't be late."` : `${D.name}: "Tonight was fun. Text me."`); }
     if (o.k === 'sweet') {
       const opts = [{ label: I('heart', 'Kiss her'), k: 'kiss' }, { label: I('people', inCar ? 'Lean in for a hug' : 'Hug her'), k: 'hug' }];
       if (inCar) opts.push({ label: I('hand', 'Hand on her knee'), k: 'knee' }, { label: I('hand', 'Hold her hand'), k: 'hand' });
@@ -4505,6 +4507,7 @@ async function talkDate() {
     if (o.k === 'dance') { endTalk(); D.dancing = pr.love.includes('nightlife') || pr.love.includes('music') || D.interest > 70; if (!D.dancing) toast(`${D.name}: "I'll watch. Dancing's not really my thing."`, 2.6); return startDance(); }
     if (o.k === 'shop') { await shopForHer(D); continue; }
     if (o.k === 'drink') { if (money < 18) await talk.say('...You can\'t afford a drink? Wow.'); else { spend(18); D.interest += (D.used.drink = (D.used.drink || 0) + 1) < 3 ? 12 : 2; bumpRel(D.id, 4); await talk.say(D.used.drink < 3 ? pick(['Ooh, thank you. Cheers!', 'You\'re sweet.']) : 'Okay, I think I\'ve had enough.'); } continue; }
+    if (o.k === 'home' && o.live) { setWaypoint(o.h.x, o.h.z, 'Home'); await talk.say(pick(['Yes. Sofa, snacks, a film?', 'Please. My feet are killing me.', 'Home sounds perfect.'])); continue; }
     if (o.k === 'home') { setWaypoint(o.h.x, o.h.z, 'Home'); await talk.say(D.interest >= 55 ? pick(['Mmm, okay. Lead the way.', 'I thought you\'d never ask.']) : 'Maybe... let\'s see how the night goes.'); continue; }
     if (o.k === 'woo') {
       if (D.interest < 65) { await talk.say(pick(['Ha! Not yet, tiger.', 'I don\'t know you well enough for that.'])); D.interest -= 5; continue; }
@@ -4603,7 +4606,7 @@ function dateOutfit(id) {
   return d.cfg;
 }
 
-function nearestHome() { let best = null, bd = 1e9; for (const p of PROPERTIES) if (owned.has(p.id)) { const d = Math.hypot(p.x - P.x, p.z - P.z); if (d < bd) { bd = d; best = p; } } return best; }
+function nearestHome() { const fh = famHome(); if (fh && propMode(fh.id) !== 'rent') return fh; let best = null, bd = 1e9; for (const p of PROPERTIES) if (owned.has(p.id) && propMode(p.id) !== 'rent') { const d = Math.hypot(p.x - P.x, p.z - P.z); if (d < bd) { bd = d; best = p; } } return best; }
 function hearts(x, z, n = 6, y = 1.8) { spawnParticles(x, y, z, ['#ff6fb5', '#ff3b8a', '#ffd1e8'], n, 1.6, 1.4, 0.22, -1.5); }
 // WooHoo: under the duvet with the bed bouncing, or in a parked car with steamy windows
 function startWoo(kind, bed) {
@@ -5503,6 +5506,38 @@ function openPhone(app = 'home') {
 function closePhone() { $('phone').classList.remove('open'); setTimeout(() => { $('phone').classList.add('hidden'); if (state === 'phone') setState('play'); }, 260); }
 let phoneThread = null;
 function phoneGo(app) { phoneApp = app; if (app === 'msgs') phoneBadge = 0; renderPhone(); }
+// ================================================================ MAIN STORY: pinned mission texts that stay in your inbox until you've done them
+const rayWho = () => ({ key: 'ray', name: 'Uncle Ray', cfg: (rayWho.c ||= { ...npcCfg('dealer', 4242), hat: 'cap', hatColor: '#3a3d45', facialHair: 'beard', hairColor: '#6b6b6b' }), pitch: 160 });
+const STORY = [
+  { id: 'home', title: 'A place to crash', text: 'Welcome to Bay City, kid. I sorted you a little studio downtown. Go check it out, get your head down.', goal: () => 'Go to your studio downtown.', wp: () => { const h = PROPERTIES.find(p => p.starter); return { x: h.x, z: h.z, name: 'Your studio' }; }, done: S => S.f.home },
+  { id: 'cash', title: 'Pay your way', text: 'Rent\'s free for now, but nothing\'s free forever. Get yourself a grand together. Work, the taco truck... or other ways. Your call.', goal: () => `Have $1,000 on you (${fmt(Math.min(money, 1000))} / $1,000).`, done: () => money >= 1000 },
+  { id: 'bag', title: 'Ray\'s bag', text: 'Need a favour. My guy Tommo has a bag for me on the pier. Grab it, bring it to me at The Anchor. Don\'t open it.', reward: 500,
+    goal: S => S.f.bag ? 'Bring the bag to Ray at The Anchor bar.' : 'Pick up the bag from Tommo on the pier.',
+    wp: S => { if (S.f.bag) { const a = PLACES.find(p => p.id === 'v_anchor'); return { x: a.x, z: a.z, name: 'Ray at The Anchor' }; } const g = PLACES.find(p => p.id === 'g_gallery'); return { x: g.x - 8, z: g.z - 6, name: 'Tommo on the pier' }; },
+    tick(S, dt) {
+      const g = PLACES.find(p => p.id === 'g_gallery'), tx = g.x - 8, tz = g.z - 6;
+      if (!S.f.bag && !inside) { const d = Math.hypot(P.x - tx, P.z - tz); if (d < 90 && !storyNpc.tommo) storyNpc.tommo = eventPed({ top: 'jacket', topColor: '#55602f', hat: 'beanie', hatColor: '#16161b', fem: false }, tx, tz, { state: 'talk', lookX: tx, lookZ: tz + 5, name: 'Tommo', ev: true });
+        if (storyNpc.tommo && d < 2.4 && !ride) { S.f.bag = true; const w = pedWho(storyNpc.tommo); if (w) { w.name = 'Tommo'; subs.say(w, 'You Ray\'s nephew? Here. Don\'t open it. Don\'t lose it.', { expr: 'neutral', now: true }); } setTimeout(() => youSay(pick(['Heavy. What\'s in this thing?', 'Don\'t open it. Got it.']), 'shock'), 3800); const T = storyNpc.tommo; storyNpc.tommo = null; setTimeout(() => cleanupEvPed(T), 6000); storyWaypoint(); saveGame(); } }
+      if (S.f.bag && inside?.place?.id === 'v_anchor' && !S.f.gave) { S.f.gave = true; setTimeout(() => { subs.say(rayWho(), 'Good lad. Didn\'t open it? Good. Here, for your trouble.', { expr: 'happy', now: true }); }, 900); }
+    }, done: S => S.f.gave },
+  { id: 'soon', title: 'Big things', text: 'You did good, kid. I\'ve got bigger plans for you. Keep your phone on. (More story coming soon.)', goal: () => 'Ray will be in touch.', done: () => false, last: true },
+];
+const storyNpc = {};
+function story() { return (stats.main ||= { i: 0, f: {}, seen: -1 }); }
+function storyStep() { return STORY[story().i] || null; }
+function storyWaypoint() { const S = story(), st = storyStep(); if (st?.wp && !st.last) { const w = st.wp(S); setWaypoint(w.x, w.z, w.name); } }
+let storyT = 2;
+function updateStory(dt) {
+  const S = story(), st = storyStep(); if (!st) return;
+  if (S.seen !== S.i && state === 'play' && !talk.active) { S.seen = S.i; textMe('ray', 'Uncle Ray', st.text); if (!st.last) subs.say(rayWho(), st.text.split(/(?<=[.!?])\s/)[0], { expr: 'neutral', radio: false, tag: 'phone' }); }
+  st.tick?.(S, dt);
+  storyT -= dt; if (storyT > 0) return; storyT = 1;
+  if (!st.last && st.done(S)) { if (st.reward) addMoney(st.reward); toast(`Mission complete: ${st.title}${st.reward ? ` · +${fmt(st.reward)}` : ''}`, 3.2); sfx.cash(); S.i++; S.f = { home: S.f.home }; if (waypoint?.name && st.wp) clearWaypoint(); saveGame(); }
+}
+function storyMessage() {
+  const S = story(), st = storyStep(); if (!st) return null;
+  return { from: 'Uncle Ray', av: 'flag', main: true, title: st.title, text: st.text, goal: st.goal(S), at: st.wp && !st.last ? st.wp(S) : null, key: 'main:' + st.id };
+}
 function messages() {
   const intro = { rich: { from: "Dad's Lawyer", av: 'case', text: "Your father has instructed me to inform you that this is the last of it: $25,000 and the deeds to the Eastport Bungalow. He suggests you 'get a job'. Bay City College is a fine place to start." },
     excon: { from: 'Big Carlos', av: 'lock', text: "You're out. Don't come back in here. Slim downtown remembers you, go see him. And watch yourself, the cops know your face. Cheap food at the taco truck. Now go make some money." },
@@ -5510,7 +5545,9 @@ function messages() {
     grad: { from: 'Bay Corp HR', av: 'case', text: "Welcome to Bay Corp! You start as Office Assistant. Clock in at the Tower reception between 7am and 7pm. Strong performance leads to promotion. We're proud to have you." },
     parent: { from: 'Eastport Elementary', av: 'people', text: "Reminder: school pick-up is at 3pm. Your little one has been talking about you all week. Spend time together, it keeps their spirits up. Groceries are at the QuickMart." } }[stats.story];
   const out = intro ? [intro] : [];
-  if (!intro) out.push({ from: 'Uncle Ray', av: 'user', text: "Welcome to Bay City, kid. I got you a little studio downtown (the purple key on your map). Eat, sleep, keep your energy up. Dealers buy low and sell high, and they'll treat you better once they know you. Customers will text you here too. Make money, buy property, live large. Need honest work? The Work app lists taxi and courier jobs." });
+  { const sm = storyMessage(); if (sm) out.push(sm); }
+  if (lifeAct?.kind === 'meet') out.push({ from: 'Buyer', av: 'deal', meet: true, text: `Behind the car wash. ${lifeAct.qty} ${lifeAct.g.name}, ${fmt(lifeAct.pay)}. Come alone.`, at: { x: lifeAct.sp.x, z: lifeAct.sp.z, name: 'Deal: behind the car wash' }, key: 'meet:' + Math.round(lifeAct.until) });
+  if (!intro && !storyStep()) out.push({ from: 'Uncle Ray', av: 'user', text: "Welcome to Bay City, kid. I got you a little studio downtown (the purple key on your map). Eat, sleep, keep your energy up. Dealers buy low and sell high, and they'll treat you better once they know you. Customers will text you here too. Make money, buy property, live large. Need honest work? The Work app lists taxi and courier jobs." });
   for (const c of customers) { const g = GOODS.find(x => x.id === c.good); out.push({ from: c.name, av: 'deal', cust: c.id, text: `Need ${c.qty} ${g.name} near ${c.area}. Paying ${fmt(c.pay)}. Don't keep me waiting (${Math.max(0, Math.ceil(c.exp - gameHours()))}h).`, at: { x: c.x, z: c.z, name: `${c.name}'s order` } }); }
   for (const p of PLACES) if (p.kind === 'dealer' && rel(p.id) >= 20) { const pr = dealerPricesFor(p); for (const g of GOODS) if (pr[g.id].hot) out.push({ from: p.npc, av: 'deal', text: pr[g.id].hot === 'cheap' ? `Got ${g.name} going cheap today. ${fmt(pr[g.id].buy)} each. Come thru.` : `Paying top dollar for ${g.name} today: ${fmt(pr[g.id].sell)}. Bring what you got.`, at: p }); }
   const inc = PROPERTIES.filter(p => owned.has(p.id) && propMode(p.id) === 'rent').reduce((a, p) => a + p.income, 0);
@@ -5518,7 +5555,7 @@ function messages() {
   if (stats.groceries <= 0) out.push({ from: 'Fridge', av: 'fridge', text: 'Your fridge is empty. QuickMart sells groceries.', key: 'fridge:' + dayN });
   // every message has a key; swiped-away ones stay gone
   const del = stats.delMsgs ||= {};
-  return out.map(m => ({ ...m, key: m.key || (m.cust ? 'cust:' + m.cust : m.from + ':' + m.text.slice(0, 40)) })).filter(m => !del[m.key]);
+  return out.map(m => ({ ...m, key: m.key || (m.cust ? 'cust:' + m.cust : m.from + ':' + m.text.slice(0, 40)) })).filter(m => m.main || !del[m.key]);
 }
 // swipe a row left past the line to delete it (a red Delete shows underneath as you drag)
 function swipeDelete(root, sel, onDel) {
@@ -5584,7 +5621,10 @@ function renderPhone() {
     const lastT = T[T.length - 1], theirs = lastT && !lastT.me ? lastT.t.toLowerCase() : '', mine = lastT?.me ? lastT.t.toLowerCase() : '';
     const O = (t, k, d = 2) => ({ t, k, d });
     let opts;
-    if (isKid) opts = [O('How was school?', 'kid'), O('Love you, kiddo.', 'kid'), O('Need anything?', 'kid'), O('Be home by 10.', 'kid', 0)];
+    const liveIn = isP && f.partner?.livesIn, withHer = date?.id === id;
+    if (withHer) opts = [O('Look up, I\'m right next to you.', 'comp', 2), O('😘', 'love', 2)];
+    else if (liveIn && /come|home|tonight|chill|groceries|dinner|wanna|up to|miss/.test(theirs)) opts = [O('Heading home now.', 'home', 3), O('Love you. Back soon.', 'love', 3), O('Want me to grab anything?', 'home', 2), O('Gonna be late, sorry.', 'busy', -1)];
+    else if (isKid) opts = [O('How was school?', 'kid'), O('Love you, kiddo.', 'kid'), O('Need anything?', 'kid'), O('Be home by 10.', 'kid', 0)];
     else if (/come get me|omw|where are you|see you soon|be ready/.test(theirs)) opts = [O('On my way, I\'ll come grab you.', 'grab', 4), O('Actually, something came up. Sorry.', 'bail', -6)];
     else if (/stood me up|not coming|forget it|whatever|priority|always busy/.test(theirs)) opts = [O('I\'m so sorry, something came up.', 'sorry', 3), O('Let me make it up to you.', 'makeup', 4), O('Relax, it\'s not that deep.', 'cold', -6)];
     else if (/come (get|see)|hang out|free|tonight|pick me up|bored|what are you up to|wanna/.test(theirs)) opts = [O('I\'ll come grab you. Where are you?', 'grab', 4), O('Not much. Want to hang out?', 'hang', 2), O('Sorry, busy day.', 'busy', 0)];
@@ -5625,8 +5665,8 @@ function renderPhone() {
     const chatIds = [...new Set([...(fam().partner ? [fam().partner.id] : []), ...Object.keys(stats.texts || {}), ...Object.keys(stats.dates || {}), ...fam().kids.filter(k => ['Teen', 'Adult'].includes(kidStage(k))).map(k => k.id)])];
     const hid = stats.hideThr ||= {};
     const chats = chatIds.filter(id => !(hid[id] != null && (stats.texts?.[id]?.length || 0) <= hid[id])).map(id => { const T = stats.texts?.[id] || [], last = T[T.length - 1]; return `<div class="swr" data-swthr="${id}"><div class="swr-del">Delete</div><button class="ph-row" data-thr="${id}"><span>${svg(id.startsWith('kid:') ? 'smile' : 'heart', 'sm')} <b>${nameOf(id)}</b> <small style="white-space:normal">${last ? (last.me ? 'You: ' : '') + last.t : 'Tap to text'}</small></span></button></div>`; }).join('');
-    el.innerHTML = `${back}<h4>Messages</h4>${chats ? `<div class="ph-sec">Chats</div>${chats}<div class="ph-sec">Inbox</div>` : ''}${stats.burner ? `<button class="ph-row" id="msCust"><span>${svg('phone', 'sm')} Burner phone</span><b>${CUST_MODES[custMode()]}</b></button>` : ''}${ms.length ? '<p class="ph-hint">Swipe a message left to delete it.</p>' : '<p class="ph-hint">No messages.</p>'}<div class="ph-list">${ms.map((m, i) => `<div class="swr" data-swmsg="${i}"><div class="swr-del">Delete</div><div class="ph-msg"><div class="av">${svg(m.av)}</div><div><b>${m.from}</b><p>${m.text}</p>${m.at ? `<button class="ph-mini" data-wp="${i}">${svg('pin', 'sm')} Set waypoint</button>` : ''}</div></div></div>`).join('')}</div>`;
-    swipeDelete(el, '[data-swmsg]', w => { const m = ms[+w.dataset.swmsg]; stats.delMsgs[m.key] = dayN; if (m.cust) { const c = customers.find(q => q.id === m.cust); if (c) removeCustomer(c); } saveGame(); renderPhone(); });
+    el.innerHTML = `${back}<h4>Messages</h4>${chats ? `<div class="ph-sec">Chats</div>${chats}<div class="ph-sec">Inbox</div>` : ''}${stats.burner ? `<button class="ph-row" id="msCust"><span>${svg('phone', 'sm')} Burner phone</span><b>${CUST_MODES[custMode()]}</b></button>` : ''}${ms.length ? '<p class="ph-hint">Swipe a message left to delete it.</p>' : '<p class="ph-hint">No messages.</p>'}<div class="ph-list">${ms.map((m, i) => m.main ? `<div class="ph-msg main"><div class="av">${svg(m.av)}</div><div><span class="mainpill">MAIN · ${m.title}</span><b>${m.from}</b><p>${m.text}</p><p class="goal">${svg('flag', 'sm')} ${m.goal}</p>${m.at ? `<button class="ph-mini" data-wp="${i}">${svg('pin', 'sm')} Set waypoint</button>` : ''}</div></div>` : `<div class="swr" data-swmsg="${i}"><div class="swr-del">Delete</div><div class="ph-msg"><div class="av">${svg(m.av)}</div><div><b>${m.from}</b><p>${m.text}</p>${m.at ? `<button class="ph-mini" data-wp="${i}">${svg('pin', 'sm')} Set waypoint</button>` : ''}</div></div></div>`).join('')}</div>`;
+    swipeDelete(el, '[data-swmsg]', w => { const m = ms[+w.dataset.swmsg]; stats.delMsgs[m.key] = dayN; if (m.cust) { const c = customers.find(q => q.id === m.cust); if (c) { removeCustomer(c); toast(`You texted ${c.name}: "Not interested."`, 2.2); } } if (m.meet && lifeAct?.kind === 'meet') { if (lifeAct.p) endLifePed({ p: lifeAct.p }); lifeAct = null; clearWaypoint(); toast('You texted the buyer: "Not interested."', 2.2); } saveGame(); renderPhone(); });
     swipeDelete(el, '[data-swthr]', w => { const id = w.dataset.swthr; stats.hideThr[id] = stats.texts?.[id]?.length || 0; saveGame(); renderPhone(); });
     if ($('msCust')) $('msCust').onclick = () => { cycleCustMode(); renderPhone(); };
     el.querySelectorAll('[data-thr]').forEach(b => b.onclick = () => { phoneThread = b.dataset.thr; phoneGo('thread'); });
@@ -5732,7 +5772,7 @@ function saveGame() {
   store.set('bc_save', save); store.set('bc_arsenal', arsenal); store.set('bc_cars', garage);
 }
 // auto-update: bookmarks and home-screen apps can hold on to an old copy. Check version.json (never cached) and reload once if newer.
-const BUILD = 86;
+const BUILD = 87;
 function checkUpdate() {
   fetch('version.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(j => {
     if (!(j.v > BUILD)) return;
@@ -5856,7 +5896,7 @@ function step(dt) {
     updateAngry(dt); updateStreetEvents(dt); updateGangs(dt); updateHills(); updateLandmarks(dt);
     updateNpcList(npcs, dt); updateFlyer(dt);
   } else { updateHomeLife(dt); updateNpcList(inside.npcs, dt); inside.h.seeThrough?.(P.x, P.z, P.y); if (inside.id === 'prison') { peds.update(dt, P.x, P.z, null, false); updateAngry(dt); updateBrawl(dt); if (inside.h.upper?.length) { const o = P.y < 2 ? 0.16 : 1; if (inside.fadeO !== o) { inside.fadeO = o; inside.h.fadeUpper(o); } } } }
-  updateChatter(dt); subs.update(dt);
+  updateChatter(dt); subs.update(dt); updateStory(dt);
   lifeTick(dt); updateDate(dt); famTexts(dt); updateFx(dt); updatePolice(dt); updatePrison(dt); updateFarm(dt); updateTrain(dt); if (!inside) updateEmergency(dt);
   updateBullets(dt); updateProjectiles(dt); updateParticles(dt); updateCash(dt); updateMarkers(); updateRace(dt); updateRoute(dt); updateCustomers(dt); updateReacts(dt); updateDoors(dt); updateJob(dt);
   if (input.consume('map') || input.consume('pause')) openPhone('maps');

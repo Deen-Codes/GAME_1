@@ -1,5 +1,5 @@
 // Everything you can walk or drive up to: shops, barbers, property, dealers, minigames, chop shop, race.
-import { blockSide, attachDoor, addStructure } from './world.js?v=86';
+import { blockSide, attachDoor, addStructure } from './world.js?v=87';
 
 const S = (city, i, j, side) => blockSide(city, i, j, side);
 
@@ -77,7 +77,7 @@ export const PLACES = [
 
 // ---- real estate (pays out every morning at 6am; each one is a home you can furnish)
 export const PROPERTIES = [
-  { id: 'p_studio', name: 'Starter Studio', icon: 'house', home: 'studio', price: 0, income: 0, ...S('main', -1, 1, 's'), starter: true },
+  { id: 'p_studio', name: 'Starter Studio', icon: 'house', home: 'studio', price: 0, income: 45, ...S('main', -1, 1, 's'), starter: true },
   { id: 'p_shack', name: 'Pier Shack', icon: 'house', home: 'studio', price: 8000, income: 70, x: 106, z: 372 },
   { id: 'p_loft', name: 'Northfield Loft', icon: 'house', home: 'apartment', price: 18000, income: 150, ...S('north', 0, 0, 's') },
   { id: 'p_bung', name: 'Eastport Bungalow', icon: 'house', home: 'house', price: 26000, income: 220, ...S('east', 0, 1, 's') },
