@@ -193,6 +193,7 @@ export function addStructure(p) {
     if (r.axis === 'x') cz += cz >= (r.z0 + r.z1) / 2 ? 0.5 : -0.5; else cx += cx >= (r.x0 + r.x1) / 2 ? 0.5 : -0.5;
   }
   if (cx !== p.x) p.x = cx; // keep the marker with the structure if it had to move
+  if (p.kind === 'service') { p.x = cx; p.z = cz + (p.id.startsWith('gas') ? 1 : 0); } // repair ring sits between the pumps / inside the wash bay
   clearRect(cx - w / 2 - 1, cz - d / 2 - 1, cx + w / 2 + 1, cz + d / 2 + 1);
   for (const o of objsNear(cx - w / 2 - 16, cz - d / 2 - 16, cx + w / 2 + 16, cz + d / 2 + 16)) // knock down anything built where this goes
     if (o.t === 'bld' && !o.y && Math.abs(o.x - cx) < (o.w + w) / 2 && Math.abs(o.z - cz) < (o.d + d) / 2) { removeObj(o); if (o.cc) removeCollider(o.cc); }
