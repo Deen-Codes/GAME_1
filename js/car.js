@@ -1,7 +1,7 @@
 // Modular car builder. Car faces +Z, sits on y=0, origin at the centre of the wheelbase.
 import * as THREE from '../lib/three.module.min.js';
-import { BASIC } from './character.js?v=55';
-import { patternTexture } from './gun.js?v=55';
+import { BASIC } from './character.js?v=56';
+import { patternTexture } from './gun.js?v=56';
 
 export const BODIES = {
   hatch:  { label: 'Hatchback', L: 3.8, W: 1.75, bh: 0.55, cl: 2.0, ch: 0.62, co: -0.4,  wr: 0.34, mass: 1.0 },
@@ -249,6 +249,7 @@ export function buildCar(cfg) {
   if (B.two) return buildTwo(c, B);
   if (B.tractor) return buildTractor(c, B);
   const grp = new THREE.Group();
+  let doors = null;
   const fin = c.finish;
   const look = { gloss: [0.25, 0.2], matte: [0.85, 0], metallic: [0.3, 0.75], chrome: [0.06, 1], camo: [0.8, 0], carbon: [0.35, 0.3] }[fin] || [0.3, 0.3];
   const bodyM = new THREE.MeshStandardMaterial({ color: c.bodyColor, roughness: look[0], metalness: look[1], flatShading: true });
@@ -287,6 +288,17 @@ export function buildCar(cfg) {
     bx(W * 0.8, 0.12, 0.6, bodyM, 0, top + 0.06, halfL - 0.6);
   } else {
     const body = add(taper(W, bh, L, 0.97, 0.98, 0), bodyM, 0, by, 0);
+    // driver/passenger doors on hinges at their front edge, so people can open them to get in and out
+    doors = {};
+    const dl = Math.min(1.25, B.cl * 0.6), hz = B.co + Math.min(B.cl, 2.2) * 0.5 - 0.02;
+    for (const sx of [-1, 1]) {
+      bx(0.02, bh * 0.94, dl + 0.05, dark, sx * (W / 2 - 0.004), by, hz - dl / 2); // shut-line seam
+      const pv = new THREE.Group(); pv.position.set(sx * (W / 2 + 0.006), by, hz);
+      const d = new THREE.Mesh(new THREE.BoxGeometry(0.04, bh * 0.9, dl), bodyM); d.position.z = -dl / 2; d.castShadow = true; pv.add(d);
+      if (c.decal === 'twotone') { const t2 = new THREE.Mesh(new THREE.BoxGeometry(0.045, bh * 0.4, dl), accM); t2.position.set(0, -bh * 0.23, -dl / 2); pv.add(t2); }
+      const hd = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.05, 0.18), chrome); hd.position.set(sx * 0.03, bh * 0.22, -dl + 0.22); pv.add(hd);
+      grp.add(pv); doors[sx] = pv;
+    }
     if (c.decal === 'twotone') bx(W + 0.02, bh * 0.45, L + 0.02, accM, 0, clr + bh * 0.22, 0);
     if (c.decal === 'side') for (const sx of [-1, 1]) bx(0.02, 0.1, L * 0.86, accM, sx * (W / 2 + 0.005), by + 0.05, 0);
     // cabin
@@ -449,7 +461,7 @@ export function buildCar(cfg) {
     glow.rotation.x = -Math.PI / 2; glow.position.y = 0.03; grp.add(glow);
   }
   grp.traverse(m => { if (m.isMesh) m.castShadow = true; });
-  return { group: grp, wheels, headM, tailM, revM, glow, length: L, width: W, height: top + B.ch, wr };
+  return { group: grp, wheels, headM, tailM, revM, glow, length: L, width: W, height: top + B.ch, wr, doors };
 }
 
 export const CAR_PRICES = { tractor: 12000, scooter: 800, bike: 400, moto: 9000, hatch: 6000, sedan: 9000, wagon: 11000, coupe: 16000, van: 14000, pickup: 18000, suv: 26000, classic: 30000, lowrider: 24000, convertible: 38000, muscle: 42000, buggy: 15000, boxtruck: 22000, sports: 85000, limo: 70000, hyper: 160000 };
