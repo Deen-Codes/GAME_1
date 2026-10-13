@@ -156,7 +156,7 @@ function building(x, z, w, d, h, color, opts = {}) {
   return o;
 }
 function removeObj(o) { const c = chunks.get(ckey(...chunkOf(o.x, o.z))); if (c) { const i = c.objs.indexOf(o); if (i >= 0) c.objs.splice(i, 1); } }
-function objsNear(x0, z0, x1, z1) { const out = []; for (let i = Math.floor(x0 / CHUNK); i <= Math.floor(x1 / CHUNK); i++) for (let j = Math.floor(z0 / CHUNK); j <= Math.floor(z1 / CHUNK); j++) for (const o of chunks.get(ckey(i, j))?.objs || []) if (o.x >= x0 && o.x <= x1 && o.z >= z0 && o.z <= z1) out.push(o); return out; }
+export function objsNear(x0, z0, x1, z1) { const out = []; for (let i = Math.floor(x0 / CHUNK); i <= Math.floor(x1 / CHUNK); i++) for (let j = Math.floor(z0 / CHUNK); j <= Math.floor(z1 / CHUNK); j++) for (const o of chunks.get(ckey(i, j))?.objs || []) if (o.x >= x0 && o.x <= x1 && o.z >= z0 && o.z <= z1) out.push(o); return out; }
 // remove trees / parked cars / benches inside a world rect (so a shop or doorway isn't blocked)
 function clearRect(x0, z0, x1, z1) {
   for (const o of objsNear(x0 - 1, z0 - 1, x1 + 1, z1 + 1)) {
@@ -481,7 +481,7 @@ function genWorld() {
   addObj({ t: 'slab', x: 0, z: -597, w: 12, d: 30, h: 0.06, col: '#55555c' });
   building(150, -598, 6, 6, 24, '#d8d8d8', { top: 'tower' });
   for (const hx of [205, 245]) building(hx, -645, 34, 30, 10, '#a8b0b8', { roof: 'pitch', roofH: 4, roofCol: '#7a8590' });
-  for (const [px, pz] of [[-90, -642], [-20, -642], [50, -642]]) { addObj({ t: 'plane', x: px, z: pz, rot: 0, col: '#ffffff', acc: ['#2f80ed', '#e23b3b', '#1fb5a8'][(px + 90) / 70 | 0] }); addCollider({ x0: px - 14, x1: px + 14, z0: pz - 15, z1: pz + 15, h: 6, plane: true }); }
+  for (const [px, pz] of [[-90, -642], [-20, -642], [50, -642]]) { addObj({ t: 'plane', x: px, z: pz, rot: 0, col: '#ffffff', acc: ['#2f80ed', '#e23b3b', '#1fb5a8'][(px + 90) / 70 | 0] }); for (const [x0, x1, z0, z1, h] of [[px - 2.2, px + 2.2, pz - 17.5, pz + 17.5, 6], [px - 15, px + 15, pz - 1.8, pz + 3.8, 3], [px - 5, px + 5, pz - 17.3, pz - 14.7, 5]]) addCollider({ x0, x1, z0, z1, h, plane: true }); } // fuselage, wings, tail: no invisible walls
 }
 genWorld();
 // tidy-up: no trees growing through buildings
