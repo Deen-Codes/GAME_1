@@ -953,7 +953,7 @@ function drawObj(o, B) {
       B.box(o.x, -1.0, o.z, 2 * U.half + 6, 1.0, 7, '#9a9590'); B.box(o.x, 0, o.z - 3.4, 2 * U.half + 6, 0.9, 0.3, '#b8b4ad'); B.box(o.x, 0, o.z + 3.4, 2 * U.half + 6, 0.9, 0.3, '#b8b4ad');
       B.box(o.x, -1.0, o.z + 3.52, 9, 0.6, 0.06, '#2f80ed'); // bridge plate
       for (const sx of [-1, 1]) {
-        for (let z = wz0; z < wz1; z += 4) { const zz = z + 2, gy = dip(o.x + sx * (U.half + 0.2), zz); if (gy > -0.3) continue; B.box(o.x + sx * (U.half + 0.2), gy, zz, 0.7, -gy + 0.4, 4.05, '#a8a39b'); B.box(o.x + sx * (U.half + 0.2), 0.4, zz, 0.9, 0.12, 4.05, '#8a857e'); }
+        for (let z = wz0; z < wz1; z += 4) { const zz = z + 2, gy = dip(o.x + sx * (U.half + 0.2), zz); if (gy > -0.3 || Math.abs(zz - o.z) < 5.4) continue; /* no wall where the rail bridge deck crosses */ B.box(o.x + sx * (U.half + 0.2), gy, zz, 0.7, -gy + 0.4, 4.05, '#a8a39b'); B.box(o.x + sx * (U.half + 0.2), 0.4, zz, 0.9, 0.12, 4.05, '#8a857e'); }
         B.box(o.x + sx * (U.half + 1.5), -U.depth, o.z, 2.2, U.depth - 1.0, 7, '#8a857e'); // abutments
       }
       for (let z = U.z - 3; z <= U.z + 3; z += 1.5) B.box(o.x, -1.05, z, 2 * U.half, 0.02, 0.6, '#2a2a30'); // underside shadow strips

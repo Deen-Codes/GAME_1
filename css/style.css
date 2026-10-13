@@ -441,14 +441,14 @@ input[type=text] { width: 100%; padding: 10px 12px; border-radius: 10px; border:
 .sidebtn.open .peek { opacity: 1; transition-delay: .12s; }
 #hud:has(.sidebtn.open) .toast { top: calc(var(--sat) + 262px); }
 
-#carLabel { position: absolute; left: calc(14px + var(--sal)); bottom: calc(10px + var(--sab)); transform: none; white-space: nowrap; font-size: 12px; font-weight: 900; letter-spacing: .04em; text-transform: uppercase; color: rgba(255,255,255,.85); text-shadow: 0 1px 3px rgba(0,0,0,.6); pointer-events: none; opacity: 0; transition: opacity .3s; }
+#carLabel { position: absolute; left: calc(80px + var(--sal)); bottom: auto; top: calc(58% - 96px); transform: translateX(-50%); white-space: nowrap; font-size: 12px; font-weight: 900; letter-spacing: .04em; text-transform: uppercase; color: rgba(255,255,255,.85); text-shadow: 0 1px 3px rgba(0,0,0,.6); pointer-events: none; opacity: 0; transition: opacity .3s; }
 #carLabel.on { opacity: 1; }
-#pad.righty #carLabel { left: auto; right: calc(14px + var(--sar)); }
+#pad.righty #carLabel { left: auto; right: calc(80px + var(--sar)); transform: translateX(50%); }
 
 /* speedometer sits above the stick you drive with, with the local speed limit sign */
-.speedo { left: calc(14px + var(--sal)); transform: none; bottom: calc(6px + var(--sab)); display: flex; align-items: center; gap: 2px; padding: 2px 8px; background: rgba(10,10,24,.35); border-radius: 10px; }
+.speedo { left: calc(80px + var(--sal)); transform: translateX(-50%); bottom: auto; top: calc(58% - 102px); display: flex; align-items: center; gap: 2px; padding: 2px 8px; background: rgba(10,10,24,.35); border-radius: 10px; }
 .speedo b { font-size: 17px !important; } .speedo span { font-size: 9px !important; }
-.speedo.righty { left: auto; right: calc(14px + var(--sar)); }
+.speedo.righty { left: auto; right: calc(80px + var(--sar)); transform: translateX(50%); }
 .speedo .lim { display: inline-flex; flex-direction: column; align-items: center; justify-content: center; width: 22px; height: 26px; margin-left: 6px; border-radius: 3px; background: #fff; border: 2px solid #141428; box-shadow: inset 0 0 0 1.5px #fff, inset 0 0 0 2.5px #141428; font-style: normal; } /* US-style SPEED LIMIT sign */
 .speedo .lim::before { content: 'LIMIT'; font-size: 5px; font-weight: 900; color: #141428; letter-spacing: .02em; }
 .speedo .lim em { font-style: normal; font-size: 11px; font-weight: 900; color: #141428; line-height: 1; }
