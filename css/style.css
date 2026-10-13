@@ -405,3 +405,6 @@ input[type=text] { width: 100%; padding: 10px 12px; border-radius: 10px; border:
 .ev-ico { width: 64px; height: 64px; margin: 2px auto 8px; border-radius: 20px; display: grid; place-items: center; background: linear-gradient(135deg, #ffd23f, #ff6fb5); color: #1c1a2e; }
 .ev-ico svg { width: 34px; height: 34px; }
 .ev-card p { line-height: 1.45; }
+
+.talk-opts button .t { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.talk-opts button .t small { font-size: 11.5px; font-weight: 700; opacity: .65; line-height: 1.2; }

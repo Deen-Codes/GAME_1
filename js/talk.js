@@ -1,8 +1,8 @@
 // Conversations staged like a Pokémon battle: they stand on a platform facing you,
 // you see the back of your own head in the foreground, subtitles type out, you pick replies.
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject } from './character.js?v=36';
-import { sfx, audio } from './audio.js?v=36';
+import { buildCharacter, poseCharacter, disposeObject } from './character.js?v=37';
+import { sfx, audio } from './audio.js?v=37';
 
 const $ = id => document.getElementById(id);
 const BG = {
@@ -130,6 +130,7 @@ export class Talk {
     return new Promise(res => {
       options.forEach((o, i) => {
         const b = document.createElement('button'); b.innerHTML = typeof o === 'string' ? o : o.label;
+        { const t = document.createElement('span'); t.className = 't'; for (const n of [...b.childNodes]) if (!(n.nodeName === 'svg' || n.nodeName === 'SVG')) t.appendChild(n); b.appendChild(t); } // label + small detail stacked
         if (o.disabled) b.disabled = true;
         b.onpointerdown = e => { e.stopPropagation(); e.preventDefault(); sfx.click(); box.classList.add('hidden'); res(i); };
         box.appendChild(b);
