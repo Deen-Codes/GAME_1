@@ -131,11 +131,11 @@ export function buildCharacter(cfg) {
     // stepped, blocky chest that matches the voxel style: a main block with bevel steps above and below
     // one smooth sculpted shape: a sphere reshaped into two soft lobes with a gentle dip between them,
     // fuller underneath and blending flat into the chest at the top (how low-poly character artists do it)
-    const fz = torsoD * 0.96 / 2, cy = torsoH * 0.69, ch = torsoH * (0.27 + 0.07 * bust), dz = 0.05 + 0.09 * bust, bw = chestW * 0.9;
+    const fz = torsoD * 0.96 / 2, cy = torsoH * 0.69, ch = torsoH * (0.27 + 0.07 * bust), dz = 0.05 + 0.09 * bust, bw = chestW * 0.98;
     const bg = new THREE.SphereGeometry(1, 28, 18), pa = bg.attributes.position;
     for (let i = 0; i < pa.count; i++) {
       let x = pa.getX(i), y = pa.getY(i), z = pa.getZ(i);
-      const lobe = 0.62 + 0.38 * Math.cos(2 * Math.PI * (Math.abs(x) - 0.5));   // peaks at the two lobes, dips in the middle
+      const lobe = Math.max(0.12, 0.5 + 0.5 * Math.cos(2 * Math.PI * (Math.abs(x) - 0.56)));   // two lobes set apart, clear dip in the middle
       const lift = y > 0 ? 1 - 0.65 * y * y : 1 - 0.05 * y * y;                       // flat on top, round underneath
       z = z > 0 ? z * lobe * lift : z * 0.2;                                      // back side tucked into the torso
       pa.setXYZ(i, x * bw / 2, y * ch / 2, z * dz);
