@@ -1,8 +1,8 @@
 // Conversations staged like a Pokémon battle: they stand on a platform facing you,
 // you see the back of your own head in the foreground, subtitles type out, you pick replies.
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject } from './character.js?v=66';
-import { sfx, audio } from './audio.js?v=66';
+import { buildCharacter, poseCharacter, disposeObject } from './character.js?v=67';
+import { sfx, audio } from './audio.js?v=67';
 
 const $ = id => document.getElementById(id);
 const BG = {
@@ -28,6 +28,33 @@ export class Talk {
     this.blipPitch = 300; this.active = false;
     $('talkBox').addEventListener('pointerdown', e => { e.preventDefault(); this.tap(); });
   }
+  // painted backdrops for places, so a chat in the club looks like the club
+  paintRoom(x, room, R) {
+    const box = (c, X, Y, w, h) => { x.fillStyle = c; x.fillRect(X, Y, w, h); };
+    if (room === 'club') {
+      const g = x.createLinearGradient(0, 0, 0, 256); g.addColorStop(0, '#0b0618'); g.addColorStop(1, '#2a0f3a'); x.fillStyle = g; x.fillRect(0, 0, 512, 256);
+      for (let i = 0; i < 9; i++) { const cx = 40 + i * 55, col = ['#ff3bd2', '#38e8ff', '#ffd23f', '#4cd964'][i % 4]; x.globalAlpha = 0.28; x.fillStyle = col; x.beginPath(); x.moveTo(cx, 0); x.lineTo(cx - 70 + R() * 140, 256); x.lineTo(cx - 40 + R() * 140, 256); x.fill(); x.globalAlpha = 1; box(col, cx - 6, 0, 12, 6); }
+      box('#16161b', 196, 150, 120, 60); box('#38e8ff', 206, 160, 100, 6); for (let i = 0; i < 8; i++) box(['#ff3bd2', '#38e8ff', '#ffd23f'][i % 3], 206 + i * 13, 175, 8, 8 + R() * 22); // DJ booth
+      box('#ff3bd2', 150, 40, 212, 4); x.fillStyle = '#ff7ae8'; x.font = 'bold 34px sans-serif'; x.fillText('NEON ROOM', 160, 90);
+      for (let i = 0; i < 26; i++) { const px = R() * 512, ph = 30 + R() * 30; x.fillStyle = '#05030c'; x.beginPath(); x.arc(px, 256 - ph, 8, 0, 7); x.fill(); x.fillRect(px - 9, 256 - ph + 6, 18, ph); if (R() < 0.5) x.fillRect(px + 4, 256 - ph - 22, 4, 20); } // crowd, hands up
+      for (let i = 0; i < 16; i++) for (let j = 0; j < 8; j++) { x.fillStyle = (i + j) % 2 ? ['#3a1450', '#14304a', '#4a1430'][(i * j) % 3] : '#1a0a24'; x.fillRect(i * 32, 256 + j * 32, 32, 32); } // lit dance floor
+    } else if (room === 'bar') {
+      box('#3a2414', 0, 0, 512, 256); for (let s2 = 0; s2 < 3; s2++) { box('#5a3a22', 60, 60 + s2 * 50, 392, 6); for (let i = 0; i < 26; i++) box(['#2f8a4a', '#8a5a2a', '#c9c2b5', '#5a2a2a', '#2a4a8a'][Math.floor(R() * 5)], 66 + i * 15, 36 + s2 * 50, 9, 24); }
+      x.globalAlpha = 0.35; box('#ffb35c', 0, 0, 512, 256); x.globalAlpha = 1; box('#5a3a22', 0, 210, 512, 46); box('#7a5230', 0, 206, 512, 8);
+      x.fillStyle = '#ff6a3c'; x.font = 'bold 26px sans-serif'; x.fillText('THE ANCHOR', 180, 28);
+    } else if (room === 'diner') {
+      box('#f6e7b8', 0, 0, 512, 256); box('#c9302c', 0, 150, 512, 20); for (let i = 0; i < 6; i++) { box('#8fd0e8', 20 + i * 85, 40, 60, 70); box('#ffffff', 18 + i * 85, 38, 64, 4); }
+      for (let i = 0; i < 5; i++) box('#c9302c', 30 + i * 100, 185, 70, 50); box('#e8e8ea', 0, 230, 512, 26);
+      for (let i = 0; i < 16; i++) for (let j = 0; j < 8; j++) { x.fillStyle = (i + j) % 2 ? '#16161b' : '#f2f2f2'; x.fillRect(i * 32, 256 + j * 32, 32, 32); }
+    } else if (room === 'gym') {
+      box('#4a4d55', 0, 0, 512, 256); box('#9fd8ff', 40, 40, 432, 120); x.globalAlpha = 0.25; box('#ffffff', 40, 40, 432, 120); x.globalAlpha = 1; // mirrors
+      for (let i = 0; i < 10; i++) { box('#16161b', 50 + i * 42, 190, 30, 8); box('#c9302c', 48 + i * 42, 182, 6, 24); box('#c9302c', 74 + i * 42, 182, 6, 24); }
+      x.fillStyle = '#ffd23f'; x.font = 'bold 26px sans-serif'; x.fillText('IRON TEMPLE', 170, 28);
+    } else if (room === 'prison') {
+      box('#9a9ea6', 0, 0, 512, 256); for (let i = 0; i < 4; i++) { box('#6a6d74', 30 + i * 125, 70, 100, 140); for (let k = 0; k < 7; k++) box('#3a3d45', 36 + i * 125 + k * 14, 70, 4, 140); }
+      box('#ffd23f', 0, 236, 512, 6);
+    }
+  }
   layout(W, H) {
     this.W = W; this.H = H;
     this.cam.aspect = W / H; this.cam.fov = W / H < 0.6 ? 52 : 40;
@@ -37,7 +64,7 @@ export class Talk {
     this.youPos = new THREE.Vector3(-0.62 * spread, 0, 1.75);
     this.cam.position.set(0, 2.3, 5.6); this.cam.lookAt(0.1, 1.05, -1.2);
   }
-  background(kind, night, wall, floor) {
+  background(kind, night, wall, floor, room) {
     if (kind === 'interior' && wall) {
       const Wc = new THREE.Color(wall), F = new THREE.Color(floor || '#555');
       const hx = c => '#' + c.getHexString();
@@ -70,18 +97,20 @@ export class Talk {
       x.fillStyle = N ? '#0f1c18' : '#2f6b3a'; for (let i = 0; i < 18; i++) { const tx = R() * 512, ty = 200 + R() * 50; x.beginPath(); x.moveTo(tx, ty - 34); x.lineTo(tx - 12, ty); x.lineTo(tx + 12, ty); x.fill(); }
       if (!N) { x.fillStyle = '#ffffff'; x.font = 'bold 22px sans-serif'; x.fillText('BAYWOOD', 300, 160); }
     }
+    if (kind === 'interior') this.paintRoom(x, room, R);
     const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace;
     if (this.scene.background?.dispose) this.scene.background.dispose();
     this.scene.background = t;
-    for (const p of [this.pNpc, this.pYou]) { p.top.material.color.set(b.plat); p.rim.material.color.set(b.rim); }
+    const RP = { club: ['#1a1428', '#ff3bd2'], bar: ['#5a3a22', '#3a2414'], diner: ['#e8e2d6', '#c9302c'], gym: ['#3a3d45', '#c9302c'], prison: ['#8a8e96', '#5a5d64'] }[kind === 'interior' ? room : ''];
+    for (const p of [this.pNpc, this.pYou]) { p.top.material.color.set(RP ? RP[0] : b.plat); p.rim.material.color.set(RP ? RP[1] : b.rim); p.rim.material.emissive?.set(room === 'club' ? '#ff3bd2' : '#000000'); }
     this.hemi.intensity = N ? 0.8 : 1.3; this.sun.intensity = N ? 1 : 2; this.sun.color.set(N ? '#b0b8ff' : '#fff3e0');
   }
-  begin({ npcCfg, youCfg, name, tag, pitch = 300, bg = 'city', night = 0, wall = null, floor = null, pet = null, pose = null, think = false, seat = false, phone = false, car = false }) {
+  begin({ npcCfg, youCfg, name, tag, pitch = 300, bg = 'city', night = 0, wall = null, floor = null, pet = null, pose = null, think = false, seat = false, phone = false, car = false, room = null }) {
     this.pose = pose; this.think = think; this.seat = seat; this.phone = phone; this.car = car; this.actK = null; this.actT = 0;
     audio();
     this.clear();
     this.active = true; this.t = 0; this.intro = 0; this.t0 = performance.now(); this.blipPitch = pitch;
-    this.background(wall ? 'interior' : bg, night, wall, floor);
+    this.background(wall ? 'interior' : bg, night, wall, floor, room);
     this.npc = buildCharacter(npcCfg); this.scene.add(this.npc.root);
     if (pet) { this.pet = pet; pet.scale.setScalar(1.15); this.scene.add(pet); }
     if (pose) { // homeless: sleeping bag / cardboard on the platform
