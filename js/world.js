@@ -79,6 +79,7 @@ export const FIELDS = [
   { x0: 460, x1: 740, z0: -420, z1: -190 },
 ];
 const PIER = { x0: 88, x1: 100, z0: 368, z1: 505 };
+export const DOCKS = [{ x0: -242, x1: -237, z0: 418, z1: 486 }, { x0: -272, x1: -242, z0: 448, z1: 452 }, { x0: -237, x1: -207, z0: 466, z1: 470 }, { x0: -272, x1: -242, z0: 478, z1: 482 }]; // Bay Marina
 
 // ---------------- helpers
 function hash(x, z, s = 0) { let h = (x * 374761393 + z * 668265263 + s * 2147483647) | 0; h = (h ^ (h >>> 13)) * 1274126177 | 0; return ((h ^ (h >>> 16)) >>> 0) / 4294967295; }
@@ -354,12 +355,29 @@ export function attachDoor(p, accent = '#ff8a2a', sign = null, build = null) {
 }
 function tree(x, z, kind = 'round', s = 1) { addObj({ t: 'tree', x, z, kind, s }); addCollider({ x, z, r: 0.45 * s }); }
 
-function genBlock(city, bx0, bz0, r) {
+// landmark blocks: the stadium, the mall and Bay Park take over whole downtown blocks
+export const LANDMARK_BLOCKS = { stadium: ['main', 5, -4], mall: ['main', -4, -3], bigpark: ['main', -2, -4] };
+function genBlock(city, bx0, bz0, r, bi, bj) {
   const cx = bx0 + 18, cz = bz0 + 18; // block 36x36
   addObj({ t: 'slab', x: cx, z: cz, w: 36, d: 36, h: 0.15, col: '#bdb6aa' });
   const lx = cx, lz = cz, L = 30;
   const dCenter = Math.hypot(cx - city.cx, cz - city.cz);
   let type;
+  const lm = Object.entries(LANDMARK_BLOCKS).find(([, [c, i, j]]) => c === city.id && i === bi && j === bj)?.[0];
+  if (lm === 'stadium') { // Bay Stadium: stands on four sides, a pitch, floodlights; the way in is on the south side
+    addObj({ t: 'stadium', x: lx, z: lz });
+    for (const [x0, z0, x1, z1] of [[-16, -16, 16, -11], [-16, -11, -11, 16], [11, -11, 16, 16], [-11, 11, -3, 16], [3, 11, 11, 16]]) addCollider({ x0: lx + x0, z0: lz + z0, x1: lx + x1, z1: lz + z1, h: 9 });
+    return;
+  }
+  if (lm === 'mall') { building(lx, lz - 1, 32, 28, 11, '#dfe4ea', { glass: true, top: 'ac' }); addObj({ t: 'mallsign', x: lx, z: lz + 13.1 }); return; }
+  if (lm === 'bigpark') { // Bay Park: lawn, a jogging loop, a pond, lots of trees and benches
+    addObj({ t: 'slab', x: lx, z: lz, w: L + 4, d: L + 4, h: 0.2, col: '#78b858' });
+    addObj({ t: 'ring', x: lx, z: lz, r: 13 });
+    addObj({ t: 'pond', x: lx, z: lz }); addCollider({ x: lx, z: lz, r: 5.2 });
+    for (let i = 0; i < 16; i++) { const a = i / 16 * Math.PI * 2 + r() * 0.2, d = i % 2 ? 9 : 15.5; const tx = lx + Math.cos(a) * d, tz = lz + Math.sin(a) * d; if (Math.abs(Math.hypot(tx - lx, tz - lz) - 13) < 1.6) continue; tree(tx, tz, r() < 0.35 ? 'pine' : 'round', 0.9 + r() * 0.6); }
+    for (let i = 0; i < 6; i++) { const a = i / 6 * Math.PI * 2 + 0.3; addObj({ t: 'bench', x: lx + Math.cos(a) * 11, z: lz + Math.sin(a) * 11, rot: (i % 3 ? 1 : 0) }); }
+    return;
+  }
   if (city.id === 'main' && cz > 280) type = r() < 0.75 ? 'beach' : 'park';
   else if (city.style === 'downtown') type = r() < 0.1 ? 'park' : r() < 0.08 ? 'parking' : dCenter < 110 ? 'tower' : dCenter < 210 ? 'mid' : r() < 0.4 ? 'house' : 'mid';
   else if (city.style === 'suburb') type = r() < 0.14 ? 'park' : dCenter < 60 ? 'mid' : r() < 0.1 ? 'parking' : 'house';
@@ -446,7 +464,7 @@ function genWorld() {
   for (const city of CITIES) {
     for (let i = city.kx[0]; i < city.kx[1]; i++) for (let j = city.kz[0]; j < city.kz[1]; j++) {
       const bx0 = city.cx + i * P + HR, bz0 = city.cz + j * P + HR;
-      genBlock(city, bx0, bz0, mkRng(hash(i + 100, j + 100, city.cx + city.cz * 7 + 1)));
+      genBlock(city, bx0, bz0, mkRng(hash(i + 100, j + 100, city.cx + city.cz * 7 + 1)), i, j);
       // lamps on block corners-ish
       for (const [lx, lz] of [[bx0 + 1.2, bz0 + 12], [bx0 + 34.8, bz0 + 24], [bx0 + 12, bz0 + 34.8], [bx0 + 24, bz0 + 1.2]]) { LAMPS.push({ x: lx, z: lz }); addObj({ t: 'lamp', x: lx, z: lz }); addCollider({ x: lx, z: lz, r: 0.16 }); }
     }
@@ -513,6 +531,7 @@ function genWorld() {
   }
   for (const lx of [-220, 40, 300, 520]) { addObj({ t: 'lifeguard', x: lx, z: shoreLine(lx) - 30 }); addCollider({ x0: lx - 1.6, x1: lx + 1.6, z0: shoreLine(lx) - 31.6, z1: shoreLine(lx) - 28.4, h: 4 }); }
   addObj({ t: 'pier', x: (PIER.x0 + PIER.x1) / 2, z: (PIER.z0 + PIER.z1) / 2 });
+  DOCKS.forEach((D, i) => addObj({ t: 'dock', i, x: (D.x0 + D.x1) / 2, z: (D.z0 + D.z1) / 2 }));
   // Hidden Hills mansions
   for (const p of PADS) {
     const big = p.r > 20;
@@ -554,10 +573,10 @@ export function parkedIn(cx, cz) { return (chunks.get(ckey(cx, cz))?.objs || [])
 // ---------------- collision
 export function walkable(x, z, onFoot = true) {
   if (x < WORLD.x0 + 20 || x > WORLD.x1 - 6 || z < WORLD.z0 + 8 || z > WORLD.z1) return false;
-  if (inR(PIER, x, z)) return true;
+  if (inR(PIER, x, z) || DOCKS.some(D => inR(D, x, z))) return true;
   return groundH(x, z) - dip(x, z) > (onFoot ? -1.7 : -1.2); // the highway cutting is dry land, not sea
 }
-export function onPier(x, z) { return inR(PIER, x, z); }
+export function onPier(x, z) { return inR(PIER, x, z) || DOCKS.some(D => inR(D, x, z)); }
 // Push a circle out of static colliders. Returns true if it hit something.
 export function resolve(pos, r, yFeet = 0) {
   let hit = false;
@@ -912,6 +931,15 @@ function drawObj(o, B) {
       B.box(o.x, 5.1, o.z, 0.7, 0.25, 0.7, '#fff6d8', { key: 'glow' });
       B.pool(o.x, 0.25, o.z, 6, '#ffcf8a');
       break;
+    case 'stadium': { // concrete bowl, coloured seats, green pitch with lines, four floodlight masts
+      for (const [x, z, w, d] of [[0, -13.5, 32, 5], [-13.5, 2.5, 5, 27], [13.5, 2.5, 5, 27], [-7, 13.5, 8, 5], [7, 13.5, 8, 5]]) { B.box(o.x + x, 0.15, o.z + z, w, 4, d, '#b8b4ad'); B.box(o.x + x * 1.04, 4.15, o.z + z * 1.04, w * 0.96, 3, d * 0.8, '#c9302c'); B.box(o.x + x * 1.08, 7.15, o.z + z * 1.08, w * 0.9, 2, d * 0.5, '#2f80ed'); }
+      B.box(o.x, 0.16, o.z, 22, 0.06, 22, '#3f9a45'); B.box(o.x, 0.23, o.z, 0.2, 0.02, 20, '#ffffff'); B.box(o.x, 0.23, o.z, 20, 0.02, 0.2, '#ffffff');
+      for (const [x, z] of [[-15, -15], [15, -15], [-15, 15], [15, 15]]) { B.box(o.x + x, 0.15, o.z + z, 0.5, 16, 0.5, '#5a5d64'); B.box(o.x + x, 16, o.z + z, 2.4, 1.2, 0.5, '#ffffff', { key: 'glow' }); }
+      B.box(o.x, 9.2, o.z - 16.2, 14, 2.2, 0.3, '#16161b', { key: 'sign' }); B.box(o.x, 9.3, o.z - 16.4, 13, 1.8, 0.05, '#ffd23f', { key: 'glow' });
+      break; }
+    case 'mallsign': B.box(o.x, 8, o.z, 16, 2, 0.4, '#16161b', { key: 'sign' }); B.box(o.x, 8.1, o.z + 0.22, 15, 1.6, 0.05, '#ff6fb5', { key: 'glow' }); B.box(o.x, 0.15, o.z + 2, 14, 0.05, 4, '#c9c2b5'); break;
+    case 'ring': for (let i = 0; i < 40; i++) { const a = i / 40 * Math.PI * 2; B.box(o.x + Math.cos(a) * o.r, 0.2, o.z + Math.sin(a) * o.r, 2.4, 0.04, 2.2, '#c9b48a'); } break;
+    case 'pond': B.box(o.x, 0.16, o.z, 10, 0.06, 10, '#9a8a6a'); B.box(o.x, 0.2, o.z, 9.2, 0.05, 9.2, '#3a7ab0'); B.box(o.x + 2, 0.3, o.z - 1, 0.6, 0.15, 0.4, '#ffffff'); break;
     case 'fountain':
       B.cyl(o.x, 0.2, o.z, 3, 0.6, '#c9c2b8', 12);
       B.disc(o.x, 0.82, o.z, 2.6, '#ffffff', 'water', 16);
@@ -951,6 +979,7 @@ function drawObj(o, B) {
       for (const sx of [-1, 1]) for (const sz of [-1, 1]) B.box(o.x + sx * 1.2, 0, o.z + sz * 1.2, 0.2, 2.6, 0.2, '#f2f2f2');
       B.box(o.x, 2.6, o.z, 3, 1.6, 3, '#e23b3b'); B.prism(o.x, 4.2, o.z, 3.4, 0.8, 3.4, '#ffffff');
       break;
+    case 'dock': { const D = DOCKS[o.i], w = D.x1 - D.x0, d = D.z1 - D.z0; B.box(o.x, -0.3, o.z, w, 0.55, d, '#a07a4f'); for (let z = D.z0 + 1; z < D.z1; z += 5) for (const sx of [D.x0 + 0.25, D.x1 - 0.25]) B.box(sx, -3, z, 0.35, 4.2, 0.35, '#6b5034'); for (let z = D.z0; z < D.z1; z += 1.2) B.flat(o.x, 0.26, z, w, 0.08, '#8a6a42'); break; }
     case 'pier':
       B.box(o.x, -0.3, o.z, PIER.x1 - PIER.x0, 0.55, PIER.z1 - PIER.z0, '#a07a4f');
       for (let z = PIER.z0 + 2; z < PIER.z1; z += 6) for (const sx of [PIER.x0 + 0.3, PIER.x1 - 0.3]) B.box(sx, -3, z, 0.4, 4.2, 0.4, '#6b5034');

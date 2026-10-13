@@ -1,5 +1,5 @@
 // Everything you can walk or drive up to: shops, barbers, property, dealers, minigames, chop shop, race.
-import { blockSide, attachDoor, addStructure } from './world.js?v=80';
+import { blockSide, attachDoor, addStructure } from './world.js?v=81';
 
 const S = (city, i, j, side) => blockSide(city, i, j, side);
 
@@ -38,6 +38,12 @@ export const PLACES = [
   { id: 'v_motors', kind: 'venue', interior: 'motors', name: 'Bay Motors', icon: 'car', ...S('main', 4, -2, 's') },
   { id: 'v_casa', kind: 'venue', interior: 'casa', name: 'Casa Bay Furniture', icon: 'sofa', ...S('main', -2, 2, 's') },
   { id: 'v_anchor', kind: 'venue', interior: 'bar', name: 'The Anchor Bar', icon: 'drink', x: 160, z: 368 },
+  { id: 'v_mall', kind: 'venue', interior: 'mall', name: 'Bay City Mall', icon: 'bag', style: 'street', ...S('main', -4, -3, 's') },
+  { id: 'l_stadium', kind: 'stadium', name: 'Bay Stadium', icon: 'ball', desc: 'Home of the Bay City Breakers. Match day every third day, 7pm.', x: 264, z: -146 },
+  { id: 'l_wheel', kind: 'ride', ride: 'wheel', name: 'Big Wheel', icon: 'star', desc: 'Round and round above the bay. $8.', x: 40, z: 405 },
+  { id: 'l_carousel', kind: 'ride', ride: 'carousel', name: 'Carousel', icon: 'star', desc: 'Painted horses and organ music. $5.', x: 64, z: 380 },
+  { id: 'l_stalls', kind: 'carny', name: 'Fairground Stalls', icon: 'target', desc: 'Hook-a-duck, ring toss, win a giant teddy.', x: 52, z: 414 },
+  { id: 'l_marina', kind: 'marina', name: 'Bay Marina', icon: 'wave', desc: 'Harbour cruises and boats for sale.', x: -239.5, z: 421 },
   { id: 't_rose', kind: 'tattoo', name: 'Needle & Rose Tattoo', icon: 'edit', desc: 'Tattoos, cover-ups and laser removal.', ...S('main', 2, 0, 's') },
   { id: 't_east', kind: 'tattoo', name: 'Eastport Ink', icon: 'edit', desc: 'Walk-ins welcome. Laser removal too.', ...S('east', 2, 0, 's') },
   { id: 'g_club', kind: 'venue', interior: 'club', name: 'Neon Room Club', icon: 'music', ...S('main', -2, -1, 's') },

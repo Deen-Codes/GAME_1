@@ -1,15 +1,17 @@
 // Enterable interiors. Rooms are built far away from the city (at ORIGIN) and the player is moved
 // there, so the normal movement, camera and collision code keeps working. South wall is cut away.
 import * as THREE from '../lib/three.module.min.js';
-import { FURN, buildFurn } from './furniture.js?v=80';
-import { addCollider, removeCollider } from './world.js?v=80';
-import { buildCar } from './car.js?v=80';
+import { FURN, buildFurn } from './furniture.js?v=81';
+import { addCollider, removeCollider } from './world.js?v=81';
+import { buildCar } from './car.js?v=81';
 
 export const ORIGIN = { x: 0, z: 2600 };
 const T = (name, w, d, floor, wall, items, npcs, spots, extra = {}) => ({ name, w, d, floor, wall, items, npcs, spots, ...extra });
 export const INTERIORS = {
   guns: T('Bay Arms', 18, 14, '#4a443e', '#7a6e62', [['counter', -3, -4.4], ['gunwall', -3, -6.75], ['lane', 4.2, 4.2], ['lane', 6.4, 4.2], ['plant', -8, 5.8], ['sign', -3, -6.8, 0, '#ff5a3c']],
     [{ role: 'gun', x: -3, z: -5.4 }], [{ kind: 'talk', x: -3, z: -3.1, label: 'Talk', icon: 'chat' }, { kind: 'range', x: 5.3, z: 5.4, label: 'Range', icon: 'target' }]),
+  mall: T('Bay City Mall', 26, 18, '#ece6dc', '#f4f4f6', [['counter', -8, -7.3, 0, '#ff6fb5'], ['rack', -10, -4], ['rack', -7, -4, 0, '#2f80ed'], ['rack', -4, -4, 0, '#ffd23f'], ['mirror', -11.6, -8.85], ['counter', 7, -7.3, 0, '#ffd23f'], ['table', 4, -2], ['table', 8, -2], ['table', 4, 1.5], ['table', 8, 1.5], ['arcade', -10, 4], ['arcade', -8.8, 4], ['arcade', -7.6, 4], ['palm', 0, -1], ['palm', -2, 6], ['palm', 11.5, 7], ['sign', -8, -8.9, 0, '#ff6fb5'], ['sign', 7, -8.9, 0, '#ffd23f']],
+    [{ role: 'clerk', x: -8, z: -8.2 }, { role: 'cook', x: 7, z: -8.2 }], [{ kind: 'mirror', x: -11, z: -7.5, label: 'Fashion', icon: 'shirt' }, { kind: 'mallfood', x: 7, z: -6, label: 'Food court', icon: 'food' }, { kind: 'arcade', x: -8.8, z: 2.6, label: 'Arcade', icon: 'play' }]),
   clothes: T('Clothes Store', 14, 10, '#e8e2d6', '#f2d6dc', [['counter', 3.6, -3.3, 0, '#e8e2d6'], ['rack', -4, -2.5], ['rack', -4, 1.2, 0, '#2f80ed'], ['rack', -0.5, 1.2, 0, '#ffd23f'], ['mirror', 5.6, -4.85], ['plant', -6, -4.2], ['sign', 0, -4.9, 0, '#ff6fb5']],
     [{ role: 'clerk', x: 3.6, z: -4.25 }], [{ kind: 'talk', x: 3.6, z: -2.1, label: 'Talk', icon: 'chat' }, { kind: 'mirror', x: 5.6, z: -3.6, label: 'Try on', icon: 'shirt' }]),
   barber: T('Barbershop', 11, 8, '#2a2a30', '#e8e2d6', [['barberchair', -3, -2.4], ['barberchair', 0, -2.4], ['barberchair', 3, -2.4], ['mirror', -3, -3.85], ['mirror', 0, -3.85], ['mirror', 3, -3.85], ['pole', 4.9, -3.6], ['chair', -4.4, 2.6, Math.PI / 2], ['chair', -4.4, 1.6, Math.PI / 2]],

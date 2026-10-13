@@ -1,25 +1,25 @@
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas } from './character.js?v=80';
-import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=80';
-import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=80';
-import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=80';
-import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=80';
-import { buildPanel, renderStats } from './ui.js?v=80';
-import { Input } from './input.js?v=80';
-import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime } from './audio.js?v=80';
-import { runMinigame } from './minigames.js?v=80';
-import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk } from './peds.js?v=80';
-import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=80';
-import { findRoute } from './nav.js?v=80';
-import { COURSES, CAREERS, QUIZ } from './careers.js?v=80';
-import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=80';
-import { attachWheel } from './wheel.js?v=80';
-import { Animals } from './animals.js?v=80';
-import { Talk } from './talk.js?v=80';
-import { svg, drawIcon } from './icons.js?v=80';
-import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=80';
-import { FURN, CATALOG } from './furniture.js?v=80';
-import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=80';
+import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas } from './character.js?v=81';
+import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=81';
+import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=81';
+import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=81';
+import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=81';
+import { buildPanel, renderStats } from './ui.js?v=81';
+import { Input } from './input.js?v=81';
+import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime } from './audio.js?v=81';
+import { runMinigame } from './minigames.js?v=81';
+import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk } from './peds.js?v=81';
+import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=81';
+import { findRoute } from './nav.js?v=81';
+import { COURSES, CAREERS, QUIZ } from './careers.js?v=81';
+import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=81';
+import { attachWheel } from './wheel.js?v=81';
+import { Animals } from './animals.js?v=81';
+import { Talk } from './talk.js?v=81';
+import { svg, drawIcon } from './icons.js?v=81';
+import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=81';
+import { FURN, CATALOG } from './furniture.js?v=81';
+import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=81';
 
 const $ = id => document.getElementById(id);
 let inside = null, editMode = false, held = null, pendingCar = false, homeMusic = false, phoneBadge = 0;
@@ -1712,6 +1712,121 @@ function gpsTurn(v) {
   }
   return 0;
 }
+// ================================================================ LANDMARKS: pier fairground, marina, neon strip, stadium, mall, Bay Park
+const lmGroup = new THREE.Group(); G.scene.add(lmGroup);
+const LM = { wheel: null, carousel: null, boats: [], neon: [], neonMats: [] };
+(function buildLandmarks() {
+  const M = (c, e) => new THREE.MeshStandardMaterial({ color: c, roughness: 0.6, emissive: e || '#000000', emissiveIntensity: e ? 0.6 : 0 });
+  const box = (g, w, h, d, m, x, y, z) => { const b = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), m); b.position.set(x, y, z); b.castShadow = true; g.add(b); return b; };
+  // --- fairground on the sand next to the pier: big wheel, carousel, a row of stalls, string lights
+  const fy = 0;
+  { const g = new THREE.Group(); g.position.set(40, fy, 398); lmGroup.add(g);
+    for (const sx of [-1, 1]) { const leg = box(g, 0.35, 11, 0.35, M('#c9ccd2'), sx * 2.2, 5.3, 0); leg.rotation.z = sx * 0.2; }
+    const wheel = new THREE.Group(); wheel.position.set(0, 10.6, 0); g.add(wheel);
+    const rimM = M('#ffffff', '#ff6fb5'); const rim = new THREE.Mesh(new THREE.TorusGeometry(8.5, 0.18, 6, 40), rimM); wheel.add(rim);
+    for (let i = 0; i < 12; i++) { const a = i / 12 * Math.PI * 2, sp = box(wheel, 0.12, 8.5, 0.12, M('#c9ccd2'), Math.cos(a) * 4.25, Math.sin(a) * 4.25, 0); sp.rotation.z = a - Math.PI / 2;
+      const cab = new THREE.Group(); cab.position.set(Math.cos(a) * 8.5, Math.sin(a) * 8.5, 0); box(cab, 1.2, 1, 1.1, M(['#e23b3b', '#2f80ed', '#ffd23f', '#4cd964'][i % 4]), 0, -0.7, 0); wheel.add(cab); }
+    LM.wheel = wheel; addCollider({ x0: 40 - 3, x1: 40 + 3, z0: 397, z1: 399, h: 3 }); }
+  { const g = new THREE.Group(); g.position.set(64, fy, 386); lmGroup.add(g);
+    box(g, 7, 0.4, 7, M('#8a5a2a'), 0, 0.2, 0); const top = new THREE.Mesh(new THREE.ConeGeometry(4.6, 2.2, 12), M('#e23b3b', '#ff3b8a')); top.position.y = 4.6; g.add(top);
+    const spin = new THREE.Group(); g.add(spin); box(spin, 0.3, 3.4, 0.3, M('#ffd23f'), 0, 2, 0);
+    for (let i = 0; i < 8; i++) { const a = i / 8 * Math.PI * 2, pole = box(spin, 0.08, 3.2, 0.08, M('#ffd23f'), Math.cos(a) * 2.6, 2, Math.sin(a) * 2.6); const horse = box(spin, 0.35, 0.55, 1.0, M(['#ffffff', '#ff6fb5', '#38e8ff', '#ffd23f'][i % 4]), Math.cos(a) * 2.6, 1.3, Math.sin(a) * 2.6); horse.rotation.y = -a; horse.userData.a = a; }
+    LM.carousel = spin; addCollider({ x: 64, z: 386, r: 3.4 }); }
+  for (let i = 0; i < 5; i++) { const g = new THREE.Group(), x = 34 + i * 7.5; g.position.set(x, fy, 414); lmGroup.add(g);
+    box(g, 4.4, 1.1, 1.6, M('#f2e6d0'), 0, 0.55, 0); for (const sx of [-2.1, 2.1]) box(g, 0.12, 2.6, 0.12, M('#ffffff'), sx, 1.3, -0.7);
+    const aw = box(g, 4.8, 0.2, 2.2, M(['#e23b3b', '#2f80ed', '#ffd23f', '#4cd964', '#ff6fb5'][i]), 0, 2.7, -0.2); aw.rotation.x = -0.15;
+    for (let k = 0; k < 3; k++) box(g, 0.45, 0.6, 0.45, M(['#ff6fb5', '#ffd23f', '#38e8ff'][k]), -1.2 + k * 1.2, 1.4, -0.4);
+    addCollider({ x0: x - 2.2, x1: x + 2.2, z0: 413.2, z1: 414.8, h: 1.2 }); }
+  { const pts = []; for (let i = 0; i <= 40; i++) { const x = 30 + i * 1.1; pts.push(new THREE.Vector3(x, 4.2 + Math.sin(i * 0.8) * 0.3, 410)); }
+    for (let i = 0; i < pts.length; i += 2) { const b = new THREE.Mesh(new THREE.SphereGeometry(0.12, 6, 4), new THREE.MeshBasicMaterial({ color: ['#ffd23f', '#ff3b8a', '#38e8ff', '#4cd964'][i % 4] })); b.position.copy(pts[i]); lmGroup.add(b); LM.neon.push(b); } }
+  // --- marina: boats tied up along the docks
+  const hullCols = ['#ffffff', '#16161b', '#2f80ed', '#c9302c', '#e8e2d6'];
+  for (const [x, z, r] of [[-250, 445, 0], [-262, 445, 0], [-252, 456, Math.PI], [-264, 456, Math.PI], [-226, 462, 0], [-214, 462, 0], [-224, 474, Math.PI], [-252, 486, Math.PI], [-264, 474, 0]]) {
+    const g = new THREE.Group(); g.position.set(x, WATER_Y + 0.1, z); g.rotation.y = r; lmGroup.add(g);
+    const big = Math.random() < 0.35, L = big ? 9 : 6, col = pick(hullCols);
+    box(g, 2.4, 0.9, L, M(col), 0, 0.3, 0); const bow = box(g, 2.4, 0.9, 1.6, M(col), 0, 0.3, L / 2 + 0.5); bow.scale.x = 0.55;
+    box(g, 2.2, 0.08, L - 0.4, M('#c9a27a'), 0, 0.78, 0); box(g, 1.8, big ? 1.4 : 0.9, big ? 3.2 : 1.8, M('#e8eef2'), 0, big ? 1.5 : 1.25, -0.6);
+    if (!big && Math.random() < 0.5) { const mast = box(g, 0.12, 8, 0.12, M('#e8e8ea'), 0, 4.7, 0.6); const sail = new THREE.Mesh(new THREE.PlaneGeometry(2.6, 6.2), new THREE.MeshStandardMaterial({ color: '#ffffff', side: THREE.DoubleSide })); sail.position.set(0, 4.8, -0.7); sail.rotation.y = Math.PI / 2; g.add(sail); }
+    g.userData.ph = Math.random() * 6; LM.boats.push(g);
+  }
+  // --- neon strip: the street outside the Neon Room club comes alive after dark
+  const neonCols = ['#ff3bd2', '#38e8ff', '#ffd23f', '#4cd964', '#ff6a3c', '#b26bff'];
+  for (let x = -164; x <= 40; x += 11) for (const sz of [-1, 1]) {
+    if (Math.random() < 0.3) continue;
+    const col = pick(neonCols), m = new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: 0.25 }); LM.neonMats.push(m);
+    const z = sz * 6.2, w = 2 + Math.random() * 3, sign = new THREE.Mesh(new THREE.BoxGeometry(w, 0.7 + Math.random() * 0.6, 0.12), m); sign.position.set(x + rand(-2, 2), 3.2 + Math.random() * 2.5, z); lmGroup.add(sign);
+    const strip = new THREE.Mesh(new THREE.BoxGeometry(5, 0.06, 0.12), m); strip.position.set(x, 0.3, sz * 5.6); lmGroup.add(strip);
+  }
+})();
+function updateLandmarks(dt) {
+  if (inside) return;
+  if (LM.wheel) LM.wheel.rotation.z += dt * 0.12;
+  if (LM.carousel) LM.carousel.rotation.y += dt * 0.6, LM.carousel.children.forEach(c => { if (c.userData.a != null) c.position.y = 1.3 + Math.sin(time * 3 + c.userData.a * 2) * 0.25; });
+  for (const b of LM.boats) { b.position.y = WATER_Y + 0.1 + Math.sin(time * 1.2 + b.userData.ph) * 0.12; b.rotation.z = Math.sin(time * 0.9 + b.userData.ph) * 0.04; }
+  const glow = clamp(night * 1.3, 0.2, 1); for (const m of LM.neonMats) m.opacity = glow * (0.75 + Math.sin(time * 3 + m.id) * 0.15); for (const b of LM.neon) b.visible = night > 0.3 || Math.floor(time * 2) % 2 === 0;
+  joggers(dt); matchDay(dt); stripCrowd(dt);
+}
+// ---------------- Bay Park joggers (and dogs out with their owners)
+const jogs = [];
+function parkCentre() { const [c, i, j] = LANDMARK_BLOCKS.bigpark, C = CITIES.find(q => q.id === c); return { x: C.cx + (i + 0.5) * 48, z: C.cz + (j + 0.5) * 48 }; }
+function joggers() {
+  const pc = parkCentre(), f = focusPos(), near = Math.hypot(pc.x - f.x, pc.z - f.z) < 110 && wet < 0.3 && clockH > 6 && clockH < 21;
+  if (near && jogs.length < 5) { const a = rand(0, 6.28), p = eventPed({ top: pick(['tank', 'tshirt', 'crop']), topColor: pick(['#ff6fb5', '#4cd964', '#38e8ff', '#ffd23f', '#ffffff']), pants: 'shorts', pantsColor: '#16161b', shoes: 'sneakers', hat: pick(['cap', 'headband', 'none']), fem: Math.random() < 0.5 }, pc.x + Math.cos(a) * 13, pc.z + Math.sin(a) * 13, { jog: a, dirJ: Math.random() < 0.5 ? 1 : -1, state: 'chase' }); jogs.push(p); if (Math.random() < 0.4 && animals?.leash) animals.leash(p); }
+  for (let i = jogs.length - 1; i >= 0; i--) { const p = jogs[i]; if (!near || !peds.list.includes(p)) { const k = peds.list.indexOf(p); if (k >= 0) { peds.list.splice(k, 1); dyn.remove(p.root); } jogs.splice(i, 1); continue; }
+    if (p.state === 'down' || p.state === 'flee' || p.angry) continue;
+    p.jog += p.dirJ * 0.0045 * (60 / 60) * 3; p.state = 'chase'; p.tx = pc.x + Math.cos(p.jog + p.dirJ * 0.3) * 13; p.tz = pc.z + Math.sin(p.jog + p.dirJ * 0.3) * 13; }
+}
+// ---------------- match day: every third day the Breakers play at 7pm and fans flood the streets
+const fans = [];
+const isMatchDay = () => dayN % 3 === 0;
+function matchDay() {
+  const S = PLACES.find(p => p.id === 'l_stadium'), f = focusPos(), live = isMatchDay() && clockH >= 16 && clockH < 22.5 && Math.hypot(S.x - f.x, S.z - f.z) < 150;
+  if (live && fans.length < 18) { const a = rand(0, 6.28), d = rand(8, 40), x = S.x + Math.cos(a) * d, z = S.z + 4 + Math.abs(Math.sin(a)) * d; if (walkable(x, z)) { const home = Math.random() < 0.7; const p = eventPed({ top: pick(['tshirt', 'hoodie', 'tshirt']), topColor: home ? '#2f80ed' : '#c9302c', hat: Math.random() < 0.4 ? 'cap' : 'none', hatColor: home ? '#ffd23f' : '#16161b', fem: Math.random() < 0.4 }, x, z, { state: 'chase', tx: S.x + rand(-3, 3), tz: S.z - 2, fan: true }); fans.push(p); } }
+  for (let i = fans.length - 1; i >= 0; i--) { const p = fans[i]; if (!live || !peds.list.includes(p)) { const k = peds.list.indexOf(p); if (k >= 0) { peds.list.splice(k, 1); dyn.remove(p.root); } fans.splice(i, 1); continue; } if (p.state === 'chase' && Math.hypot(p.x - p.tx, p.z - p.tz) < 1.5) { p.state = 'talk'; p.lookX = S.x; p.lookZ = S.z - 10; } }
+}
+// ---------------- the neon strip fills up at night
+const stripPeds = [];
+function stripCrowd() {
+  const f = focusPos(), on = night > 0.5 && f.x > -175 && f.x < 50 && Math.abs(f.z) < 40 && wet < 0.4;
+  if (on && stripPeds.length < 10) { const x = rand(-160, 36), z = pick([-5.2, 5.2]) + rand(-0.6, 0.6); if (Math.hypot(x - f.x, z - f.z) > 18 && walkable(x, z)) { const p = eventPed({ top: pick(['crop', 'tank', 'jacket', 'tshirt']), topColor: pick(['#ff6fb5', '#16161b', '#e23b3b', '#ffd23f', '#9b51e0', '#ffffff']), pants: pick(['skirt', 'jeans']), fem: Math.random() < 0.55, eyewear: 'none' }, x, z, { state: 'talk', lookX: x + rand(-2, 2), lookZ: z + rand(-2, 2) }); stripPeds.push(p); } }
+  for (let i = stripPeds.length - 1; i >= 0; i--) { const p = stripPeds[i]; if (!on || !peds.list.includes(p)) { const k = peds.list.indexOf(p); if (k >= 0 && Math.hypot(p.x - f.x, p.z - f.z) > 30) { peds.list.splice(k, 1); dyn.remove(p.root); } stripPeds.splice(i, 1); } }
+}
+// ---------------- landmark interactions
+async function openRide(p) {
+  const price = p.ride === 'wheel' ? 8 : 5; if (money < price) { toast(`It's ${fmt(price)}.`); return; }
+  spend(price);
+  const withHer = date && !date.inCar && Math.hypot(date.x - P.x, date.z - P.z) < 12;
+  fade(() => { advanceTime(0.3); feed({ mood: p.ride === 'wheel' ? 12 : 8 }); if (withHer) { date.interest += p.ride === 'wheel' ? 14 : 8; bumpRel(date.id, 5, false); hearts(date.x, date.z, 10); }
+    toast(p.ride === 'wheel' ? (withHer ? `Top of the wheel, the whole bay lit up below. ${date.name} kissed you.` : 'Round and round above the bay. The view is unreal.') : (withHer ? `${date.name} can't stop laughing on the painted horses.` : 'You rode the carousel. A kid stared at you the whole time.'), 3.2); });
+}
+async function openCarny() {
+  const opts = [{ label: 'Hook-a-duck ($5)', cls: 'big', fn: () => game(0.35) }, { label: 'Ring toss ($5)', fn: () => game(0.25) }, { label: 'Leave', fn: closeModal }];
+  function game(chance) { closeModal(); if (money < 5) { toast('That\'s $5.'); return; } spend(5); if (Math.random() < chance + lvl('charm') * 0.01) { feed({ mood: 10 }); const giant = Math.random() < 0.3; toast(giant ? 'WINNER! A giant teddy bear!' : 'Winner! A little plush toy.', 2.6); sfx.cash(); if (date && Math.hypot(date.x - P.x, date.z - P.z) < 12) { date.interest += giant ? 15 : 8; toast(`You gave ${date.name} the ${giant ? 'giant teddy' : 'plush'}. She loves it.`, 3); } } else { toast(pick(['So close!', 'Rigged, surely.', 'Nope. Try again?']), 1.8); sfx.fail(); } }
+  modal(`<div class="big-ico">${svg('target', 'big')}</div><h3>Fairground Stalls</h3><p>Win a prize. Win her a prize.</p>`, opts);
+}
+async function openStadium(p) {
+  const nextIn = (3 - dayN % 3) % 3, live = isMatchDay() && clockH >= 17 && clockH < 21;
+  if (!live) { toast(isMatchDay() ? (clockH < 17 ? 'Gates open at 5pm. Kick-off at 7.' : 'The match is over. Fans are heading home.') : `No match today. Next home game in ${nextIn || 3} day${(nextIn || 3) > 1 ? 's' : ''}, 7pm.`, 3); return; }
+  modal(`<div class="big-ico">${svg('ball', 'big')}</div><h3>Bay City Breakers vs ${pick(['Harbor Hawks', 'Desert Kings', 'Valley Rovers', 'Coast United'])}</h3><p>Ticket $45. Bet on the Breakers at the kiosk.</p>`, [
+    { label: 'Ticket ($45)', cls: 'big', fn: () => watch(0) }, { label: 'Ticket + $200 on the Breakers', fn: () => watch(200) }, { label: 'Not tonight', fn: closeModal }]);
+  function watch(bet) { closeModal(); if (money < 45 + bet) { toast('Not enough cash.'); return; } spend(45 + bet); const win = Math.random() < 0.55;
+    fade(() => { advanceTime(2); feed({ mood: win ? 22 : 4, hunger: 10 }); if (bet && win) addMoney(bet * 2); if (date && Math.hypot(date.x - P.x, date.z - P.z) < 15) date.interest += 10;
+      toast(win ? `Breakers win ${pick(['2-1', '3-0', '1-0', '3-2'])}! The stadium is shaking.${bet ? ` Bet pays ${fmt(bet * 2)}.` : ''}` : `Breakers lose ${pick(['0-1', '1-2', '0-3'])}. The walk out is quiet.${bet ? ' There goes the bet.' : ''}`, 3.5); }); }
+}
+function openMarina() {
+  modal(`<div class="big-ico">${svg('wave', 'big')}</div><h3>Bay Marina</h3><p>Harbour cruises at sunset, deep-sea fishing trips, and the boats are lovely to look at.</p>`, [
+    { label: 'Harbour cruise ($40)', cls: 'big', fn: () => { closeModal(); if (money < 40) { toast('That\'s $40.'); return; } spend(40); const her = date && Math.hypot(date.x - P.x, date.z - P.z) < 15; fade(() => { advanceTime(1.5); feed({ mood: 16 }); if (her) { date.interest += 16; bumpRel(date.id, 6, false); } toast(her ? `Sunset on the water with ${date.name}. She rested her head on your shoulder.` : 'An hour out on the bay. Dolphins! Actual dolphins.', 3.2); }); } },
+    { label: 'Fishing trip ($60)', fn: () => { closeModal(); if (money < 60) { toast('That\'s $60.'); return; } spend(60); fade(() => { advanceTime(3); const fish = Math.random(); const pay = fish < 0.15 ? 400 : fish < 0.6 ? 90 : 0; if (pay) addMoney(pay); feed({ mood: 10, hunger: -10 }); toast(pay >= 400 ? 'You landed a huge tuna! Sold it at the dock for $400.' : pay ? 'A good catch. Sold it for $90.' : 'Nothing biting today. Nice day on the water though.', 3.2); }); } },
+    { label: 'Leave', fn: closeModal }]);
+}
+async function mallFood() {
+  modal(`<div class="big-ico">${svg('food', 'big')}</div><h3>Food Court</h3>`, [
+    { label: 'Burger meal ($9)', cls: 'big', fn: () => { closeModal(); if (money < 9) return; spend(9); feed({ hunger: 45, mood: 4, fat: 0.006 }); toast('Burger, fries, a shake. Elite.'); } },
+    { label: 'Sushi box ($14)', fn: () => { closeModal(); if (money < 14) return; spend(14); feed({ hunger: 38, mood: 6 }); toast('Fresh sushi. Feeling fancy.'); } },
+    { label: 'Smoothie ($6)', fn: () => { closeModal(); if (money < 6) return; spend(6); feed({ hunger: 12, energy: 8 }); toast('Berry smoothie. Brain freeze.'); } },
+    { label: 'Leave', fn: closeModal }]);
+}
+
 // ================================================================ FARMS: barns, silos, hay and tractors ploughing the rows
 const farmGroup = new THREE.Group(); G.scene.add(farmGroup);
 (function buildFarms() {
@@ -1872,7 +1987,7 @@ function makeMarker(x, z, icon, color, data, parent = G.scene) {
   if (!data.interior) markers.push(m);
   return m;
 }
-const PLACE_COLORS = { tattoo: '#ff5a8a', dealer: '#4cd964', clothes: '#ff6fb5', barber: '#38e8ff', game: '#ffd23f', chop: '#ff8a2a', race: '#ff3b4a', property: '#b26bff', guns: '#ff5a3c', venue: '#ffb35c', job: '#ffd23f', customer: '#7dff9a' };
+const PLACE_COLORS = { ride: '#ff6fb5', carny: '#ffd23f', stadium: '#2f80ed', marina: '#38e8ff', tattoo: '#ff5a8a', dealer: '#4cd964', clothes: '#ff6fb5', barber: '#38e8ff', game: '#ffd23f', chop: '#ff8a2a', race: '#ff3b4a', property: '#b26bff', guns: '#ff5a3c', venue: '#ffb35c', job: '#ffd23f', customer: '#7dff9a' };
 const NPC_ROLE = { dealer: 'dealer', job: 'dispatcher' };
 const npcs = [];
 PLACES.forEach((p, i) => {
@@ -1943,7 +2058,12 @@ function enterInterior(place, prop) {
       spots.forEach(([x, z, f, y], i) => { const w = h.toWorld(x, z); inside.npcs.push({ x: w.x, z: w.z, y, role: 'guest', cfg: npcCfg('inmate', 1200 + i), fig: null, face: f, homeFace: f, t: rand(0, 6), parent: dyn, name: 'Inmate', dance: false }); });
     }
     if (id === 'club') for (let i = 0; i < 6; i++) { const w = h.toWorld(-2 + (i % 3) * 2, -0.8 + Math.floor(i / 3) * 2.4); inside.npcs.push({ x: w.x, z: w.z, role: 'guest', cfg: npcCfg('guest', 900 + i), fig: null, face: rand(0, 6), homeFace: rand(0, 6), t: rand(0, 6), parent: dyn, name: 'Clubber', dance: true }); }
-    const WC = ['diner', 'bar', 'club', 'gym', 'casino', 'mart', 'office', 'college', 'hospital', 'police', 'motors', 'casa', 'clothes'].includes(id) ? [{ kind: 'restroom', x: tpl.w / 2 - 1.1, z: -tpl.d / 2 + 1.1, label: 'Restroom', icon: 'door' }] : [];
+    let WC = [];
+    if (['diner', 'bar', 'club', 'gym', 'casino', 'mart', 'office', 'college', 'hospital', 'police', 'motors', 'casa', 'clothes', 'mall'].includes(id)) { // restroom in whichever corner is clear of counters and other markers
+      const busy = [...tpl.spots, ...tpl.npcs, ...(tpl.items || []).map(([t, x, z]) => ({ x, z }))];
+      const c = [[-1, -1], [1, -1], [-1, 1], [1, 1]].map(([sx, sz]) => ({ x: sx * (tpl.w / 2 - 1.1), z: sz * (tpl.d / 2 - 1.5) })).filter(q => Math.abs(q.x) > 2).map(q => ({ ...q, d: Math.min(...busy.map(b => Math.hypot(b.x - q.x, b.z - q.z))) })).sort((a, b) => b.d - a.d)[0];
+      WC = [{ kind: 'restroom', x: c.x, z: c.z, label: 'Restroom', icon: 'door' }];
+    }
     for (const s of [...tpl.spots, ...WC]) { const w = h.toWorld(s.x, s.z); inside.marks.push({ ...makeMarker(w.x, w.z, s.icon, '#ffd23f', { interior: true, small: true }, G.scene), spot: s }); }
     const door = h.toWorld(0, h.d / 2 - 1.3);
     Object.assign(P, { x: door.x, z: door.z, face: Math.PI, y: 0, vy: 0 });
@@ -2031,7 +2151,7 @@ function openStorage() {
 
 // ================================================================ ACTIONS (context button)
 let action = null;
-const VERB = { tattoo: 'Get inked', dealer: 'Talk', clothes: 'Enter', barber: 'Enter', guns: 'Enter', venue: 'Enter', game: 'Play', chop: 'Sell car', mods: 'Customise', service: 'Repair', race: 'Race', property: 'View', job: 'Talk', customer: 'Talk' };
+const VERB = { ride: 'Ride', carny: 'Play', stadium: 'Match', marina: 'Boats', tattoo: 'Get inked', dealer: 'Talk', clothes: 'Enter', barber: 'Enter', guns: 'Enter', venue: 'Enter', game: 'Play', chop: 'Sell car', mods: 'Customise', service: 'Repair', race: 'Race', property: 'View', job: 'Talk', customer: 'Talk' };
 const SPOT_VERB = s => s.label;
 function findAction() {
   if (P.dead) return null;
@@ -2088,7 +2208,7 @@ function doAction(a) {
   else if (a.kind === 'ladder') { P.ladder = a.L; P.y = a.top ? a.L.top - 0.05 : 0.3; sfx.click(); }
 }
 // opening hours (24h clock; close past midnight wraps). Anything not listed is always open.
-const HOURS = { tattoo: [11, 23], clothes: [9, 21], barber: [9, 19], guns: [10, 20], diner: [6, 23], college: [7, 21], office: [7, 19], gym: [5, 23], motors: [9, 20], casa: [10, 19], bar: [16, 3], club: [21, 5], pit: [20, 4], church: [7, 21], mods: [8, 22], taco: [10, 22], gallery: [10, 23], surf: [7, 19], hoops: [6, 22], taxi: [0, 24], bins: [5, 14], courier: [7, 20] };
+const HOURS = { mall: [9, 22], ride: [11, 24], carny: [11, 24], marina: [7, 20], tattoo: [11, 23], clothes: [9, 21], barber: [9, 19], guns: [10, 20], diner: [6, 23], college: [7, 21], office: [7, 19], gym: [5, 23], motors: [9, 20], casa: [10, 19], bar: [16, 3], club: [21, 5], pit: [20, 4], church: [7, 21], mods: [8, 22], taco: [10, 22], gallery: [10, 23], surf: [7, 19], hoops: [6, 22], taxi: [0, 24], bins: [5, 14], courier: [7, 20] };
 const placeHours = p => HOURS[p.interior] || HOURS[p.kind] || HOURS[p.game] || HOURS[p.job] || null;
 function isOpen(p) { const h = placeHours(p); if (!h) return true; const [o, c] = h, t = clockH; return o < c ? t >= o && t < c : t >= o || t < c; }
 const hh12 = h => { h = ((h % 24) + 24) % 24; return h === 0 ? 'midnight' : h === 12 ? 'noon' : h < 12 ? `${h}am` : `${h - 12}pm`; };
@@ -2105,9 +2225,15 @@ function openPlace(p) {
   else if (p.kind === 'mods') { if (!ride || !ride.personal) { toast('Bay Customs only works on your own cars. Drive one in.'); sfx.fail(); return; } ride.s.v = 0; openCustom('car'); }
   else if (p.kind === 'race') openRace(p);
   else if (p.kind === 'tattoo') openTattoo(p);
+  else if (p.kind === 'ride') openRide(p);
+  else if (p.kind === 'carny') openCarny(p);
+  else if (p.kind === 'stadium') openStadium(p);
+  else if (p.kind === 'marina') openMarina(p);
 }
 async function doSpot(s) {
   const place = inside.place, id = inside.id;
+  if (s.kind === 'mallfood') return mallFood();
+  if (s.kind === 'arcade') { const r2 = await mini('beat'); feed({ mood: 10 }); spend(Math.min(money, 2)); return; }
   if (s.kind === 'restroom') { fade(() => { advanceTime(0.1); stats.bladder = 100; stats.hygiene = Math.min(100, (stats.hygiene ?? 80) + 4); toast(pick(['Ahh. Much better.', 'Washed your hands too. Good.', 'Public toilets. Never again. ...Until next time.']), 2.2); }); return; }
   if (id === 'prison') return prisonSpot(s);
   if (s.kind === 'admissions') return talkAdmissions();
@@ -2472,7 +2598,9 @@ function updateLifeAct(dt) {
   const A2 = lifeAct; if (!A2) return; A2.t += dt;
   if (A2.kind === 'approach') {
     const p = A2.p, d = Math.hypot(p.x - P.x, p.z - P.z);
-    if (!peds.list.includes(p) || inside || d > 70 || A2.t > 45) { endLifePed(A2); lifeAct = null; if (A2.ev.follow) life().queue.push({ id: A2.ev.id, at: gameHours() + 2, data: A2.data }); return; }
+    if (p.state === 'down' || p.angry || A2.robbed) { endLifePed(A2); lifeAct = null; return; } // you robbed or hit them: they've changed their mind
+    if (d < 3 && lifeBusy()) A2.busyT = (A2.busyT || 0) + dt; // you're busy (on a date etc.): they wait a moment, then leave it for another day
+    if (!peds.list.includes(p) || inside || d > 70 || A2.t > 30 || (A2.busyT || 0) > 6) { endLifePed(A2); lifeAct = null; if (A2.ev.follow) life().queue.push({ id: A2.ev.id, at: gameHours() + 2, data: A2.data }); return; }
     if (ride) { p.state = 'idle'; return; } // they wait while you're in a car
     p.state = 'chase'; p.tx = P.x; p.tz = P.z;
     if (d < 1.9 && !lifeBusy()) { peds.talk(p, P.x, P.z); lifeAct = null; runEventTalk(A2.ev, A2.data, { cfg: A2.cfg, name: A2.who.name || 'Stranger', tag: A2.who.tag || 'Stranger' }, () => endLifePed(A2)); }
@@ -4152,6 +4280,7 @@ function updateWoo(dt) {
 async function talkToPed(p) {
   if (p.kind === 'homeless') return talkHomeless(p);
   { const E = streetEvents.find(E => E.kind === 'busk' && E.perf === p); if (E) return talkBusker(E); }
+  if (lifeAct?.kind === 'approach' && lifeAct.p === p) { const A2 = lifeAct; lifeAct = null; peds.talk(p, P.x, P.z); return runEventTalk(A2.ev, A2.data, { cfg: A2.cfg, name: A2.who.name || 'Stranger', tag: A2.who.tag || 'Stranger' }, () => endLifePed(A2)); } // the person walking up to you
   if (p.gang && !p.angry) return talkGang(p);
   if (p.guard) return talkGuard(p);
   if (p.angry) { toast(`${p.name || 'They'} want their car back!`); return; }
@@ -4203,6 +4332,7 @@ async function talkToPed(p) {
       if (fight) { await talk.say("Ha! With what, your fists? Get lost!"); peds.release(p); endTalk(); hurt(12); return; }
       const amt = 20 + Math.floor(Math.random() * 110);
       await talk.say(pick(["Okay okay! Take it! Don't hurt me!", "Seriously?! Fine!", "This city, man..."]));
+      if (lifeAct?.p === p) lifeAct.robbed = true;
       endTalk(); peds.release(p); dropCash(p.x, p.z, amt); peds.flee(p, P.x, P.z); peds.scare(P.x, P.z, 16); feed({ mood: -2 }); crime(0.8); witness('rob', p.x, p.z, p); return;
     }
     else { await talk.say(pick(['See ya.', 'Take care!', 'Bye.'])); done = true; }
@@ -5214,7 +5344,7 @@ function saveGame() {
   store.set('bc_save', save); store.set('bc_arsenal', arsenal); store.set('bc_cars', garage);
 }
 // auto-update: bookmarks and home-screen apps can hold on to an old copy. Check version.json (never cached) and reload once if newer.
-const BUILD = 80;
+const BUILD = 81;
 function checkUpdate() {
   fetch('version.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(j => {
     if (!(j.v > BUILD)) return;
@@ -5335,7 +5465,7 @@ function step(dt) {
     peds.update(dt, f.x, f.z, nc, nb);
     animals ||= new Animals(dyn, peds, (x, z) => baseY(x, z));
     animals.update(dt, f.x, f.z, clockH, { x: f.x, z: f.z, car: !!ride && Math.abs(ride.s.v) > 2, run: !ride && input.stick.m > 0.85 }, false);
-    updateAngry(dt); updateStreetEvents(dt); updateGangs(dt); updateHills();
+    updateAngry(dt); updateStreetEvents(dt); updateGangs(dt); updateHills(); updateLandmarks(dt);
     updateNpcList(npcs, dt); updateFlyer(dt);
   } else { updateNpcList(inside.npcs, dt); inside.h.seeThrough?.(P.x, P.z, P.y); if (inside.id === 'prison') { peds.update(dt, P.x, P.z, null, false); updateAngry(dt); updateBrawl(dt); if (inside.h.upper?.length) { const o = P.y < 2 ? 0.16 : 1; if (inside.fadeO !== o) { inside.fadeO = o; inside.h.fadeUpper(o); } } } }
   lifeTick(dt); updateDate(dt); famTexts(dt); updateFx(dt); updatePolice(dt); updatePrison(dt); updateFarm(dt); updateTrain(dt); if (!inside) updateEmergency(dt);
