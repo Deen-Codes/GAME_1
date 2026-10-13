@@ -109,7 +109,7 @@ export function buildCharacter(cfg) {
 
   const root = new THREE.Group();
   const hips = new THREE.Group(); hips.position.y = legLen; root.add(hips);
-  hips.add(box(torsoW * 0.95, 0.18, torsoD * 0.95, pantsM, 0, 0.02, 0));
+  hips.add(box(torsoW * (c.fem ? 1.04 : 0.95), 0.18, torsoD * (c.fem ? 1.0 : 0.95), pantsM, 0, 0.02, 0));
   const torso = new THREE.Group(); torso.position.y = 0.08; hips.add(torso);
 
   // ---- torso / top ----
@@ -117,6 +117,10 @@ export function buildCharacter(cfg) {
   const chestW = c.top === 'tank' ? torsoW * 0.92 : torsoW;
   const swim = c.top === 'shirtless' || c.top === 'swimtop';
   torso.add(box(chestW, torsoH, torsoD, swim ? skin : topM, 0, torsoH / 2, 0));
+  if (c.fem && (c.height ?? 1) >= 0.8) { // feminine silhouette: shaped top, narrower waist
+    const chestM = c.top === 'swimtop' ? topM : swim ? skin : topM;
+    torso.add(box(torsoW * 0.78, torsoH * 0.2, 0.07, chestM, 0, torsoH * 0.62, torsoD / 2 + 0.02));
+  }
   if (c.belly > 0) { const bd = 0.06 + 0.22 * c.belly; torso.add(box(chestW * (0.7 + 0.15 * c.belly), torsoH * (0.35 + 0.2 * c.belly), bd, swim ? skin : topM, 0, torsoH * 0.18, torsoD / 2 + bd / 2 - 0.01)); }
   if (c.top === 'swimtop') torso.add(box(chestW * 1.02, torsoH * 0.16, torsoD * 1.04, topM, 0, torsoH * 0.72, 0)); // swim top band
   if (c.pants !== 'swim') { torso.add(box(torsoW * 1.01, 0.06, torsoD * 1.01, dark, 0, 0.02, 0)); // belt
@@ -169,6 +173,7 @@ export function buildCharacter(cfg) {
     for (const sx of [-1, 1]) {
       head.add(box(ew, eh, 0.01, white, sx * eyeX, eyeY, faceZ));
       head.add(box(ew * 0.5, Math.min(eh, 0.05), 0.012, eyeM, sx * eyeX + sx * 0.008, eyeY - 0.004, faceZ + 0.004));
+      if (c.fem) { head.add(box(ew * 1.15, 0.018, 0.014, dark, sx * eyeX, eyeY + eh / 2 + 0.008, faceZ + 0.006)); head.add(box(0.018, 0.03, 0.014, dark, sx * (eyeX + ew * 0.62), eyeY + eh / 2, faceZ + 0.006)); }
     }
   }
   if (c.hair !== 'none' || c.eyes === 'angry') {
@@ -179,7 +184,7 @@ export function buildCharacter(cfg) {
     }
   }
   if (c.mask === 'none' || c.mask === 'ski') {
-    if (c.headShape !== 'round' || true) head.add(box(0.045, 0.07, 0.045, skin, 0, -headH * 0.04, faceZ + 0.02));
+    if (c.headShape !== 'round' || true) head.add(box(c.fem ? 0.035 : 0.045, c.fem ? 0.05 : 0.07, c.fem ? 0.03 : 0.045, skin, 0, -headH * 0.04, faceZ + (c.fem ? 0.012 : 0.02)));
   }
   const mouthY = -headH * 0.24;
   if (c.mask === 'none' || c.mask === 'ski') {
@@ -187,13 +192,13 @@ export function buildCharacter(cfg) {
     if (c.mouth === 'open') head.add(box(0.08, 0.065, 0.01, dark, 0, mouthY, faceZ));
     if (c.mouth === 'smile' || c.mouth === 'frown') {
       const s = c.mouth === 'smile' ? 1 : -1;
-      head.add(box(0.07, 0.022, 0.01, dark, 0, mouthY - 0.01 * s, faceZ));
+      head.add(box(0.07, 0.022, 0.01, c.fem ? M('#b8325a') : dark, 0, mouthY - 0.01 * s, faceZ));
       head.add(box(0.025, 0.022, 0.01, dark, -0.045, mouthY + 0.008 * s, faceZ));
       head.add(box(0.025, 0.022, 0.01, dark, 0.045, mouthY + 0.008 * s, faceZ));
     }
   }
   // facial hair
-  const fh = c.facialHair;
+  const fh = c.fem ? 'none' : c.facialHair;
   if (fh === 'stubble') head.add(box(headW * 0.86, headH * 0.32, 0.012, M(c.hairColor, { transparent: true, opacity: 0.45 }), 0, -headH * 0.27, headD / 2 + 0.002));
   if (fh === 'beard') head.add(box(headW * 1.03, headH * 0.4, headD * 0.6, hairM, 0, -headH * 0.32, headD * 0.22));
   if (fh === 'bigbeard') head.add(box(headW * 1.08, headH * 0.75, headD * 0.62, hairM, 0, -headH * 0.48, headD * 0.22));

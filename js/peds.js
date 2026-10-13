@@ -1,7 +1,7 @@
 // Pedestrians: baked low-poly people who stroll sidewalks, wander the beach, flee from trouble.
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, randomChar, disposeObject } from './character.js';
-import { CITIES, sandLine, shoreLine, groundH, walkable, resolve } from './world.js';
+import { buildCharacter, randomChar, disposeObject } from './character.js?v=11';
+import { CITIES, sandLine, shoreLine, groundH, walkable, resolve } from './world.js?v=11';
 
 const MAT = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.7, metalness: 0.05, flatShading: true });
 const SKINS = ['#ffe0cc', '#f6c9a4', '#e8b088', '#d39a6a', '#b77a4b', '#8d5524', '#6b3f22', '#452a1a'];
@@ -32,7 +32,7 @@ function makeLook(beach, fem = Math.random() < 0.5) {
   const cfg = { ...randomChar(), mask: 'none', skin: pick(SKINS), hairColor: pick(HAIRS), eyewear: Math.random() < 0.25 ? 'shades' : 'none', back: Math.random() < 0.15 ? 'backpack' : 'none', eyes: 'normal', headSize: rand(0.95, 1.1), height: rand(0.88, 1.12) };
   cfg.hat = Math.random() < 0.3 ? pick(['cap', 'beanie', 'cowboy', 'headband']) : 'none';
   cfg.hair = pick(fem ? FEM_HAIR : MASC_HAIR);
-  if (fem) { cfg.facialHair = 'none'; cfg.height = rand(0.88, 1.02); cfg.build = rand(0.85, 1.0); cfg.mouth = 'smile'; }
+  if (fem) { cfg.fem = true; cfg.facialHair = 'none'; cfg.headShape = 'box'; cfg.height = rand(0.88, 1.02); cfg.build = rand(0.85, 1.0); cfg.mouth = 'smile'; }
   else if (cfg.facialHair === undefined) cfg.facialHair = 'none';
   if (beach) Object.assign(cfg, { top: fem ? pick(['swimtop', 'swimtop', 'tank']) : pick(['shirtless', 'shirtless', 'tank', 'tshirt']), pants: fem ? pick(['swim', 'swim', 'shorts']) : pick(['swim', 'shorts']), shoes: 'bare', eyewear: Math.random() < 0.5 ? 'shades' : 'none', hat: Math.random() < 0.3 ? (fem ? 'none' : 'cap') : 'none' });
   else { if (['armor', 'shirtless', 'swimtop'].includes(cfg.top)) cfg.top = 'tshirt'; if (cfg.pants === 'swim') cfg.pants = 'jeans'; }
