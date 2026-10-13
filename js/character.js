@@ -129,17 +129,8 @@ export function buildCharacter(cfg) {
     torso.add(box(chestW * 0.92, torsoH * 0.56, torsoD * 0.96, bodyM, 0, torsoH * 0.72, 0));
     const chestM = c.top === 'swimtop' ? topM : swim ? skin : topM, bd = 0.05 + 0.08 * bust;
     // stepped, blocky chest that matches the voxel style: a main block with bevel steps above and below
-    // two separate round shapes, set apart, partly sunk into the chest; flatter on top so they blend in
-    const fz = torsoD * 0.96 / 2, cy = torsoH * 0.66, ch = torsoH * (0.26 + 0.06 * bust), dz = 0.05 + 0.08 * bust, rx = torsoW * (0.2 + 0.03 * bust);
-    const bg = new THREE.SphereGeometry(1, 24, 18), pa = bg.attributes.position;
-    for (let i = 0; i < pa.count; i++) {
-      const x = pa.getX(i), y = pa.getY(i), z = pa.getZ(i);
-      const f = y > 0 ? 1 - 0.45 * y * y : 1;
-      pa.setXYZ(i, x * rx, y * ch / 2, z > 0 ? z * dz * f : z * dz * 0.3);
-    }
-    bg.computeVertexNormals();
-    const bmat = chestM.clone(); bmat.flatShading = false; bmat.roughness = 0.95;
-    for (const sx of [-1, 1]) { const bm = new THREE.Mesh(bg, bmat); bm.position.set(sx * torsoW * 0.23, cy, fz - dz * 0.15); bm.castShadow = true; torso.add(bm); }
+    // flat chest; swimwear still gets a proper bikini top
+    const fz = torsoD * 0.96 / 2, cy = torsoH * 0.66, ch = torsoH * 0.28, dz = 0;
     if (c.top === 'swimtop') { // bikini top: band all the way round at chest height + straps
       torso.add(box(chestW * 0.94, ch * 0.75, torsoD * 0.98, chestM, 0, cy - ch * 0.05, 0));
       for (const sx of [-1, 1]) torso.add(box(0.03, torsoH * 0.2, torsoD * 0.9, chestM, sx * chestW * 0.28, torsoH * 0.86, 0));
