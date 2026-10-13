@@ -1,25 +1,25 @@
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA } from './character.js?v=39';
-import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=39';
-import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=39';
-import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide } from './world.js?v=39';
-import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=39';
-import { buildPanel, renderStats } from './ui.js?v=39';
-import { Input } from './input.js?v=39';
-import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime } from './audio.js?v=39';
-import { runMinigame } from './minigames.js?v=39';
-import { Peds, bakeCfg, figure, setWalk } from './peds.js?v=39';
-import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=39';
-import { findRoute } from './nav.js?v=39';
-import { COURSES, CAREERS, QUIZ } from './careers.js?v=39';
-import { EVENTS, EVENT_BY_ID } from './events.js?v=39';
-import { attachWheel } from './wheel.js?v=39';
-import { Animals } from './animals.js?v=39';
-import { Talk } from './talk.js?v=39';
-import { svg, drawIcon } from './icons.js?v=39';
-import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=39';
-import { FURN, CATALOG } from './furniture.js?v=39';
-import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE } from './interiors.js?v=39';
+import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA } from './character.js?v=40';
+import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=40';
+import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=40';
+import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide } from './world.js?v=40';
+import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=40';
+import { buildPanel, renderStats } from './ui.js?v=40';
+import { Input } from './input.js?v=40';
+import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime } from './audio.js?v=40';
+import { runMinigame } from './minigames.js?v=40';
+import { Peds, bakeCfg, figure, setWalk } from './peds.js?v=40';
+import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=40';
+import { findRoute } from './nav.js?v=40';
+import { COURSES, CAREERS, QUIZ } from './careers.js?v=40';
+import { EVENTS, EVENT_BY_ID } from './events.js?v=40';
+import { attachWheel } from './wheel.js?v=40';
+import { Animals } from './animals.js?v=40';
+import { Talk } from './talk.js?v=40';
+import { svg, drawIcon } from './icons.js?v=40';
+import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=40';
+import { FURN, CATALOG } from './furniture.js?v=40';
+import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE } from './interiors.js?v=40';
 
 const $ = id => document.getElementById(id);
 let inside = null, editMode = false, held = null, pendingCar = false, homeMusic = false, phoneBadge = 0;
@@ -2895,7 +2895,7 @@ async function talkToPed(p) {
 function sheet(title, render, bind) {
   return new Promise(res => {
     const close = (v) => { $('dealUI').classList.add('hidden'); res(v); };
-    const draw = () => { $('dealBody').innerHTML = render(); bind?.($('dealBody'), close, draw); };
+    const draw = () => { $('dealBody').innerHTML = render(); bind?.($('dealBody'), close, draw); $('dealBody').querySelectorAll('[data-done]').forEach(b => b.onclick = () => close(sheet.value || 0)); };
     $('dealTitle').textContent = title; draw();
     $('dealUI').classList.remove('hidden');
     $('dealClose').onclick = () => close(sheet.value || 0); sheet.value = 0;
@@ -2912,7 +2912,7 @@ function openTrade(p) {
     const perks = [rel(p.id) >= 20 ? `${relName(rel(p.id))} prices` : '', stats.haggle[p.id] === dayN ? 'haggled' : ''].filter(Boolean).join(' · ');
     return `<div class="deal-stats"><span>${svg('wallet', 'sm')} <b>${fmt(money)}</b></span><span>${svg('bag', 'sm')} ${stashCount()}/${stashCap()}</span><span class="dn">${p.name}${perks ? ' · ' + perks : ''}</span></div>
       <div class="trows">${rows}</div>
-      <div class="tbar"><div class="qty"><button data-q="-">−</button><b>${qty}</b><button data-q="+">+</button><button data-q="max">MAX</button></div>
+      <div class="tbar"><div class="qty"><button data-q="-">−</button><b>${qty}</b><button data-q="+">+</button><button data-q="max">MAX</button><button class="done" data-done="1">Done</button></div>
       <button class="tbuy" ${qty > maxBuy ? 'disabled' : ''}>Buy ${fmt(pr.buy * qty)}</button>
       <button class="tsell" ${have ? '' : 'disabled'}>Sell ${fmt(pr.sell * Math.min(qty, have))}</button></div>`;
   }, (root, close, draw) => {
@@ -3044,7 +3044,11 @@ let custT = 30;
 function updateCustomers(dt) {
   custT -= dt;
   if (custT <= 0 && !inside) { custT = rand(70, 140); if (customers.length < 3 && (stashCount() > 0 || lvl('dealing') > 1 || dayN > 1)) newCustomer(); }
-  for (const c of [...customers]) if (gameHours() > c.exp) { toast(`${c.name} got tired of waiting.`); removeCustomer(c); }
+  for (const c of [...customers]) if (gameHours() > c.exp) {
+    const near = c.npc && Math.hypot(c.npc.x - P.x, c.npc.z - P.z) < 60;
+    if (near && !c.graced) { c.graced = true; c.exp = gameHours() + 1.5; toast(`${c.name}: "I was about to leave! Hurry up."`, 2.5); continue; }
+    toast(`${c.name} got tired of waiting.`); removeCustomer(c);
+  }
   if (!inside) updateNpcList(custNpcs(), dt);
 }
 async function talkCustomer(c) {
@@ -3812,7 +3816,7 @@ function saveGame() {
   store.set('bc_save', save); store.set('bc_arsenal', arsenal); store.set('bc_cars', garage);
 }
 // auto-update: bookmarks and home-screen apps can hold on to an old copy. Check version.json (never cached) and reload once if newer.
-const BUILD = 39;
+const BUILD = 40;
 function checkUpdate() {
   fetch('version.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(j => {
     if (!(j.v > BUILD)) return;

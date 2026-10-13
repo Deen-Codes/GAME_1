@@ -411,3 +411,6 @@ input[type=text] { width: 100%; padding: 10px 12px; border-radius: 10px; border:
 
 .talk-box.think { background: #eef3ff; box-shadow: inset 0 0 0 3px #9fb8ff, 0 8px 0 rgba(28,26,46,.35); }
 .talk-box.think .talk-text { font-style: italic; }
+
+.deal-head { position: sticky; top: -16px; z-index: 2; background: var(--panel); padding: 10px 0 8px; margin-top: -10px; }
+.qty .done { width: auto; font-size: 14px; margin-left: 6px; background: #ffd23f !important; color: #1c1a2e !important; font-weight: 900; padding: 0 16px; }
