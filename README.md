@@ -149,6 +149,8 @@ Walk into shops, venues and homes:
 - Pinch the game view (or use the mouse wheel) to zoom right in and see faces and clothes, or zoom out. Double-click to reset.
 
 ## Prison: Bay County Correctional
+- The prison is big, with separate rooms: reception (front desk, security gate), visiting room, infirmary, corridor, canteen, library, a two-tier cell block with stairs and an upper walkway, and an outdoor yard.
+- Fights happen for real on the floor (punch combos, kick finisher, auto lock-on to the nearest fighter) while the block crowds round.
 - Busted at 2+ stars means prison (12h to 3 days), in an orange jumpsuit. Your phone and weapons are taken. Free roam: cell block, canteen (3 free meals a day), yard (weights, hoops), visiting room, infirmary.
 - Lights out at 22:00 fast-forwards to morning. Your bunk lets you nap or do your time.
 - Inmates: Big Tony (shot caller: shivs, work, riots), Dre and Moose (fights), Pops (lifer, knows a way out), Rico (talks too much), Lil Mikey (new fish). Guards Grimes and Pike. Mama Joy runs the canteen. Agent Walsh (FBI) offers a deal.

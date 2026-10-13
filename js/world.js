@@ -495,6 +495,7 @@ export function resolve(pos, r, yFeet = 0) {
       if (d < m && d > 1e-6) { pos.x = c.x + dx / d * m; pos.z = c.z + dz / d * m; hit = true; }
     } else {
       if (c.plane && yFeet > 3) continue;
+      if (c.upper && yFeet < 2.4) continue;
       if (yFeet >= (c.h || 99)) continue;
       const nx = Math.max(c.x0, Math.min(pos.x, c.x1)), nz = Math.max(c.z0, Math.min(pos.z, c.z1));
       const dx = pos.x - nx, dz = pos.z - nz, d2 = dx * dx + dz * dz;

@@ -1,7 +1,9 @@
 // Pedestrians: baked low-poly people who stroll sidewalks, wander the beach, flee from trouble.
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, randomChar, disposeObject } from './character.js?v=28';
-import { CITIES, sandLine, shoreLine, groundH, walkable, resolve } from './world.js?v=28';
+import { buildCharacter, randomChar, disposeObject } from './character.js?v=29';
+import { CITIES, sandLine, shoreLine, groundH, walkable as worldWalkable, resolve } from './world.js?v=29';
+// interiors swap in their own floor test so brawlers can move around inside
+let walkable = worldWalkable; export function setWalk(fn) { walkable = fn || worldWalkable; }
 
 const MAT = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.7, metalness: 0.05 }); // boxes keep crisp per-face normals; rounded parts stay smooth
 const SKINS = ['#ffe0cc', '#f6c9a4', '#e8b088', '#d39a6a', '#b77a4b', '#8d5524', '#6b3f22', '#452a1a'];
@@ -226,7 +228,7 @@ export class Peds {
       else if (p.state === 'sit') { p.inner.position.set(0, -(p.limbs[0].position.y - 0.05), -0.15); p.limbs[0].rotation.x = -1.45; p.limbs[1].rotation.x = -1.35; p.limbs[2].rotation.x = -0.2; p.limbs[3].rotation.x = -0.5 + Math.sin(p.phase2 = (p.phase2 || 0) + dt) * 0.05; }
       else p.inner.position.set(0, 0, 0);
       const gH = p.kind === 'beach' ? groundH(p.x, p.z) : 0, swimP = gH < -1.3;
-      const y = p.kind === 'beach' ? (gH >= 0 ? gH : swimP ? -1.85 : gH) : 0.17;
+      const y = p.kind === 'beach' ? (gH >= 0 ? gH : swimP ? -1.85 : gH) : p.kind === 'inmate' ? 0 : 0.17;
       if (swimP && p.state !== 'down') { p.inner.rotation.x = 1.2; const ph = p.phase * 2 + p.t; p.limbs[2].rotation.x = -(ph % 6.28); p.limbs[3].rotation.x = -((ph + 3.14) % 6.28); }
       if (p.hitT > 0 && p.state !== 'down') p.inner.rotation.x = -0.45 * (p.hitT / 0.32);
       p.root.position.set(p.x, y + yo, p.z); p.root.rotation.y = p.face;
