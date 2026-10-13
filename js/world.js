@@ -15,6 +15,9 @@ for (const c of CITIES) {
   c.z0 = c.cz + c.kz[0] * P - HR; c.z1 = c.cz + c.kz[1] * P + HR;
 }
 export const SIGN = { x: -446, z: -268, text: 'BAYWOOD' };
+// the Bay Line railway: north of downtown, from the Hidden Hills to the farmland, with three stations
+export const RAIL = { z: -303, x0: -284, x1: 444, stations: [{ name: 'Baywood Hills', x: -252 }, { name: 'Downtown North', x: 72 }, { name: 'Farmland', x: 412 }] };
+export const onRail = (x, z, m = 0) => x > RAIL.x0 - m && x < RAIL.x1 + m && Math.abs(z - RAIL.z) < 2.2 + m;
 export const AIRPORT = { x0: -240, x1: 280, z0: -780, z1: -575 };
 export const sandLine = x => 352 + 6 * Math.sin(x / 41) + 3 * Math.sin(x / 13);
 export const shoreLine = x => 432 + 8 * Math.sin(x / 53) + 4 * Math.sin(x / 19);
@@ -404,6 +407,8 @@ function genBlock(city, bx0, bz0, r) {
 }
 
 function genWorld() {
+  for (let x = RAIL.x0; x < RAIL.x1; x += 8) addObj({ t: 'rail', x: x + 4, z: RAIL.z });
+  for (const st of RAIL.stations) { addObj({ t: 'platform', x: st.x, z: RAIL.z + 4.4, name: st.name }); addCollider({ x0: st.x - 15, x1: st.x + 15, z0: RAIL.z + 2.4, z1: RAIL.z + 6.4, h: 0.45, top: 0.48 }); }
   // city blocks + street lamps
   for (const city of CITIES) {
     for (let i = city.kx[0]; i < city.kx[1]; i++) for (let j = city.kz[0]; j < city.kz[1]; j++) {
@@ -497,9 +502,10 @@ function genWorld() {
   for (const [px, pz] of [[-90, -642], [-20, -642], [50, -642]]) { addObj({ t: 'plane', x: px, z: pz, rot: 0, col: '#ffffff', acc: ['#2f80ed', '#e23b3b', '#1fb5a8'][(px + 90) / 70 | 0] }); for (const [x0, x1, z0, z1, h] of [[px - 2.2, px + 2.2, pz - 17.5, pz + 17.5, 6], [px - 15, px + 15, pz - 1.8, pz + 3.8, 3], [px - 5, px + 5, pz - 17.3, pz - 14.7, 5]]) addCollider({ x0, x1, z0, z1, h, plane: true }); } // fuselage, wings, tail: no invisible walls
 }
 genWorld();
-// tidy-up: no trees growing through buildings
+// tidy-up: no trees growing through buildings or on the railway
 for (const c of chunks.values()) for (let i = c.objs.length - 1; i >= 0; i--) {
   const o = c.objs[i]; if (o.t !== 'tree') continue;
+  if (onRail(o.x, o.z, 4) || RAIL.stations.some(st => Math.abs(o.x - st.x) < 18 && Math.abs(o.z - RAIL.z - 4) < 6)) { c.objs.splice(i, 1); for (const cc of collidersNear(o.x, o.z).slice()) if (cc.r && Math.abs(cc.x - o.x) < 0.01 && Math.abs(cc.z - o.z) < 0.01) removeCollider(cc); continue; }
   const hit = objsNear(o.x - 16, o.z - 16, o.x + 16, o.z + 16).some(b => b.t === 'bld' && Math.abs(o.x - b.x) < b.w / 2 + 1.2 && Math.abs(o.z - b.z) < b.d / 2 + 1.2);
   if (hit) { c.objs.splice(i, 1); for (const cc of collidersNear(o.x, o.z).slice()) if (cc.r && Math.abs(cc.x - o.x) < 0.01 && Math.abs(cc.z - o.z) < 0.01) removeCollider(cc); }
 }
@@ -898,6 +904,18 @@ function drawObj(o, B) {
       for (let z = PIER.z0 + 2; z < PIER.z1; z += 6) for (const sx of [PIER.x0 + 0.3, PIER.x1 - 0.3]) B.box(sx, -3, z, 0.4, 4.2, 0.4, '#6b5034');
       for (let z = PIER.z0; z < PIER.z1; z += 1.2) B.flat(o.x, 0.26, z, PIER.x1 - PIER.x0, 0.08, '#8a6a42');
       break;
+    case 'rail': { // two steel rails on wooden sleepers over a gravel bed
+      B.box(o.x, 0, o.z, 8.05, 0.12, 4.2, '#7a7068');
+      for (let i = 0; i < 8; i++) B.box(o.x - 3.5 + i, 0.12, o.z, 0.35, 0.1, 3.0, '#5a4030');
+      for (const s of [-0.75, 0.75]) B.box(o.x, 0.22, o.z + s, 8.05, 0.12, 0.12, '#9aa0aa');
+      break; }
+    case 'platform': { // concrete platform, yellow safety line, canopy, benches and a lit name sign
+      B.box(o.x, 0, o.z, 30, 0.45, 4, '#b8b4ad'); B.box(o.x, 0.45, o.z - 1.75, 30, 0.02, 0.3, '#ffd23f');
+      for (const sx of [-10, 0, 10]) { B.box(o.x + sx, 0.45, o.z + 1.5, 0.18, 3.2, 0.18, '#3a3d45'); }
+      B.box(o.x, 3.6, o.z + 0.6, 26, 0.18, 3.4, '#2f80ed');
+      for (const sx of [-6, 6]) { B.box(o.x + sx, 0.45, o.z + 1.2, 2.2, 0.45, 0.6, '#7a5230'); B.box(o.x + sx, 0.9, o.z + 1.45, 2.2, 0.5, 0.1, '#7a5230'); }
+      B.box(o.x, 2.4, o.z + 1.95, 6, 0.9, 0.12, '#16161b', { key: 'sign' }); B.box(o.x, 2.45, o.z + 2.02, 5.6, 0.7, 0.02, '#ffffff', { key: 'glow' });
+      break; }
     case 'runway':
       B.box(o.x, 0, o.z, o.w, 0.07, o.d, '#46464d');
       for (let x = o.x - o.w / 2 + 10; x < o.x + o.w / 2 - 10; x += 14) B.flat(x, 0.08, o.z, 7, 0.5, '#f2f2f2');
@@ -970,6 +988,8 @@ export function drawMap(size = 512) {
   }
   for (const r of ROADS) { x.fillStyle = r.dirt ? '#a8865a' : '#55555c'; x.fillRect(tx(r.x0), tz(r.z0), Math.max(1.5, (r.x1 - r.x0) / sx), Math.max(1.5, (r.z1 - r.z0) / sz)); }
   x.fillStyle = '#46464d'; x.fillRect(tx(-230), tz(-720), 500 / sx, 30 / sz);
+  x.fillStyle = '#5a4a3e'; x.fillRect(tx(RAIL.x0), tz(RAIL.z) - 1, (RAIL.x1 - RAIL.x0) / sx, 2.2); x.fillStyle = '#d8d2c8'; for (let rx = RAIL.x0; rx < RAIL.x1; rx += 16) x.fillRect(tx(rx), tz(RAIL.z) - 0.4, 1, 0.8);
+  for (const st of RAIL.stations) { x.fillStyle = '#2f80ed'; x.fillRect(tx(st.x - 15), tz(RAIL.z + 2.4), 30 / sx, 4 / sz + 1); }
   for (const ch of chunks.values()) for (const o of ch.objs) {
     if (o.t === 'bld') { x.fillStyle = o.glass ? '#8fb8d0' : '#9a8f86'; x.fillRect(tx(o.x - o.w / 2), tz(o.z - o.d / 2), Math.max(1, o.w / sx), Math.max(1, o.d / sz)); }
     else if (o.t === 'tree' && o.kind !== 'palm' && Math.random() < 0.6) { x.fillStyle = '#3a6a32'; x.fillRect(tx(o.x) - 0.6, tz(o.z) - 0.6, 1.4, 1.4); }

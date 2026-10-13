@@ -1,8 +1,8 @@
 // Conversations staged like a Pokémon battle: they stand on a platform facing you,
 // you see the back of your own head in the foreground, subtitles type out, you pick replies.
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject } from './character.js?v=45';
-import { sfx, audio } from './audio.js?v=45';
+import { buildCharacter, poseCharacter, disposeObject } from './character.js?v=47';
+import { sfx, audio } from './audio.js?v=47';
 
 const $ = id => document.getElementById(id);
 const BG = {
@@ -76,8 +76,8 @@ export class Talk {
     for (const p of [this.pNpc, this.pYou]) { p.top.material.color.set(b.plat); p.rim.material.color.set(b.rim); }
     this.hemi.intensity = N ? 0.8 : 1.3; this.sun.intensity = N ? 1 : 2; this.sun.color.set(N ? '#b0b8ff' : '#fff3e0');
   }
-  begin({ npcCfg, youCfg, name, tag, pitch = 300, bg = 'city', night = 0, wall = null, floor = null, pet = null, pose = null, think = false, seat = false }) {
-    this.pose = pose; this.think = think; this.seat = seat;
+  begin({ npcCfg, youCfg, name, tag, pitch = 300, bg = 'city', night = 0, wall = null, floor = null, pet = null, pose = null, think = false, seat = false, phone = false }) {
+    this.pose = pose; this.think = think; this.seat = seat; this.phone = phone;
     audio();
     this.clear();
     this.active = true; this.t = 0; this.intro = 0; this.t0 = performance.now(); this.blipPitch = pitch;
@@ -97,6 +97,7 @@ export class Talk {
       this.bubbles = g; this.scene.add(g);
     }
     $('talkBox').classList.toggle('think', think);
+    if (phone) for (const c of [this.npc, this.you]) { const ph = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.16, 0.09), new THREE.MeshStandardMaterial({ color: '#16161b', roughness: 0.3 })); ph.position.set(0, -0.06, 0.05); (c.hand || c.armR.pivot).add(ph); }
     if (seat) { // car seat, dashboard and steering wheel
       const g = new THREE.Group(), m = c => new THREE.MeshStandardMaterial({ color: c, roughness: 0.7 });
       const seatB = new THREE.Mesh(new THREE.BoxGeometry(0.75, 0.16, 0.7), m('#2a2b30')); seatB.position.set(0, 0.55, -0.1); g.add(seatB);
@@ -176,6 +177,7 @@ export class Talk {
       c.armR.pivot.rotation.set(-0.15 - Math.max(0, g) * 1.4, 0, 0.12 + Math.max(0, g) * 0.3);
       c.armL.pivot.rotation.set(-0.1 + Math.min(0, g) * 1.2, 0, -0.12);
     }
+    if (this.phone && n && y) for (const c of [n, y]) { c.armR.pivot.rotation.set(-2.65, 0, 0.55); c.head.rotation.z = -0.12; } // phone to the ear
     if (this.think && n) { // you, alone, hand on chin, mulling it over
       n.root.position.x = 0;
       if (this.seat && this.seatG) { // sat at the wheel, both hands on it, glancing down at the dash

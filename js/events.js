@@ -95,7 +95,7 @@ export const EVENTS = [
   { id: 'whistle', via: 'call', follow: true, who: () => ({ role: 'sales', seed: 99, name: 'Head Office', tag: 'Calling' }),
     text: () => ['Your old manager was caught cooking the books.', 'We heard you refused to take part. That kind of integrity is rare.'],
     choices: a => [{ label: 'Just doing my job', go: () => { a.promote(); a.mood(20); return 'And you\'re doing it as our newest promotion. Congratulations.'; } }] },
-  { id: 'headhunter', via: 'call', when: a => (!a.career() && a.lvl('smarts') >= 3) ? 2 : 0, who: () => ({ role: 'sales', seed: 314, name: 'Jen from Recruit Bay', tag: 'Calling' }),
+  { id: 'headhunter', via: 'call', when: a => (!a.career() && a.lvl('smarts') >= 3) ? 2 : 0, who: () => ({ role: 'sales', seed: 314, name: 'Jen from Recruit Bay', tag: 'Calling', fem: true }),
     text: () => ['Hi! Jen from Recruit Bay. Your name came up, people say you\'re sharp.', 'Bay Corp needs an Office Assistant. No degree needed. Interested?'],
     choices: a => [
       { label: 'I\'ll take it', go: () => { a.hire('office'); return 'Amazing! Clock in at Bay Corp Tower reception.'; } },
@@ -181,7 +181,7 @@ export const EVENTS = [
   { id: 'deal_gone_bad', via: 'call', when: a => a.lvl('dealing') >= 2 ? 2 : 0, who: () => ({ role: 'dealer', seed: 3131, name: 'Unknown number', tag: 'Calling' }),
     text: () => ['Yo, I heard you\'re the plug. I need a big order.', 'Cash on delivery. Round the back of the car wash, tonight.'],
     choices: a => [
-      { label: 'I\'ll be there', go: () => { if (roll(0.5)) { a.give(900); a.lvlUp('dealing', 40); return '(It was legit: $900 and a new regular.)'; } a.hp(-30); a.loseStash(); return '(It was a setup. They took everything you were carrying.)'; } },
+      { label: 'I\'ll be there', go: () => { a.dealMeet(); return 'Round the back of the car wash. Tonight. Come alone, and bring the stuff.'; } },
       { label: 'Nah, don\'t know you', go: () => { a.lvlUp('dealing', 15); return '(Next day you hear the car wash got raided. Good call.)'; } },
     ] },
   { id: 'tax', via: 'call', when: a => a.money() > 40000 ? 3 : 0, who: () => ({ role: 'sales', seed: 1040, name: 'Bay Revenue', tag: 'Calling' }),

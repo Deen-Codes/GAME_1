@@ -127,6 +127,12 @@ Walk into shops, venues and homes:
 - Swim in the sea and fountains. Some pedestrians swim too.
 - Jump at a wall to grab the ledge and climb up. Fire-escape ladders lead to rooftops. Dive off into water; long falls on land hurt.
 
+## The Bay Line (trains)
+- A railway runs along the north edge of downtown with three stations: Baywood Hills, Downtown North and Farmland. The train shuttles between them on a timetable.
+- Stand on a platform while it's stopped to board ($3). Get off at any stop.
+- A level crossing with barriers and flashing lights sits where the line crosses the north highway. The train sounds its horn.
+- Don't stand on the tracks: anything in the train's way gets hit.
+
 ## Parkour and rooftops
 - Zig-zag iron fire escapes on the sides of many buildings: walk up the stairs to the roof.
 - Sprint and jump for a long jump that clears gaps between rooftops.
