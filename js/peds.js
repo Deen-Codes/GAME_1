@@ -1,7 +1,7 @@
 // Pedestrians: baked low-poly people who stroll sidewalks, wander the beach, flee from trouble.
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, randomChar, disposeObject } from './character.js?v=16';
-import { CITIES, sandLine, shoreLine, groundH, walkable, resolve } from './world.js?v=16';
+import { buildCharacter, randomChar, disposeObject } from './character.js?v=17';
+import { CITIES, sandLine, shoreLine, groundH, walkable, resolve } from './world.js?v=17';
 
 const MAT = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.7, metalness: 0.05 }); // boxes keep crisp per-face normals; rounded parts stay smooth
 const SKINS = ['#ffe0cc', '#f6c9a4', '#e8b088', '#d39a6a', '#b77a4b', '#8d5524', '#6b3f22', '#452a1a'];
