@@ -1,7 +1,7 @@
 // Modular car builder. Car faces +Z, sits on y=0, origin at the centre of the wheelbase.
 import * as THREE from '../lib/three.module.min.js';
-import { BASIC } from './character.js?v=194';
-import { patternTexture } from './gun.js?v=194';
+import { BASIC } from './character.js?v=195';
+import { patternTexture } from './gun.js?v=195';
 
 export const BODIES = {
   hatch:  { label: 'Hatchback', L: 3.8, W: 1.75, bh: 0.55, cl: 2.0, ch: 0.62, co: -0.4,  wr: 0.34, mass: 1.0 },
@@ -237,7 +237,7 @@ function buildBoat(c, B) {
   bx(0.5, 0.35, 0.3, dark, 0.45, 0.85, 0.1); // dash + wheel
   bx(0.5, 1.0, 0.55, dark, 0, 0.55, -hl - 0.2); bx(0.62, 0.45, 0.75, M('#e8e8ea'), 0, 1.2, -hl - 0.2); // outboard motor
   for (const sx of [-1, 1]) { const h = bx(0.18, 0.1, 0.06, headM, sx * 0.35, 0.68, hl - 0.6); h.rotation.y = sx * 0.4; bx(0.14, 0.1, 0.05, tailM, sx * (W / 2 - 0.15), 0.5, -hl - 0.01); }
-  return { group: grp, wheels: [], headM, tailM, revM, glow: null, length: L, width: W, height: 1.3, wr: 0.3, boat: true };
+  return { group: grp, wheels: [], headM, tailM, revM, glow: null, length: L, width: W, height: 1.3, wr: 0.3, boat: true, seat: { x: 0.45, y: 0.95, z: -0.62 } };
 }
 function buildTractor(c, B) {
   const grp = new THREE.Group(), M = (col, o = {}) => new THREE.MeshStandardMaterial({ color: col, roughness: 0.55, flatShading: true, ...o });
