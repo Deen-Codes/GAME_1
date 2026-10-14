@@ -135,8 +135,8 @@ export const EVENTS = [
       { label: 'Deny everything', go: () => { if (!a.partner()) return '...'; a.rel(a.partner().id, -40); if (roll(0.5)) { a.breakup(); return 'You\'re a liar. We\'re finished.'; } return 'I don\'t believe you. Sleep on the couch.'; } },
     ] },
   { id: 'secret_kept', via: 'thought', follow: true,
-    text: a => [`${a.partner()?.name || 'They'} picked up my phone earlier. My heart nearly stopped.`, 'They didn\'t see anything. I think.'],
-    choices: a => [{ label: 'Delete everything', go: () => { a.mood(-4); return 'Never again. Probably.'; } }] },
+    text: a => [`${a.partner()?.name || 'She'} just texted: "Who's been messaging you so late?"`, 'My heart nearly stopped. She doesn\'t know. Not yet.'],
+    choices: a => [{ label: 'Delete the chats', go: () => { a.mood(-4); return 'Gone. Never again. Probably.'; } }, { label: 'Come clean', go: () => { if (!a.partner()) return '...'; a.rel(a.partner().id, -25); if (roll(0.4)) { a.breakup(); return 'She\'s done. Bags packed by the time I got home.'; } return 'She cried. She\'s staying. For now.'; } }] },
 
   // ---------------------------------------------------------------- health & body
   { id: 'chest', via: 'thought', when: a => (a.fat() > 0.55 || a.drinker()) ? 3 : 0,
