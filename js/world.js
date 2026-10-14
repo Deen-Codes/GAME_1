@@ -1,6 +1,6 @@
 // Open-world map: layout, deterministic generation, colliders, chunk meshing and minimap.
 import * as THREE from '../lib/three.module.min.js';
-import { groundMaterial, GT } from './groundtex.js?v=163';
+import { groundMaterial, GT } from './groundtex.js?v=164';
 
 export const WORLD = { x0: -560, x1: 1290, z0: -800, z1: 520 };
 export const CHUNK = 64;
@@ -10,8 +10,8 @@ export const CITIES = [
   { id: 'main', name: 'Downtown', cx: 0, cz: 0, kx: [-6, 6], kz: [-6, 7], style: 'downtown' },
   { id: 'east', name: 'Eastport', cx: 600, cz: 0, kx: [-3, 3], kz: [-3, 3], style: 'suburb' },
   { id: 'north', name: 'Northfield', cx: 0, cz: -520, kx: [-4, 4], kz: [-1, 1], style: 'mid' },
-  { id: 'nport', name: 'Northport', cx: 648, cz: -424, kx: [-2, 2], kz: [-3, 3], style: 'nport' }, // across the river from Eastport
-  { id: 'isle', name: 'Long Beach', cx: 1056, cz: 0, kx: [-2, 2], kz: [-6, 6], style: 'island' }, // the long island city out in the east bay
+  { id: 'nport', name: 'Northport', cx: 648, cz: -432, kx: [-2, 2], kz: [-3, 3], style: 'nport' }, // across the river from Eastport
+  { id: 'isle', name: 'Long Beach', cx: 1056, cz: 0, kx: [-2, 2], kz: [-9, 6], style: 'island' }, // long enough to reach up level with Northport // the long island city out in the east bay
 ];
 for (const c of CITIES) {
   c.x0 = c.cx + c.kx[0] * P - HR; c.x1 = c.cx + c.kx[1] * P + HR;
@@ -22,16 +22,26 @@ export const SIGN = { x: -446, z: -268, text: 'BAYWOOD' };
 export const RAIL = { z: -318, x0: -284, x1: 444, stations: [{ name: 'Baywood Hills', x: -252 }, { name: 'Downtown North', x: 72 }, { name: 'Farmland', x: 412 }] };
 // ---- Bay Metro: an elevated loop through downtown above the avenues (x = +-96, z = +-144), 9 m up on concrete pillars
 export const METRO = (() => {
-  const X = 96, Z = 144, R = 16, Y = 9, pts = [];
-  const line = (x0, z0, x1, z1) => { const L = Math.hypot(x1 - x0, z1 - z0); for (let i = 0; i < L; i += 1) pts.push([x0 + (x1 - x0) * i / L, z0 + (z1 - z0) * i / L]); };
-  const arc = (cx, cz, a0) => { for (let i = 0; i < 25; i++) { const a = a0 + i / 25 * Math.PI / 2; pts.push([cx + Math.cos(a) * R, cz + Math.sin(a) * R]); } };
-  line(-X + R, -Z, X - R, -Z); arc(X - R, -Z + R, -Math.PI / 2); line(X, -Z + R, X, Z - R); arc(X - R, Z - R, 0); line(X - R, Z, -X + R, Z); arc(-X + R, Z - R, Math.PI / 2); line(-X, Z - R, -X, -Z + R); arc(-X + R, -Z + R, Math.PI);
+  // the loop: round downtown, north to meet the Bay Line at Farmland, east over the river to Northport, down into Eastport,
+  // across the bay and right round Long Beach, then back across the bay into downtown. Every corner is a 16 m curve.
+  const R = 16, Y = 9, pts = [];
+  const C = [[-96, -144], [240, -144], [240, -288], [744, -288], [744, -96], [960, -96], [960, -432], [1152, -432], [1152, 288], [960, 288], [960, -48], [96, -48], [96, 144], [-96, 144]];
+  const n = C.length, dir = (a, b) => { const l = Math.hypot(b[0] - a[0], b[1] - a[1]); return [(b[0] - a[0]) / l, (b[1] - a[1]) / l]; };
+  for (let i = 0; i < n; i++) {
+    const c = C[i], nx = C[(i + 1) % n], pv = C[(i - 1 + n) % n], din = dir(pv, c), dout = dir(c, nx);
+    const A = [c[0] - din[0] * R, c[1] - din[1] * R], O = [A[0] + dout[0] * R, A[1] + dout[1] * R], B = [c[0] + dout[0] * R, c[1] + dout[1] * R];
+    const a0 = Math.atan2(A[1] - O[1], A[0] - O[0]), a1 = Math.atan2(B[1] - O[1], B[0] - O[0]), da = Math.atan2(Math.sin(a1 - a0), Math.cos(a1 - a0));
+    for (let k = 0; k < 25; k++) { const a = a0 + da * k / 25; pts.push([O[0] + Math.cos(a) * R, O[1] + Math.sin(a) * R]); }
+    const E = [nx[0] - dout[0] * R, nx[1] - dout[1] * R], L = Math.hypot(E[0] - B[0], E[1] - B[1]);
+    for (let d = 0; d < L; d += 1) pts.push([B[0] + dout[0] * d, B[1] + dout[1] * d]);
+  }
   const cum = [0]; for (let i = 1; i < pts.length; i++) cum.push(cum[i - 1] + Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]));
   const len = cum[cum.length - 1] + Math.hypot(pts[0][0] - pts[pts.length - 1][0], pts[0][1] - pts[pts.length - 1][1]);
   const at = s => { s = ((s % len) + len) % len; let lo = 0, hi = cum.length - 1; while (lo < hi) { const m = (lo + hi + 1) >> 1; if (cum[m] <= s) lo = m; else hi = m - 1; } const a = pts[lo], b = pts[(lo + 1) % pts.length], seg = (lo + 1 < cum.length ? cum[lo + 1] : len) - cum[lo], t = seg ? (s - cum[lo]) / seg : 0; return { x: a[0] + (b[0] - a[0]) * t, z: a[1] + (b[1] - a[1]) * t, h: Math.atan2(b[0] - a[0], b[1] - a[1]) }; };
   const sOf = (x, z) => { let best = 0, bd = 1e9; for (let i = 0; i < pts.length; i++) { const d = Math.hypot(pts[i][0] - x, pts[i][1] - z); if (d < bd) { bd = d; best = cum[i]; } } return best; };
-  // stations: the platform on the outside of the loop, a stair tower down to the pavement (on the outer kerb, clear of the junction)
-  const stations = [['Midtown', 0, -Z, 0, -1], ['East Side', X, 0, 1, 0], ['Bayside', 0, Z, 0, 1], ['West End', -X, 0, -1, 0]].map(([name, x, z, ox, oz]) => ({ name, x, z, s: sOf(x, z), ox, oz, tower: { x: x + ox * 8.6 + (ox ? 0 : 14), z: z + oz * 8.6 + (oz ? 0 : 14) } }));
+  // stations: the platform on one side of the line, a stair tower down to the ground beside it
+  const stations = [['Midtown', 0, -144, 0, -1], ['Farmland (Bay Line)', 412, -288, 0, -1], ['Northport', 648, -288, 0, -1], ['Eastport', 744, -122, 1, 0], ['Long Beach North', 1056, -432, 0, -1], ['Long Beach South', 1056, 288, 0, 1], ['East Side', 96, 0, 1, 0], ['Bayside', 0, 144, 0, 1], ['West End', -96, 0, -1, 0]]
+    .map(([name, x, z, ox, oz]) => ({ name, x, z, s: sOf(x, z), ox, oz, tower: { x: x + ox * 8.6 + (ox ? 0 : 14), z: z + oz * 8.6 + (oz ? 0 : 14) } })).sort((a, b) => a.s - b.s);
   return { Y, len, at, stations, pts };
 })();
 export const onBridge = (x, z) => Math.abs(x - UNDERPASS.x) < UNDERPASS.half + 5.2 && Math.abs(z - RAIL.z) < 3.3;
@@ -43,7 +53,7 @@ export const WATER_Y = -0.8;
 // ---- the east: Eastport's coast, the Bay River (in from the east bay along the top of Eastport, then north off the map)
 // and Long Beach, a long rectangular island ringed with sand
 export const coastX = z => 792 + 5 * Math.sin(z / 37) + 3 * Math.sin(z / 13);
-export const ISLE = { x0: 900, x1: 1212, z0: -348, z1: 348 };
+export const ISLE = { x0: 900, x1: 1212, z0: -492, z1: 348 };
 export const RIVER = { hw: 14, pts: [[840, -212], [760, -214], [680, -210], [600, -212], [548, -218], [520, -236], [507, -270], [503, -320], [509, -390], [501, -460], [508, -540], [500, -620], [507, -700], [502, -780], [504, -860]] };
 export function riverD(x, z) {
   if (x < 470 || z > -170) return 1e9; let best = 1e9; const P2 = RIVER.pts;
@@ -136,6 +146,7 @@ export function rolling(x, z) {
   w = Math.min(w, sm((rectDist(x, z, AIRPORT) - 10) / 60), sm((sandLine(x) - 70 - z) / 70), sm((-300 - x) * -1 / 40 + 0)); // towns, airport, beach, hills seam
   if (x > RAIL.x0 - 30 && x < RAIL.x1 + 30) w = Math.min(w, sm((Math.abs(z - RAIL.z) - 7) / 30));
   if (x > 660) w = Math.min(w, sm((coastX(z) - 50 - x) / 40)); // flat down to the east shore
+  if (x > 230 && x < 800) w = Math.min(w, sm((Math.abs(z + 288) - 10) / 30), sm((Math.abs(z + 48) - 10) / 30)); // and under the metro viaduct
   if (x > 440 && z < -140) w = Math.min(w, sm((riverD(x, z) - RIVER.hw - 14) / 30)); // and along the river banks
   for (const f of FIELDS) { const bx = f.x1 - 10, bz = f.z0 + 9; w = Math.min(w, sm((Math.hypot(x - bx, z - bz) - 16) / 26), sm((Math.hypot(x - bx + 9.5, z - bz + 2) - 6) / 16)); } // flat barn yards
   if (w <= 0) return 0;
@@ -158,7 +169,8 @@ export const SKYWAYS = [
   { id: 'B', name: 'Harbor Skyway', axis: 'z', line: -48, a0: -282, a1: 330, ramp: 36 },
   // bridges: the same raised road, higher, on big piers standing in the water
   { id: 'C', name: 'Long Beach Bridge', axis: 'x', line: 0, a0: 750, a1: 954, ramp: 54, y: 9, bridge: true },
-  { id: 'D', name: 'Northport Bridge', axis: 'z', line: 600, a0: -274, a1: -150, ramp: 44, y: 7.5, bridge: true },
+  { id: 'D', name: 'River Bridge', axis: 'z', line: 600, a0: -282, a1: -150, ramp: 44, y: 7.5, bridge: true },
+  { id: 'E', name: 'Northport Bay Bridge', axis: 'x', line: -432, a0: 750, a1: 954, ramp: 54, y: 9, bridge: true },
 ];
 for (const S of SKYWAYS) S.y ??= SKY_Y;
 const skyUW = (S, x, z) => S.axis === 'x' ? [x, z - S.line] : [z, x - S.line]; // [along, across]
@@ -188,7 +200,7 @@ export function groundH(x, z) {
   return h;
 }
 export const FIELDS = [
-  { x0: 312, x1: 432, z0: 30, z1: 300 }, { x0: 312, x1: 432, z0: -300, z1: -30 },
+  { x0: 312, x1: 432, z0: 30, z1: 300 }, { x0: 312, x1: 432, z0: -262, z1: -30 },
   { x0: 30, x1: 270, z0: -450, z1: -338 }, { x0: -270, x1: -30, z0: -450, z1: -338 },
 ];
 const PIER = { x0: 88, x1: 100, z0: 368, z1: 505 };
@@ -617,7 +629,7 @@ function genWorld() {
     addObj({ t: 'fence', x0: 532, x1: 708, z: 290 }); }
   // Bay Metro viaduct: deck segments every 4 m, pillars every 16 m (but never in a junction), stations with stair towers
   { const M = METRO; for (let s = 0; s < M.len; ) { const a0 = M.at(s), a1 = M.at(s + 4), bend = Math.abs(Math.atan2(Math.sin(a1.h - a0.h), Math.cos(a1.h - a0.h))) > 0.02, step = bend ? 1.5 : 4, a = M.at(s + step / 2); addObj({ t: 'via', x: a.x, z: a.z, h: a.h, len: bend ? 1.9 : 4.15 }); s += step; }
-    for (let s = 0; s < M.len; s += 16) { const a = M.at(s); const jx = Math.round(a.x / 48) * 48, jz = Math.round(a.z / 48) * 48; if (Math.abs(a.x - jx) < 9 && Math.abs(a.z - jz) < 9) continue; const onRd = !!roadAt(a.x, a.z), o = { t: 'vpillar', x: a.x, z: a.z, h: a.h, portal: onRd, s, cols: [] }; addObj(o); if (onRd) { const cs = Math.cos(a.h), sn = Math.sin(a.h); for (const sw of [-7.3, 7.3]) { const c = { x: a.x + cs * sw, z: a.z - sn * sw, r: 0.6 }; addCollider(c); o.cols.push(c); } } else { const c = { x: a.x, z: a.z, r: 0.75 }; addCollider(c); o.cols.push(c); } } // over a street: legs on the pavements, the road stays clear
+    for (let s = 0; s < M.len; s += 16) { const a = M.at(s); if (ROADS.filter(r => inR(r, a.x, a.z, 3)).length > 1 || skyAt(a.x, a.z)) continue; const onRd = !!roadAt(a.x, a.z), o = { t: 'vpillar', x: a.x, z: a.z, h: a.h, portal: onRd, s, cols: [] }; addObj(o); if (onRd) { const cs = Math.cos(a.h), sn = Math.sin(a.h); for (const sw of [-7.3, 7.3]) { const c = { x: a.x + cs * sw, z: a.z - sn * sw, r: 0.6 }; addCollider(c); o.cols.push(c); } } else { const c = { x: a.x, z: a.z, r: 0.75 }; addCollider(c); o.cols.push(c); } } // over a street: legs on the pavements, the road stays clear
     for (const st of M.stations) { addObj({ t: 'vstation', x: st.x, z: st.z, ox: st.ox, oz: st.oz, tx: st.tower.x, tz: st.tower.z, name: st.name }); addCollider({ x0: st.tower.x - 1.4, x1: st.tower.x + 1.4, z0: st.tower.z - 1.4, z1: st.tower.z + 1.4, h: 9 }); } }
   // Bay Skyways: deck segments, pillars clear of junctions, ramp strips, parapets and lamps
   for (const S of SKYWAYS) {
@@ -778,6 +790,9 @@ for (const ch of chunks.values()) for (let i = ch.objs.length - 1; i >= 0; i--) 
   for (const ch of chunks.values()) for (let i = ch.objs.length - 1; i >= 0; i--) { const o = ch.objs[i]; if (['tree', 'bush', 'rock'].includes(o.t) && Math.hypot(o.x - PEAK.x, o.z - PEAK.z) < 13) { ch.objs.splice(i, 1); for (const cc of collidersNear(o.x, o.z).slice()) if (cc.r && Math.abs(cc.x - o.x) < 0.01 && Math.abs(cc.z - o.z) < 0.01) removeCollider(cc); } } // a clear summit
   for (let a = 0; a < Math.PI * 2; a += 0.22) { const c0 = canyonNear(PEAK.x + Math.cos(a) * 11.2, PEAK.z + Math.sin(a) * 11.2); if (c0 && c0.d < CR_HW + 1) continue; addCollider({ x: PEAK.x + Math.cos(a) * 11.2, z: PEAK.z + Math.sin(a) * 11.2, r: 0.5 }); }
   addCollider({ x: PEAK.x - 6, z: PEAK.z - 6, r: 0.45 }); }
+// nothing growing through the metro viaduct or its stair towers
+{ const M = METRO; for (let q = 0; q < M.len; q += 6) { const a = M.at(q); for (const o of objsNear(a.x - 6, a.z - 6, a.x + 6, a.z + 6)) if ((o.t === 'tree' && Math.hypot(o.x - a.x, o.z - a.z) < 5.5) || (o.t === 'bld' && Math.abs(o.x - a.x) < o.w / 2 + 3.2 && Math.abs(o.z - a.z) < o.d / 2 + 3.2 && o.h + (o.y || 0) > M.Y - 2.5)) { removeObj(o); if (o.cc) removeCollider(o.cc); else for (const cc of collidersNear(o.x, o.z).slice()) if (cc.r && Math.abs(cc.x - o.x) < 0.01 && Math.abs(cc.z - o.z) < 0.01) removeCollider(cc); } }
+  for (const st of M.stations) clearRect(st.tower.x - 3, st.tower.z - 3, st.tower.x + 3, st.tower.z + 3); }
 // nothing parked or growing on the skyway ramps
 for (const S of SKYWAYS) for (const [ua, ub] of [[S.a0, S.a0 + S.ramp], [S.a1 - S.ramp, S.a1]]) { const [xa, za] = skyXZ(S, ua, -SKY_HW - 0.5), [xb, zb] = skyXZ(S, ub, SKY_HW + 0.5); clearRect(Math.min(xa, xb), Math.min(za, zb), Math.max(xa, xb), Math.max(za, zb)); }
 // tidy-up: no trees growing through buildings or on the railway
@@ -1293,7 +1308,7 @@ function drawObj(o, B) {
         const ew = sw * 5.3; B.quad('solid', P2(o.u0, ew - 0.07, y0 + 0.012), P2(o.u0, ew + 0.07, y0 + 0.012), P2(o.u1, ew + 0.07, y1 + 0.012), P2(o.u1, ew - 0.07, y1 + 0.012), '#f2d14a', c3); }
       { const d0 = S.a0 + S.ramp, d1 = S.a1 - S.ramp, ue = Math.abs(o.u1 - d0) < 0.01 ? o.u1 : Math.abs(o.u0 - d1) < 0.01 ? o.u0 : null; if (ue != null) { const cu = ue === o.u1 ? ue - 3 : ue + 3, [cx2, cz2] = skyXZ(S, cu, 0); B.quad('solid', P2(ue, -6.4, 0), P2(ue, 6.4, 0), P2(ue, 6.4, S.y - 0.55), P2(ue, -6.4, S.y - 0.55), '#bdb8ae', [cx2, 2, cz2]); } } // abutment face under the deck end
       break; }
-    case 'vpillar': { const Y = METRO.Y; if (o.portal) { const cs = Math.cos(o.h), sn = Math.sin(o.h); for (const sw of [-7.3, 7.3]) { const lx = o.x + cs * sw, lz = o.z - sn * sw; B.box(lx, 0.15, lz, 1.0, Y - 1.0, 1.0, '#a8a49c'); B.box(lx, 0.6, lz, 1.04, 0.22, 1.04, '#f2d14a'); } B.box(o.x, Y - 1.6, o.z, 15.6, 0.8, 1.6, '#9e9a92', { rot: o.h }); break; } B.box(o.x, 0, o.z, 1.3, Y - 0.85, 1.3, '#a8a49c', { rot: o.h }); B.box(o.x, Y - 1.6, o.z, 4.6, 0.8, 1.6, '#9e9a92', { rot: o.h }); break; }
+    case 'vpillar': { const Y = METRO.Y; if (o.portal) { const cs = Math.cos(o.h), sn = Math.sin(o.h); for (const sw of [-7.3, 7.3]) { const lx = o.x + cs * sw, lz = o.z - sn * sw; B.box(lx, 0.15, lz, 1.0, Y - 1.0, 1.0, '#a8a49c'); B.box(lx, 0.6, lz, 1.04, 0.22, 1.04, '#f2d14a'); } B.box(o.x, Y - 1.6, o.z, 15.6, 0.8, 1.6, '#9e9a92', { rot: o.h }); break; } { const g0 = groundH(o.x, o.z), bot = g0 < -0.3 ? -7 : Math.min(0, g0); B.box(o.x, bot, o.z, g0 < -0.3 ? 2 : 1.3, Y - 0.85 - bot, g0 < -0.3 ? 2 : 1.3, '#a8a49c', { rot: o.h }); if (g0 < -0.3) B.box(o.x, -1.1, o.z, 3, 0.6, 3, '#8f8b84'); } B.box(o.x, Y - 1.6, o.z, 4.6, 0.8, 1.6, '#9e9a92', { rot: o.h }); break; } // out in the water the pillar goes down to the seabed
     case 'vstation': { const Y = METRO.Y, px = o.x + o.ox * 5.2, pz = o.z + o.oz * 5.2, along = o.ox ? 'z' : 'x', w = along === 'x' ? 30 : 3.8, d = along === 'x' ? 3.8 : 30;
       B.box(px, Y - 0.5, pz, w, 0.7, d, '#c9c4ba'); B.box(px + o.ox * 1.7, Y + 0.2, pz + o.oz * 1.7, along === 'x' ? 30 : 0.2, 1.1, along === 'x' ? 0.2 : 30, '#e8e4dc'); // platform + back wall
       for (let i = -12; i <= 12; i += 6) { const qx = along === 'x' ? px + i : px + o.ox * 1.5, qz = along === 'x' ? pz + o.oz * 1.5 : pz + i; B.box(qx, Y + 0.2, qz, 0.2, 2.8, 0.2, '#3a3d45'); }
@@ -1504,7 +1519,7 @@ export function drawMap(size = 512) {
   return { canvas: cv, tx, tz, sx, sz };
 }
 export const LABELS = [
-  ['DOWNTOWN', 0, 0], ['BAY BEACH', 100, 395], ['HIDDEN HILLS', -420, -60], ['BAYWOOD PEAK', -502, -232], ['EASTPORT', 600, 0], ['NORTHFIELD', 0, -520], ['NORTHPORT', 648, -424], ['LONG BEACH', 1056, 0], ['BAY RIVER', 505, -620], ['EAST BAY', 850, 200], ['AIRPORT', 20, -690], ['FARMLAND', 370, 160],
+  ['DOWNTOWN', 0, 0], ['BAY BEACH', 100, 395], ['HIDDEN HILLS', -420, -60], ['BAYWOOD PEAK', -502, -232], ['EASTPORT', 600, 0], ['NORTHFIELD', 0, -520], ['NORTHPORT', 648, -432], ['LONG BEACH', 1056, 0], ['BAY RIVER', 505, -620], ['EAST BAY', 850, 200], ['AIRPORT', 20, -690], ['FARMLAND', 370, 160],
 ];
 export const SPAWN = { x: 8.2, z: 30, carX: 3, carZ: 40, carH: Math.PI };
 
