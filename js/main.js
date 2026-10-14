@@ -1,26 +1,26 @@
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=101';
-import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=101';
-import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=101';
-import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=101';
-import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=101';
-import { buildPanel, renderStats } from './ui.js?v=101';
-import { Input } from './input.js?v=101';
-import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime } from './audio.js?v=101';
-import { runMinigame } from './minigames.js?v=101';
-import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk } from './peds.js?v=101';
-import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=101';
-import { findRoute } from './nav.js?v=101';
-import { COURSES, CAREERS, QUIZ } from './careers.js?v=101';
-import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=101';
-import { attachWheel } from './wheel.js?v=101';
-import { Animals } from './animals.js?v=101';
-import { Talk } from './talk.js?v=101';
-import { incomingText, classify, textOptions, textReply } from './texts.js?v=101';
-import { svg, drawIcon } from './icons.js?v=101';
-import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=101';
-import { FURN, CATALOG } from './furniture.js?v=101';
-import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=101';
+import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=102';
+import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=102';
+import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=102';
+import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=102';
+import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=102';
+import { buildPanel, renderStats } from './ui.js?v=102';
+import { Input } from './input.js?v=102';
+import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime } from './audio.js?v=102';
+import { runMinigame } from './minigames.js?v=102';
+import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk } from './peds.js?v=102';
+import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=102';
+import { findRoute } from './nav.js?v=102';
+import { COURSES, CAREERS, QUIZ } from './careers.js?v=102';
+import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=102';
+import { attachWheel } from './wheel.js?v=102';
+import { Animals } from './animals.js?v=102';
+import { Talk } from './talk.js?v=102';
+import { incomingText, classify, textOptions, textReply } from './texts.js?v=102';
+import { svg, drawIcon } from './icons.js?v=102';
+import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=102';
+import { FURN, CATALOG } from './furniture.js?v=102';
+import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=102';
 
 const $ = id => document.getElementById(id);
 let inside = null, editMode = false, held = null, pendingCar = false, homeMusic = false, phoneBadge = 0;
@@ -328,7 +328,7 @@ const subs = (() => {
     if (!who?.cfg) return;
     enqueue({ who, text, expr: o.expr || 'neutral', radio: !!o.radio, pri: o.pri || 0, tag: o.tag, silent: !!o.silent, now: !!o.now });
   }
-  function note(icon, title, text, o = {}) { enqueue({ plain: true, icon, title, text, cls: o.cls || '', pri: o.pri || 1, dur: o.dur, now: !!o.now }); }
+  function note(icon, title, text, o = {}) { enqueue({ plain: true, icon, title, text, cls: o.cls || '', color: o.color, pri: o.pri || 1, dur: o.dur, now: !!o.now }); }
   const readTime = s => Math.max(1.9, s.split(/\s+/).length * 0.3 + 1.1);
   function start(line) {
     if (!R && !line.plain) init();
@@ -336,7 +336,7 @@ const subs = (() => {
     cur = line; t = 0; outT = 0; cur.shown = -1; cur.len = line.text.length;
     const rush = queue.length ? 0.72 : 1;
     if (line.plain) {
-      faceW.style.display = 'none'; icoW.style.display = line.icon ? 'grid' : 'none'; if (line.icon) icoW.innerHTML = svg(line.icon, 'sm');
+      faceW.style.display = 'none'; icoW.style.display = line.icon ? 'grid' : 'none'; if (line.icon) { icoW.innerHTML = svg(line.icon, 'sm'); icoW.style.background = line.color || (line.cls === 'radio' ? '#9b51e0' : '#2f80ed'); }
       nameEl.textContent = line.title || ''; nameEl.style.display = line.title ? '' : 'none'; txtEl.textContent = line.text; cur.total = Math.max(1.6, (line.dur ? Math.min(line.dur, readTime(line.text)) : readTime(line.text)) * rush);
     } else {
       faceW.style.display = ''; icoW.style.display = 'none'; nameEl.style.display = '';
@@ -1288,8 +1288,16 @@ function meleeHit(step = 0) {
 // ---------------- health
 let time = 0, clockH = 8, dayN = 1, shake = 0, saveT = 0, toastT = 0, hurtFlash = 0, timeScale = 1;
 const gameHours = () => dayN * 24 + clockH;
+// every little message gets a picture that says what it's about
+const TOAST_ICONS = [[/rain (has )?stopp|fog is lifting|clear(s|ed) up|sun('s| is) out|skies clear/i, 'sun', '#ffb020'], [/storm|thunder|lightning/i, 'storm', '#5a4abf'], [/rain|drizzl|pour/i, 'rain', '#2f80ed'], [/fog|mist/i, 'fog', '#7a8a9a'],
+  [/police|cops?\b|arrest|wanted|patrol|spotted|ticket|sentence|cell|prison|guards|busted|search area/i, 'shield', '#2a5ad8'], [/turf|gang|kings|reds|blues|crew/i, 'fist', '#8b1e3f'], [/fire|smoke|burn/i, 'bolt', '#ff6a2a'],
+  [/hospital|nurse|health|hurt|patched|doctor/i, 'cross', '#e23b3b'], [/love|engaged|girlfriend|kiss|wedding|baby|date\b|she /i, 'heart', '#ff3b8a'], [/grocer|food|burger|meal|sushi|smoothie|eat|fridge|hungry|dumpling|starving/i, 'food', '#ff8a2a'],
+  [/gun|ammo|grenade|rocket|range|shiv/i, 'gun', '#5d636e'], [/\$|cash|paid|money|income|sold|bought|price|fine\b/i, 'cash', '#2fbf55'], [/car\b|drive|garage|customs|scoot|headlight|parked|race/i, 'car', '#ff8a2a'],
+  [/home|house|storage|furniture|bed\b|sleep|edit mode/i, 'house', '#9b51e0'], [/class|school|college|study|enrol/i, 'book', '#2f80ed'], [/gym|workout|membership|weights/i, 'dumbbell', '#ff8a2a'],
+  [/market|parade|protest|match|festival|fair/i, 'people', '#ff6fb5'], [/mission|story/i, 'flag', '#e0a010'], [/night|lights out|dark/i, 'moon', '#3a3fbf'], [/morning|new day|day\b/i, 'sun', '#ffb020'], [/phone|text|call/i, 'phone', '#2f80ed']];
+function toastIcon(msg) { for (const [re, ic, col] of TOAST_ICONS) if (re.test(msg)) return [ic, col]; return ['chat', '#4a4f5a']; }
 function toast(msg, dur = 2.4) { const fm = typeof msg === 'string' && msg.match(/^([A-Z][\w.' ]{1,24}): "(.+?)"\s*(.*)$/); if (fm) { const w = faceFor(null, fm[1]); if (w) { subs.say(w, fm[2] + (fm[3] ? ` ${fm[3]}` : ''), { silent: true, expr: /!|love|yay|fun/i.test(fm[2]) ? 'happy' : 'neutral', pri: 2 }); return; } }
-  if (state === 'play' && typeof msg === 'string') { subs.note(null, null, msg, { dur }); return; }
+  if (state === 'play' && typeof msg === 'string') { const [ic, col] = toastIcon(msg); subs.note(ic, null, msg, { dur, color: col }); return; }
   const t = $('toast'); t.textContent = msg; t.classList.add('on'); toastT = dur; }
 let noteT = 0;
 function slotNote(icon, title, sub, dur = 4, cls = '') { subs.note(icon, title, sub || '', { dur, cls }); }
@@ -6057,7 +6065,7 @@ function saveGame() {
   store.set('bc_save', save); store.set('bc_arsenal', arsenal); store.set('bc_cars', garage);
 }
 // auto-update: bookmarks and home-screen apps can hold on to an old copy. Check version.json (never cached) and reload once if newer.
-const BUILD = 101;
+const BUILD = 102;
 function checkUpdate() {
   fetch('version.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(j => {
     if (!(j.v > BUILD)) return;
