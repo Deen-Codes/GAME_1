@@ -1,26 +1,26 @@
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=115';
-import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=115';
-import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=115';
-import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=115';
-import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=115';
-import { buildPanel, renderStats } from './ui.js?v=115';
-import { Input } from './input.js?v=115';
-import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime } from './audio.js?v=115';
-import { runMinigame } from './minigames.js?v=115';
-import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk } from './peds.js?v=115';
-import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=115';
-import { findRoute } from './nav.js?v=115';
-import { COURSES, CAREERS, QUIZ } from './careers.js?v=115';
-import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=115';
-import { attachWheel } from './wheel.js?v=115';
-import { Animals } from './animals.js?v=115';
-import { Talk } from './talk.js?v=115';
-import { incomingText, classify, textOptions, textReply } from './texts.js?v=115';
-import { svg, drawIcon } from './icons.js?v=115';
-import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=115';
-import { FURN, CATALOG } from './furniture.js?v=115';
-import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=115';
+import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=116';
+import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=116';
+import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=116';
+import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=116';
+import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=116';
+import { buildPanel, renderStats } from './ui.js?v=116';
+import { Input } from './input.js?v=116';
+import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime } from './audio.js?v=116';
+import { runMinigame } from './minigames.js?v=116';
+import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk } from './peds.js?v=116';
+import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=116';
+import { findRoute } from './nav.js?v=116';
+import { COURSES, CAREERS, QUIZ } from './careers.js?v=116';
+import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=116';
+import { attachWheel } from './wheel.js?v=116';
+import { Animals } from './animals.js?v=116';
+import { Talk } from './talk.js?v=116';
+import { incomingText, classify, textOptions, textReply } from './texts.js?v=116';
+import { svg, drawIcon } from './icons.js?v=116';
+import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=116';
+import { FURN, CATALOG } from './furniture.js?v=116';
+import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=116';
 
 const $ = id => document.getElementById(id);
 let inside = null, editMode = false, held = null, pendingCar = false, homeMusic = false, phoneBadge = 0;
@@ -3991,7 +3991,7 @@ function updatePromises() {
   // "8pm, don't be late": she sends her location when it's time
   const DL = stats.dateLater; if (DL && gameHours() >= DL.at) { stats.dateLater = null; if (!date && !stats.dateMeet && stats.dates?.[DL.id]?.cfg) { const sp = randomRoadSpot(70, 220); stats.dateMeet = { id: DL.id, x: sp.x + 3.5, z: sp.z, until: gameHours() + 3 }; setWaypoint(sp.x + 3.5, sp.z, `Pick up ${nameOf(DL.id)}`); textMe(DL.id, nameOf(DL.id), 'It\'s 8! I\'m ready. Location sent 📍', false, 'pickup'); } }
 }
-function textMe(id, from, text, me = false, topic) { const T = (stats.texts ||= {}); (T[id] ||= []).push({ me, t: text, d: dayN, h: gameHours(), k: me ? undefined : topic !== undefined ? topic : classify(text) }); if (T[id].length > 40) T[id].shift(); if (!me) { phoneBadge++; notify(from, text, 4.5, id); sfx.coin(); } }
+function textMe(id, from, text, me = false, topic) { if (!me && stats.dates?.[id]?.noNum) return; const T = (stats.texts ||= {}); (T[id] ||= []).push({ me, t: text, d: dayN, h: gameHours(), k: me ? undefined : topic !== undefined ? topic : classify(text) }); if (T[id].length > 40) T[id].shift(); if (!me) { phoneBadge++; notify(from, text, 4.5, id); sfx.coin(); } }
 // side buttons stretch out into a pill to show what's new: the phone shows a message summary, the radio shows the song
 const peekT = {};
 function peek(id, html, dur = 4.5) {
@@ -4058,7 +4058,7 @@ function famTexts(dt) { // random incoming texts from people who care about you
   const f = fam(), cands = [];
   const withMe = id => date?.id === id || (inside?.prop && inside.prop.id === f.home && id === f.partner?.id && f.partner?.livesIn); // no "what are you up to?" from someone standing next to you
   if (f.partner && rel(f.partner.id) > 15 && !withMe(f.partner.id)) cands.push(f.partner.id);
-  for (const id of Object.keys(stats.dates || {})) if (id !== f.partner?.id && !withMe(id) && rel(id) > 25 && Math.random() < 0.3) cands.push(id);
+  for (const id of Object.keys(stats.dates || {})) if (!stats.dates[id].noNum && id !== f.partner?.id && !withMe(id) && rel(id) > 25 && Math.random() < 0.3) cands.push(id);
   for (const k of f.kids) if (['Teen', 'Adult'].includes(kidStage(k))) cands.push(k.id);
   if (!cands.length || inside?.prop?.id === f.home) return;
   const id = pick(cands), T = stats.texts?.[id], last = T?.[T.length - 1];
@@ -4447,7 +4447,7 @@ function townHtml() {
   if (!ppl.length) return '';
   return `<div class="ph-sec">People around town</div><p class="ph-hint">What locals think of you. They remember what they see you do.</p>` + ppl.map(r => `<div class="ph-row col"><span><b>${r.name}</b> <small>${opWord(r.rap)}${r.met ? ' · ' + ATTITUDE[r.att] : ' · seen you around'}</small></span>${bar(Math.abs(r.rap), r.rap < 0 ? '#e23b3b' : '#2fbf55')}</div>`).join('');
 }
-function addDateContact(p) { stats.dates ||= {}; const id = 'date:' + p.name; stats.dates[id] = { ...(stats.dates[id] || {}), name: p.name, cfg: p.look.cfg }; prefsOf(id, p.soc || p.person); stats.rel[id] = Math.max(stats.rel[id] || 0, 20); relNames[id] = p.name; saveGame(); }
+function addDateContact(p, noNum) { stats.dates ||= {}; const id = 'date:' + p.name; const was = stats.dates[id]; stats.dates[id] = { ...(was || {}), name: p.name, cfg: p.look.cfg }; if (noNum && !p.gotNumber && (!was || was.noNum)) stats.dates[id].noNum = true; else delete stats.dates[id].noNum; prefsOf(id, p.soc || p.person); stats.rel[id] = Math.max(stats.rel[id] || 0, 20); relNames[id] = p.name; saveGame(); }
 // ================================================================ DATES (she follows you, gets in your car, has her own tastes)
 // Everyone you date keeps the personality they had as a stranger: two things they love, one they hate.
 // Get to know them (ask, listen), then take them places they'll love. In the car you sit side by side and chat.
@@ -4474,7 +4474,7 @@ function startDate(p) {
   const bl = bellyFor('date:' + p.name); let look = p.look; if (bl) look = { ...bakeCfg({ ...look.cfg, belly: bl }), fem: true };
   const fig = figure(look); dyn.add(fig.root);
   date = { name: p.name, look, cfg: look.cfg, fig, x: p.x, z: p.z, face: p.face, phase: 0, interest: p.interest, since: gameHours(), id: 'date:' + p.name, used: {}, been: {} };
-  addDateContact(p); bumpRel(date.id, 10, false); date.prefs = prefsOf(date.id, p.soc || p.person);
+  addDateContact(p, true); bumpRel(date.id, 10, false); date.prefs = prefsOf(date.id, p.soc || p.person);
   $('loveBtn').classList.remove('hidden');
   toast(`${p.name} is hanging out with you. Tap the heart for things to do together.`, 4);
 }
@@ -4600,11 +4600,11 @@ function dateCalls(dt) {
   if (gameHours() < stats.nextDateCall || date || state !== 'play' || talk.active || stats.jail || inside || dance || woo) return;
   stats.nextDateCall = gameHours() + rand(8, 16);
   stats.lastCall ||= {};
-  const ids = Object.keys(stats.dates || {}).filter(id => rel(id) >= 35 && !(fam().partner?.id === id && fam().partner.livesIn) && stats.lastCall[id] !== dayN && (stats.lastCall[id] || 0) < dayN - 1); if (!ids.length) return; // nobody rings you two days running
+  const ids = Object.keys(stats.dates || {}).filter(id => !stats.dates[id].noNum && rel(id) >= 35 && !(fam().partner?.id === id && fam().partner.livesIn) && stats.lastCall[id] !== dayN && (stats.lastCall[id] || 0) < dayN - 1); if (!ids.length) return; // nobody rings you two days running
   const id = pick(ids), d = stats.dates[id]; if (!d?.cfg) return;
   stats.lastCall[id] = dayN; dateCall(id, d);
 }
-function dateCall(id, d) { // ring first, then you're on the call
+function dateCall(id, d) { if (stats.dates?.[id]?.noNum) return; // ring first, then you're on the call
   ringing(d.name, d.cfg, id); const A = audio(); if (A) for (let i = 0; i < 4; i++) sfx.note(i % 2 ? 1180 : 940, A.currentTime + i * 0.18, 0.15, 'square', 0.03, 3000);
   setTimeout(() => { if (state === 'play' && !date) dateCall2(id, d); }, 1700);
 }
@@ -6005,8 +6005,9 @@ function renderPhone() {
     const C = textCtx(id), lastT = T[T.length - 1], waiting = lastT?.me && gameHours() - (lastT.h || 0) < 0.25;
     const topic = lastT && !lastT.me ? (lastT.k !== undefined ? lastT.k : classify(lastT.t)) : null;
     const opts = waiting ? [] : textOptions(C, topic);
-    el.innerHTML = `<button class="ph-back" data-go="msgs">‹ Messages</button><h4>${name}</h4><div class="ph-thread" id="phThr">${T.map(m => `<div class="bub ${m.me ? 'me' : ''}">${m.t}</div>`).join('') || '<p class="ph-hint">No messages yet. Say hi.</p>'}${waiting ? '<div class="bub typing">…</div>' : ''}</div><div class="ph-replies">${opts.map((o, i) => `<button class="ph-mini" data-rep="${i}">${o.t}</button>`).join('')}</div>`;
+    el.innerHTML = `<button class="ph-back" data-go="msgs">‹ Messages</button><h4>${name}</h4>${!isKid && !isP && id.startsWith('date:') ? `<button class="ph-mini ph-block" id="thrBlock">${svg('x', 'sm')} Block number</button>` : ''}<div class="ph-thread" id="phThr">${T.map(m => `<div class="bub ${m.me ? 'me' : ''}">${m.t}</div>`).join('') || '<p class="ph-hint">No messages yet. Say hi.</p>'}${waiting ? '<div class="bub typing">…</div>' : ''}</div><div class="ph-replies">${opts.map((o, i) => `<button class="ph-mini" data-rep="${i}">${o.t}</button>`).join('')}</div>`;
     const thr = $('phThr'); thr.scrollTop = 1e6;
+    if ($('thrBlock')) $('thrBlock').onclick = () => { stats.dates ||= {}; (stats.dates[id] ||= { name }).noNum = true; stats.hideThr ||= {}; stats.hideThr[id] = 1e9; saveGame(); toast(`Blocked ${name}. She can't call or text you any more.`, 2.6); phoneGo('msgs'); };
     el.querySelectorAll('[data-rep]').forEach(b => b.onclick = () => {
       const o = opts[+b.dataset.rep]; textMe(id, 'You', o.t, true); renderPhone();
       setTimeout(() => {
@@ -6017,7 +6018,7 @@ function renderPhone() {
     });
   } else if (phoneApp === 'msgs') {
     const ms = messages();
-    const chatIds = [...new Set([...(fam().partner ? [fam().partner.id] : []), ...Object.keys(stats.texts || {}), ...Object.keys(stats.dates || {}), ...fam().kids.filter(k => ['Teen', 'Adult'].includes(kidStage(k))).map(k => k.id)])];
+    const chatIds = [...new Set([...(fam().partner ? [fam().partner.id] : []), ...Object.keys(stats.texts || {}), ...Object.keys(stats.dates || {}).filter(id => !stats.dates[id].noNum), ...fam().kids.filter(k => ['Teen', 'Adult'].includes(kidStage(k))).map(k => k.id)])];
     const hid = stats.hideThr ||= {};
     const chats = chatIds.filter(id => !(hid[id] != null && (stats.texts?.[id]?.length || 0) <= hid[id])).map(id => { const T = stats.texts?.[id] || [], last = T[T.length - 1]; return `<div class="swr" data-swthr="${id}"><div class="swr-del">Delete</div><button class="ph-row" data-thr="${id}"><span>${svg(id.startsWith('kid:') ? 'smile' : 'heart', 'sm')} <b>${nameOf(id)}</b> <small style="white-space:normal">${last ? (last.me ? 'You: ' : '') + last.t : 'Tap to text'}</small></span></button></div>`; }).join('');
     el.innerHTML = `${back}<h4>Messages</h4>${chats ? `<div class="ph-sec">Chats</div>${chats}<div class="ph-sec">Inbox</div>` : ''}${stats.burner ? `<button class="ph-row" id="msCust"><span>${svg('phone', 'sm')} Burner phone</span><b>${CUST_MODES[custMode()]}</b></button>` : ''}${ms.length ? '<p class="ph-hint">Swipe a message left to delete it.</p>' : '<p class="ph-hint">No messages.</p>'}<div class="ph-list">${ms.map((m, i) => m.main ? `<div class="ph-msg main"><div class="av">${svg(m.av)}</div><div><span class="mainpill">MAIN · ${m.title}</span><b>${m.from}</b><p>${m.text}</p><p class="goal">${svg('flag', 'sm')} ${m.goal}</p>${m.at ? `<button class="ph-mini" data-wp="${i}">${svg('pin', 'sm')} Set waypoint</button>` : ''}</div></div>` : `<div class="swr" data-swmsg="${i}"><div class="swr-del">Delete</div><div class="ph-msg"><div class="av">${svg(m.av)}</div><div><b>${m.from}</b><p>${m.text}</p>${m.at ? `<button class="ph-mini" data-wp="${i}">${svg('pin', 'sm')} Set waypoint</button>` : ''}</div></div></div>`).join('')}</div>`;
@@ -6028,7 +6029,7 @@ function renderPhone() {
     el.querySelectorAll('[data-wp]').forEach(b => b.onclick = () => { const m = ms[+b.dataset.wp]; setWaypoint(m.at.x, m.at.z, m.at.name); toast(m.at.name); closePhone(); });
   } else if (phoneApp === 'contacts') {
     const people = Object.entries(stats.rel).filter(([, v]) => v > 0).sort((a, b) => b[1] - a[1]);
-    el.innerHTML = `${back}<h4>Contacts</h4><p class="ph-hint">Relationships grow when you trade, chat and spend time with people. Friends give better prices, tips and texts.</p>${people.length ? people.map(([id, v]) => { const p = PLACES.find(q => q.id === id); const dt8 = stats.dates?.[id]; return `<div class="ph-row col"><span><b>${dt8?.name || relNames[id] || p?.npcName || (id === 'street' ? 'Street rep' : nameFor(id))}</b> <small>${p ? p.name : id === 'street' ? 'Your customers' : (dt8 ? 'Dating' : id.split(':')[0].replace(/^[a-z]_/, ''))}</small></span>${bar(v, '#ff6fb5')}<small>${relName(v)} · ${Math.round(v)}</small>${p ? `<button class="ph-mini" data-wp="${id}">${svg('pin', 'sm')} Find</button>` : ''}${dt8 && !date ? `<button class="ph-mini" data-call="${id}">${svg('heart', 'sm')} Ask her out</button>` : ''}</div>`; }).join('') : '<p class="ph-hint">No contacts yet. Go talk to people!</p>'}${townHtml()}`;
+    el.innerHTML = `${back}<h4>Contacts</h4><p class="ph-hint">Relationships grow when you trade, chat and spend time with people. Friends give better prices, tips and texts.</p>${people.length ? people.map(([id, v]) => { const p = PLACES.find(q => q.id === id); const dt8 = stats.dates?.[id]; return `<div class="ph-row col"><span><b>${dt8?.name || relNames[id] || p?.npcName || (id === 'street' ? 'Street rep' : nameFor(id))}</b> <small>${p ? p.name : id === 'street' ? 'Your customers' : (dt8 ? 'Dating' : id.split(':')[0].replace(/^[a-z]_/, ''))}</small></span>${bar(v, '#ff6fb5')}<small>${relName(v)} · ${Math.round(v)}</small>${p ? `<button class="ph-mini" data-wp="${id}">${svg('pin', 'sm')} Find</button>` : ''}${dt8 && !dt8.noNum && !date ? `<button class="ph-mini" data-call="${id}">${svg('heart', 'sm')} Ask her out</button>` : ''}</div>`; }).join('') : '<p class="ph-hint">No contacts yet. Go talk to people!</p>'}${townHtml()}`;
     el.querySelectorAll('[data-wp]').forEach(b => b.onclick = () => { const p = PLACES.find(q => q.id === b.dataset.wp); setWaypoint(p.x, p.z, p.name); closePhone(); });
     el.querySelectorAll('[data-call]').forEach(b => b.onclick = () => { const id = b.dataset.call, d = stats.dates[id], r = rel(id); closePhone(); if (r < 30 && Math.random() < 0.5) { toast(`${d.name}: "Sorry, busy tonight!"`, 3); bumpRel(id, 2); return; } toast(`${d.name}: "Omw! Where are you?"`, 3); setTimeout(() => { if (date || inside) return; const look = { ...bakeCfg(d.cfg), fem: true }, a = rand(0, 6.28); startDate({ name: d.name, look, x: P.x + Math.sin(a) * 20, z: P.z + Math.cos(a) * 20, face: 0, interest: 40 + r * 0.6, root: new THREE.Group() }); }, 4000); });
   } else if (phoneApp === 'me') {
@@ -6128,7 +6129,7 @@ function saveGame() {
   store.set('bc_save', save); store.set('bc_arsenal', arsenal); store.set('bc_cars', garage);
 }
 // auto-update: bookmarks and home-screen apps can hold on to an old copy. Check version.json (never cached) and reload once if newer.
-const BUILD = 115;
+const BUILD = 116;
 function checkUpdate() {
   fetch('version.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(j => {
     if (!(j.v > BUILD)) return;
@@ -6440,4 +6441,4 @@ function frame(now) {
 }
 startGame();
 requestAnimationFrame(frame);
-window.__game = { get animals() { return animals; }, crime, WANT, copCars, cops, pitFight, busted, fam, famNewDay, makeOfficial, talkFamily, get dayN() { return dayN; }, set dayN(v) { dayN = v; }, scene: G.scene, cam: G.cam, snap: () => updateCamera(0, true), get state() { return state; }, P, input, get ride() { return ride; }, get myCar() { return myCar; }, get traffic() { return traffic; }, peds, setTime: h => { clockH = h; }, openCustom, enterVehicle, exitCar, get money() { return money; }, set money(v) { money = v; }, openPlace, PLACES, PROPERTIES, runMinigame, get action() { return action; }, arsenal, selectWeapon, openPhone, setWaypoint, get route() { return route; }, talkToPed, talk, doAction, stats, get inside() { return inside; }, enterInterior, exitInterior, get customers() { return customers; }, newCustomer, startEdit, endEdit, get job() { return job; }, gainXP, storage, doSpot, useFurn, phoneGo, talkVenue, talkJob, openPlace, talkCustomer, startJob, openCarShop, damageCar, repairCar, addFire, get fires() { return fires; }, get ems() { return ems; }, get vehicles() { return vehicles; }, makeVehicle, makeCop, prisonFight, life, startDealMeet, get lifeAct() { return lifeAct; }, get train() { return train; }, get trainRide() { return trainRide; }, boardTrain, eventReset: () => { eventOpen = false; }, bodyCheck, attendClass, talkAdmissions, edu, startDance, get dance() { return dance; }, radioSet: i => { radioSet(i); radioOn(true); }, get zoom() { return zoom; }, set zoom(z) { zoom = z; }, DEFAULT_CAR, setState: x => setState(x), get jail() { return stats.jail; }, witness, personOf, dealHeat, trafficStop, carNear, carTop, startDate, talkDate, get date() { return date; }, get carAnim() { return carAnim; }, lifeApi, startShower, bizNewDay, subs, forceWanted, get buddy() { return buddy; }, startBuddy, textMe, toast, levelUp, closePhone, bringCar, useFurn, damageCar, debtorScene, get debtor() { return debtor; }, camBlocked, get camYaw() { return camYaw; }, ev: { evChase, evMug, evRobbery, evGang, evBusk, evCrash, evFire, evMarket, evParade, evProtest, streetEvents } };
+window.__game = { get animals() { return animals; }, crime, WANT, copCars, cops, pitFight, busted, fam, famNewDay, makeOfficial, talkFamily, get dayN() { return dayN; }, set dayN(v) { dayN = v; }, scene: G.scene, cam: G.cam, snap: () => updateCamera(0, true), get state() { return state; }, P, input, get ride() { return ride; }, get myCar() { return myCar; }, get traffic() { return traffic; }, peds, setTime: h => { clockH = h; }, openCustom, enterVehicle, exitCar, get money() { return money; }, set money(v) { money = v; }, openPlace, PLACES, PROPERTIES, runMinigame, get action() { return action; }, arsenal, selectWeapon, openPhone, setWaypoint, get route() { return route; }, talkToPed, talk, doAction, stats, get inside() { return inside; }, enterInterior, exitInterior, get customers() { return customers; }, newCustomer, startEdit, endEdit, get job() { return job; }, gainXP, storage, doSpot, useFurn, phoneGo, talkVenue, talkJob, openPlace, talkCustomer, startJob, openCarShop, damageCar, repairCar, addFire, get fires() { return fires; }, get ems() { return ems; }, get vehicles() { return vehicles; }, makeVehicle, makeCop, prisonFight, life, startDealMeet, get lifeAct() { return lifeAct; }, get train() { return train; }, get trainRide() { return trainRide; }, boardTrain, eventReset: () => { eventOpen = false; }, bodyCheck, attendClass, talkAdmissions, edu, startDance, get dance() { return dance; }, radioSet: i => { radioSet(i); radioOn(true); }, get zoom() { return zoom; }, set zoom(z) { zoom = z; }, DEFAULT_CAR, setState: x => setState(x), get jail() { return stats.jail; }, witness, personOf, dealHeat, trafficStop, carNear, carTop, startDate, endDate, dateCall, addDateContact, get phoneThread() { return phoneThread; }, set phoneThread(v) { phoneThread = v; }, talkDate, get date() { return date; }, get carAnim() { return carAnim; }, lifeApi, startShower, bizNewDay, subs, forceWanted, get buddy() { return buddy; }, startBuddy, textMe, toast, levelUp, closePhone, bringCar, useFurn, damageCar, debtorScene, get debtor() { return debtor; }, camBlocked, get camYaw() { return camYaw; }, ev: { evChase, evMug, evRobbery, evGang, evBusk, evCrash, evFire, evMarket, evParade, evProtest, streetEvents } };
