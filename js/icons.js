@@ -54,6 +54,7 @@ export const ICONS = {
   taco: ['M3 17a9 9 0 0 1 18 0z', 'M6 15c1-2 2-2 3 0 1-2 2-2 3 0 1-2 2-2 3 0 1-2 2-2 3 0'],
   toilet: ['M7 3h6v7H7z', 'M5 10h14a7 7 0 0 1-7 7 7 7 0 0 1-7-7z', 'M9 17l-1 4h8l-1-4'],
   shower: ['M4 21V7a4 4 0 0 1 8 0', 'M9 7h6', 'M10 11l-.5 1.5M13 11v1.5M16 11l.5 1.5M9.5 15l-.5 1.5M13 15v1.5M16.5 15l.5 1.5'],
+  bath: ['M3 12h18v2a5 5 0 0 1-5 5H8a5 5 0 0 1-5-5z', 'M6 12V6a2 2 0 0 1 4 0', 'M7 19l-1 2M17 19l1 2', 'M13 8.5v.01M15.5 7v.01M15 10v.01'],
   drop: ['M12 3c4 5 6.5 8.3 6.5 11.5a6.5 6.5 0 0 1-13 0C5.5 11.3 8 8 12 3z'],
   gift: ['M4 10h16v4H4zM5 14h14v7H5z', 'M12 10v11', 'M12 10c-2-4-6-4-6-1.5S10 10 12 10zM12 10c2-4 6-4 6-1.5S14 10 12 10z'],
   bed: ['M3 19V6M3 14h18v5M21 14v-3a3 3 0 0 0-3-3h-7v6', C(7, 11, 2)],
@@ -88,13 +89,13 @@ export const ICONS = {
   bus: ['M5 3h14a1 1 0 0 1 1 1v13H4V4a1 1 0 0 1 1-1z', 'M4 11h16M8 21v-4M16 21v-4', C(8, 14, 0.8), C(16, 14, 0.8)],
 };
 export function svg(name, cls = '') {
-  const p = ICONS[name] || ICONS.star;
+  const p = ICONS[name] || ICONS.hand || ICONS.chat; // never fall back to a star
   return `<svg viewBox="0 0 24 24" class="ic ${cls}">${p.map(d => `<path d="${d}"/>`).join('')}</svg>`;
 }
 const P2D = new Map();
 export function drawIcon(ctx, name, x, y, size, { stroke = '#fff', width = 2, fill = null } = {}) {
   let paths = P2D.get(name);
-  if (!paths) { paths = (ICONS[name] || ICONS.star).map(d => new Path2D(d)); P2D.set(name, paths); }
+  if (!paths) { paths = (ICONS[name] || ICONS.hand || ICONS.chat).map(d => new Path2D(d)); P2D.set(name, paths); }
   ctx.save(); ctx.translate(x - size / 2, y - size / 2); ctx.scale(size / 24, size / 24);
   ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.lineWidth = width * 24 / size * (size / 24);
   ctx.lineWidth = width; ctx.strokeStyle = stroke;

@@ -1,10 +1,17 @@
 {
   "name": "Bay City",
   "short_name": "Bay City",
+  "id": "./",
   "start_url": "./",
+  "scope": "./",
   "display": "fullscreen",
+  "display_override": ["fullscreen", "standalone"],
   "orientation": "portrait",
   "background_color": "#141a30",
   "theme_color": "#141a30",
-  "icons": [{ "src": "icon.png", "sizes": "512x512", "type": "image/png" }]
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
 }

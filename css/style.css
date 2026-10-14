@@ -726,8 +726,8 @@ body.armory .drag-hint { bottom: calc(60dvh + 6px); }
 #payphone .ppbtns { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 #payphone .ppbtns button { background: #3d4049; color: #fff; border-radius: 14px; padding: 12px; font-weight: 900; text-align: left; display: flex; gap: 8px; align-items: center; border-bottom: 4px solid #1b1c22; }
 #payphone .ppbtns button small { display: block; color: #ffd23f; }
-.fbtn span { max-width: 92%; text-align: center; line-height: 1.05; white-space: nowrap; }
-.fbtn span.xs { white-space: normal; overflow-wrap: anywhere; }
+.fbtn span { max-width: 90%; text-align: center; line-height: 1.05; white-space: normal; overflow-wrap: normal; word-break: keep-all; } /* two-word labels wrap at the space, single words never split */
+.fbtn span.xs { overflow-wrap: anywhere; }
 .fbtn span.sm { font-size: 8.5px; letter-spacing: .01em; }
 .fbtn span.xs { font-size: 7.6px; letter-spacing: 0; }
 /* on foot outside, the weapon button sits in the thumb arc (where Kick used to be): tap to holster/draw, hold for the weapon wheel, ammo shown under the icon */
@@ -737,3 +737,11 @@ body.armory .drag-hint { bottom: calc(60dvh + 6px); }
 #pad.wpnslot #wpnBtn .wicon, #pad.wpnslot #wpnBtn > svg { width: 26px; height: 22px; flex-basis: 100%; }
 #pad.wpnslot #wpnBtn b { font-size: 10px; line-height: 1; } #pad.wpnslot #wpnBtn span { font-size: 9px; line-height: 1; }
 #pad.wpnslot #wpnBtn b.rl { font-size: 7.5px; }
+#a2hs { position: fixed; left: 12px; right: 12px; top: calc(env(safe-area-inset-top) + 10px); z-index: 60; display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 18px; background: rgba(18,16,28,.92); color: #fff; box-shadow: 0 8px 30px rgba(0,0,0,.4); transform: translateY(-140%); transition: transform .4s cubic-bezier(.2,.9,.3,1.1); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+#a2hs.on { transform: none; }
+#a2hs img { width: 44px; height: 44px; border-radius: 11px; flex: none; }
+#a2hs div { flex: 1; display: flex; flex-direction: column; gap: 2px; font-size: 12.5px; line-height: 1.3; }
+#a2hs div b { font-size: 14px; }
+#a2hs .ish { width: 15px; height: 15px; vertical-align: -3px; fill: none; stroke: #4aa3ff; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+#a2hs .pill { flex: none; }
+#a2hs .pill.hot { background: #ff8a2a; border-color: #ff8a2a; color: #1a1208; }

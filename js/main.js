@@ -1,29 +1,30 @@
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=156';
-import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun, partEffects, partPerk } from './gun.js?v=156';
-import { buildCar, computeCarStats, carStatBars, carClass, carPartEffects, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=156';
-import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, STAIRS, unblockPillars, canyonAt, canyonNear, PEAK, SKYWAYS, SKY_Y, skyAt, skyY, rampSeg, windowShader, makeOceanMaterial, WATER_U, WIND_U, METRO, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=156';
-import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=156';
-import { buildPanel, renderStats } from './ui.js?v=156';
-import { Input } from './input.js?v=156';
-import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime, animalCall } from './audio.js?v=156';
-import { runMinigame } from './minigames.js?v=156';
-import { CUT, initCutGames } from './cutgames.js?v=156';
-import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk, setReservedNames, seededLook } from './peds.js?v=156';
-import { citizens, whereNow } from './citizens.js?v=156';
-import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=156';
-import { findRoute } from './nav.js?v=156';
-import { COURSES, CAREERS, QUIZ } from './careers.js?v=156';
-import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=156';
-import { attachWheel } from './wheel.js?v=156';
-import { GROUND_U } from './groundtex.js?v=156';
-import { Animals, makeAnimalMesh } from './animals.js?v=156';
-import { Talk } from './talk.js?v=156';
-import { incomingText, classify, textOptions, textReply } from './texts.js?v=156';
-import { svg, drawIcon } from './icons.js?v=156';
-import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=156';
-import { FURN, CATALOG } from './furniture.js?v=156';
-import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=156';
+import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=157';
+import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun, partEffects, partPerk } from './gun.js?v=157';
+import { buildCar, computeCarStats, carStatBars, carClass, carPartEffects, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=157';
+import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, STAIRS, unblockPillars, canyonAt, canyonNear, PEAK, SKYWAYS, SKY_Y, skyAt, skyY, rampSeg, windowShader, makeOceanMaterial, WATER_U, WIND_U, METRO, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=157';
+import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=157';
+import { buildPanel, renderStats } from './ui.js?v=157';
+import { Input } from './input.js?v=157';
+import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime, animalCall } from './audio.js?v=157';
+import { runMinigame } from './minigames.js?v=157';
+import { CUT, initCutGames } from './cutgames.js?v=157';
+import { initOnline, updateOnline, goOnline, goOffline, NET, onNet, sendMagicLink, signOut, signedIn } from './online.js?v=157';
+import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk, setReservedNames, seededLook } from './peds.js?v=157';
+import { citizens, whereNow } from './citizens.js?v=157';
+import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=157';
+import { findRoute } from './nav.js?v=157';
+import { COURSES, CAREERS, QUIZ } from './careers.js?v=157';
+import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=157';
+import { attachWheel } from './wheel.js?v=157';
+import { GROUND_U } from './groundtex.js?v=157';
+import { Animals, makeAnimalMesh } from './animals.js?v=157';
+import { Talk } from './talk.js?v=157';
+import { incomingText, classify, textOptions, textReply } from './texts.js?v=157';
+import { svg, drawIcon, ICONS as ICON_SET } from './icons.js?v=157';
+import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=157';
+import { FURN, CATALOG } from './furniture.js?v=157';
+import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=157';
 
 const $ = id => document.getElementById(id);
 let inside = null, editMode = false, held = null, pendingCar = false, homeMusic = false, phoneBadge = 0;
@@ -2822,7 +2823,7 @@ function ensureWardrobe() {
 }
 // ---------------- home: furniture use & edit mode
 const FURN_VERB = { outfit: 'Outfits', shower: 'Shower', toilet: 'Use toilet', sleep: 'Sleep', eat: 'Eat', cook: 'Cook', sit: 'Sit', tv: 'Watch TV', read: 'Read', laptop: 'Laptop', lift: 'Lift', run: 'Run', music: 'Music', relax: 'Relax', arcade: 'Play', bath: 'Take a bath', hottub: 'Hot tub', piano: 'Play piano', drink: 'Pour a drink' };
-const FURN_ICON = { outfit: 'shirt', sleep: 'bed', eat: 'fridge', cook: 'food', sit: 'sofa', tv: 'tv', read: 'book', laptop: 'chart', lift: 'dumbbell', run: 'run', music: 'music', relax: 'smile', arcade: 'play' };
+const FURN_ICON = { outfit: 'shirt', sleep: 'bed', eat: 'fridge', cook: 'food', sit: 'sofa', tv: 'tv', read: 'book', laptop: 'chart', lift: 'dumbbell', run: 'run', music: 'music', relax: 'smile', arcade: 'play', toilet: 'toilet', shower: 'shower', bath: 'bath', hottub: 'drop', drink: 'drink', piano: 'music' };
 let useCd = {};
 function advanceTime(h) { const steps = Math.ceil(h * 4); for (let i = 0; i < steps; i++) { const before = clockH; clockH += h / steps; if (clockH >= 24) clockH -= 24; if (before < 6 && clockH >= 6) newDay(); } }
 async function useFurn(item) {
@@ -2897,10 +2898,10 @@ function findAction() {
   if (P.dead) return null;
   if (inside) {
     if (editMode) return null;
-    if (P.sit) return P.sit.tv ? { kind: 'furn', item: P.sit.tv, icon: 'chat', label: 'Watch TV' } : { kind: 'stand', icon: 'run', label: 'Stand up' };
+    if (P.sit) return P.sit.tv ? { kind: 'furn', item: P.sit.tv, icon: 'tv', label: 'Watch TV' } : { kind: 'stand', icon: 'run', label: 'Stand up' };
     let best = null, bd = 1.9;
-    for (const m of inside.marks) { const d = Math.hypot(m.x - P.x, m.z - P.z); if (d < bd) { bd = d; best = { kind: 'spot', spot: m.spot, icon: m.spot.icon === 'chat' ? 'chat' : 'door', label: SPOT_VERB(m.spot) }; } }
-    if (inside.prop) for (const f of inside.h.furn) { const a = FURN[f.t].act; if (!a) continue; const w = inside.h.toWorld(f.x, f.z), d = Math.hypot(w.x - P.x, w.z - P.z) - Math.max(FURN[f.t].w, FURN[f.t].d) / 2 + 0.3; if (d < bd) { bd = d; best = { kind: 'furn', item: f, icon: 'chat', label: FURN_VERB[a] }; } }
+    for (const m of inside.marks) { const d = Math.hypot(m.x - P.x, m.z - P.z); if (d < bd) { bd = d; best = { kind: 'spot', spot: m.spot, icon: m.spot.icon && (ICON_SET[m.spot.icon] || ICONS[m.spot.icon]) ? m.spot.icon : 'door', label: SPOT_VERB(m.spot) }; } }
+    if (inside.prop) for (const f of inside.h.furn) { const a = FURN[f.t].act; if (!a) continue; const w = inside.h.toWorld(f.x, f.z), d = Math.hypot(w.x - P.x, w.z - P.z) - Math.max(FURN[f.t].w, FURN[f.t].d) / 2 + 0.3; if (d < bd) { bd = d; best = { kind: 'furn', item: f, icon: FURN_ICON[a] || 'hand', label: FURN_VERB[a] }; } }
     for (const n of inside.npcs) if (n.fam) { const d = Math.hypot(n.x - P.x, n.z - P.z); if (d < bd) { bd = d; best = { kind: 'fam', n, icon: 'chat', label: n.role === 'spouse' ? 'Talk' : (kidStage(n.fam) === 'Baby' ? 'Hold' : 'Talk') }; } }
     for (const n of inside.npcs) if (n.pr) { const d = Math.hypot(n.x - P.x, n.z - P.z) - 0.4; if (d < bd) { bd = d; best = { kind: 'pnpc', n, icon: 'chat', label: n.role === 'guard' ? 'Guard' : 'Talk' }; } }
     if (P.z > ORIGIN.z + inside.h.d / 2 - 1.6 && Math.abs(P.x - ORIGIN.x) < 1.6) return stats.jail && inside.id === 'prison' ? best : { kind: 'exit', icon: 'exit', label: 'Leave' };
@@ -6333,6 +6334,7 @@ function drawMinimap() {
     if ((WANT.stars && !WANT.seen) || WANT.patrolT > 0) { const [a, b] = toS(WANT.lx, WANT.lz), rr = searchR() / span * R * 2, fl = Math.floor(time * 3) % 2, pat = !WANT.stars; mctx.fillStyle = pat ? 'rgba(42,106,255,.12)' : fl ? 'rgba(255,42,58,.22)' : 'rgba(42,106,255,.22)'; mctx.strokeStyle = pat ? 'rgba(42,106,255,.6)' : fl ? 'rgba(255,42,58,.8)' : 'rgba(42,106,255,.8)'; mctx.lineWidth = 2; if (pat) mctx.setLineDash([6, 5]); mctx.beginPath(); mctx.arc(a, b, rr, 0, 7); mctx.fill(); mctx.stroke(); mctx.setLineDash([]); }
     // police vision cones: always on, so you can see who's watching before a deal
     for (const e of eyes()) { const [a, b] = toS(e[0], e[1]); if (Math.abs(a - CX) > CX + 30 || Math.abs(b - CY) > CY + 30) continue; const rr = e[3] / span * R * 2, ang = Math.atan2(Math.cos(e[2]), Math.sin(e[2])); const g = mctx.createRadialGradient(a, b, 0, a, b, rr); g.addColorStop(0, WANT.stars ? 'rgba(255,60,70,.38)' : 'rgba(80,140,255,.34)'); g.addColorStop(1, 'rgba(80,140,255,0)'); mctx.fillStyle = g; mctx.beginPath(); mctx.moveTo(a, b); mctx.arc(a, b, rr, ang - CONE, ang + CONE); mctx.closePath(); mctx.fill(); }
+    for (const q of NET.list) if (q.x != null && !q.hidden) { const [a, b] = toS(q.x, q.z); mctx.fillStyle = '#4cd964'; mctx.strokeStyle = '#fff'; mctx.lineWidth = 2; mctx.beginPath(); mctx.arc(a, b, 5.5, 0, 7); mctx.fill(); mctx.stroke(); } // other online players
     for (const t of traffic) if (t.police) { const [a, b] = toS(t.rx, t.rz); mctx.fillStyle = '#2a6aff'; mctx.strokeStyle = '#fff'; mctx.lineWidth = 2; mctx.beginPath(); mctx.arc(a, b, 6, 0, 7); mctx.fill(); mctx.stroke(); }
     for (const v of copCars) { const [a, b] = toS(v.s.x, v.s.z); mctx.fillStyle = Math.floor(time * 6) % 2 ? '#ff2a3a' : '#2a6aff'; mctx.beginPath(); mctx.arc(a, b, 7, 0, 7); mctx.fill(); }
     for (const c of cops) { const [a, b] = toS(c.x, c.z); mctx.fillStyle = '#2a6aff'; mctx.fillRect(a - 3, b - 3, 6, 6); }
@@ -6377,7 +6379,7 @@ const BTN_SVG = {
 const btnCache = {};
 function setBtn(id, icon, label) {
   const k = icon + '|' + label; if (btnCache[id] === k) return; btnCache[id] = k;
-  const inner = BTN_SVG[icon] ? `<svg viewBox="0 0 24 24">${BTN_SVG[icon]}</svg>` : icon && icon !== 'none' ? svg(ICONS[icon] || icon, 'btn') : '<svg viewBox="0 0 24 24"></svg>';
+  const inner = BTN_SVG[icon] ? `<svg viewBox="0 0 24 24">${BTN_SVG[icon]}</svg>` : icon && icon !== 'none' ? svg(ICON_SET[ICONS[icon] || icon] ? (ICONS[icon] || icon) : 'hand', 'btn') : '<svg viewBox="0 0 24 24"></svg>';
   const plain = String(label).replace(/<[^>]+>/g, ''), longest = Math.max(0, ...plain.split(/\s+/).map(w => w.length));
   $(id).innerHTML = `${inner}<span class="${longest > 7 ? 'xs' : plain.length > 11 ? 'sm' : ''}">${label}</span>`; // long words shrink to fit the round button
 }
@@ -6534,6 +6536,7 @@ const APPS = [
   ['radio', 'Radio', 'radio', 'linear-gradient(135deg,#ff3b8a,#90205a)'],
   ['azbay', 'AzBay', 'bag', 'linear-gradient(135deg,#ff9f1a,#2f80ed)'],
   ['log', 'My Story', 'book', 'linear-gradient(135deg,#7b3fe4,#2a1a6a)'],
+  ['online', 'Online', 'people', 'linear-gradient(135deg,#4cd964,#1fb5a8)'],
   ['settings', 'Settings', 'gear', 'linear-gradient(135deg,#9aa0aa,#5d636e)'],
 ];
 const mapView = { z: 3, cx: 0, cz: 0, init: false, off: null };
@@ -6771,6 +6774,22 @@ function renderPhone() {
   } else if (phoneApp === 'radio') {
     el.innerHTML = `${back}<h4>Radio</h4><p class="ph-hint">Plays while you drive, or at home on a stereo. In the car, tap the radio button for the radio wheel. Every station has 10 songs.</p>${nowPlaying() ? `<p class="ph-hint"><b>Now playing:</b> ${nowPlaying().title} · ${nowPlaying().artist}</p>` : ''}${STATIONS.map((s, i) => `<button class="ph-row ${radioIndex() === i ? 'on' : ''}" data-st="${i}"><span>${s.name}</span>${radioIndex() === i ? '<b>●</b>' : ''}</button>`).join('')}`;
     el.querySelectorAll('[data-st]').forEach(b => b.onclick = () => { radioSet(+b.dataset.st); radioOn(!!ride || homeMusic); renderPhone(); });
+  } else if (phoneApp === 'online') {
+    const nm = myNetName(), st = NET.status, on = st === 'online' || st === 'connecting', local = NET.local();
+    let acct = '';
+    if (!local) acct = !NET.configured() ? `<p class="ph-hint">Online play is being set up. It switches on as soon as the server is connected.</p>`
+      : signedIn() ? `<div class="ph-row"><span>${svg('user', 'sm')} Signed in as <b>${NET.email}</b></span><button class="ph-mini" data-out>Sign out</button></div>`
+      : `<p class="ph-hint">Sign in with your email. We send you a link: tap it and you're in. No passwords.</p><div class="ph-row"><input id="netEmail" type="email" placeholder="you@email.com" autocomplete="email" style="flex:1;min-width:0;padding:8px 10px;border-radius:10px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.08);color:#fff"><button class="ph-mini" data-link>Send link</button></div>`;
+    el.innerHTML = `${back}<h4>Online</h4><p class="ph-hint">Play in the same Bay City as other testers. You'll see each other walking and driving around.</p>
+      <div class="ph-row"><span>${svg('user', 'sm')} Your name</span><input id="netName" value="${nm.replace(/"/g, '')}" maxlength="16" style="width:120px;padding:6px 8px;border-radius:10px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.08);color:#fff;text-align:right"></div>
+      ${acct}
+      <div class="ph-row"><span><i class="dot" style="display:inline-block;width:9px;height:9px;border-radius:50%;background:${st === 'online' ? '#4cd964' : st === 'connecting' ? '#ffb020' : '#666'}"></i> ${st === 'online' ? `Online · ${NET.count} other${NET.count === 1 ? '' : 's'} here` : st === 'connecting' ? 'Connecting...' : 'Offline'}${local ? ' (local test)' : ''}</span><button class="ph-mini" data-net ${!local && (!NET.configured() || !signedIn()) ? 'disabled' : ''}>${on ? 'Go offline' : 'Go online'}</button></div>
+      ${NET.error ? `<p class="ph-hint" style="color:#ff6a74">${NET.error}</p>` : ''}
+      ${NET.count ? `<div class="ph-sec">Players in town</div>` + NET.list.map(q => `<div class="ph-row"><span>${svg('user', 'sm')} <b>${q.name}</b></span><span>${q.d != null ? Math.round(q.d) + ' m' : ''}</span></div>`).join('') : ''}`;
+    el.querySelector('#netName').onchange = e => { try { localStorage.setItem('bc_name', e.target.value.trim().slice(0, 16) || 'Player'); } catch (err) {} };
+    el.querySelector('[data-net]')?.addEventListener('click', () => { if (on) goOffline(); else goOnline(); renderPhone(); });
+    el.querySelector('[data-out]')?.addEventListener('click', async () => { await signOut(); renderPhone(); });
+    el.querySelector('[data-link]')?.addEventListener('click', async e => { const em = el.querySelector('#netEmail').value.trim(); if (!/^\S+@\S+\.\S+$/.test(em)) { toast('Type your email first'); return; } e.target.disabled = true; e.target.textContent = 'Sending...'; const r = await sendMagicLink(em); toast(r.ok ? `Link sent to ${em}. Open it on this phone.` : `Couldn't send: ${r.error}`, 4); renderPhone(); });
   } else if (phoneApp === 'azbay') { renderAzBay(el, back);
   } else if (phoneApp === 'settings') {
     el.innerHTML = `${back}<h4>Settings</h4>
@@ -6802,7 +6821,7 @@ function saveGame() {
   store.set('bc_save', save); store.set('bc_arsenal', arsenal); store.set('bc_cars', garage);
 }
 // auto-update: bookmarks and home-screen apps can hold on to an old copy. Check version.json (never cached) and reload once if newer.
-const BUILD = 156;
+const BUILD = 157;
 function checkUpdate() {
   fetch('version.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(j => {
     if (!(j.v > BUILD)) return;
@@ -6941,7 +6960,7 @@ function step(dt) { lastDt = dt;
   action = findAction();
   if (woo) { for (const k of ['a', 'b', 'x', 'y']) input.consume(k); if (ride) { ride.s.v = 0; updateVehicles(dt); } updateWoo(dt); } else if (ride) { updateVehicles(dt); P.x = ride.s.x; P.z = ride.s.z; } else if (carAnim) { updateCarAnim(dt); updateVehicles(dt); } else if (dance) { updateDance(dt); } else if (trainRide) { updateVehicles(dt); heroRoot.position.set(P.x, P.y, P.z); if (input.consume('a')) { if (action?.kind === 'trainoff') leaveTrain(); else if (action?.kind === 'metrooff') leaveMetro(); } input.consume('b'); input.consume('x'); input.consume('y'); } else { updateFoot(dt); if (!inside) updateVehicles(dt); }
   if (!inside) {
-    updateTraffic(dt); updateTrafficLights(dt); updateTwoWheelers(dt);
+    updateTraffic(dt); updateTrafficLights(dt); updateTwoWheelers(dt); updateOnline(dt);
     const f = focusPos(), nc = cityNear(f.x, f.z, 30), nb = f.z > sandLine(f.x) - 60 && f.x > -330;
     peds.update(dt, f.x, f.z, nc, nb);
     animals ||= new Animals(dyn, peds, (x, z) => baseY(x, z));
@@ -7155,3 +7174,25 @@ function frame(now) {
 startGame();
 requestAnimationFrame(frame);
 window.__game = { get animals() { return animals; }, crime, WANT, copCars, cops, pitFight, busted, fam, famNewDay, makeOfficial, talkFamily, get dayN() { return dayN; }, set dayN(v) { dayN = v; }, scene: G.scene, cam: G.cam, snap: () => updateCamera(0, true), get state() { return state; }, P, input, get ride() { return ride; }, get myCar() { return myCar; }, get traffic() { return traffic; }, peds, setTime: h => { clockH = h; }, openCustom, enterVehicle, exitCar, get money() { return money; }, set money(v) { money = v; }, openPlace, PLACES, PROPERTIES, runMinigame, get action() { return action; }, arsenal, selectWeapon, openPhone, setWaypoint, get route() { return route; }, talkToPed, talk, doAction, stats, get inside() { return inside; }, enterInterior, exitInterior, get customers() { return customers; }, newCustomer, startEdit, endEdit, get job() { return job; }, gainXP, storage, doSpot, useFurn, phoneGo, talkVenue, talkJob, openPlace, talkCustomer, startJob, openCarShop, damageCar, repairCar, addFire, get fires() { return fires; }, get ems() { return ems; }, get vehicles() { return vehicles; }, makeVehicle, makeCop, prisonFight, life, startDealMeet, get lifeAct() { return lifeAct; }, get train() { return train; }, get trainRide() { return trainRide; }, boardTrain, eventReset: () => { eventOpen = false; }, bodyCheck, attendClass, talkAdmissions, edu, startDance, get dance() { return dance; }, radioSet: i => { radioSet(i); radioOn(true); }, get zoom() { return zoom; }, set zoom(z) { zoom = z; }, DEFAULT_CAR, setState: x => setState(x), get jail() { return stats.jail; }, witness, personOf, dealHeat, trafficStop, carNear, carTop, startDate, playCutT: (k, o) => { setState("mini"); return playCut(k, o || {}).then(r => { setState("play"); window.__cutR = r; return r; }); }, payPhoneT: () => payPhone(), get metro() { return metro; }, METRO, boardMetroT: i => { metro.si = i; metro.stop = 8; metro.s = METRO.stations[i].s; boardMetro(i); }, unblockT: (id, f) => unblockDoors(id, f), get HD() { return HOME_DEFAULTS; }, smashT: () => { const cx = Math.floor(P.x / CHUNK), cz = Math.floor(P.z / CHUNK); let b = null, bd = 1e9; for (let i = -2; i <= 2; i++) for (let j = -2; j <= 2; j++) for (const q of parkedIn(cx + i, cz + j)) { const d = Math.hypot(q.x - P.x, q.z - P.z); if (!q.taken && d < bd) { bd = d; b = q; } } if (!b) return "none"; P.x = b.x + Math.cos(b.rot) * 1.8; P.z = b.z - Math.sin(b.rot) * 1.8; breakIntoParked(b); return "ok"; }, gymT: o => mini("gym", o || {}), openArmoryT: () => openArmory(PLACES.find(q => q.kind === "guns"), null), get rinfo() { return { calls: renderer.info.render.calls, tris: renderer.info.render.triangles, geos: renderer.info.memory.geometries, tex: renderer.info.memory.textures }; }, saveGameT: () => saveGame(), maybePregnantT: (id, t) => maybePregnant(id, t), runEventT: (id, d) => runEventTalk(EVENT_BY_ID[id], d || {}, { name: 'Tester', tag: 'Test', cfg: null }, null), get pet() { return pet; }, CIT: () => CIT(), citizenRecord: c => citizenRecord(c), get town() { return town(); }, get ownedT() { return owned; }, openGunsmithT: (s, p, n) => openGunsmith(s, p, n), ambient, get ambEl() { return ambEl; }, openTradeT: p => openTrade(p), get stashT() { return stash; }, startWooT: (k, b) => startWoo(k, b), get woo() { return woo; }, endDate, dateCall, addDateContact, get phoneThread() { return phoneThread; }, set phoneThread(v) { phoneThread = v; }, talkDate, get date() { return date; }, get carAnim() { return carAnim; }, lifeApi, startShower, bizNewDay, subs, forceWanted, get buddy() { return buddy; }, startBuddy, textMe, toast, levelUp, closePhone, bringCar, useFurn, damageCar, debtorScene, get debtor() { return debtor; }, camBlocked, get camYaw() { return camYaw; }, ev: { evChase, evMug, evRobbery, evGang, evBusk, evCrash, evFire, evMarket, evParade, evProtest, streetEvents } };
+
+// ================================================================ install as an app (Add to Home Screen)
+if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('sw.js').catch(() => {});
+{ const standalone = matchMedia('(display-mode: standalone), (display-mode: fullscreen)').matches || navigator.standalone, ios = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  let deferred = null; const seen = () => { try { return localStorage.getItem('bc_a2hs'); } catch (e) { return '1'; } }, mark = v => { try { localStorage.setItem('bc_a2hs', v); } catch (e) {} };
+  const card = (html, btns) => { const el = document.createElement('div'); el.id = 'a2hs'; el.innerHTML = `<img src="icon-180.png" alt=""><div><b>Play Bay City like an app</b><span>${html}</span></div>${btns}`; document.body.appendChild(el); requestAnimationFrame(() => el.classList.add('on')); return el; };
+  const close = el => { el.classList.remove('on'); setTimeout(() => el.remove(), 400); };
+  addEventListener('beforeinstallprompt', e => { e.preventDefault(); deferred = e; });
+  if (!standalone && !seen() && !location.search.includes('test')) setTimeout(() => {
+    if (state !== 'play') return;
+    if (deferred) { const el = card('Full screen, its own icon, opens straight into the game.', '<button class="pill hot" data-i>Install</button><button class="pill" data-x>Later</button>'); el.querySelector('[data-i]').onclick = async () => { deferred.prompt(); await deferred.userChoice.catch(() => {}); mark('1'); close(el); }; el.querySelector('[data-x]').onclick = () => { mark('later'); close(el); }; }
+    else if (ios) { const el = card('Tap <b>Share</b> <svg viewBox="0 0 24 24" class="ish"><path d="M12 3v12M7 8l5-5 5 5M5 12v8h14v-8"/></svg> at the bottom of Safari, then <b>Add to Home Screen</b>.', '<button class="pill" data-x>Got it</button>'); el.querySelector('[data-x]').onclick = () => { mark('1'); close(el); }; }
+  }, 25000);
+}
+
+// ================================================================ online play hookup
+function myNetName() { try { return localStorage.getItem('bc_name') || 'Player'; } catch (e) { return 'Player'; } }
+{ let lastCfg = '', lastRide = null;
+  initOnline({ dyn, buildCharacter, buildCar, poseCharacter, toast, myName: myNetName, charCfg: () => charCfg,
+    state: () => { const f = ride ? ride.s : P, ck = JSON.stringify(charCfg), cfgChanged = ck !== lastCfg, rideChanged = ride !== lastRide; lastCfg = ck; lastRide = ride;
+      return { x: f.x, y: ride ? (ride.s.y || 0) : P.y, z: f.z, face: ride ? ride.s.h : P.face, speed: ride ? Math.abs(ride.s.v) : Math.hypot(P.kx || 0, P.kz || 0) || (input.stick.m * 5), ride: ride && !ride.b.two ? ride : ride, inside: !!inside, cfgChanged, rideChanged }; } });
+  onNet(() => { if (state === 'phone' && phoneApp === 'online') renderPhone(); }); }
