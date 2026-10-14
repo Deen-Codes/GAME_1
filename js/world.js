@@ -1,5 +1,6 @@
 // Open-world map: layout, deterministic generation, colliders, chunk meshing and minimap.
 import * as THREE from '../lib/three.module.min.js';
+import { groundMaterial, GT } from './groundtex.js?v=118';
 
 export const WORLD = { x0: -560, x1: 800, z0: -800, z1: 520 };
 export const CHUNK = 64;
@@ -139,6 +140,15 @@ export function groundColor(x, z, out = tmpC) {
   return out;
 }
 
+// which detail texture the ground uses here (matches groundColor)
+export function groundType(x, z) {
+  if (z > sandLine(x) - 6) return GT.sand;
+  if (x < -312) return GT.forest;
+  if (inR(AIRPORT, x, z)) return GT.grass;
+  if (cityAt(x, z, 4)) return GT.grass;
+  for (const r of FIELDS) if (inR(r, x, z)) return GT.crops;
+  return GT.grass;
+}
 // ---------------- world data
 const chunks = new Map();     // key -> { objs: [] }
 const colGrid = new Map();    // key -> colliders
@@ -639,6 +649,8 @@ export const MATS = {
   sign: new THREE.MeshStandardMaterial({ vertexColors: true, emissive: '#ffffff', emissiveIntensity: 0.15, roughness: 0.4 }),
   pool: new THREE.MeshBasicMaterial({ vertexColors: true, map: radialTex(), transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false }),
 };
+// the ground (terrain, roads, pavements, lawns) gets world-space detail textures: grass blades, sand grain, slab joints, asphalt aggregate, crop rows
+MATS.ground = groundMaterial(MATS.solid);
 
 // Interior-mapped windows: each window pane ray-casts into a fake room (walls, floor, ceiling, furniture,
 // people, curtains), so you see into it with real parallax as the camera moves. Every room is different and
@@ -768,7 +780,7 @@ export function windowShader(sh) {
 const _a = new THREE.Vector3(), _b = new THREE.Vector3(), _n = new THREE.Vector3();
 class GB {
   constructor() { this.sets = {}; }
-  S(k) { return this.sets[k] || (this.sets[k] = { p: [], n: [], c: [], uv: [] }); }
+  S(k) { return this.sets[k] || (this.sets[k] = { p: [], n: [], c: [], uv: [], gt: [] }); }
   tri(k, v0, v1, v2, color, center, uv) {
     _a.set(v1[0] - v0[0], v1[1] - v0[1], v1[2] - v0[2]); _b.set(v2[0] - v0[0], v2[1] - v0[1], v2[2] - v0[2]);
     _n.crossVectors(_a, _b).normalize();
@@ -779,6 +791,7 @@ class GB {
     const s = this.S(k), cc = col(color);
     for (const v of [v0, v1, v2]) { s.p.push(v[0], v[1], v[2]); s.n.push(_n.x, _n.y, _n.z); s.c.push(cc.r, cc.g, cc.b); }
     if (uv) for (const u of uv) s.uv.push(u[0], u[1]); else s.uv.push(0, 0, 0, 0, 0, 0);
+    if (k === 'ground') { const g = this.gt || GT.auto; s.gt.push(g, g, g); }
   }
   quad(k, v0, v1, v2, v3, color, center, uv) {
     this.tri(k, v0, v1, v2, color, center, uv && [uv[0], uv[1], uv[2]]);
@@ -858,6 +871,7 @@ class GB {
       g.setAttribute('normal', new THREE.Float32BufferAttribute(s.n, 3));
       g.setAttribute('color', new THREE.Float32BufferAttribute(s.c, 3));
       g.setAttribute('uv', new THREE.Float32BufferAttribute(s.uv, 2));
+      if (k === 'ground') g.setAttribute('gtype', new THREE.Float32BufferAttribute(s.gt, 1));
       g.computeBoundingSphere();
       const m = new THREE.Mesh(g, MATS[k]);
       m.castShadow = k === 'solid' || k === 'win'; m.receiveShadow = k !== 'pool';
@@ -871,7 +885,7 @@ class GB {
 function drawObj(o, B) {
   const r = mkRng(hash(o.x * 10 | 0, o.z * 10 | 0, 99));
   switch (o.t) {
-    case 'slab': B.box(o.x, o.y || 0, o.z, o.w, o.h, o.d, o.col); break;
+    case 'slab': B.gt = GT.auto; B.box(o.x, o.y || 0, o.z, o.w, o.h, o.d, o.col, { topKey: 'ground' }); break;
     case 'paint': if (o.col) B.flat(o.x, o.y ?? 0.19, o.z, o.w, o.d, o.col); break;
     case 'bld': {
       const y0 = 0.15 + (o.y || 0);
@@ -1028,16 +1042,16 @@ function drawObj(o, B) {
 
 function buildTerrain(cx, cz, B) {
   const N = 16, S = CHUNK / N, x0 = cx * CHUNK, z0 = cz * CHUNK;
-  const hs = [], cs = [];
+  const hs = [], cs = [], gts = [];
   for (let j = 0; j <= N; j++) for (let i = 0; i <= N; i++) {
     const x = x0 + i * S, z = z0 + j * S;
-    hs.push(groundH(x, z)); cs.push('#' + groundColor(x, z).getHexString());
+    hs.push(groundH(x, z)); cs.push('#' + groundColor(x, z).getHexString()); gts.push(groundType(x + S / 2, z + S / 2));
   }
   const V = (i, j) => [x0 + i * S, hs[j * (N + 1) + i], z0 + j * S];
   for (let j = 0; j < N; j++) for (let i = 0; i < N; i++) {
     const c = cs[j * (N + 1) + i];
     const a = V(i, j), b = V(i + 1, j), d = V(i, j + 1), e = V(i + 1, j + 1), ctr = [a[0] + S / 2, -100, a[2] + S / 2];
-    B.tri('solid', a, d, b, c, ctr); B.tri('solid', b, d, e, cs[(j + 1) * (N + 1) + i + 1], ctr);
+    B.gt = gts[j * (N + 1) + i]; B.tri('ground', a, d, b, c, ctr); B.tri('ground', b, d, e, cs[(j + 1) * (N + 1) + i + 1], ctr);
   }
   // roads clipped to this chunk
   const cx1 = x0 + CHUNK, cz1 = z0 + CHUNK;
@@ -1045,7 +1059,8 @@ function buildTerrain(cx, cz, B) {
     const ax0 = Math.max(r.x0, x0), ax1 = Math.min(r.x1, cx1), az0 = Math.max(r.z0, z0), az1 = Math.min(r.z1, cz1);
     if (ax0 >= ax1 || az0 >= az1) continue;
     const col2 = r.dirt ? '#a8865a' : '#4b4b53';
-    if (r.city) { B.flat((ax0 + ax1) / 2, 0.04, (az0 + az1) / 2, ax1 - ax0, az1 - az0, col2); continue; }
+    B.gt = r.dirt ? GT.dirt : GT.asphalt;
+    if (r.city) { B.flat((ax0 + ax1) / 2, 0.04, (az0 + az1) / 2, ax1 - ax0, az1 - az0, col2, 'ground'); continue; }
     // country roads follow the hills: a strip of quads with per-corner heights
     const along = r.axis === 'z', L0 = along ? az0 : ax0, L1 = along ? az1 : ax1, step = 4;
     const C0 = along ? ax0 : az0, C1 = along ? ax1 : az1, nAc = Math.max(1, Math.ceil((C1 - C0) / 3));
@@ -1055,7 +1070,7 @@ function buildTerrain(cx, cz, B) {
       for (let k = 0; k < nAc; k++) {
         const u0 = C0 + (C1 - C0) * k / nAc, u1 = C0 + (C1 - C0) * (k + 1) / nAc;
         const A = pt(u0, t), Bq = pt(u1, t), C2 = pt(u1, t2), D2 = pt(u0, t2);
-        B.quad('solid', A, Bq, C2, D2, col2, [(A[0] + C2[0]) / 2, -100, (A[2] + C2[2]) / 2]);
+        B.quad('ground', A, Bq, C2, D2, col2, [(A[0] + C2[0]) / 2, -100, (A[2] + C2[2]) / 2]);
       }
     }
   }
