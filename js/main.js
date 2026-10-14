@@ -1,26 +1,26 @@
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=122';
-import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=122';
-import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=122';
-import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=122';
-import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=122';
-import { buildPanel, renderStats } from './ui.js?v=122';
-import { Input } from './input.js?v=122';
-import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime, animalCall } from './audio.js?v=122';
-import { runMinigame } from './minigames.js?v=122';
-import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk, setReservedNames } from './peds.js?v=122';
-import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=122';
-import { findRoute } from './nav.js?v=122';
-import { COURSES, CAREERS, QUIZ } from './careers.js?v=122';
-import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=122';
-import { attachWheel } from './wheel.js?v=122';
-import { Animals } from './animals.js?v=122';
-import { Talk } from './talk.js?v=122';
-import { incomingText, classify, textOptions, textReply } from './texts.js?v=122';
-import { svg, drawIcon } from './icons.js?v=122';
-import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=122';
-import { FURN, CATALOG } from './furniture.js?v=122';
-import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=122';
+import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=123';
+import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun, partEffects, partPerk } from './gun.js?v=123';
+import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=123';
+import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=123';
+import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=123';
+import { buildPanel, renderStats } from './ui.js?v=123';
+import { Input } from './input.js?v=123';
+import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime, animalCall } from './audio.js?v=123';
+import { runMinigame } from './minigames.js?v=123';
+import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk, setReservedNames } from './peds.js?v=123';
+import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=123';
+import { findRoute } from './nav.js?v=123';
+import { COURSES, CAREERS, QUIZ } from './careers.js?v=123';
+import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=123';
+import { attachWheel } from './wheel.js?v=123';
+import { Animals } from './animals.js?v=123';
+import { Talk } from './talk.js?v=123';
+import { incomingText, classify, textOptions, textReply } from './texts.js?v=123';
+import { svg, drawIcon } from './icons.js?v=123';
+import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=123';
+import { FURN, CATALOG } from './furniture.js?v=123';
+import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=123';
 
 const $ = id => document.getElementById(id);
 let inside = null, editMode = false, held = null, pendingCar = false, homeMusic = false, phoneBadge = 0;
@@ -157,7 +157,7 @@ function previewLayout() { const c = pv.cam; c.aspect = W / H; c.clearViewOffset
 function updatePreview(dt, t) {
   if (pv.dirty) rebuildPreview();
   const m = previewMode;
-  if (!dragging) { pv.rot += pv.vel * dt; pv.vel = damp(pv.vel, m === 'carshop' ? 0.4 : 0, 2, dt); }
+  if (!dragging) { pv.rot += pv.vel * dt; pv.vel = damp(pv.vel, m === 'carshop' || m === 'gun' || m === 'car' ? 0.35 : 0, 2, dt); }
   pv.gunStand.visible = m === 'gun'; pv.carStand.visible = m === 'car' || m === 'carshop'; pv.turn.visible = !pv.gunStand.visible && !pv.carStand.visible;
   const aspect = W / H, h = pv.char.height;
   let focus, dist;
@@ -1196,7 +1196,7 @@ function shoot(origin, aimAng) {
     const a = (aimAng ?? P.face) + (Math.random() - 0.5) * s.spread * DEG * (1 + P.recoil);
     let m = bpool.pop(); if (!m) m = new THREE.Mesh(bgeo, new THREE.MeshBasicMaterial());
     m.material.color.set(s.tracer); m.position.copy(tmpV); m.rotation.set(0, a, 0); dyn.add(m);
-    bullets.push({ x: tmpV.x, y: tmpV.y, z: tmpV.z, vx: Math.sin(a) * s.speed, vz: Math.cos(a) * s.speed, life: s.range / s.speed, m, ammo: s.ammo, slot: arsenal.cur });
+    bullets.push({ x: tmpV.x, y: tmpV.y, z: tmpV.z, vx: Math.sin(a) * s.speed, vz: Math.cos(a) * s.speed, life: s.range / s.speed, m, ammo: s.ammo, slot: arsenal.cur, dmg: s.dmg });
   }
   am().mag--; P.recoil = Math.min(1, P.recoil + s.recoil * 0.5); shake = Math.max(shake, s.recoil * 0.1);
   flash(tmpV, (s.quiet ? 0.4 : 0.8) * (0.8 + s.dmg / 80), s.energy ? s.tracer : '#ffffff', s.quiet ? 3 : 8);
@@ -1213,9 +1213,9 @@ function updateBullets(dt) {
       b.x += b.vx * dt / steps; b.z += b.vz * dt / steps;
       if (solidPoint(b.x, b.z, b.y)) dead = true;
       for (const t of traffic) if (Math.hypot(t.rx - b.x, t.rz - b.z) < 1.6 && b.y < 2) { dead = true; t.stun = 3; }
-      if (!dead) for (const v of vehicles) if ((b.cop ? v === ride : v !== ride) && Math.hypot(v.s.x - b.x, v.s.z - b.z) < Math.max(1.2, v.b.length * 0.45) && b.y < 2) { dead = true; damageCar(v, 4, b.x, b.z); break; }
+      if (!dead) for (const v of vehicles) if ((b.cop ? v === ride : v !== ride) && Math.hypot(v.s.x - b.x, v.s.z - b.z) < Math.max(1.2, v.b.length * 0.45) && b.y < 2) { dead = true; damageCar(v, 4 * clamp((b.dmg || 24) / 24, 0.5, 4) * (b.ammo === 'ap' ? 2.2 : 1), b.x, b.z); if (b.ammo === 'incendiary' && Math.random() < 0.08) addFire(v.s.x, v.s.z); break; } /* armour piercing chews through cars; incendiary can set them alight */
       for (const p of peds.list) if (p.state !== 'down' && Math.hypot(p.x - b.x, p.z - b.z) < 0.6) {
-        if (b.cop) continue; dead = true; const d = Math.hypot(b.vx, b.vz); if (peds.knock(p, b.vx / d, b.vz / d, 4)) { p.injured = true; p.t = 40; } crime(p.kind === 'cop' ? 2 : 1); witness('gun', P.x, P.z, p); peds.scare(p.x, p.z, 20); gainXP('gun_' + b.slot, 3);
+        if (b.cop) continue; dead = true; const d = Math.hypot(b.vx, b.vz); if (peds.knock(p, b.vx / d, b.vz / d, 4)) { p.injured = true; p.t = 40; } if (b.ammo === 'frost') p.frostT = 4; if (b.ammo === 'incendiary') spawnParticles(p.x, 1.2, p.z, ['#ffb02e', '#ff5a1f', '#ffe08a'], 10, 1.5, 0.8, 0.12, 2); crime(p.kind === 'cop' ? 2 : 1); witness('gun', P.x, P.z, p); peds.scare(p.x, p.z, 20); gainXP('gun_' + b.slot, 3);
         spawnParticles(b.x, b.y, b.z, ['#ffffff', '#ffd23f'], 4, 2, 0.3, 0.08); if (Math.random() < 0.5) dropCash(p.x, p.z, 5 + Math.floor(Math.random() * 30)); break;
       }
       if (dead) {
@@ -3330,11 +3330,10 @@ async function talkGuns(p, n) {
     const c = await talk.choose([I('gun', 'Weapons & ammo'), I('wrench', 'Customise a gun'), I('target', 'How does the range work?'), I('x', 'Leave')]);
     if (c === 0) { const v = await openGunStore(p); if (v) bumpRel(n.relId, v / 500); await talk.say(pick(['Stay safe out there.', 'Good choice.', 'Anything else?'])); }
     else if (c === 1) {
-      const guns = arsenal.owned.filter(id => SLOT[id].kind === 'gun');
-      if (!guns.length) { await talk.say("You don't own a gun I can work on. Buy one first."); continue; }
-      await talk.say('Which piece are we working on?');
-      const k = await talk.choose([...guns.map(id => `${iconSVG(id, 'sm')} ${arsenal.cfg[id].name || SLOT[id].name}`), I('x', 'Never mind')]);
-      if (k < guns.length) { talk.end(); openGunsmith(guns[k], p); return; }
+      const guns = SLOTS.filter(s2 => s2.kind === 'gun').map(s2 => s2.id);
+      await talk.say('Which piece are we working on? You can try any of them on the bench first.');
+      const k = await talk.choose([...guns.map(id => arsenal.owned.includes(id) ? `${iconSVG(id, 'sm')} ${arsenal.cfg[id].name || SLOT[id].name} <small>Lvl ${lvl('gun_' + id)}</small>` : `${iconSVG(id, 'sm')} ${SLOT[id].name} <small>try it · ${fmt(SLOT[id].price)}</small>`), I('x', 'Never mind')]);
+      if (k < guns.length) { talk.end(); openGunsmith(guns[k], p, !arsenal.owned.includes(guns[k])); return; }
     }
     else if (c === 2) await talk.say("Fifteen bucks a session. Equip a gun, step up to the lane. Every hit makes you better with that gun: tighter aim, faster reloads.");
     else { await talk.say('Come back soon.'); break; }
@@ -6351,7 +6350,7 @@ function saveGame() {
   store.set('bc_save', save); store.set('bc_arsenal', arsenal); store.set('bc_cars', garage);
 }
 // auto-update: bookmarks and home-screen apps can hold on to an old copy. Check version.json (never cached) and reload once if newer.
-const BUILD = 122;
+const BUILD = 123;
 function checkUpdate() {
   fetch('version.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(j => {
     if (!(j.v > BUILD)) return;
@@ -6511,7 +6510,7 @@ const input = new Input();
 input.bindTouch({ zone: $('stickZone'), base: $('stickBase'), knob: $('stickKnob'), canvas, buttons: { a: $('btnA'), b: $('btnB'), x: $('btnX'), y: $('btnY') } });
 function show(id, on) { $(id).classList.toggle('hidden', !on); }
 const CUSTOM_STATES = ['char', 'gun', 'car', 'clothes', 'barber', 'carshop'];
-function setState(s) { if (s === 'talk') subs.stop(); /* a conversation replaces what's on screen; other screens just pause the queue */
+function setState(s) { if (s === 'talk') subs.stop(); if (s !== 'play') setTimeout(stackTabs, 60); /* a conversation replaces what's on screen; other screens just pause the queue */
   state = s;
   show('custom', CUSTOM_STATES.includes(s));
   show('hud', s === 'play' || s === 'ui' || s === 'phone'); show('pad', s === 'play');
@@ -6532,7 +6531,7 @@ const MOD_BASE = { tyres: 600, wheels: 900, wheelSize: 500, suspension: 700, fro
 function modPrice(k, v) { return MOD_PRICES[k]?.[v] ?? MOD_BASE[k] ?? 0; }
 function shopPrice() {
   if (!shop) return 0;
-  if (shop.kind === 'gun') { let t = 0; for (const k of Object.keys(pvGunCfg)) if (pvGunCfg[k] !== shop.orig[k]) t += SMITH_PRICES[k] ?? 100; return t; }
+  if (shop.kind === 'gun') { let t = shop.newGun ? SLOT[shop.slot].price : 0; for (const k of Object.keys(pvGunCfg)) if (pvGunCfg[k] !== shop.orig[k]) t += SMITH_PRICES[k] ?? 100; return t; }
   if (shop.kind === 'mods') { let t = 0; for (const k of Object.keys(carCfg)) if (carCfg[k] !== shop.orig[k]) t += modPrice(k, carCfg[k]); return Math.round(t * (hasDegree('mechanics') ? 0.8 : 1)); }
   if (shop.kind === 'carshop') { const p = CAR_PRICES[pvCarCfg.body]; return Math.round(p * (rel(shop.relId) >= 40 ? 0.9 : 1)); }
   let total = shop.outfit ? shop.outfit.price : 0;
@@ -6583,27 +6582,44 @@ function openShop(kind, place) {
   $('stats').innerHTML = `<div class="statx">${kind === 'barber' ? `Cut ${fmt(BARBER_PRICES.hair)} · Colour ${fmt(BARBER_PRICES.hairColor)} · Beard ${fmt(BARBER_PRICES.facialHair)}` : `${STYLE_NAMES[place.style]} · pick an outfit, then tweak colours (${fmt(15)}) and extras (${fmt(30)}). New clothes boost your mood and Charm.`}</div>`;
   pv.dirty = true; updateShopPrice();
 }
-function openGunsmith(slot, place) {
-  shop = { kind: 'gun', slot, place, orig: { ...arsenal.cfg[slot] } };
-  pvGunCfg = { ...arsenal.cfg[slot] }; previewCfg = null;
+// Call of Duty style gunsmith: spin the gun, every attachment shows what it does, better parts unlock as you level the gun up
+const PART_KEYS = ['barrel', 'muzzle', 'stock', 'grip', 'magazine', 'sight', 'under', 'ammo'];
+function partUnlock(slot, key, val) {
+  if (!GUN_SKILL_SLOTS.includes(slot) || !PART_KEYS.includes(key)) return 0;
+  const i = Object.keys(PARTS[key]).indexOf(val); const need = i < 2 ? 1 : Math.min(12, 2 + (i - 2) * 2);
+  return lvl('gun_' + slot) >= need || shop?.orig?.[key] === val ? 0 : need;
+}
+function smithSchemaRich(slot) {
+  return smithSchema(slot).map(t => ({ ...t, items: t.items.map(it => {
+    if (it.type !== 'choice' || !(PART_KEYS.includes(it.key) || it.key === 'finish')) return it;
+    return { ...it, decorate: val => { const lock = partUnlock(slot, it.key, val), perk = partPerk(val), fx = it.key === 'finish' ? [] : partEffects(it.key, val);
+      return { fx, note: !fx.length ? (perk || (it.key === 'finish' ? 'Cosmetic' : 'Balanced')) : null, lock, price: shop?.orig?.[it.key] === val ? 'Fitted' : fmt(SMITH_PRICES[it.key] ?? 100) }; },
+      onLocked: (val, need) => { sfx.fail?.(); toast(`${PARTS[it.key][val].label} unlocks at ${SLOT[slot].name} level ${need}. Get kills or train at the range.`, 3); } };
+  }) }));
+}
+function openGunsmith(slot, place, newGun = false) {
+  const cfg0 = arsenal.cfg[slot] || { ...DEFAULT_CFGS[slot] };
+  shop = { kind: 'gun', slot, place, newGun, orig: { ...cfg0 } };
+  pvGunCfg = { ...cfg0 }; previewCfg = null;
   setState('gun');
-  $('customTitle').textContent = `${SLOT[slot].name} · ${place.name}`; $('randBtn').classList.add('buy');
+  $('customTitle').textContent = `${newGun ? 'Try out · ' : ''}${SLOT[slot].name} · ${GUN_SKILL_SLOTS.includes(slot) ? `Lvl ${lvl('gun_' + slot)}` : place.name}`; $('randBtn').classList.add('buy');
   $('presets').innerHTML = '';
-  panel = buildPanel({ tabsEl: $('tabs'), contentEl: $('content'), schema: smithSchema(slot), getCfg: () => pvGunCfg, onChange: (k, v) => { pvGunCfg[k] = v; if (k === 'receiver') { pvGunCfg.fireMode = RECEIVERS[v].mode; panel.refresh(); } pv.dirty = true; gunStatsPanel(); updateShopPrice(); } });
+  panel = buildPanel({ tabsEl: $('tabs'), contentEl: $('content'), schema: smithSchemaRich(slot), getCfg: () => pvGunCfg, onChange: (k, v) => { pvGunCfg[k] = v; if (k === 'receiver') { pvGunCfg.fireMode = RECEIVERS[v].mode; panel.refresh(); } pv.dirty = true; gunStatsPanel(); updateShopPrice(); } });
   pv.dirty = true; gunStatsPanel(); updateShopPrice();
 }
+function stackTabs() { requestAnimationFrame(() => { const h = $('stats').offsetHeight; $('tabs').style.top = h ? (h - 10) + 'px' : ''; }); } // tabs stick just under the pinned stats
 function gunStatsPanel() {
-  const s = computeStats(pvGunCfg);
-  const notes = [`DPS <b>${Math.round(s.dps)}</b>`, { semi: 'Semi-auto', burst: '3-round burst', auto: 'Full auto' }[s.mode]];
-  if (s.pellets > 1) notes.push(`${s.pellets} pellets`); notes.push(PARTS.ammo[s.ammo].label);
-  renderStats($('stats'), statBars(s), notes.join(' · ') + ' · parts from $120, paint $40');
+  const s = computeStats(pvGunCfg), s0 = computeStats(shop?.orig || pvGunCfg), dd = Math.round(s.dps - s0.dps);
+  const notes = [`DPS <b>${Math.round(s.dps)}</b>${dd ? ` <b style="color:${dd > 0 ? '#5cf08a' : '#ff6b78'}">${dd > 0 ? '+' : ''}${dd}</b>` : ''}`, { semi: 'Semi-auto', burst: '3-round burst', auto: 'Full auto' }[s.mode]];
+  if (s.pellets > 1) notes.push(`${s.pellets} pellets`); notes.push(PARTS.ammo[s.ammo].label); if (s.quiet) notes.push('Suppressed');
+  stackTabs(); renderStats($('stats'), statBars(s), notes.join(' · ') + (shop?.newGun ? ` · gun ${fmt(SLOT[shop.slot].price)} + parts` : ' · drag the gun to spin it'), statBars(s0));
 }
 function updateShopPrice() { const p = shopPrice(); $('randBtn').textContent = p ? `Buy ${fmt(p)}` : 'Buy'; $('randBtn').disabled = !p; }
 function changed() {
   store.set('rr_char', stats.jail?.outfit || stats.escaped || charCfg); store.set('bc_cars', garage);
   pv.dirty = true;
-  if (state === 'car') { renderStats($('stats'), carStatBars(computeCarStats(carCfg)), `Engine <b>${CAR_PARTS.engine[carCfg.engine].label}</b> · Tyres <b>${CAR_PARTS.tyres[carCfg.tyres].label}</b> · Back cancels unpaid changes`); updateShopPrice(); }
-  else if (state === 'char') $('stats').innerHTML = `<div class="statx">Body and face are free. Visit barbers for hair and clothing stores for outfits.</div>`;
+  if (state === 'car') { stackTabs(); renderStats($('stats'), carStatBars(computeCarStats(carCfg)), `Engine <b>${CAR_PARTS.engine[carCfg.engine].label}</b> · Tyres <b>${CAR_PARTS.tyres[carCfg.tyres].label}</b> · Back cancels unpaid changes`); updateShopPrice(); }
+  else if (state === 'char') { stackTabs(); } if (state === 'char') $('stats').innerHTML = `<div class="statx">Body and face are free. Visit barbers for hair and clothing stores for outfits.</div>`;
 }
 $('backBtn').onclick = () => {
   const wasCar = state === 'car';
@@ -6620,7 +6636,7 @@ $('randBtn').onclick = () => {
     const price = shopPrice(); if (!price) return;
     if (money < price) { sfx.fail(); toast(`You need ${fmt(price - money)} more`); return; }
     spend(price);
-    if (shop.kind === 'gun') { arsenal.cfg[shop.slot] = { ...pvGunCfg }; shop.orig = { ...pvGunCfg }; saveGame(); toast('Work done. Looks mean.'); updateShopPrice(); return; }
+    if (shop.kind === 'gun') { const nw = shop.newGun; arsenal.cfg[shop.slot] = { ...pvGunCfg }; shop.orig = { ...pvGunCfg }; if (nw) { shop.newGun = false; if (!arsenal.owned.includes(shop.slot)) arsenal.owned.push(shop.slot); const st = slotStats(shop.slot, pvGunCfg); arsenal.ammo[shop.slot] = { mag: st.mag || 0, res: (st.mag || 0) * 3 }; $('customTitle').textContent = `${SLOT[shop.slot].name} · Lvl ${lvl('gun_' + shop.slot)}`; } saveGame(); toast(nw ? `${pvGunCfg.name || SLOT[shop.slot].name} is yours. Built your way.` : 'Work done. Looks mean.'); sfx.coin(); gunStatsPanel(); panel.refresh(); updateShopPrice(); return; }
     if (shop.kind === 'mods') { shop.orig = { ...carCfg }; store.set('bc_cars', garage); saveGame(); gainXP('driving', Math.round(price / 200)); toast('Bay Customs: work done. She looks great.'); sfx.coin(); updateShopPrice(); return; }
     if (shop.kind === 'carshop') { garage.cars.push({ ...DEFAULT_CAR, ...pvCarCfg }); garage.active = garage.cars.length - 1; store.set('bc_cars', garage); bumpRel(shop.relId, 10, false); if (ride === myCar) exitCar(); rebuildMyCar({ x: inside.back.x, z: inside.back.z, h: 0 }); pendingCar = true; toast(`You bought a ${BODIES[pvCarCfg.body].label}! It'll be outside.`, 3); feed({ mood: 25 }); return; }
     if (stats.escaped) { stats.escaped = null; toast('Jumpsuit in the bin. Nobody will recognise you now.', 3); }
@@ -6663,4 +6679,4 @@ function frame(now) {
 }
 startGame();
 requestAnimationFrame(frame);
-window.__game = { get animals() { return animals; }, crime, WANT, copCars, cops, pitFight, busted, fam, famNewDay, makeOfficial, talkFamily, get dayN() { return dayN; }, set dayN(v) { dayN = v; }, scene: G.scene, cam: G.cam, snap: () => updateCamera(0, true), get state() { return state; }, P, input, get ride() { return ride; }, get myCar() { return myCar; }, get traffic() { return traffic; }, peds, setTime: h => { clockH = h; }, openCustom, enterVehicle, exitCar, get money() { return money; }, set money(v) { money = v; }, openPlace, PLACES, PROPERTIES, runMinigame, get action() { return action; }, arsenal, selectWeapon, openPhone, setWaypoint, get route() { return route; }, talkToPed, talk, doAction, stats, get inside() { return inside; }, enterInterior, exitInterior, get customers() { return customers; }, newCustomer, startEdit, endEdit, get job() { return job; }, gainXP, storage, doSpot, useFurn, phoneGo, talkVenue, talkJob, openPlace, talkCustomer, startJob, openCarShop, damageCar, repairCar, addFire, get fires() { return fires; }, get ems() { return ems; }, get vehicles() { return vehicles; }, makeVehicle, makeCop, prisonFight, life, startDealMeet, get lifeAct() { return lifeAct; }, get train() { return train; }, get trainRide() { return trainRide; }, boardTrain, eventReset: () => { eventOpen = false; }, bodyCheck, attendClass, talkAdmissions, edu, startDance, get dance() { return dance; }, radioSet: i => { radioSet(i); radioOn(true); }, get zoom() { return zoom; }, set zoom(z) { zoom = z; }, DEFAULT_CAR, setState: x => setState(x), get jail() { return stats.jail; }, witness, personOf, dealHeat, trafficStop, carNear, carTop, startDate, ambient, get ambEl() { return ambEl; }, openTradeT: p => openTrade(p), get stashT() { return stash; }, startWooT: (k, b) => startWoo(k, b), get woo() { return woo; }, endDate, dateCall, addDateContact, get phoneThread() { return phoneThread; }, set phoneThread(v) { phoneThread = v; }, talkDate, get date() { return date; }, get carAnim() { return carAnim; }, lifeApi, startShower, bizNewDay, subs, forceWanted, get buddy() { return buddy; }, startBuddy, textMe, toast, levelUp, closePhone, bringCar, useFurn, damageCar, debtorScene, get debtor() { return debtor; }, camBlocked, get camYaw() { return camYaw; }, ev: { evChase, evMug, evRobbery, evGang, evBusk, evCrash, evFire, evMarket, evParade, evProtest, streetEvents } };
+window.__game = { get animals() { return animals; }, crime, WANT, copCars, cops, pitFight, busted, fam, famNewDay, makeOfficial, talkFamily, get dayN() { return dayN; }, set dayN(v) { dayN = v; }, scene: G.scene, cam: G.cam, snap: () => updateCamera(0, true), get state() { return state; }, P, input, get ride() { return ride; }, get myCar() { return myCar; }, get traffic() { return traffic; }, peds, setTime: h => { clockH = h; }, openCustom, enterVehicle, exitCar, get money() { return money; }, set money(v) { money = v; }, openPlace, PLACES, PROPERTIES, runMinigame, get action() { return action; }, arsenal, selectWeapon, openPhone, setWaypoint, get route() { return route; }, talkToPed, talk, doAction, stats, get inside() { return inside; }, enterInterior, exitInterior, get customers() { return customers; }, newCustomer, startEdit, endEdit, get job() { return job; }, gainXP, storage, doSpot, useFurn, phoneGo, talkVenue, talkJob, openPlace, talkCustomer, startJob, openCarShop, damageCar, repairCar, addFire, get fires() { return fires; }, get ems() { return ems; }, get vehicles() { return vehicles; }, makeVehicle, makeCop, prisonFight, life, startDealMeet, get lifeAct() { return lifeAct; }, get train() { return train; }, get trainRide() { return trainRide; }, boardTrain, eventReset: () => { eventOpen = false; }, bodyCheck, attendClass, talkAdmissions, edu, startDance, get dance() { return dance; }, radioSet: i => { radioSet(i); radioOn(true); }, get zoom() { return zoom; }, set zoom(z) { zoom = z; }, DEFAULT_CAR, setState: x => setState(x), get jail() { return stats.jail; }, witness, personOf, dealHeat, trafficStop, carNear, carTop, startDate, openGunsmithT: (s, p, n) => openGunsmith(s, p, n), ambient, get ambEl() { return ambEl; }, openTradeT: p => openTrade(p), get stashT() { return stash; }, startWooT: (k, b) => startWoo(k, b), get woo() { return woo; }, endDate, dateCall, addDateContact, get phoneThread() { return phoneThread; }, set phoneThread(v) { phoneThread = v; }, talkDate, get date() { return date; }, get carAnim() { return carAnim; }, lifeApi, startShower, bizNewDay, subs, forceWanted, get buddy() { return buddy; }, startBuddy, textMe, toast, levelUp, closePhone, bringCar, useFurn, damageCar, debtorScene, get debtor() { return debtor; }, camBlocked, get camYaw() { return camYaw; }, ev: { evChase, evMug, evRobbery, evGang, evBusk, evCrash, evFire, evMarket, evParade, evProtest, streetEvents } };

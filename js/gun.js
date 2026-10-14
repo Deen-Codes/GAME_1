@@ -1,6 +1,6 @@
 // Modular gun builder + stat model. Gun points along +Z, origin at the top of the grip (where the hand goes).
 import * as THREE from '../lib/three.module.min.js';
-import { BASIC } from './character.js?v=122';
+import { BASIC } from './character.js?v=123';
 
 // Base stats per frame. Every other part multiplies these.
 export const RECEIVERS = {
@@ -83,6 +83,15 @@ export const PARTS = {
     chrome: opt('Chrome'), gold: opt('Gold plated'), camo: opt('Woodland camo'), digital: opt('Digital camo'), carbon: opt('Carbon fibre'), tiger: opt('Tiger stripe'),
   },
 };
+// what a part does, as shown on its chip: [label, '+25%', isGood]
+const FX = { dmg: ['damage', 1], range: ['range', 1], spread: ['accuracy', -1], rof: ['fire rate', 1], recoil: ['recoil', -1], mob: ['mobility', 1], reload: ['reload time', -1], mag: ['mag size', 1], pellets: ['pellets', 1], speed: ['bullet speed', 1] };
+const PERKS = { suppressor: 'Off the radar: quiet shots', laser: 'Laser sight on target', flashlight: 'Lights up the night', launcher: 'Fires grenades', bayonet: 'Melee stab', incendiary: 'Sets targets on fire', frost: 'Slows targets', explosive: 'Small blasts', ap: 'Punches through cars', hollow: 'Big damage up close', thermal: 'See people in the dark' };
+export function partEffects(slot, val) {
+  const p = PARTS[slot]?.[val]; if (!p) return [];
+  const out = Object.entries(p.m).map(([k, v]) => { const f = FX[k]; if (!f) return null; let pct = Math.round((v - 1) * 100); if (!pct) return null; const good = pct * f[1] > 0; if (k === 'spread') pct = -pct; return [f[0], (k === 'pellets' ? (v > 1 ? '+' : '') + Math.round((v - 1) * 100) + '%' : (pct > 0 ? '+' : '') + pct + '%'), good]; }).filter(Boolean);
+  return out.sort((a, b) => b[2] - a[2]);
+}
+export function partPerk(val) { return PERKS[val] || null; }
 const toOpts = obj => Object.entries(obj).map(([k, v]) => [k, v.label]);
 
 export const GUN_SCHEMA = [
