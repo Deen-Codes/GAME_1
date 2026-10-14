@@ -533,12 +533,20 @@ body.phone-out #mmWrap { opacity: 0; transition: opacity .1s; }
 #nHealth { --c: #ff3b4a; }
 
 /* speed on the phone-map, like a sat-nav: turns red when you're over the limit */
-#mmSpeed { position: absolute; right: 6px; bottom: 6px; width: 38px; height: 38px; border-radius: 50%; background: rgba(255,255,255,.95); border: 3px solid #16161b; display: grid; place-items: center; align-content: center; line-height: 1; z-index: 3; color: #16161b; text-shadow: none; }
+#mmSpeed { position: absolute; left: 6px; bottom: 6px; width: 38px; height: 38px; border-radius: 50%; background: rgba(255,255,255,.95); border: 3px solid #16161b; display: grid; place-items: center; align-content: center; line-height: 1; z-index: 3; color: #16161b; text-shadow: none; }
 #mmSpeed b { font-size: 14px; font-weight: 900; font-variant-numeric: tabular-nums; }
 #mmSpeed small { font-size: 7px; font-weight: 900; letter-spacing: .04em; }
-#mmSpeed.over { background: #ff3b30; border-color: #fff; color: #fff; animation: starFlash .5s infinite alternate; }
+#mmSpeed.over { background: #ff3b30; border-color: #fff; color: #fff; }
 #mmSpeed.hidden { display: none; }
 #mmWrap.badge::after { display: none; }
 /* closing: shrink back into the map, only fading right at the end */
 #phone:not(.open) .iphone { opacity: 0; transition: transform .32s cubic-bezier(.45,0,.7,.4), opacity .08s linear .26s; }
 #mmWrap { transition: opacity .12s; }
+
+/* the radio: a small button under the needs rings that stretches out to show what's playing */
+#radioBtn.inpill { width: 38px; height: 38px; border-radius: 13px; margin-top: 2px; }
+#radioBtn.inpill .ic { left: 8px; right: auto; top: 7px; width: 22px; height: 22px; }
+#radioBtn.inpill .peek { left: 40px; right: 10px; }
+#radioBtn.inpill.open { width: min(100%, calc(100vw - 150px)); }
+#radioBtn.inpill.hidden { display: none; }
+.ph-mini.on { background: #fff; color: #16161b; }

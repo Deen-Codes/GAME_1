@@ -1,26 +1,26 @@
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=96';
-import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=96';
-import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=96';
-import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=96';
-import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=96';
-import { buildPanel, renderStats } from './ui.js?v=96';
-import { Input } from './input.js?v=96';
-import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime } from './audio.js?v=96';
-import { runMinigame } from './minigames.js?v=96';
-import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk } from './peds.js?v=96';
-import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=96';
-import { findRoute } from './nav.js?v=96';
-import { COURSES, CAREERS, QUIZ } from './careers.js?v=96';
-import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=96';
-import { attachWheel } from './wheel.js?v=96';
-import { Animals } from './animals.js?v=96';
-import { Talk } from './talk.js?v=96';
-import { incomingText, classify, textOptions, textReply } from './texts.js?v=96';
-import { svg, drawIcon } from './icons.js?v=96';
-import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=96';
-import { FURN, CATALOG } from './furniture.js?v=96';
-import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=96';
+import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=98';
+import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=98';
+import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=98';
+import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=98';
+import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=98';
+import { buildPanel, renderStats } from './ui.js?v=98';
+import { Input } from './input.js?v=98';
+import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime } from './audio.js?v=98';
+import { runMinigame } from './minigames.js?v=98';
+import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk } from './peds.js?v=98';
+import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=98';
+import { findRoute } from './nav.js?v=98';
+import { COURSES, CAREERS, QUIZ } from './careers.js?v=98';
+import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=98';
+import { attachWheel } from './wheel.js?v=98';
+import { Animals } from './animals.js?v=98';
+import { Talk } from './talk.js?v=98';
+import { incomingText, classify, textOptions, textReply } from './texts.js?v=98';
+import { svg, drawIcon } from './icons.js?v=98';
+import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=98';
+import { FURN, CATALOG } from './furniture.js?v=98';
+import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=98';
 
 const $ = id => document.getElementById(id);
 let inside = null, editMode = false, held = null, pendingCar = false, homeMusic = false, phoneBadge = 0;
@@ -970,6 +970,18 @@ function rebuildMyCar(at) {
   headSpot.color.set(carCfg.headlights || '#ffffff');
 }
 function vehY(x, z, py = 0) { if (py > -2.5 && onBridge(x, z)) return 0.12; const r = roadAt(x, z); return r ? (r.city ? 0.04 : roadY(x, z)) : Math.max(groundH(x, z), cityAt(x, z, -6) ? 0.17 : cityAt(x, z, 4) ? 0 : -6); } // on the pavement you're up on the kerb
+// traffic switches its lights on after dark: headlamps, tail lights and a pool of light on the road ahead
+let TL = null;
+function trafficLamps(t, on) {
+  t.lit = on;
+  if (!TL) { const cv = document.createElement('canvas'); cv.width = 64; cv.height = 128; const x = cv.getContext('2d'), g = x.createRadialGradient(32, 10, 2, 32, 40, 80); g.addColorStop(0, 'rgba(255,240,200,0.9)'); g.addColorStop(1, 'rgba(255,240,200,0)'); x.fillStyle = g; x.fillRect(0, 0, 64, 128);
+    TL = { head: new THREE.MeshBasicMaterial({ color: '#fff6d8' }), tail: new THREE.MeshBasicMaterial({ color: '#ff2a2a' }), pool: new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(cv), transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, opacity: 0.55 }), box: new THREE.BoxGeometry(0.34, 0.12, 0.06), plane: new THREE.PlaneGeometry(3.4, 9) }; }
+  if (on && !t.lamps) { const g = new THREE.Group(), L = t.lib.len || 4.4, W = t.lib.wid || 1.9;
+    for (const s of [-1, 1]) { const h = new THREE.Mesh(TL.box, TL.head); h.position.set(s * W * 0.33, 0.62, L / 2 + 0.02); g.add(h); const b = new THREE.Mesh(TL.box, TL.tail); b.position.set(s * W * 0.33, 0.66, -L / 2 - 0.02); g.add(b); }
+    const pool = new THREE.Mesh(TL.plane, TL.pool); pool.rotation.x = -Math.PI / 2; pool.position.set(0, 0.03, L / 2 + 4.4); g.add(pool);
+    t.mesh.add(g); t.lamps = g; }
+  if (t.lamps) t.lamps.visible = on;
+}
 function placeVehicle(v) {
   const s = v.s, g = v.b.group, fx = Math.sin(s.h), fz = Math.cos(s.h), hl = v.b.length * 0.4;
   const py = s.y ?? 0, yf = vehY(s.x + fx * hl, s.z + fz * hl, py), yb = vehY(s.x - fx * hl, s.z - fz * hl, py), y = vehY(s.x, s.z, py);
@@ -1049,7 +1061,7 @@ function updateTraffic(dt) {
     }
     trafficPose(t);
     t.rx = damp(t.rx, t.x, 7, dt); t.rz = damp(t.rz, t.z, 7, dt); t.rh += wrapA(t.h - t.rh) * (1 - Math.exp(-7 * dt));
-    t.mesh.position.set(t.rx, 0.04, t.rz); t.mesh.rotation.y = t.rh;
+    t.mesh.position.set(t.rx, 0.04, t.rz); t.mesh.rotation.y = t.rh; if (t.lit !== night > 0.35) trafficLamps(t, night > 0.35);
     if (t.speed > 3) for (const p of peds.list) if (Math.hypot(p.x - t.rx, p.z - t.rz) < 1.8 && peds.knock(p, t.fx, t.fz, t.speed * 0.7)) { sfx.thud(); t.stun = 2; }
     for (const v of vehicles) if (v !== ride && (v.s.x - t.rx) ** 2 + (v.s.z - t.rz) ** 2 < 49) { const h = carVsTraffic(v, t); if (h) { v.s.x += h.nx * h.pen; v.s.z += h.nz * h.pen; if (t.speed > 4) { v.s.vx += h.nx * t.speed * 0.5; v.s.vz += h.nz * t.speed * 0.5; v.coast = 0.8; sfx.thud(); t.stun = 2; } t.speed = 0; placeVehicle(v); } }
     if (ride) {
@@ -2430,7 +2442,7 @@ function enterInterior(place, prop) {
       inside.npcs.push({ x: w.x, z: w.z, role: n.role, cfg, fig: null, face: 0, homeFace: 0, t: Math.random() * 5, parent: dyn, name: nameFor((place?.id || id) + n.role + i), relId: (place?.id || id) + ':' + n.role, dance: false });
     });
     if (prop) addFamilyNpcs(prop);
-    if (prop) story().f.home = true;
+    if (prop) story().f.home = true; if (prop) setTimeout(azDeliver, 600);
     if (prop && WANT.stars) clearWanted('You laid low at home. The heat is off.');
     setTimeout(lifeArrive, 1500);
     if (prop && stats.escaped) { charCfg = { ...stats.escaped }; stats.escaped = null; buildHero(); toast('You burned the jumpsuit and changed into your own clothes.', 3); }
@@ -3880,7 +3892,7 @@ function textAct(id, act) {
   else if (act === 'meetExtend') { if (stats.dateMeet?.id === id) stats.dateMeet.until += 1; }
   else if (act === 'meetCancel') { if (stats.dateMeet?.id === id) { stats.dateMeet = null; clearWaypoint(); } }
   else if (act === 'promiseHome' || act === 'promiseHour') { if (!P2.some(p => p.id === id && p.k === 'home')) P2.push({ id, k: 'home', until: gameHours() + (act === 'promiseHour' ? 1.4 : 2.5) }); }
-  else if (act === 'promiseGroc') { if (!P2.some(p => p.id === id && p.k === 'groc')) P2.push({ id, k: 'groc', base: stats.groceries || 0, until: gameHours() + 6 }); toast('Groceries: QuickMart, then home.', 2.4); }
+  else if (act === 'promiseGroc') { if (!P2.some(p => p.id === id && p.k === 'groc')) P2.push({ id, k: 'groc', base: stats.groceries || 0, until: gameHours() + 6 }); const f = focusPos(), mart = PLACES.filter(p => p.interior === 'mart').sort((a, b) => Math.hypot(a.x - f.x, a.z - f.z) - Math.hypot(b.x - f.x, b.z - f.z))[0]; if (mart) setWaypoint(mart.x, mart.z, `Groceries: ${mart.name}`); toast('Groceries: QuickMart is on your map. Or order them on AzBay.', 2.8); }
   else if (act === 'send50') { spend(50); }
   else if (act === 'breakup') { lifeApi().breakup?.(); }
 }
@@ -3916,7 +3928,7 @@ function faceFor2(id, name) {
   if (buddy && buddy.name === name) return buddyWho();
   const cu = customers.find(c => c.name === name); if (cu?.cfg || cu?.npc?.cfg) return { key: 'cust' + cu.id, name, cfg: cu.cfg || cu.npc.cfg, pitch: 180 };
   const dl = PLACES.find(p => p.npc === name && p.cfg); if (dl) return { key: dl.id, name, cfg: dl.cfg, pitch: 170 };
-  if (!name || /^(You|Bay |Unknown)/.test(name)) return null;
+  if (!name || /^(You|Bay |Unknown)/.test(name) || !/^[A-Z][a-z'’-]+( [A-Z][a-z'’-]+)?$/.test(name)) return null; // only real names get a face
   // someone we don't have a look for yet: give them one face, the same one every time
   let h = 0; for (const ch of name) h = (h * 31 + ch.charCodeAt(0)) | 0; const fem = FEM_NAMES.includes(name.split(' ')[0]) || /a$|ie$|y$/i.test(name.split(' ')[0]);
   const ff = (faceFor2.cache ||= {}); ff[name] ||= { ...npcCfg('guest', Math.abs(h) % 9999), fem };
@@ -3980,9 +3992,11 @@ async function talkFamily(n) {
     const o = [{ label: I('heart', 'Kiss'), k: 'kiss' }, { label: I('chat', 'How was your day?'), k: 'chat' }, { label: I('cash', 'Give housekeeping money <small>$200</small>'), k: 'money' }];
     if (P2.status === 'partner' && rel(P2.id) >= 65) o.push({ label: I('star', 'Propose <small>ring $2,500</small>'), k: 'propose' });
     if (inside.h.furn.some(x => FURN[x.t].act === 'sleep')) o.push({ label: I('heart', 'WooHoo'), k: 'woo' });
+    if (stats.gifts?.length) o.push({ label: I('heart', 'Give a gift'), k: 'gift' });
     o.push({ label: I('star', "Let's go out"), k: 'out' }, { label: I('x', 'Later'), k: 'bye' });
     const c = o[await talk.choose(o)].k;
-    if (c === 'kiss') { bumpRel(P2.id, 5); feed({ mood: 6 }); hearts(n.x, n.z, 8); await talk.say('*mwah* Love you.'); }
+    if (c === 'gift') await giveGift(P2.id, P2.name, n.x, n.z);
+    else if (c === 'kiss') { bumpRel(P2.id, 5); feed({ mood: 6 }); hearts(n.x, n.z, 8); await talk.say('*mwah* Love you.'); }
     else if (c === 'chat') { bumpRel(P2.id, 4); gainXP('charm', 4); await talk.say(pick(["Long day. The baby didn't sleep at all.", "I'm thinking of starting a little business. Nails, maybe.", "Your mom called. Just kidding.", "Honestly? I'm happy. Just us. This."])); }
     else if (c === 'money') { if (money < 200) await talk.say("Babe, you don't have it. It's fine."); else { spend(200); bumpRel(P2.id, 8, false); stats.groceries += 4; await talk.say("Thank you. I'll stock the fridge."); } }
     else if (c === 'propose') {
@@ -4534,9 +4548,11 @@ async function talkDate() {
     if (!partner() && rel(D.id) >= 45) top.push({ label: I('heart', 'Be my girlfriend?'), k: 'official' });
     if (bed || parked) top.push({ label: I('heart', bed ? 'WooHoo (bed)' : 'WooHoo (in the car)'), k: 'woo' });
     else { const live = partner()?.id === D.id && fam().partner?.livesIn, h = famHome() || nearestHome(); if (h && !(inside?.prop && inside.prop.id === h.id)) top.push({ label: I('house', live ? 'Wanna chill at home?' : 'Come back to my place?'), k: 'home', h, live }); }
+    if (stats.gifts?.length) top.push({ label: I('heart', 'Give her a gift'), k: 'gift' });
     top.push({ label: I('check', 'That\'s all'), k: 'done' }, { label: I('x', 'Call it a night'), k: 'bye' });
     const o = top[await talk.choose(top)];
     if (o.k === 'done') break;
+    if (o.k === 'gift') { await giveGift(D.id, D.name, D.x, D.z); continue; }
     if (o.k === 'bye') { endTalk(); bumpRel(D.id, 4); return endDate(partner()?.id === D.id && fam().partner?.livesIn ? `${D.name}: "Okay. See you at home. Don't be late."` : `${D.name}: "Tonight was fun. Text me."`); }
     if (o.k === 'sweet') {
       const opts = [{ label: I('heart', 'Kiss her'), k: 'kiss' }, { label: I('people', inCar ? 'Lean in for a hug' : 'Hug her'), k: 'hug' }];
@@ -5517,12 +5533,32 @@ function drawMinimap() {
   const S = mm.width, SH = mm.height, CX = S / 2, CY = SH / 2, R = Math.max(S, SH) / 2;
   mctx.save(); mctx.clearRect(0, 0, S, S);
   
-  if (inside) {
+  if (inside) { // a proper floor plan: rooms, walls, furniture, things you can use, and who's home
     mctx.fillStyle = '#1a1626'; mctx.fillRect(0, 0, S, SH);
-    const sc = R * 1.6 / Math.max(inside.h.w, inside.h.d);
-    mctx.fillStyle = INTERIORS[inside.id].floor; mctx.fillRect(S / 2 - inside.h.w * sc / 2, CY - inside.h.d * sc / 2, inside.h.w * sc, inside.h.d * sc);
-    for (const m of inside.marks) { drawIcon(mctx, m.spot.icon, S / 2 + (m.x - ORIGIN.x) * sc, CY + (m.z - ORIGIN.z) * sc, 20, { stroke: '#ffd23f', width: 2.6 }); }
-    mctx.fillStyle = '#ffd23f'; mctx.beginPath(); mctx.arc(S / 2 + (P.x - ORIGIN.x) * sc, CY + (P.z - ORIGIN.z) * sc, 7, 0, 7); mctx.fill();
+    const H = inside.h, tpl = INTERIORS[inside.id], sc = Math.min((S - 26) / H.w, (SH - 44) / H.d);
+    const X = lx => CX + lx * sc, Y = lz => CY + lz * sc;
+    mctx.fillStyle = tpl.floor; mctx.fillRect(X(-H.w / 2), Y(-H.d / 2), H.w * sc, H.d * sc);
+    for (const [x0, z0, x1, z1, c] of tpl.floors || []) { mctx.fillStyle = c; mctx.fillRect(X(x0), Y(z0), (x1 - x0) * sc, (z1 - z0) * sc); }
+    // furniture as little blocks, rotated the way they sit
+    const ACT_ICON = { sleep: 'bed', sit: 'sofa', tv: 'tv', eat: 'fridge', cook: 'food', shower: 'wave', bath: 'wave', toilet: 'door', read: 'book', laptop: 'case', lift: 'dumbbell', run: 'run', music: 'music', relax: 'heart', arcade: 'play', hottub: 'wave', piano: 'music', drink: 'drink' };
+    const icons = [];
+    for (const f of H.furn) { const F = FURN[f.t]; if (!F || F.wall) continue; const r = f.r || 0;
+      mctx.save(); mctx.translate(X(f.x), Y(f.z)); mctx.rotate(-r); mctx.fillStyle = F.act ? 'rgba(255,255,255,.42)' : 'rgba(255,255,255,.2)'; mctx.fillRect(-F.w * sc / 2, -F.d * sc / 2, F.w * sc, F.d * sc); mctx.restore();
+      if (F.act && inside.prop) icons.push([ACT_ICON[F.act], X(f.x), Y(f.z)]); }
+    // walls
+    mctx.fillStyle = '#e8e2d6';
+    for (const [x0, z0, x1, z1] of tpl.walls || []) mctx.fillRect(X(x0), Y(z0), Math.max(2, (x1 - x0) * sc), Math.max(2, (z1 - z0) * sc));
+    mctx.strokeStyle = '#e8e2d6'; mctx.lineWidth = 4; mctx.beginPath();
+    mctx.moveTo(X(-1.2), Y(H.d / 2)); mctx.lineTo(X(-H.w / 2), Y(H.d / 2)); mctx.lineTo(X(-H.w / 2), Y(-H.d / 2)); mctx.lineTo(X(H.w / 2), Y(-H.d / 2)); mctx.lineTo(X(H.w / 2), Y(H.d / 2)); mctx.lineTo(X(1.2), Y(H.d / 2)); mctx.stroke(); // the gap is the front door
+    for (const [ic, a2, b2] of icons) if (ic) drawIcon(mctx, ic, a2, b2, 15, { stroke: '#16161b', width: 2.2 });
+    for (const m2 of inside.marks) drawIcon(mctx, m2.spot.icon, X(m2.x - ORIGIN.x), Y(m2.z - ORIGIN.z), 20, { stroke: '#ffd23f', width: 2.6 });
+    // people: hearts for your partner, smiles for your kids, dots for everyone else
+    for (const n of inside.npcs) { const a2 = X(n.x - ORIGIN.x), b2 = Y(n.z - ORIGIN.z);
+      if (n.role === 'spouse' || n.role === 'kid') { mctx.fillStyle = n.role === 'spouse' ? '#ff3b8a' : '#ffd23f'; mctx.beginPath(); mctx.arc(a2, b2, 12, 0, 7); mctx.fill(); drawIcon(mctx, n.role === 'spouse' ? 'heart' : 'smile', a2, b2, 15, { stroke: '#fff', width: 2.4 }); }
+      else if (n.role !== 'guest') { mctx.fillStyle = '#9fb7ff'; mctx.beginPath(); mctx.arc(a2, b2, 6, 0, 7); mctx.fill(); } }
+    if (date && !date.inCar && date.fig?.root.visible) { const a2 = X(date.x - ORIGIN.x), b2 = Y(date.z - ORIGIN.z); mctx.fillStyle = '#ff3b8a'; mctx.beginPath(); mctx.arc(a2, b2, 12, 0, 7); mctx.fill(); drawIcon(mctx, 'heart', a2, b2, 15, { stroke: '#fff', width: 2.4 }); }
+    mctx.save(); mctx.translate(X(P.x - ORIGIN.x), Y(P.z - ORIGIN.z)); mctx.rotate(Math.PI - P.face);
+    mctx.fillStyle = '#ffd23f'; mctx.strokeStyle = '#1a1a2a'; mctx.lineWidth = 4; mctx.beginPath(); mctx.moveTo(0, -14); mctx.lineTo(10, 10); mctx.lineTo(0, 4); mctx.lineTo(-10, 10); mctx.closePath(); mctx.stroke(); mctx.fill(); mctx.restore();
     mctx.restore();
   } else {
     const f = focusPos(), px = f.x, pz = f.z, face = ride ? ride.s.h : P.face, span = ride ? 260 : 170;
@@ -5541,7 +5577,7 @@ function drawMinimap() {
     for (const c of cops) { const [a, b] = toS(c.x, c.z); mctx.fillStyle = '#2a6aff'; mctx.fillRect(a - 3, b - 3, 6, 6); }
     mctx.fillStyle = '#ffffff';
     for (const m of markers) { const [a, b] = toS(m.x, m.z); if (Math.abs(a - CX) < CX - 10 && Math.abs(b - CY) < CY - 10) { mctx.fillStyle = 'rgba(20,18,38,.85)'; mctx.beginPath(); mctx.arc(a, b, 13, 0, 7); mctx.fill(); drawIcon(mctx, markerIcon(m), a, b, 18, { stroke: m.color, width: 2.6 }); } }
-    if (myCar && ride !== myCar) { const [a, b] = toS(myCar.s.x, myCar.s.z); mctx.fillStyle = '#ff8a2a'; mctx.strokeStyle = '#fff'; mctx.lineWidth = 3; mctx.beginPath(); mctx.arc(a, b, 9, 0, 7); mctx.fill(); mctx.stroke(); }
+    if (myCar && ride !== myCar) { const [a, b] = toS(myCar.s.x, myCar.s.z); mctx.fillStyle = '#ff8a2a'; mctx.strokeStyle = '#fff'; mctx.lineWidth = 3; mctx.beginPath(); mctx.arc(a, b, 15, 0, 7); mctx.fill(); mctx.stroke(); drawIcon(mctx, 'car', a, b, 18, { stroke: '#fff', width: 2.6 }); }
     const edgeDot = (wx, wz, col, r) => { let [a, b] = toS(wx, wz); a = clamp(a, 12, S - 12); b = clamp(b, 12, SH - 12); mctx.fillStyle = col; mctx.strokeStyle = '#fff'; mctx.lineWidth = 3; mctx.beginPath(); mctx.arc(a, b, r, 0, 7); mctx.fill(); mctx.stroke(); };
     if (waypoint) edgeDot(waypoint.x, waypoint.z, '#ffd23f', 11);
     if (race) edgeDot(...RACE.points[race.i], '#ff3b4a', 11);
@@ -5645,10 +5681,11 @@ attachWheel($('wpnBtn'), {
   onOpen: () => { timeScale = 0.2; }, onClose: () => { timeScale = 1; },
 });
 const ST_ICON = ['sun', 'music', 'moon', 'bolt', 'book', 'fist', 'heart', 'wave', 'mic', 'star', 'x'];
-let lastSong = ''; onSong((song, st) => { if (!song || song.title === lastSong) return; lastSong = song.title; if (ride || homeMusic) slotNote('music', song.title, `${song.artist}${st?.name ? ' · ' + st.name : ''}`, 3.4, 'radio'); });
+let lastSong = ''; onSong((song, st) => { if (!song || song.title === lastSong) return; lastSong = song.title; if (ride || homeMusic) peek('radioBtn', `<b>${song.title}</b><small>${song.artist}${st?.name ? ' · ' + st.name.split(' — ')[0] : ''}</small>`, 4); });
+document.querySelector('.hud-l .needs').after($('radioBtn')); $('radioBtn').classList.add('inpill'); // the radio lives under the needs rings now
 attachWheel($('radioBtn'), {
   items: () => STATIONS.map((s, i) => ({ icon: svg(ST_ICON[i] || 'radio', 'wheel'), label: s.name.split(' — ')[0], sub: s.name.split(' — ')[1] || '', current: radioIndex() === i })),
-  onSelect: (it, i) => { radioSet(i); radioOn(!!ride); toast(STATIONS[i].name, 1.4); },
+  onSelect: (it, i) => { radioSet(i); radioOn(!!ride); const n = nowPlaying(); peek('radioBtn', `<b>${STATIONS[i].name.split(' — ')[0]}</b><small>${n ? n.title + ' · ' + n.artist : (STATIONS[i].name.split(' — ')[1] || '')}</small>`, 3); },
   centre: () => 'Close',
   onOpen: () => { timeScale = 0.2; }, onClose: () => { timeScale = 1; },
 });
@@ -5657,6 +5694,61 @@ $('loveBtn').addEventListener('pointerdown', e => { e.stopPropagation(); e.preve
 $('editAdd').onclick = () => { openStorage(); };
 // (Done lives on the B button in edit mode)
 
+// ================================================================ AzBay: buy (nearly) anything online. It turns up at your door.
+const GIFTS = [
+  { id: 'roses', name: 'Bouquet of roses', icon: 'leaf', price: 60, love: 8, say: ['Roses?! You remembered I love these.', 'They\'re beautiful. Come here.'] },
+  { id: 'chocs', name: 'Fancy chocolates', icon: 'heart', price: 35, love: 5, say: ['Ooh, the good ones. I\'m not sharing.', 'Chocolate. You know the way to my heart.'] },
+  { id: 'teddy', name: 'Giant teddy bear', icon: 'smile', price: 45, love: 5, say: ['He\'s bigger than me! I love him.', 'Okay this is ridiculous. I love it.'] },
+  { id: 'perfume', name: 'Designer perfume', icon: 'sparkle', price: 140, love: 11, say: ['This is my favourite! How did you know?', 'I\'m wearing it tonight. For you.'] },
+  { id: 'bag', name: 'Designer handbag', icon: 'bag', price: 650, love: 18, say: ['Shut UP. Is this real?!', 'Every girl in Bay City is going to be jealous.'] },
+  { id: 'necklace', name: 'Diamond necklace', icon: 'sparkle', price: 1800, love: 26, say: ['I... don\'t know what to say. It\'s stunning.', 'Put it on me. Now.'] },
+];
+const AZ_GROC = [{ n: 3, price: 30, name: '3 home meals' }, { n: 7, price: 60, name: 'Weekly shop (7 meals)' }];
+function azUsed() { // second-hand deals, a fresh handful every day
+  const r = seeded(dayN * 977), items = [];
+  for (let i = 0; i < 5; i++) { const f = CATALOG[Math.floor(r() * CATALOG.length)]; items.push({ i, t: f.id, name: f.name, price: Math.round(f.price * (0.35 + r() * 0.3)), c: f.colors?.[Math.floor(r() * (f.colors?.length || 1))], seller: pick2(r, ['bayboy92', 'mama_lu', 'vintage_vic', 'k1ngjames', 'eastport_ed', 'sellit_sal']), cond: pick2(r, ['Like new', 'Good', 'Used', 'Bit scuffed']) }); }
+  return items;
+}
+const pick2 = (r, a) => a[Math.floor(r() * a.length)];
+function azOrder(o, label, express) { (stats.orders ||= []).push({ ...o, at: gameHours() + (express ? 1 : 6) }); if (express) spend(15); toast(`AzBay: ${label} ordered. ${express ? 'Arriving within the hour.' : 'Arriving later today.'}`, 2.6); saveGame(); }
+function azDeliver() { // parcels waiting when you get home
+  const L = stats.orders; if (!L?.length || !inside?.prop) return;
+  const due = L.filter(o => gameHours() >= o.at); if (!due.length) return;
+  stats.orders = L.filter(o => gameHours() < o.at); const got = [];
+  for (const o of due) { if (o.k === 'furn') { storage.push({ t: o.t, c: o.c }); got.push(FURN[o.t].name); } else if (o.k === 'groc') { stats.groceries += o.n; got.push(`${o.n} meals of groceries`); } else if (o.k === 'gift') { (stats.gifts ||= []).push(o.g); got.push(GIFTS.find(g => g.id === o.g).name); } }
+  setTimeout(() => toast(`AzBay parcel${due.length > 1 ? 's' : ''} on the doorstep: ${got.join(', ')}.${due.some(o => o.k === 'furn') ? ' (Furniture is in your storage. Edit Home to place it.)' : ''}`, 4), 1200); saveGame();
+}
+// giving someone a present you've bought
+async function giveGift(id, name, x, z) {
+  const have = [...new Set(stats.gifts || [])]; if (!have.length) return false;
+  const k = await talk.choose([...have.map(g => { const G = GIFTS.find(q => q.id === g); return I(G.icon, G.name); }), I('x', 'Keep it for later')]);
+  if (k >= have.length) return false;
+  const G = GIFTS.find(q => q.id === have[k]); stats.gifts.splice(stats.gifts.indexOf(G.id), 1);
+  await talk.say(pick(['Got you something.', 'Close your eyes... okay, open.']), 'you');
+  bumpRel(id, G.love, false); if (date?.id === id) date.interest += G.love; hearts(x, z, Math.round(G.love / 2)); feed({ mood: 6 });
+  await talk.say(pick(G.say)); saveGame(); return true;
+}
+function renderAzBay(el, back) {
+  const tab = renderAzBay.tab || 'home', used = azUsed(), bought = stats.azUsed?.[dayN] || [];
+  const tabs = [['home', 'Home'], ['groc', 'Groceries'], ['gifts', 'Gifts'], ['used', 'Used']].map(([k, l]) => `<button class="ph-mini ${tab === k ? 'on' : ''}" data-azt="${k}">${l}</button>`).join('');
+  let body = '';
+  if (tab === 'home') body = CATALOG.map(f => `<div class="ph-row"><span>${svg(FURN_ICON[f.act] || 'sofa', 'sm')} <b>${f.name}</b></span><span class="rowbtns"><button class="ph-mini" data-azb="furn:${f.id}" ${money < f.price ? 'disabled' : ''}>${fmt(f.price)}</button></span></div>`).join('');
+  else if (tab === 'groc') body = AZ_GROC.map((g, i) => `<div class="ph-row"><span>${svg('cart', 'sm')} <b>${g.name}</b></span><span class="rowbtns"><button class="ph-mini" data-azb="groc:${i}" ${money < g.price ? 'disabled' : ''}>${fmt(g.price)}</button></span></div>`).join('');
+  else if (tab === 'gifts') body = `<p class="ph-hint">Give them in person. Talk to her and pick "Give a gift".${stats.gifts?.length ? ` You have ${stats.gifts.length} wrapped.` : ''}</p>` + GIFTS.map(g => `<div class="ph-row"><span>${svg(g.icon, 'sm')} <b>${g.name}</b></span><span class="rowbtns"><button class="ph-mini" data-azb="gift:${g.id}" ${money < g.price ? 'disabled' : ''}>${fmt(g.price)}</button></span></div>`).join('');
+  else body = `<p class="ph-hint">Second-hand bargains. New listings every day.</p>` + used.map(u => `<div class="ph-row col"><span><b>${u.name}</b><small>${u.cond} · @${u.seller}</small></span><span class="rowbtns"><button class="ph-mini" data-azb="used:${u.i}" ${bought.includes(u.i) || money < u.price ? 'disabled' : ''}>${bought.includes(u.i) ? 'Sold' : fmt(u.price)}</button></span></div>`).join('');
+  const pend = (stats.orders || []).length;
+  el.innerHTML = `${back}<h4>AzBay</h4><p class="ph-hint">Everything, delivered to your door. ${pend ? `<b>${pend} on the way.</b>` : ''}</p><label class="ph-hint"><input type="checkbox" id="azExp" ${renderAzBay.exp ? 'checked' : ''}> Express delivery (+$15, within the hour)</label><div class="rowbtns" style="margin:6px 0">${tabs}</div>${body}`;
+  el.querySelector('#azExp').onchange = e => { renderAzBay.exp = e.target.checked; };
+  el.querySelectorAll('[data-azt]').forEach(b => b.onclick = () => { renderAzBay.tab = b.dataset.azt; renderPhone(); });
+  el.querySelectorAll('[data-azb]').forEach(b => b.onclick = () => {
+    const [k, v] = b.dataset.azb.split(':'), ex = !!renderAzBay.exp && money >= 15;
+    if (k === 'furn') { const f = FURN[v]; if (money < f.price) return; spend(f.price); azOrder({ k: 'furn', t: v, c: f.colors?.[0] }, f.name, ex); }
+    else if (k === 'groc') { const g = AZ_GROC[+v]; if (money < g.price) return; spend(g.price); azOrder({ k: 'groc', n: g.n }, g.name, ex); }
+    else if (k === 'gift') { const g = GIFTS.find(q => q.id === v); if (money < g.price) return; spend(g.price); azOrder({ k: 'gift', g: v }, g.name, ex); }
+    else if (k === 'used') { const u = used[+v]; if (money < u.price) return; spend(u.price); ((stats.azUsed ||= {})[dayN] ||= []).push(u.i); azOrder({ k: 'furn', t: u.t, c: u.c }, u.name, ex); }
+    renderPhone();
+  });
+}
 // ================================================================ PHONE
 let phoneApp = 'home';
 const APPS = [
@@ -5671,6 +5763,7 @@ const APPS = [
   ['homes', 'Homes', 'house', 'linear-gradient(135deg,#b26bff,#6b2fd0)'],
   ['style', 'Style', 'shirt', 'linear-gradient(135deg,#ffd23f,#e0a010)'],
   ['radio', 'Radio', 'radio', 'linear-gradient(135deg,#ff3b8a,#90205a)'],
+  ['azbay', 'AzBay', 'bag', 'linear-gradient(135deg,#ff9f1a,#2f80ed)'],
   ['settings', 'Settings', 'gear', 'linear-gradient(135deg,#9aa0aa,#5d636e)'],
 ];
 const mapView = { z: 3, cx: 0, cz: 0, init: false, off: null };
@@ -5897,6 +5990,7 @@ function renderPhone() {
   } else if (phoneApp === 'radio') {
     el.innerHTML = `${back}<h4>Radio</h4><p class="ph-hint">Plays while you drive, or at home on a stereo. In the car, tap the radio button for the radio wheel. Every station has 10 songs.</p>${nowPlaying() ? `<p class="ph-hint"><b>Now playing:</b> ${nowPlaying().title} · ${nowPlaying().artist}</p>` : ''}${STATIONS.map((s, i) => `<button class="ph-row ${radioIndex() === i ? 'on' : ''}" data-st="${i}"><span>${s.name}</span>${radioIndex() === i ? '<b>●</b>' : ''}</button>`).join('')}`;
     el.querySelectorAll('[data-st]').forEach(b => b.onclick = () => { radioSet(+b.dataset.st); radioOn(!!ride || homeMusic); renderPhone(); });
+  } else if (phoneApp === 'azbay') { renderAzBay(el, back);
   } else if (phoneApp === 'settings') {
     el.innerHTML = `${back}<h4>Settings</h4>
       <button class="ph-row" id="stSound"><span>Sound</span><b>${settings.sound ? 'On' : 'Off'}</b></button>
@@ -5927,7 +6021,7 @@ function saveGame() {
   store.set('bc_save', save); store.set('bc_arsenal', arsenal); store.set('bc_cars', garage);
 }
 // auto-update: bookmarks and home-screen apps can hold on to an old copy. Check version.json (never cached) and reload once if newer.
-const BUILD = 96;
+const BUILD = 98;
 function checkUpdate() {
   fetch('version.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(j => {
     if (!(j.v > BUILD)) return;
