@@ -591,7 +591,7 @@ body.phone-out #mmWrap { opacity: 0; transition: opacity .1s; }
 /* sat-nav strip on the phone-map: distance big, where you're going under it */
 #mmNav { position: absolute; left: 0; right: 0; bottom: 0; padding: 4px 6px 5px 6px; background: linear-gradient(transparent, rgba(10,10,24,.85) 30%); display: flex; flex-direction: column; align-items: flex-end; text-align: right; z-index: 2; pointer-events: none; text-shadow: 0 1px 2px #000; }
 #mmNav.hidden { display: none; }
-#mmNav b { font-size: 13px; font-weight: 900; color: #ffd23f; line-height: 1.1; }
+#mmNav b { font-size: 13px; font-weight: 900; color: #c99bff; line-height: 1.1; text-shadow: 0 1px 2px rgba(0,0,0,.6); } /* same purple as the GPS line */
 #mmNav small { font-size: 8.5px; font-weight: 800; color: #fff; max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.15; }
 #mmWrap.navving #mmNav { padding-left: 48px; }
 #mmWrap:not(:has(#mmSpeed.hidden)) #mmNav { padding-left: 48px; }
@@ -961,3 +961,5 @@ body:has(#title) #sbBtn, body:has(#mg:not(.hidden)) #sbBtn { display: none; }
 #fareBtn svg { display: inline; vertical-align: -3px; margin-right: 4px; } #fareBtn small { font-size: 11px; opacity: .7; }
 @media (orientation: landscape) and (max-height: 540px) { #fareBtn { top: calc(150px + var(--sat, 0px)); } }
 #talkFace { position: absolute; top: -58px; right: 14px; width: 92px; height: 92px; border-radius: 50%; background: radial-gradient(circle at 50% 40%, #ffffff, #e9e3f2); border: 4px solid #2a1640; box-shadow: 0 6px 16px rgba(0,0,0,.25); z-index: 2; }
+
+#fareBtn .fb-top { display: flex; align-items: center; gap: 6px; } #fareBtn .fb-row { display: flex; gap: 8px; font-size: 12px; font-weight: 900; } #fareBtn .fb-row .t { color: #7a1f1f; } #fareBtn .fb-row .m { color: #1d6b34; }
