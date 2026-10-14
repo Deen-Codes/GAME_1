@@ -1,7 +1,7 @@
 // Modular car builder. Car faces +Z, sits on y=0, origin at the centre of the wheelbase.
 import * as THREE from '../lib/three.module.min.js';
-import { BASIC } from './character.js?v=197';
-import { patternTexture } from './gun.js?v=197';
+import { BASIC } from './character.js?v=198';
+import { patternTexture } from './gun.js?v=198';
 
 export const BODIES = {
   hatch:  { label: 'Hatchback', L: 3.8, W: 1.75, bh: 0.55, cl: 2.0, ch: 0.62, co: -0.4,  wr: 0.34, mass: 1.0 },
@@ -322,7 +322,15 @@ function buildTwo(c, B) {
   bx(0.05, 0.04, 0.04, revM, 0.07, kind === 'scooter' ? wr + 0.1 : seatY - 0.08, -wz - 0.03);
   return { group: grp, wheels, headM, tailM, revM, glow: null, length: L, width: B.W, height: barY + 0.1, wr, two: kind, seatY, barY, barZ, barW, crank };
 }
+// cars are drawn a size up from their old proportions so people fit in them; bikes, scooters and boats were already right
+export const CAR_SCALE = 1.2;
 export function buildCar(cfg) {
+  const r = buildCarRaw(cfg); if (r.two || r.boat) { r.s = 1; return r; }
+  const S = CAR_SCALE; r.group.scale.setScalar(S); r.s = S;
+  for (const k of ['length', 'width', 'height', 'wr', 'top', 'co', 'cl']) if (typeof r[k] === 'number') r[k] *= S; // world-size numbers (collisions, doors, smoke); local ones (seat, doors) scale with the group
+  return r;
+}
+function buildCarRaw(cfg) {
   const c = { ...DEFAULT_CAR, ...cfg };
   const B = BODIES[c.body] || BODIES.coupe;
   if (B.two) return buildTwo(c, B);
