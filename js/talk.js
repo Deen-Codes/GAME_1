@@ -1,8 +1,8 @@
 // Conversations staged like a Pokémon battle: they stand on a platform facing you,
 // you see the back of your own head in the foreground, subtitles type out, you pick replies.
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, setFace } from './character.js?v=189';
-import { sfx, audio } from './audio.js?v=189';
+import { buildCharacter, poseCharacter, disposeObject, setFace } from './character.js?v=190';
+import { sfx, audio } from './audio.js?v=190';
 
 const $ = id => document.getElementById(id);
 const BG = {
@@ -144,22 +144,26 @@ export class Talk {
     if (this.realCar) { const R = this.realCar, g = R.group, m = c => new THREE.MeshStandardMaterial({ color: c, roughness: 0.6 });
       g.traverse(o => { if (o.isMesh && o.material?.transparent) { o.material = o.material.clone(); o.material.opacity = 0.16; o.material.depthWrite = false; } }); // clear glass so you can see in
       if (R.glow) R.glow.visible = false;
-      // the game's cars are built a touch small next to people: scale this one up so you actually fit inside, head under the roof
-      const ch = Math.max(0.5, (R.height || 1.6) - (R.top ?? 0.9)), K = Math.min(2.1, Math.max(1.3, 1.42 / ch)); g.scale.setScalar(K);
-      const side = 1, sx = side * R.width * 0.21 * K, top = (R.top ?? 0.9) * K, sz = ((R.co ?? 0) - 0.08) * K; this.rc = { sx, top: top + 0.02, sz, side, K, W: R.width * K };
+      // where the side windows actually are on this car (any body): the glass panes' box, in the car's own space
+      g.updateMatrixWorld(true); const gb = new THREE.Box3(), tmp = new THREE.Box3(); let any = false;
+      g.traverse(o => { if (o.isMesh && o.material?.transparent && o !== R.glow) { tmp.setFromObject(o); gb.union(tmp); any = true; } });
+      const y0 = any ? gb.min.y : (R.top ?? 0.9), y1 = any ? gb.max.y : (R.height || 1.6), z0 = any ? gb.min.z : -0.8, z1 = any ? gb.max.z : 0.8;
+      // the game's cars are built small next to people: scale this one so the window is tall enough for your head and shoulders
+      const open = R.topless || !any || y1 - y0 < 0.25, K = open ? 1.5 : Math.min(3.6, Math.max(1.3, 1.32 / (y1 - y0))); g.scale.setScalar(K);
+      const side = 1, sx = side * R.width * 0.21 * K, top = (open ? (R.top ?? y0) : y0) * K, sz = (z0 + (z1 - z0) * (R.body === 'van' ? 0.86 : 0.58)) * K; /* vans: the cab's right at the front */ this.rc = { sx, top: top + 0.02, sz, side, K, W: R.width * K, win: (y1 - y0) * K };
       const I = new THREE.Group(); // the cabin: seat, dash, console and a proper wheel, at people scale
       const seatB = new THREE.Mesh(new THREE.BoxGeometry(0.52, 0.14, 0.52), m('#2a2b30')); seatB.position.set(sx, top + 0.07, sz); I.add(seatB);
       const back = new THREE.Mesh(new THREE.BoxGeometry(0.52, 0.78, 0.12), m('#2a2b30')); back.position.set(sx, top + 0.5, sz - 0.32); back.rotation.x = -0.15; I.add(back);
       const hr = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.2, 0.1), m('#2a2b30')); hr.position.set(sx, top + 1.0, sz - 0.4); I.add(hr);
       const seat2 = seatB.clone(); seat2.position.x = -sx; I.add(seat2); const back2 = back.clone(); back2.position.x = -sx; I.add(back2);
-      const dash = new THREE.Mesh(new THREE.BoxGeometry(R.width * K * 0.86, 0.26, 0.42), m('#23252b')); dash.position.set(0, top + 0.52, sz + 0.9); I.add(dash);
+      const dash = new THREE.Mesh(new THREE.BoxGeometry(R.width * K * 0.86, 0.26, 0.42), m('#23252b')); dash.position.set(0, top + 0.5, sz + 0.88); I.add(dash);
       const cons = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.32, 0.8), m('#1d1f24')); cons.position.set(0, top + 0.16, sz + 0.2); I.add(cons);
       const floor = new THREE.Mesh(new THREE.BoxGeometry(R.width * K * 0.86, 0.04, 1.8), m('#16171b')); floor.position.set(0, top - 0.02, sz + 0.3); I.add(floor);
-      const wheel = new THREE.Group(); wheel.position.set(sx, top + 0.62, sz + 0.56); wheel.rotation.x = -0.5; // square-on to you, column dead centre behind it
+      const wheel = new THREE.Group(); wheel.position.set(sx, top + 0.72, sz + 0.56); wheel.rotation.x = 0.5; // square-on to you, column dead centre behind it
       const rim = new THREE.Mesh(new THREE.TorusGeometry(0.18, 0.026, 8, 24), m('#16161a')); wheel.add(rim);
       const hub = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 0.05, 12), m('#3a3d45')); hub.rotation.x = Math.PI / 2; wheel.add(hub);
       const spoke = new THREE.Mesh(new THREE.BoxGeometry(0.34, 0.03, 0.02), m('#3a3d45')); wheel.add(spoke);
-      const colm = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 0.3, 8), m('#16161a')); colm.rotation.x = Math.PI / 2; colm.position.z = 0.16; wheel.add(colm);
+      const colm = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 0.3, 8), m('#16161a')); colm.rotation.x = Math.PI / 2; colm.position.z = 0.16; wheel.add(colm); // (wheel tilted top-away, so this runs forward and DOWN into the dash)
       I.add(wheel); this.wheel = rim;
       const root = new THREE.Group(); root.add(g); root.add(I); this.scene.add(root); this.carRoot = root;
     }
@@ -172,7 +176,7 @@ export class Talk {
       const back = new THREE.Mesh(new THREE.BoxGeometry(0.62, 0.9, 0.16), m('#2a2b30')); back.position.set(0, 0.98, -0.46); back.rotation.x = -0.15; g.add(back);
       const head = new THREE.Mesh(new THREE.BoxGeometry(0.36, 0.26, 0.12), m('#2a2b30')); head.position.set(0, 1.58, -0.56); g.add(head);
       const dash = new THREE.Mesh(new THREE.BoxGeometry(1.4, 0.3, 0.5), m('#1a1b20')); dash.position.set(0.3, 0.82, 1.05); g.add(dash);
-      const wheel = new THREE.Mesh(new THREE.TorusGeometry(0.22, 0.035, 8, 22), m('#16161a')); wheel.position.set(0, 1.08, 0.62); wheel.rotation.x = -0.5; g.add(wheel); this.wheel = wheel;
+      const wheel = new THREE.Mesh(new THREE.TorusGeometry(0.22, 0.035, 8, 22), m('#16161a')); wheel.position.set(0, 1.08, 0.62); wheel.rotation.x = 0.5; g.add(wheel); this.wheel = wheel;
       const col = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.5, 8), m('#16161a')); col.rotation.x = Math.PI / 2; col.position.z = 0.26; wheel.add(col); // the column runs straight out of the centre of the wheel
       const spoke = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.04, 0.03), m('#3a3d45')); wheel.add(spoke);
       this.seatG = g; this.scene.add(g);
@@ -186,8 +190,8 @@ export class Talk {
       }
       const dash = new THREE.Mesh(new THREE.BoxGeometry(1.9, 0.22, 0.45), m('#2b2d33')); dash.position.set(0, 0.62, 1.05); g.add(dash);
       const well = new THREE.Mesh(new THREE.BoxGeometry(1.9, 0.5, 0.1), m('#22242a')); well.position.set(0, 0.26, 1.2); g.add(well);
-      const col = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.42, 8), m('#16161a')); col.position.set(0.45, 0.85, 0.85); col.rotation.x = -1.1; g.add(col);
       const wheel = new THREE.Mesh(new THREE.TorusGeometry(0.2, 0.035, 8, 22), m('#16161a')); wheel.position.set(0.45, 1.0, 0.62); wheel.rotation.x = 0.45; g.add(wheel); this.wheel = wheel;
+      const col = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.42, 8), m('#16161a')); col.rotation.x = Math.PI / 2; col.position.z = 0.22; wheel.add(col); // straight out of the hub, down into the dash
       const body = car.color || '#30323a';
       const roof = new THREE.Mesh(new THREE.BoxGeometry(2.0, 0.08, 1.6), m(body)); roof.position.set(0, 2.05, 0.1); g.add(roof);
       const hood = new THREE.Mesh(new THREE.BoxGeometry(2.1, 0.12, 0.7), m(body)); hood.position.set(0, 0.76, 1.55); g.add(hood); // bonnet in your car's paint
@@ -342,8 +346,8 @@ export class Talk {
   realCarPose(n, y) {
     const { sx, top, sz, side, W } = this.rc, drv = this.think ? n : y, other = this.think ? null : n, talkingMe = this.think ? this.talking === 'npc' : this.talking === 'you';
     drv.root.position.set(sx, 0, sz + 0.02); drv.root.rotation.set(0, 0, 0);
-    const legLen = drv.legLen || 0.86; drv.root.position.y = top - 0.04 - legLen + 0.03; // sat low in the seat, head well under the roof
-    drv.legL.pivot.rotation.set(-1.4, 0, 0.05); drv.legR.pivot.rotation.set(-1.4, 0, -0.05); drv.legL.knee.rotation.x = 1.25; drv.legR.knee.rotation.x = 1.25; if (drv.hips) drv.hips.rotation.x = 0;
+    const legLen = drv.legLen || 0.86; drv.root.position.y = top + 0.14 - legLen + 0.03; // hips on the cushion
+    drv.legL.pivot.rotation.set(-1.5, 0, 0.05); drv.legR.pivot.rotation.set(-1.5, 0, -0.05); drv.legL.knee.rotation.x = 1.35; drv.legR.knee.rotation.x = 1.35; if (drv.hips) drv.hips.rotation.x = 0;
     drv.armR.pivot.rotation.set(-1.05, 0, -0.12); if (drv.armR.elbow) drv.armR.elbow.rotation.set(-0.55, 0, 0); // one hand on the wheel
     if (this.phone) { drv.armL.pivot.rotation.set(-0.85, -0.15, 0.42); if (drv.armL.elbow) drv.armL.elbow.rotation.set(-2.6, 0, 0); drv.head.rotation.set(talkingMe ? Math.sin(this.t * 11) * 0.06 : 0, 0.45, 0.1); } // phone at the ear nearest the window
     else { drv.armL.pivot.rotation.set(-1.05, 0, 0.12); if (drv.armL.elbow) drv.armL.elbow.rotation.set(-0.55, 0, 0); drv.head.rotation.set(talkingMe ? Math.sin(this.t * 11) * 0.06 : 0, other ? side * 1.1 : 0.2, 0); }
@@ -353,7 +357,7 @@ export class Talk {
       this.cam.position.set(side * (W / 2 + 3.2), top + 1.0, sz + 4.2); this.cam.lookAt(sx + side * 0.75, top + 0.62, sz + 0.2);
     } else {
       if (other) other.root.visible = false; // a phone call: it's just you in the car
-      this.cam.position.set(sx + side * 2.15, top + 0.82, sz + 0.6); this.cam.lookAt(sx - side * 0.05, top + 0.66, sz + 0.2); // through the window: head, shoulders and the hand on the wheel
+      this.cam.position.set(sx + side * 2.1, top + 1.02, sz + 0.65); this.cam.lookAt(sx - side * 0.05, top + 0.84, sz + 0.2); // through the window: head, shoulders and the hand on the wheel
     }
   }
   carPose(n, y) {
