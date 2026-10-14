@@ -1,28 +1,28 @@
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=144';
-import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun, partEffects, partPerk } from './gun.js?v=144';
-import { buildCar, computeCarStats, carStatBars, carClass, carPartEffects, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=144';
-import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, WIND_U, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=144';
-import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=144';
-import { buildPanel, renderStats } from './ui.js?v=144';
-import { Input } from './input.js?v=144';
-import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime, animalCall } from './audio.js?v=144';
-import { runMinigame } from './minigames.js?v=144';
-import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk, setReservedNames, seededLook } from './peds.js?v=144';
-import { citizens, whereNow } from './citizens.js?v=144';
-import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=144';
-import { findRoute } from './nav.js?v=144';
-import { COURSES, CAREERS, QUIZ } from './careers.js?v=144';
-import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=144';
-import { attachWheel } from './wheel.js?v=144';
-import { GROUND_U } from './groundtex.js?v=144';
-import { Animals, makeAnimalMesh } from './animals.js?v=144';
-import { Talk } from './talk.js?v=144';
-import { incomingText, classify, textOptions, textReply } from './texts.js?v=144';
-import { svg, drawIcon } from './icons.js?v=144';
-import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=144';
-import { FURN, CATALOG } from './furniture.js?v=144';
-import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=144';
+import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=145';
+import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun, partEffects, partPerk } from './gun.js?v=145';
+import { buildCar, computeCarStats, carStatBars, carClass, carPartEffects, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=145';
+import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, WIND_U, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=145';
+import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=145';
+import { buildPanel, renderStats } from './ui.js?v=145';
+import { Input } from './input.js?v=145';
+import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime, animalCall } from './audio.js?v=145';
+import { runMinigame } from './minigames.js?v=145';
+import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk, setReservedNames, seededLook } from './peds.js?v=145';
+import { citizens, whereNow } from './citizens.js?v=145';
+import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=145';
+import { findRoute } from './nav.js?v=145';
+import { COURSES, CAREERS, QUIZ } from './careers.js?v=145';
+import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=145';
+import { attachWheel } from './wheel.js?v=145';
+import { GROUND_U } from './groundtex.js?v=145';
+import { Animals, makeAnimalMesh } from './animals.js?v=145';
+import { Talk } from './talk.js?v=145';
+import { incomingText, classify, textOptions, textReply } from './texts.js?v=145';
+import { svg, drawIcon } from './icons.js?v=145';
+import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=145';
+import { FURN, CATALOG } from './furniture.js?v=145';
+import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=145';
 
 const $ = id => document.getElementById(id);
 let inside = null, editMode = false, held = null, pendingCar = false, homeMusic = false, phoneBadge = 0;
@@ -1822,17 +1822,74 @@ function updateAngry(dt) {
     } else { p.state = 'chase'; p.tx = tgt.x; p.tz = tgt.z; }
   }
 }
+// ---------------- cutscenes in the real world: the minigame overlay goes see-through and the camera moves in close
+const cutCam = new THREE.PerspectiveCamera(46, 1, 0.1, 500);
+function cutRender(shake = 0) { cutCam.aspect = W / H; cutCam.updateProjectionMatrix(); const o = cutCam.position.clone(); if (shake > 0) cutCam.position.add(new THREE.Vector3(rand(-1, 1) * shake, rand(-1, 1) * shake, rand(-1, 1) * shake)); renderer.render(G.scene, cutCam); cutCam.position.copy(o); }
+function toScreen(v) { const q = v.clone().project(cutCam); return [(q.x + 1) / 2 * W, (1 - q.y) / 2 * H]; }
+function armPose(arm, lift, bend) { arm.pivot.rotation.set(lift, 0, 0); if (arm.elbow) arm.elbow.rotation.set(bend, 0, 0); }
+// breaking into a parked car: you're stood at the window, mash the screen and he punches it in
+function smashCut(p) {
+  ensureCarLib(); const cfg = carLib[Math.floor(p.seed * carLib.length)].cfg, car = buildCar(cfg), rot = p.rot;
+  car.group.position.set(p.x, 0.17, p.z); car.group.rotation.y = rot; dyn.add(car.group); car.group.updateMatrixWorld(true); if (p.mesh) p.mesh.visible = false;
+  const R = new THREE.Vector3(Math.cos(rot), 0, -Math.sin(rot)), F = new THREE.Vector3(Math.sin(rot), 0, Math.cos(rot)), side = Math.sign((P.x - p.x) * R.x + (P.z - p.z) * R.z) || 1;
+  let glass = null, gc = null, best = -1; const tmp = new THREE.Box3(), c = new THREE.Vector3();
+  car.group.traverse(m => { if (!m.isMesh || !m.material.transparent || m.material.opacity <= 0.5) return; tmp.setFromObject(m); tmp.getCenter(c); const lat = (c.x - p.x) * R.x + (c.z - p.z) * R.z, fw = (c.x - p.x) * F.x + (c.z - p.z) * F.z; const sc = lat * side - Math.abs(fw - 0.2) * 0.3; if (lat * side > 0.2 && sc > best) { best = sc; glass = m; gc = c.clone(); } });
+  if (!gc) gc = new THREE.Vector3(p.x, 1.2, p.z).addScaledVector(R, side * car.width / 2);
+  const n = R.clone().multiplyScalar(side), stand = gc.clone().addScaledVector(n, 0.78), face = Math.atan2(-n.x, -n.z);
+  { const fs = (P.x - p.x) * F.x + (P.z - p.z) * F.z >= 0 ? 1 : -1; cutCam.position.copy(gc).addScaledVector(n, 3.3).addScaledVector(F, 3.6 * fs).add(new THREE.Vector3(0, 0.8, 0)); const la = gc.clone().addScaledVector(n, 0.42); cutCam.lookAt(la.x, la.y - 0.1, la.z); } // side-on: you, the window and the car door in shot
+  const need = 6; let hits = 0, punch = 0, arm = 0, shake = 0, done = false, endT = 0; const cracks = [];
+  return { see: true, title: 'Break in', hint: 'Mash the screen to punch the window in!', time: 7, car, glass, side,
+    init() {}, down() { if (done) return; hits++; punch = 1; arm = 1 - arm; shake = 0.05; sfx.crack(); navigator.vibrate?.(25);
+      const k = 30 + hits * 14, ox = rand(-0.5, 0.5) * 40, oy = rand(-0.5, 0.5) * 30; for (let i = 0; i < 4 + hits; i++) { const a = rand(0, 6.28), L = rand(0.3, 1) * k; const pts = [[ox, oy]]; let px = ox, py = oy; for (let q = 0; q < 4; q++) { px += Math.cos(a + rand(-0.4, 0.4)) * L / 4; py += Math.sin(a + rand(-0.4, 0.4)) * L / 4; pts.push([px, py]); } cracks.push(pts); }
+      if (hits >= need) { done = true; endT = 1; sfx.smash(); navigator.vibrate?.([40, 30, 60]); if (glass) glass.visible = false; cracks.length = 0; spawnParticles(gc.x, gc.y, gc.z, ['#cfe8ff', '#9fd2ee', '#ffffff'], 40, 3, 1.2, 0.12, -6); } },
+    update(dt) { punch = Math.max(0, punch - dt * 5); shake = Math.max(0, shake - dt * 0.4); if (done) endT -= dt; return done && endT <= 0; },
+    frame(dt) {
+      if (heroW) heroW.group.visible = false; heroRoot.visible = true; heroRoot.position.set(stand.x, 0, stand.z); hero.root.rotation.set(0, face, 0); P.x = stand.x; P.z = stand.z; P.face = face;
+      poseCharacter(hero, { phase: 0, speed: 0, air: false, aim: 0, recoil: 0, t: time });
+      const pk = Math.sin(Math.min(1, punch) * Math.PI); // guard up, jab out
+      armPose(arm ? hero.armR : hero.armL, -1.5 - pk * 0.15, -(1 - pk) * 1.7); armPose(arm ? hero.armL : hero.armR, -1.25, -1.8); hero.torso.rotation.y = (arm ? -1 : 1) * pk * 0.25;
+      updateParticles?.(dt); cutRender(shake);
+    },
+    draw(cx) { if (!done) { const [x0, y0] = toScreen(gc); cx.strokeStyle = 'rgba(255,255,255,.92)'; cx.lineWidth = 2; for (const pts of cracks) { cx.beginPath(); cx.moveTo(x0 + pts[0][0], y0 + pts[0][1]); for (const q of pts) cx.lineTo(x0 + q[0], y0 + q[1]); cx.stroke(); } }
+      cx.fillStyle = '#fff'; cx.font = '900 30px system-ui'; cx.textAlign = 'center'; cx.shadowColor = 'rgba(0,0,0,.7)'; cx.shadowBlur = 10; cx.fillText(done ? 'IN!' : `${hits} / ${need}`, W / 2, H * 0.68); cx.shadowBlur = 0; },
+    result() { return { win: done, score: hits }; },
+    cleanup(win) { if (heroW) heroW.group.visible = true; dyn.remove(car.group); if (!win && p.mesh) p.mesh.visible = true; hero.torso.rotation.y = 0; } };
+}
 async function breakIntoParked(p) {
   setState('mini');
-  const r1 = await runMinigame('smash');
+  const cut = smashCut(p), r1 = await runMinigame(cut); cut.cleanup(r1.win);
   if (!r1.win) { setState('play'); toast(r1.quit ? 'You walked away' : 'Car alarm! Better leave it.'); if (!r1.quit) { peds.scare(p.x, p.z, 30); crime(0.6); } return; }
-  const r2 = await runMinigame('hotwire', { wires: Math.random() < 0.35 ? 4 : 3 });
+  const r2 = await runMinigame('hotwire', { wires: Math.random() < 0.35 ? 4 : 3, car: carLib[Math.floor(p.seed * carLib.length)].cfg });
   setState('play');
-  if (!r2.win) { toast(r2.quit ? 'You walked away' : 'Too slow, the alarm went off!'); peds.scare(p.x, p.z, 30); return; }
+  if (!r2.win) { toast(r2.quit ? 'You walked away' : 'Too slow, the alarm went off!'); peds.scare(p.x, p.z, 30); if (p.mesh) p.mesh.visible = true; return; }
   p.taken = true; if (p.mesh) p.mesh.parent?.remove(p.mesh); removeCollider(p.col);
-  ensureCarLib(); enterVehicle(makeVehicle(carLib[Math.floor(p.seed * carLib.length)].cfg, p.x, p.z, p.rot, false)); gainXP('driving', 5);
+  ensureCarLib(); const v = makeVehicle(carLib[Math.floor(p.seed * carLib.length)].cfg, p.x, p.z, p.rot, false);
+  { const R = new THREE.Vector3(Math.cos(p.rot), 0, -Math.sin(p.rot)), tmp = new THREE.Box3(), c = new THREE.Vector3(); let g = null, best = -1; v.b.group.updateMatrixWorld(true); v.b.group.traverse(m => { if (!m.isMesh || !m.material.transparent || m.material.opacity <= 0.5) return; tmp.setFromObject(m); tmp.getCenter(c); const lat = ((c.x - p.x) * R.x + (c.z - p.z) * R.z) * cut.side; if (lat > 0.2 && lat > best) { best = lat; g = m; } }); if (g) g.visible = false; } // the window stays smashed
+  enterVehicle(v); gainXP('driving', 5);
 }
-
+// workouts: mash the screen and watch yourself lift (or pound the heavy bag)
+function gymCut(o = {}) {
+  const bag = /bag/i.test(o.title || ''), face = P.face, fw = new THREE.Vector3(Math.sin(face), 0, Math.cos(face)), rt = new THREE.Vector3(Math.cos(face), 0, -Math.sin(face));
+  const base = new THREE.Vector3(P.x, P.y || 0, P.z);
+  cutCam.position.copy(base).addScaledVector(fw, 3.9).addScaledVector(rt, 1.8).add(new THREE.Vector3(0, 1.7, 0)); cutCam.lookAt(base.x, base.y + 1.3, base.z);
+  let barbell = null; if (!bag) { barbell = new THREE.Group(); const M1 = new THREE.MeshStandardMaterial({ color: '#c9ccd2', metalness: 0.8, roughness: 0.3 }), M2 = new THREE.MeshStandardMaterial({ color: '#16161b', roughness: 0.6 });
+    const bar = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.025, 1.6, 8), M1); bar.rotation.z = Math.PI / 2; barbell.add(bar); for (const sx of [-0.68, 0.68]) { const pl = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.2, 0.08, 16), M2); pl.rotation.z = Math.PI / 2; pl.position.x = sx; barbell.add(pl); } dyn.add(barbell); }
+  let bar = 0, reps = 0, pump = 0, arm = 0, punch = 0; const tmpA = new THREE.Vector3(), tmpB = new THREE.Vector3();
+  return { see: true, title: o.title || 'Workout', hint: bag ? 'Mash the screen to hit the bag!' : 'Mash the screen to push the weight!', time: 18,
+    init() {}, down() { bar += bag ? 0.11 : 0.085; pump = 0.12; punch = 1; arm = 1 - arm; sfx.click(); if (bar >= 1) { bar = 0; reps++; sfx.coin(); navigator.vibrate?.(20); } },
+    update(dt) { bar = Math.max(0, bar - dt * 0.25); pump -= dt; punch = Math.max(0, punch - dt * 6); },
+    frame(dt) {
+      if (heroW) heroW.group.visible = false; heroRoot.visible = true; heroRoot.position.copy(base); hero.root.rotation.set(0, face, 0); poseCharacter(hero, { phase: 0, speed: 0, air: false, aim: 0, recoil: 0, t: time });
+      if (bag) { const pk = Math.sin(punch * Math.PI); armPose(arm ? hero.armR : hero.armL, -1.5 - pk * 0.1, -(1 - pk) * 1.7); armPose(arm ? hero.armL : hero.armR, -1.3, -1.8); }
+      else { const k = Math.min(1, bar * 1.15) * (1 - Math.max(0, pump) * 0.5), lift = -0.5 - k * 2.5; for (const A of [hero.armL, hero.armR]) armPose(A, lift, -1.2 * (1 - k)); hero.armL.pivot.rotation.z = 0.45; hero.armR.pivot.rotation.z = -0.45;
+        heroRoot.updateMatrixWorld(true); (hero.armL.hand || hero.armL.elbow).getWorldPosition(tmpA); (hero.armR.hand || hero.armR.elbow).getWorldPosition(tmpB); barbell.position.copy(tmpA).add(tmpB).multiplyScalar(0.5); barbell.rotation.set(0, face, 0); }
+      cutRender(pump > 0 ? 0.015 : 0);
+    },
+    draw(cx) { const w = W * 0.7, x = (W - w) / 2, y = H * 0.9; cx.fillStyle = 'rgba(0,0,0,.35)'; cx.fillRect(x, y, w, 16); cx.fillStyle = '#ff8a2a'; cx.fillRect(x, y, w * bar, 16);
+      cx.fillStyle = '#ffd23f'; cx.font = '900 30px system-ui'; cx.textAlign = 'center'; cx.shadowColor = 'rgba(0,0,0,.7)'; cx.shadowBlur = 10; cx.fillText(`Reps: ${reps}`, W / 2, H * 0.16); cx.shadowBlur = 0; },
+    result() { return { win: reps > 0, score: reps, money: reps * 25 }; },
+    cleanup() { if (heroW) heroW.group.visible = true; if (barbell) dyn.remove(barbell); } };
+}
 // ---------------- car damage: dents where you hit, smoke, fire, then it blows
 const BROKEN_LAMP = new THREE.MeshStandardMaterial({ color: '#2a2a30', roughness: 0.9 });
 function damageCar(v, amt, ix, iz) {
@@ -2667,7 +2724,7 @@ async function useFurn(item) {
   saveGame();
 }
 function homePartnerNear() { const n = inside?.npcs?.find(q => q.role === 'spouse'); return n && Math.hypot(n.x - P.x, n.z - P.z) < 9 ? n.name : null; }
-async function mini(kind, opts = {}) { setState('mini'); const r = await runMinigame(kind, opts); setState('play'); return r; }
+async function mini(kind, opts = {}) { setState('mini'); let r; if (kind === 'gym') { const g = gymCut(opts); r = await runMinigame(g); g.cleanup(); } else r = await runMinigame(kind, opts); setState('play'); return r; }
 function startEdit() { if (!inside?.prop) return; editMode = true; held = null; toast('Edit mode: pick up, move and rotate furniture.', 3); $('editBar').classList.remove('hidden'); }
 function endEdit() { if (held) { const p = holdPos(); if (fits(held.t, p.x, p.z, held.r)) placeHeld(true); else { storage.push({ t: held.t, c: held.c }); inside.h.group.remove(held.ghost); held = null; toast('No room there, so it went into storage.'); } } editMode = false; $('editBar').classList.add('hidden'); saveHome(); }
 function saveHome() { if (inside?.prop) { homes[inside.prop.id] = inside.h.furn.map(f => ({ t: f.t, x: f.x, z: f.z, r: f.r, c: f.c })); saveGame(); } }
@@ -2799,7 +2856,7 @@ async function doSpot(s) {
   }
   if ((s.kind === 'lift' || s.kind === 'bag' || s.kind === 'tread') && id === 'gym' && !gymMember()) { toast('Members only. Talk to the trainer to sign up ($120 for 30 days).', 3); return; }
   if ((s.kind === 'lift' || s.kind === 'bag' || s.kind === 'tread') && (stats.relDay['gym:' + dayN] || 0) >= GYM_DAILY) { toast(`You've done ${GYM_DAILY} workouts today. Your body needs to recover.`, 3); return; }
-  if (s.kind === 'lift' || s.kind === 'bag') { const r = await mini('gym', { title: s.kind === 'bag' ? 'Heavy Bag' : 'Bench Press' }); workout(r.score, 'lift'); gainXP('strength', r.score * 12); gainXP('health', r.score * (s.kind === 'bag' ? 6 : 3)); feed({ energy: -10, mood: 5 }); }
+  if (s.kind === 'lift' || s.kind === 'bag') { const r = await mini('gym', { title: s.kind === 'bag' ? 'Heavy Bag' : 'Barbell Press' }); workout(r.score, 'lift'); gainXP('strength', r.score * 12); gainXP('health', r.score * (s.kind === 'bag' ? 6 : 3)); feed({ energy: -10, mood: 5 }); }
   if (s.kind === 'tread') { const r = await mini('tread'); workout(r.score / 10, 'cardio'); gainXP('stamina', Math.round(r.score * 0.7)); gainXP('health', Math.round(r.score * 0.35)); feed({ energy: -12, mood: 5 }); }
   if (s.kind === 'blackjack' || s.kind === 'slots') { if (money < 10) { toast('You need at least $10 to play'); return; } const r = await mini(s.kind, { money }); if (r.money) addMoney(r.money); feed({ mood: r.money > 0 ? 8 : -3 }); }
   if (s.kind === 'dj') { const r = await mini('beat', { title: 'Neon Room DJ set' }); if (r.money) addMoney(r.money); gainXP('charm', r.score); feed({ mood: 10, energy: -6 }); }
@@ -5076,7 +5133,7 @@ function wooBed(W, dt) {
   }
   if (W.stage === 'undress') { // Sims spin: a twirl, a puff of sparkles, and the pixel blur goes on
     const sp = ease(cl(t / 0.9)) * Math.PI * 4;
-    heroLimbs(0, 0); herLimbs(0, 0); poseHips(); hero.armL.pivot.rotation.z = -0.5; hero.armR.pivot.rotation.z = 0.5; date.fig.limbs[2].rotation.z = -0.5; date.fig.limbs[3].rotation.z = 0.5;
+    heroLimbs(0, 0); herLimbs(0, 0); poseHips(); hero.armL.pivot.rotation.z = 0.45; hero.armR.pivot.rotation.z = -0.45; date.fig.limbs[2].rotation.z = -0.5; date.fig.limbs[3].rotation.z = 0.5;
     place(me, Math.sin(cl(t / 0.9) * Math.PI) * 0.15, faceMe + sp, 0); place(her, Math.sin(cl(t / 0.9) * Math.PI) * 0.15, faceHer - sp, 0);
     if (t > 0.45 && !W.puff) { W.puff = true; for (const q of [me, her]) spawnParticles(q.x, 1.1, q.z, ['#ffffff', '#ffd1e8', '#ff6fb5', '#ffd23f'], 18, 2.2, 1.2, 0.14, -1); }
     blurAt(me, 0.95, t > 0.45); blurAt(her, 0.95, t > 0.45);
@@ -6545,7 +6602,7 @@ function saveGame() {
   store.set('bc_save', save); store.set('bc_arsenal', arsenal); store.set('bc_cars', garage);
 }
 // auto-update: bookmarks and home-screen apps can hold on to an old copy. Check version.json (never cached) and reload once if newer.
-const BUILD = 144;
+const BUILD = 145;
 function checkUpdate() {
   fetch('version.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(j => {
     if (!(j.v > BUILD)) return;
@@ -6895,4 +6952,4 @@ function frame(now) {
 }
 startGame();
 requestAnimationFrame(frame);
-window.__game = { get animals() { return animals; }, crime, WANT, copCars, cops, pitFight, busted, fam, famNewDay, makeOfficial, talkFamily, get dayN() { return dayN; }, set dayN(v) { dayN = v; }, scene: G.scene, cam: G.cam, snap: () => updateCamera(0, true), get state() { return state; }, P, input, get ride() { return ride; }, get myCar() { return myCar; }, get traffic() { return traffic; }, peds, setTime: h => { clockH = h; }, openCustom, enterVehicle, exitCar, get money() { return money; }, set money(v) { money = v; }, openPlace, PLACES, PROPERTIES, runMinigame, get action() { return action; }, arsenal, selectWeapon, openPhone, setWaypoint, get route() { return route; }, talkToPed, talk, doAction, stats, get inside() { return inside; }, enterInterior, exitInterior, get customers() { return customers; }, newCustomer, startEdit, endEdit, get job() { return job; }, gainXP, storage, doSpot, useFurn, phoneGo, talkVenue, talkJob, openPlace, talkCustomer, startJob, openCarShop, damageCar, repairCar, addFire, get fires() { return fires; }, get ems() { return ems; }, get vehicles() { return vehicles; }, makeVehicle, makeCop, prisonFight, life, startDealMeet, get lifeAct() { return lifeAct; }, get train() { return train; }, get trainRide() { return trainRide; }, boardTrain, eventReset: () => { eventOpen = false; }, bodyCheck, attendClass, talkAdmissions, edu, startDance, get dance() { return dance; }, radioSet: i => { radioSet(i); radioOn(true); }, get zoom() { return zoom; }, set zoom(z) { zoom = z; }, DEFAULT_CAR, setState: x => setState(x), get jail() { return stats.jail; }, witness, personOf, dealHeat, trafficStop, carNear, carTop, startDate, openArmoryT: () => openArmory(PLACES.find(q => q.kind === "guns"), null), get rinfo() { return { calls: renderer.info.render.calls, tris: renderer.info.render.triangles, geos: renderer.info.memory.geometries, tex: renderer.info.memory.textures }; }, saveGameT: () => saveGame(), maybePregnantT: (id, t) => maybePregnant(id, t), runEventT: (id, d) => runEventTalk(EVENT_BY_ID[id], d || {}, { name: 'Tester', tag: 'Test', cfg: null }, null), get pet() { return pet; }, CIT: () => CIT(), citizenRecord: c => citizenRecord(c), get town() { return town(); }, get ownedT() { return owned; }, openGunsmithT: (s, p, n) => openGunsmith(s, p, n), ambient, get ambEl() { return ambEl; }, openTradeT: p => openTrade(p), get stashT() { return stash; }, startWooT: (k, b) => startWoo(k, b), get woo() { return woo; }, endDate, dateCall, addDateContact, get phoneThread() { return phoneThread; }, set phoneThread(v) { phoneThread = v; }, talkDate, get date() { return date; }, get carAnim() { return carAnim; }, lifeApi, startShower, bizNewDay, subs, forceWanted, get buddy() { return buddy; }, startBuddy, textMe, toast, levelUp, closePhone, bringCar, useFurn, damageCar, debtorScene, get debtor() { return debtor; }, camBlocked, get camYaw() { return camYaw; }, ev: { evChase, evMug, evRobbery, evGang, evBusk, evCrash, evFire, evMarket, evParade, evProtest, streetEvents } };
+window.__game = { get animals() { return animals; }, crime, WANT, copCars, cops, pitFight, busted, fam, famNewDay, makeOfficial, talkFamily, get dayN() { return dayN; }, set dayN(v) { dayN = v; }, scene: G.scene, cam: G.cam, snap: () => updateCamera(0, true), get state() { return state; }, P, input, get ride() { return ride; }, get myCar() { return myCar; }, get traffic() { return traffic; }, peds, setTime: h => { clockH = h; }, openCustom, enterVehicle, exitCar, get money() { return money; }, set money(v) { money = v; }, openPlace, PLACES, PROPERTIES, runMinigame, get action() { return action; }, arsenal, selectWeapon, openPhone, setWaypoint, get route() { return route; }, talkToPed, talk, doAction, stats, get inside() { return inside; }, enterInterior, exitInterior, get customers() { return customers; }, newCustomer, startEdit, endEdit, get job() { return job; }, gainXP, storage, doSpot, useFurn, phoneGo, talkVenue, talkJob, openPlace, talkCustomer, startJob, openCarShop, damageCar, repairCar, addFire, get fires() { return fires; }, get ems() { return ems; }, get vehicles() { return vehicles; }, makeVehicle, makeCop, prisonFight, life, startDealMeet, get lifeAct() { return lifeAct; }, get train() { return train; }, get trainRide() { return trainRide; }, boardTrain, eventReset: () => { eventOpen = false; }, bodyCheck, attendClass, talkAdmissions, edu, startDance, get dance() { return dance; }, radioSet: i => { radioSet(i); radioOn(true); }, get zoom() { return zoom; }, set zoom(z) { zoom = z; }, DEFAULT_CAR, setState: x => setState(x), get jail() { return stats.jail; }, witness, personOf, dealHeat, trafficStop, carNear, carTop, startDate, smashT: () => { const cx = Math.floor(P.x / CHUNK), cz = Math.floor(P.z / CHUNK); let b = null, bd = 1e9; for (let i = -2; i <= 2; i++) for (let j = -2; j <= 2; j++) for (const q of parkedIn(cx + i, cz + j)) { const d = Math.hypot(q.x - P.x, q.z - P.z); if (!q.taken && d < bd) { bd = d; b = q; } } if (!b) return "none"; P.x = b.x + Math.cos(b.rot) * 1.8; P.z = b.z - Math.sin(b.rot) * 1.8; breakIntoParked(b); return "ok"; }, gymT: o => mini("gym", o || {}), openArmoryT: () => openArmory(PLACES.find(q => q.kind === "guns"), null), get rinfo() { return { calls: renderer.info.render.calls, tris: renderer.info.render.triangles, geos: renderer.info.memory.geometries, tex: renderer.info.memory.textures }; }, saveGameT: () => saveGame(), maybePregnantT: (id, t) => maybePregnant(id, t), runEventT: (id, d) => runEventTalk(EVENT_BY_ID[id], d || {}, { name: 'Tester', tag: 'Test', cfg: null }, null), get pet() { return pet; }, CIT: () => CIT(), citizenRecord: c => citizenRecord(c), get town() { return town(); }, get ownedT() { return owned; }, openGunsmithT: (s, p, n) => openGunsmith(s, p, n), ambient, get ambEl() { return ambEl; }, openTradeT: p => openTrade(p), get stashT() { return stash; }, startWooT: (k, b) => startWoo(k, b), get woo() { return woo; }, endDate, dateCall, addDateContact, get phoneThread() { return phoneThread; }, set phoneThread(v) { phoneThread = v; }, talkDate, get date() { return date; }, get carAnim() { return carAnim; }, lifeApi, startShower, bizNewDay, subs, forceWanted, get buddy() { return buddy; }, startBuddy, textMe, toast, levelUp, closePhone, bringCar, useFurn, damageCar, debtorScene, get debtor() { return debtor; }, camBlocked, get camYaw() { return camYaw; }, ev: { evChase, evMug, evRobbery, evGang, evBusk, evCrash, evFire, evMarket, evParade, evProtest, streetEvents } };

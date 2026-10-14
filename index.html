@@ -12,7 +12,7 @@
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon.png">
 <title>Bay City</title>
-<link rel="stylesheet" href="css/style.css?v=144">
+<link rel="stylesheet" href="css/style.css?v=145">
 </head>
 <body>
 <canvas id="c"></canvas>
@@ -96,9 +96,10 @@
 <div id="dealUI" class="screen hidden"><div class="deal-card scroll"><div class="deal-head"><b id="dealTitle">Trade</b><button class="pill" id="dealClose">Done</button></div><div id="dealBody"></div></div></div>
 
 <div id="mg" class="screen hidden">
-  <div class="mg-head"><b id="mgTitle">Minigame</b><button class="pill" id="mgQuit">Quit</button></div>
-  <div class="mg-timer"><i id="mgTimer"></i></div>
   <canvas id="mgCanvas"></canvas>
+  <div class="mg-timer"><i id="mgTimer"></i></div>
+  <div class="mg-head"><b id="mgTitle">Minigame</b><button class="pill" id="mgQuit">Quit</button></div>
+  <div id="mgHint"></div><div id="mgBanner"></div>
   <div class="card mg-card hidden" id="mgCard"></div>
 </div>
 
@@ -111,6 +112,6 @@
 
 <div id="rotate"><div>Turn your phone upright<br><small>Bay City is played in portrait</small></div></div>
 
-<script type="module" src="js/main.js?v=144"></script>
+<script type="module" src="js/main.js?v=145"></script>
 </body>
 </html>

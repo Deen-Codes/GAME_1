@@ -1,6 +1,6 @@
 // Touch minigames in the spirit of Chinatown Wars. Each one draws on a 2D canvas overlay.
-import { sfx, audio } from './audio.js?v=144';
-import { drawIcon } from './icons.js?v=144';
+import { sfx, audio } from './audio.js?v=145';
+import { drawIcon } from './icons.js?v=145';
 
 const rnd = (a, b) => a + Math.random() * (b - a);
 const pick = a => a[Math.floor(Math.random() * a.length)];
@@ -86,39 +86,56 @@ const GAMES = {
   },
 
   // ---------------------------------------------------------------- hotwire
-  hotwire: (o = {}) => {
-    let W, H; const cols = ['#ff3b4a', '#3d8bff', '#ffd23f', '#4cd964'].slice(0, o.wires || 3);
-    let left, right, drag = null, done = false, endT = 0, sparks = [];
+  hotwire: (o = {}) => { // lying in the footwell looking up under the steering column: the panel's off, wires hang out
+    let W, H; const cols = ['#ff3b4a', '#3d8bff', '#ffd23f', '#4cd964'].slice(0, o.wires || 3), trim = o.car?.accentColor || '#2a2c34', body = o.car?.bodyColor || '#30323a';
+    let left, right, drag = null, done = false, endT = 0, sparks = [], light = null, crank = 0;
     return {
-      title: 'Hotwire it', hint: 'Drag each wire to its matching colour', time: 10,
+      title: 'Hotwire it', hint: 'Under the dash: drag each wire to the terminal of the same colour', time: 10,
       init(w, h) {
-        W = w; H = h; const n = cols.length, top = H * 0.25, gap = H * 0.5 / (n - 1 || 1);
-        left = cols.map((c, i) => ({ c, x: W * 0.16, y: top + i * gap, done: false }));
+        W = w; H = h; const n = cols.length, top = H * 0.4, gap = H * 0.32 / (n - 1 || 1);
+        left = cols.map((c, i) => ({ c, x: W * 0.3, y: top + i * gap, done: false }));
         const order = cols.map((c, i) => i).sort(() => Math.random() - 0.5);
-        right = order.map((ci, i) => ({ c: cols[ci], x: W * 0.84, y: top + i * gap }));
+        right = order.map((ci, i) => ({ c: cols[ci], x: W * 0.8, y: top + 10 + i * gap }));
+        light = { x: W * 0.5, y: H * 0.5 };
       },
-      down(x, y) { for (const l of left) if (!l.done && Math.hypot(x - l.x, y - l.y) < 40) { drag = { l, x, y }; sfx.click(); } },
-      move(x, y) { if (drag) { drag.x = x; drag.y = y; } },
+      down(x, y) { light = { x, y }; for (const l of left) if (!l.done && Math.hypot(x - l.x - 30, y - l.y) < 44) { drag = { l, x, y }; sfx.click(); } },
+      move(x, y) { light = { x, y }; if (drag) { drag.x = x; drag.y = y; } },
       up(x, y) {
         if (!drag) return;
-        const t = right.find(r => Math.hypot(x - r.x, y - r.y) < 44);
-        if (t && t.c === drag.l.c) { drag.l.done = true; drag.l.tx = t.x; drag.l.ty = t.y; sfx.spark(); navigator.vibrate?.(20); for (let i = 0; i < 14; i++) sparks.push({ x: t.x, y: t.y, vx: rnd(-160, 160), vy: rnd(-200, 60), l: 0.5 }); }
-        else if (t) { sfx.fail(); navigator.vibrate?.([10, 30, 10]); }
+        const t = right.find(r => Math.hypot(x - r.x, y - r.y) < 46);
+        if (t && t.c === drag.l.c) { drag.l.done = true; drag.l.tx = t.x; drag.l.ty = t.y; sfx.spark(); navigator.vibrate?.(20); for (let i = 0; i < 18; i++) sparks.push({ x: t.x, y: t.y, vx: rnd(-180, 180), vy: rnd(-220, 40), l: rnd(0.2, 0.5) }); }
+        else if (t) { sfx.fail(); navigator.vibrate?.([10, 30, 10]); for (let i = 0; i < 8; i++) sparks.push({ x: t.x, y: t.y, vx: rnd(-120, 120), vy: rnd(-160, 20), l: 0.25 }); }
         drag = null;
-        if (left.every(l => l.done) && !done) { done = true; endT = 0.8; sfx.engineStart(); }
+        if (left.every(l => l.done) && !done) { done = true; endT = 1.1; sfx.engineStart(); navigator.vibrate?.([30, 40, 80]); }
       },
-      update(dt) { for (const s of sparks) { s.vy += 600 * dt; s.x += s.vx * dt; s.y += s.vy * dt; s.l -= dt; } sparks = sparks.filter(s => s.l > 0); if (done) endT -= dt; return done && endT <= 0; },
+      update(dt) { for (const s of sparks) { s.vy += 700 * dt; s.x += s.vx * dt; s.y += s.vy * dt; s.l -= dt; } sparks = sparks.filter(s => s.l > 0); if (done) { endT -= dt; crank += dt; } return done && endT <= 0; },
       draw(c) {
-        rr(c, W * 0.06, H * 0.15, W * 0.88, H * 0.7, 22); c.fillStyle = '#20232c'; c.fill();
-        c.strokeStyle = '#3a3e4c'; c.lineWidth = 2; for (let i = 0; i < 6; i++) { c.beginPath(); c.moveTo(W * 0.1, H * 0.2 + i * H * 0.12); c.lineTo(W * 0.9, H * 0.2 + i * H * 0.12); c.stroke(); }
-        for (const r of right) { c.fillStyle = '#555a66'; rr(c, r.x - 6, r.y - 26, 46, 52, 10); c.fill(); c.fillStyle = r.c; c.beginPath(); c.arc(r.x, r.y, 15, 0, 7); c.fill(); c.fillStyle = '#c9ccd2'; c.beginPath(); c.arc(r.x, r.y, 6, 0, 7); c.fill(); }
+        const shk = done && crank < 0.6 ? (Math.random() - 0.5) * 6 : 0; c.save(); c.translate(shk, shk);
+        // footwell: carpet, pedals, the underside of the dash and the steering column coming down at you
+        let g = c.createLinearGradient(0, 0, 0, H); g.addColorStop(0, '#0d0e12'); g.addColorStop(0.55, '#16171c'); g.addColorStop(1, '#22232a'); c.fillStyle = g; c.fillRect(0, 0, W, H);
+        c.fillStyle = trim; c.beginPath(); c.moveTo(0, 0); c.lineTo(W, 0); c.lineTo(W, H * 0.22); c.quadraticCurveTo(W * 0.5, H * 0.3, 0, H * 0.2); c.fill(); // dash underside
+        c.fillStyle = 'rgba(0,0,0,.35)'; for (let i = 0; i < 8; i++) c.fillRect(W * 0.05 + i * W * 0.12, H * 0.08, W * 0.06, 4);
+        c.fillStyle = '#2b2c33'; c.beginPath(); c.moveTo(W * 0.32, 0); c.lineTo(W * 0.68, 0); c.lineTo(W * 0.62, H * 0.3); c.lineTo(W * 0.38, H * 0.3); c.fill(); // column shroud
+        c.strokeStyle = '#3d3e47'; c.lineWidth = 26; c.beginPath(); c.arc(W * 0.5, -H * 0.08, W * 0.46, 0.25 * Math.PI, 0.75 * Math.PI); c.stroke(); // bottom of the steering wheel
+        c.fillStyle = '#9aa0aa'; c.beginPath(); c.arc(W * 0.5, H * 0.24, 16, 0, 7); c.fill(); c.fillStyle = '#16161b'; c.fillRect(W * 0.5 - 3, H * 0.24 - 10, 6, 20); // ignition barrel, forced
+        c.fillStyle = '#121318'; c.beginPath(); c.moveTo(W * 0.18, H * 0.3); c.lineTo(W * 0.52, H * 0.28); c.lineTo(W * 0.48, H * 0.36); c.lineTo(W * 0.2, H * 0.37); c.fill(); // the panel you pulled off, hanging
+        for (const [px, pw] of [[0.22, 0.12], [0.45, 0.1], [0.66, 0.16]]) { c.fillStyle = '#3a3b42'; c.fillRect(W * px, H * 0.86, W * pw, H * 0.035); c.fillStyle = '#2a2b31'; c.fillRect(W * px + W * pw / 2 - 4, H * 0.76, 8, H * 0.1); } // pedals
+        c.fillStyle = body; c.globalAlpha = 0.5; c.fillRect(0, H * 0.94, W, H * 0.06); c.globalAlpha = 1; // door sill in the car's colour
+        // the terminal block and the loom of wires
+        c.fillStyle = '#3a3c45'; rr(c, W * 0.72, H * 0.36, W * 0.2, H * 0.4, 10); c.fill();
+        for (const r of right) { c.fillStyle = '#1b1c22'; c.beginPath(); c.arc(r.x, r.y, 20, 0, 7); c.fill(); c.fillStyle = r.c; c.beginPath(); c.arc(r.x, r.y, 13, 0, 7); c.fill(); c.fillStyle = '#c9ccd2'; c.beginPath(); c.arc(r.x, r.y, 5, 0, 7); c.fill(); }
+        c.fillStyle = '#16171c'; rr(c, W * 0.12, H * 0.3, W * 0.12, H * 0.08, 8); c.fill(); // loom clip under the column
         for (const l of left) {
           const tx = l.done ? l.tx : drag && drag.l === l ? drag.x : l.x + 30, ty = l.done ? l.ty : drag && drag.l === l ? drag.y : l.y;
-          c.strokeStyle = l.c; c.lineWidth = 12; c.lineCap = 'round'; c.beginPath(); c.moveTo(l.x - 50, l.y); c.bezierCurveTo(l.x + 40, l.y, tx - 60, ty, tx, ty); c.stroke();
-          c.fillStyle = '#c9a24a'; c.beginPath(); c.arc(tx, ty, 9, 0, 7); c.fill();
+          c.strokeStyle = 'rgba(0,0,0,.45)'; c.lineWidth = 14; c.lineCap = 'round'; c.beginPath(); c.moveTo(W * 0.18, H * 0.34); c.bezierCurveTo(W * 0.1, l.y, tx - 70, ty + 30, tx, ty + 4); c.stroke();
+          c.strokeStyle = l.c; c.lineWidth = 10; c.beginPath(); c.moveTo(W * 0.18, H * 0.34); c.bezierCurveTo(W * 0.1, l.y, tx - 70, ty + 26, tx, ty); c.stroke();
+          c.fillStyle = '#d9a441'; c.beginPath(); c.arc(tx, ty, 6, 0, 7); c.fill(); // bare copper end
         }
-        for (const s of sparks) { c.fillStyle = `rgba(255,${200 + Math.random() * 55 | 0},80,${s.l * 2})`; c.fillRect(s.x, s.y, 4, 4); }
-        if (done) drawIcon(c, 'key', W / 2, H * 0.5, 80, { stroke: '#ffd23f', width: 2.2 });
+        for (const s of sparks) { c.fillStyle = `rgba(255,${200 + Math.random() * 55 | 0},90,${Math.min(1, s.l * 3)})`; c.fillRect(s.x, s.y, 4, 4); }
+        c.restore();
+        // phone torch: only a pool of light where your finger is
+        const lg = c.createRadialGradient(light.x, light.y, 30, light.x, light.y, Math.max(W, H) * 0.55); lg.addColorStop(0, 'rgba(0,0,0,0)'); lg.addColorStop(0.5, 'rgba(0,0,0,.35)'); lg.addColorStop(1, 'rgba(0,0,0,.82)'); c.fillStyle = lg; c.fillRect(0, 0, W, H);
+        if (done) { c.fillStyle = `rgba(255,220,120,${Math.max(0, 0.5 - crank)})`; c.fillRect(0, 0, W, H); c.fillStyle = '#ffd23f'; c.font = '900 34px system-ui'; c.textAlign = 'center'; c.fillText('VROOM', W / 2, H * 0.62); }
       },
       result() { return { win: done, score: left.filter(l => l.done).length }; },
     };
@@ -626,8 +643,8 @@ const GAMES = {
 export function runMinigame(kind, opts = {}) {
   return new Promise(resolve => {
     const root = document.getElementById('mg'), cv = document.getElementById('mgCanvas'), ctx = cv.getContext('2d');
-    const game = GAMES[kind](opts);
-    root.classList.remove('hidden');
+    const game = typeof kind === 'object' ? kind : GAMES[kind](opts);
+    root.classList.remove('hidden'); root.classList.toggle('see', !!game.see); // see: the 3D world shows through (cutscenes in the real scene)
     document.getElementById('mgTitle').textContent = opts.title || game.title;
     const timerBar = document.getElementById('mgTimer'), card = document.getElementById('mgCard');
     let W = 0, H = 0, running = false, t = 0, timeLeft = game.time, raf = 0, finished = false;
@@ -646,10 +663,13 @@ export function runMinigame(kind, opts = {}) {
       if (quit) { cleanup(); resolve(r); return; }
       r.win ? sfx.cash() : sfx.fail();
       const money = r.money ? `<div class="mg-money${r.money < 0 ? ' neg' : ''}">${r.money < 0 ? '−' : '+'}$${Math.abs(r.money)}</div>` : '';
-      showCard(`<h3>${game.time === 0 ? (r.money >= 0 ? 'Cashed out' : 'Better luck next time') : r.win ? (opts.winText || 'Nice!') : (opts.loseText || 'Out of time!')}</h3>${money}<p>${opts.scoreLabel ? opts.scoreLabel(r) : r.score != null ? `Score: ${r.score}` : ''}</p>`, 'Continue', () => { cleanup(); resolve(r); });
+      const ban = document.getElementById('mgBanner'); ban.innerHTML = `<b>${game.time === 0 ? (r.money >= 0 ? 'Cashed out' : 'Better luck next time') : r.win ? (opts.winText || 'Nice!') : (opts.loseText || 'Out of time!')}</b>${money}`; ban.className = 'show ' + (r.win || r.money > 0 ? 'win' : 'lose');
+      setTimeout(() => { ban.className = ''; cleanup(); resolve(r); }, r.money ? 1700 : 1100);
     };
     document.getElementById('mgQuit').onclick = () => finish(true);
-    showCard(`<h3>${opts.title || game.title}</h3><p>${game.hint}</p>`, 'Start', () => { card.classList.add('hidden'); running = true; last = performance.now(); });
+    // no start screen: the hint fades in over the scene and it begins straight away, like a cutscene
+    const hintEl = document.getElementById('mgHint'); hintEl.textContent = game.hint; hintEl.className = 'show'; setTimeout(() => hintEl.className = '', 2200);
+    setTimeout(() => { running = true; last = performance.now(); }, 450);
     let last = performance.now();
     const loop = now => {
       raf = requestAnimationFrame(loop);
@@ -662,6 +682,7 @@ export function runMinigame(kind, opts = {}) {
         if (game.time && timeLeft <= 0) finish(false);
       }
       ctx.clearRect(0, 0, W, H);
+      game.frame?.(dt, t);
       game.draw(ctx, t);
       timerBar.style.width = game.time ? Math.max(0, timeLeft / game.time * 100) + '%' : '0%';
       timerBar.style.background = timeLeft < 3 ? '#ff3b4a' : '';
