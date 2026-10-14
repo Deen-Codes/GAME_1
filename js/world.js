@@ -1,6 +1,6 @@
 // Open-world map: layout, deterministic generation, colliders, chunk meshing and minimap.
 import * as THREE from '../lib/three.module.min.js';
-import { groundMaterial, GT } from './groundtex.js?v=146';
+import { groundMaterial, GT } from './groundtex.js?v=147';
 
 export const WORLD = { x0: -560, x1: 800, z0: -800, z1: 520 };
 export const CHUNK = 64;
@@ -18,6 +18,20 @@ for (const c of CITIES) {
 export const SIGN = { x: -446, z: -268, text: 'BAYWOOD' };
 // the Bay Line railway: north of downtown, from the Hidden Hills to the farmland, with three stations
 export const RAIL = { z: -318, x0: -284, x1: 444, stations: [{ name: 'Baywood Hills', x: -252 }, { name: 'Downtown North', x: 72 }, { name: 'Farmland', x: 412 }] };
+// ---- Bay Metro: an elevated loop through downtown above the avenues (x = +-96, z = +-144), 9 m up on concrete pillars
+export const METRO = (() => {
+  const X = 96, Z = 144, R = 16, Y = 9, pts = [];
+  const line = (x0, z0, x1, z1) => { const L = Math.hypot(x1 - x0, z1 - z0); for (let i = 0; i < L; i += 1) pts.push([x0 + (x1 - x0) * i / L, z0 + (z1 - z0) * i / L]); };
+  const arc = (cx, cz, a0) => { for (let i = 0; i < 25; i++) { const a = a0 + i / 25 * Math.PI / 2; pts.push([cx + Math.cos(a) * R, cz + Math.sin(a) * R]); } };
+  line(-X + R, -Z, X - R, -Z); arc(X - R, -Z + R, -Math.PI / 2); line(X, -Z + R, X, Z - R); arc(X - R, Z - R, 0); line(X - R, Z, -X + R, Z); arc(-X + R, Z - R, Math.PI / 2); line(-X, Z - R, -X, -Z + R); arc(-X + R, -Z + R, Math.PI);
+  const cum = [0]; for (let i = 1; i < pts.length; i++) cum.push(cum[i - 1] + Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]));
+  const len = cum[cum.length - 1] + Math.hypot(pts[0][0] - pts[pts.length - 1][0], pts[0][1] - pts[pts.length - 1][1]);
+  const at = s => { s = ((s % len) + len) % len; let lo = 0, hi = cum.length - 1; while (lo < hi) { const m = (lo + hi + 1) >> 1; if (cum[m] <= s) lo = m; else hi = m - 1; } const a = pts[lo], b = pts[(lo + 1) % pts.length], seg = (lo + 1 < cum.length ? cum[lo + 1] : len) - cum[lo], t = seg ? (s - cum[lo]) / seg : 0; return { x: a[0] + (b[0] - a[0]) * t, z: a[1] + (b[1] - a[1]) * t, h: Math.atan2(b[0] - a[0], b[1] - a[1]) }; };
+  const sOf = (x, z) => { let best = 0, bd = 1e9; for (let i = 0; i < pts.length; i++) { const d = Math.hypot(pts[i][0] - x, pts[i][1] - z); if (d < bd) { bd = d; best = cum[i]; } } return best; };
+  // stations: the platform on the outside of the loop, a stair tower down to the pavement (on the outer kerb, clear of the junction)
+  const stations = [['Midtown', 0, -Z, 0, -1], ['East Side', X, 0, 1, 0], ['Bayside', 0, Z, 0, 1], ['West End', -X, 0, -1, 0]].map(([name, x, z, ox, oz]) => ({ name, x, z, s: sOf(x, z), ox, oz, tower: { x: x + ox * 8.6 + (ox ? 0 : 14), z: z + oz * 8.6 + (oz ? 0 : 14) } }));
+  return { Y, len, at, stations, pts };
+})();
 export const onBridge = (x, z) => Math.abs(x - UNDERPASS.x) < UNDERPASS.half + 5.2 && Math.abs(z - RAIL.z) < 3.3;
 export const onRail = (x, z, m = 0) => x > RAIL.x0 - m && x < RAIL.x1 + m && Math.abs(z - RAIL.z) < 2.2 + m;
 export const AIRPORT = { x0: -240, x1: 280, z0: -780, z1: -575 };
@@ -481,6 +495,10 @@ function genWorld() {
       for (let k = 0; k < n; k++) addObj({ t: 'container', x, z, y: k * 2.6, col: cols[Math.floor(R() * cols.length)] }); addCollider({ x0: x - 6.1, x1: x + 6.1, z0: z - 1.25, z1: z + 1.25, h: n * 2.6 }); }
     for (const cx of [575, 665]) { addObj({ t: 'crane', x: cx, z: 307 }); for (const sz of [-15, 15]) for (const sx of [-5, 5]) addCollider({ x: cx + sx, z: 307 + sz, r: 0.7 }); }
     addObj({ t: 'fence', x0: 532, x1: 708, z: 290 }); }
+  // Bay Metro viaduct: deck segments every 4 m, pillars every 16 m (but never in a junction), stations with stair towers
+  { const M = METRO; for (let s = 0; s < M.len; s += 4) { const a = M.at(s + 2); addObj({ t: 'via', x: a.x, z: a.z, h: a.h }); }
+    for (let s = 0; s < M.len; s += 16) { const a = M.at(s); const jx = Math.round(a.x / 48) * 48, jz = Math.round(a.z / 48) * 48; if (Math.abs(a.x - jx) < 9 && Math.abs(a.z - jz) < 9) continue; addObj({ t: 'vpillar', x: a.x, z: a.z, h: a.h }); addCollider({ x: a.x, z: a.z, r: 0.75 }); }
+    for (const st of M.stations) { addObj({ t: 'vstation', x: st.x, z: st.z, ox: st.ox, oz: st.oz, tx: st.tower.x, tz: st.tower.z, name: st.name }); addCollider({ x0: st.tower.x - 1.4, x1: st.tower.x + 1.4, z0: st.tower.z - 1.4, z1: st.tower.z + 1.4, h: 9 }); } }
   // city blocks + street lamps
   for (const city of CITIES) {
     for (let i = city.kx[0]; i < city.kx[1]; i++) for (let j = city.kz[0]; j < city.kz[1]; j++) {
@@ -1047,6 +1065,19 @@ function drawObj(o, B) {
       if (o.flowers) for (let i = 0; i < 6; i++) B.blob(o.x + (R2() - 0.5) * 0.9 * o.s, yb + (0.6 + R2() * 0.25) * o.s, o.z + (R2() - 0.5) * 0.9 * o.s, 0.1, 0.09, 0.1, ['#ff6fb5', '#ffd23f', '#ffffff', '#e23b3b', '#b26bff'][(sd + i) % 5], sd + i * 3);
       break; }
     case 'hedge': { const yb = groundH(o.x, o.z) + 0.15; B.box(o.x, yb, o.z, o.w, 0.85, 0.7, '#3f7d3a', { key: 'leaf' }); for (let i = 0; i < Math.floor(o.w / 1.2); i++) B.blob(o.x - o.w / 2 + 0.6 + i * 1.2, yb + 0.9, o.z, 0.62, 0.32, 0.4, i % 2 ? '#4a8f42' : '#3f7d3a', (o.seed || 1) + i); break; }
+    case 'via': { const Y = METRO.Y, o2 = { rot: o.h }; B.box(o.x, Y - 0.5, o.z, 6.2, 0.7, 4.15, '#b9b4aa', o2); // deck
+      const cs = Math.cos(o.h), sn = Math.sin(o.h); for (const sx of [-3.0, 3.0]) B.box(o.x + cs * sx, Y + 0.2, o.z - sn * sx, 0.25, 0.9, 4.15, '#d2cec6', o2); // parapets
+      for (const sx of [-0.75, 0.75]) B.box(o.x + cs * sx, Y + 0.2, o.z - sn * sx, 0.12, 0.14, 4.15, '#6a6d74', o2); // rails
+      B.box(o.x, Y - 0.85, o.z, 4.2, 0.35, 4.15, '#8f8b84', o2); break; }
+    case 'vpillar': { const Y = METRO.Y; B.box(o.x, 0, o.z, 1.3, Y - 0.85, 1.3, '#a8a49c', { rot: o.h }); B.box(o.x, Y - 1.6, o.z, 4.6, 0.8, 1.6, '#9e9a92', { rot: o.h }); break; }
+    case 'vstation': { const Y = METRO.Y, px = o.x + o.ox * 5.2, pz = o.z + o.oz * 5.2, along = o.ox ? 'z' : 'x', w = along === 'x' ? 30 : 3.8, d = along === 'x' ? 3.8 : 30;
+      B.box(px, Y - 0.5, pz, w, 0.7, d, '#c9c4ba'); B.box(px + o.ox * 1.7, Y + 0.2, pz + o.oz * 1.7, along === 'x' ? 30 : 0.2, 1.1, along === 'x' ? 0.2 : 30, '#e8e4dc'); // platform + back wall
+      for (let i = -12; i <= 12; i += 6) { const qx = along === 'x' ? px + i : px + o.ox * 1.5, qz = along === 'x' ? pz + o.oz * 1.5 : pz + i; B.box(qx, Y + 0.2, qz, 0.2, 2.8, 0.2, '#3a3d45'); }
+      B.box(px, Y + 3.0, pz, along === 'x' ? 31 : 4.6, 0.25, along === 'x' ? 4.6 : 31, '#2f80ed'); B.box(px + o.ox * 1.5, Y + 0.25, pz + o.oz * 1.5, along === 'x' ? 4 : 0.1, 0.6, along === 'x' ? 0.1 : 4, '#16161b', { key: 'glow' }); // canopy, name board
+      B.box(o.tx, 0.15, o.tz, 2.6, Y + 0.3, 2.6, '#3a3d45'); B.box(o.tx, Y + 0.45, o.tz, 3.0, 0.3, 3.0, '#2f80ed'); B.box(o.tx + (o.ox ? -o.ox * 1.3 : 0), 0.15, o.tz + (o.oz ? -o.oz * 1.3 : 0) + (o.ox ? 0 : 0), o.ox ? 0.06 : 1.4, 2.3, o.ox ? 1.4 : 0.06, '#cfe8ff'); // stair tower with glass doors facing the road
+      B.box(o.tx, 2.6, o.tz, 2.7, 0.5, 2.7, '#ffd23f', { key: 'glow' }); // yellow M band
+      // walkway from the tower to the platform
+      B.box((o.tx + px) / 2, Y - 0.5, (o.tz + pz) / 2, Math.abs(o.tx - px) + 2.6, 0.6, Math.abs(o.tz - pz) + 2.6, '#c9c4ba'); break; }
     case 'container': { const y = 0.27 + (o.y || 0); B.box(o.x, y, o.z, 12, 2.55, 2.4, o.col); for (let i = -5; i <= 5; i++) B.box(o.x + i * 1.08, y + 0.05, o.z, 0.12, 2.45, 2.48, shadeHex(o.col, 0.82)); B.box(o.x + 6.02, y, o.z, 0.06, 2.55, 2.42, '#3a3d45'); break; }
     case 'crane': { const x = o.x, z = o.z, c = '#e8b020';
       for (const sx of [-5, 5]) for (const sz of [-15, 15]) B.box(x + sx, 0.15, z + sz, 0.9, 22, 0.9, c);
@@ -1224,6 +1255,7 @@ export function drawMap(size = 512) {
   x.fillStyle = '#46464d'; x.fillRect(tx(-230), tz(-720), 500 / sx, 30 / sz);
   x.fillStyle = '#5a4a3e'; x.fillRect(tx(RAIL.x0), tz(RAIL.z) - 1, (RAIL.x1 - RAIL.x0) / sx, 2.2); x.fillStyle = '#d8d2c8'; for (let rx = RAIL.x0; rx < RAIL.x1; rx += 16) x.fillRect(tx(rx), tz(RAIL.z) - 0.4, 1, 0.8);
   for (const st of RAIL.stations) { x.fillStyle = '#2f80ed'; x.fillRect(tx(st.x - 15), tz(RAIL.z + 2.4), 30 / sx, 4 / sz + 1); }
+  x.strokeStyle = '#ffd23f'; x.lineWidth = 2; x.beginPath(); METRO.pts.forEach(([px, pz], i) => i ? x.lineTo(tx(px), tz(pz)) : x.moveTo(tx(px), tz(pz))); x.closePath(); x.stroke(); for (const st of METRO.stations) { x.fillStyle = '#ffd23f'; x.beginPath(); x.arc(tx(st.x), tz(st.z), 3, 0, 7); x.fill(); }
   for (const ch of chunks.values()) for (const o of ch.objs) {
     if (o.t === 'bld') { x.fillStyle = o.glass ? '#8fb8d0' : '#9a8f86'; x.fillRect(tx(o.x - o.w / 2), tz(o.z - o.d / 2), Math.max(1, o.w / sx), Math.max(1, o.d / sz)); }
     else if (o.t === 'tree' && o.kind !== 'palm' && Math.random() < 0.6) { x.fillStyle = '#3a6a32'; x.fillRect(tx(o.x) - 0.6, tz(o.z) - 0.6, 1.4, 1.4); }
