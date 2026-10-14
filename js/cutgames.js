@@ -1,7 +1,7 @@
 // Minigames as playable cutscenes in the real 3D world: you watch your own character do it, on a little set
 // built where you're standing (or in the sea, at the hoop, behind the counter...). A light HUD sits on top.
 import * as THREE from '../lib/three.module.min.js';
-import { sfx, audio } from './audio.js?v=182';
+import { sfx, audio } from './audio.js?v=183';
 
 let C = null; // context from main.js: scene, camera, hero, helpers
 export function initCutGames(ctx) { C = ctx; }
@@ -513,4 +513,91 @@ CUT.hotwire = (o = {}) => {
       if (sel >= 0) { c.fillStyle = wires[sel].col; c.beginPath(); c.arc(W / 2, H * 0.9, 14, 0, 7); c.fill(); txt(c, 'Now tap the matching terminal', W / 2, H * 0.95, 13, '#fff'); } },
     result() { return { win: done, score: connected }; },
     cleanup() { C.cutCam.fov = 46; C.cutCam.updateProjectionMatrix(); for (const l of lamps) l.material.dispose(); S.dispose(); C.heroRoot().visible = true; } };
+};
+
+// ================================================================ life-event activities: you actually do the thing someone asked you to
+// kinds: tyre (mash to undo the nuts), chug (mash to down the pint), jog (mash to run), sing + roof (tap in the zone), film (keep them in frame), litter (tap the rubbish)
+CUT.task = (o = {}) => {
+  const P = C.P, kind = o.kind || 'tyre';
+  const CAMS = { tyre: [3.6, 1.8, -2.0, 1.0, 0.45, 0.7], chug: [0.4, 1.7, 2.6, 0, 1.35, 0], jog: [2.6, 1.6, 3.2, 0, 1, -1], sing: [2.4, 1.5, 2.6, 0.3, 1.15, 0.8], roof: [2.8, 2.6, -1.6, 0, 0.6, 0.8], film: [0.5, 1.85, -1.1, -0.1, 1.3, 2.6], litter: [0, 7.5, -4.5, 0, 0, 0.8] }, CA = CAMS[kind];
+  let face = P.face; { const ok = f => { const c = Math.cos(f), s2 = Math.sin(f), w = (lx, lz) => [P.x + lx * c + lz * s2, P.z - lx * s2 + lz * c]; for (const k of [1, 0.66, 0.33]) { const [x, z] = w(CA[0] * k, CA[2] * k); if (!C.open?.(x, z) && C.open) return false; } return true; };
+    for (let i = 0; i < 8; i++) { const f = P.face + [0, Math.PI, Math.PI / 2, -Math.PI / 2, Math.PI / 4, -Math.PI / 4, 3 * Math.PI / 4, -3 * Math.PI / 4][i]; if (ok(f)) { face = f; break; } } } // turn the little set so the camera isn't stuck in a wall
+  const S = makeSet(P.x, C.groundY(P.x, P.z), P.z, face);
+  const npc = o.npc ? person(o.npc) : null; let npc2 = null;
+  let prog = 0, ph = 0, hits = 0, miss = 0, mk = 0, mdir = 1, zone = [0.4, 0.62], flash = 0, msg = '', msgCol = '#5ee07a', msgT = 0, tapT = 0;
+  const props = {};
+  const say = (m, col = '#5ee07a') => { msg = m; msgT = 0.7; msgCol = col; };
+  if (kind === 'tyre') { // the stranger's car, back wheel off the ground on the jack
+    S.box(1.9, 0.62, 3.6, '#c94040', 0, 0.42, 1.6); S.box(1.7, 0.5, 1.8, '#a83030', 0, 1.04, 1.9); S.box(1.68, 0.3, 1.6, '#9fd3ff', 0, 1.1, 1.9);
+    props.wheel = S.cyl(0.38, 0.38, 0.26, '#16161b', 0.98, 0.3, 0.6, 20); props.wheel.rotation.z = Math.PI / 2; S.cyl(0.2, 0.2, 0.28, '#9aa0a8', 0.98, 0.3, 0.6, 12).rotation.z = Math.PI / 2;
+    props.nuts = []; for (let i = 0; i < 5; i++) { const a = i / 5 * Math.PI * 2, n = S.box(0.06, 0.06, 0.06, '#e8e2c8', 1.13, 0.68 + Math.sin(a) * 0.12, 0.6 + Math.cos(a) * 0.12); props.nuts.push(n); }
+    S.box(0.3, 0.3, 0.3, '#ffd23f', 1.1, 0, 1.3); if (npc) { S.add(npc.root, 2.4, 0, 2.2); npc.root.rotation.y = -2.2; }
+  } else if (kind === 'chug') {
+    S.box(2.6, 1.05, 0.7, '#5a3a20', 0, 0, 0.9); S.box(2.7, 0.06, 0.8, '#3a2412', 0, 1.05, 0.9);
+    props.glass = S.cyl(0.07, 0.06, 0.2, new THREE.MeshStandardMaterial({ color: '#e8f4ff', transparent: true, opacity: 0.35 }), 0, 0, 0);
+    props.beer = S.cyl(0.062, 0.055, 0.18, '#e0a020', 0, 0, 0);
+    if (npc) { S.add(npc.root, 0.9, 0, 0.2); npc.root.rotation.y = -1.6; }
+  } else if (kind === 'jog') {
+    props.lines = []; for (let i = 0; i < 10; i++) props.lines.push(S.box(0.12, 0.012, 0.8, '#f2f0e8', 0, 0.01, 0));
+    for (let i = 0; i < 4; i++) { const r = person(null, { topColor: ['#ff3b8a', '#38e8ff', '#ffd23f', '#4cd964'][i] }); S.add(r.root, -1.4 + i * 0.9, 0, -2 - i * 1.3); (props.runners ||= []).push(r); }
+  } else if (kind === 'sing') {
+    if (npc) { S.add(npc.root, 0.9, 0, 0.3); npc.root.rotation.y = -0.5; props.guitar = S.box(0.12, 0.5, 0.06, '#a0602a', 0.75, 0.9, 0.55); props.guitar.rotation.z = 0.9; }
+    S.box(0.6, 0.12, 0.35, '#2a1a10', 0.2, 0, 1.0); for (let i = 0; i < 5; i++) { const c = person(null); S.add(c.root, -2.2 + i * 1.1, 0, 3.4 + (i % 2) * 0.5); c.root.rotation.y = Math.PI; (props.crowd ||= []).push(c); }
+    props.mic = S.box(0.05, 0.05, 0.16, '#222', 0, 0, 0);
+  } else if (kind === 'roof') {
+    const r = S.box(4, 0.1, 3, '#7a3a2a', 0, 0, 1); props.tiles = []; for (let i = 0; i < 5; i++) { const t = S.box(0.5, 0.06, 0.4, '#a0502a', -1 + i * 0.5, 0.1, 0.8); t.visible = false; props.tiles.push(t); }
+    props.ham = S.box(0.05, 0.05, 0.3, '#5a3a20', 0, 0, 0);
+  } else if (kind === 'film') {
+    S.box(1.1, 0.75, 0.8, '#e8e2d6', 0, 0, 2.6); const a = person(null, { fem: false, topColor: '#2a2d33' }), b = person(null, { fem: true, topColor: '#c9306f' });
+    S.add(a.root, -0.75, 0, 2.6); a.root.rotation.y = Math.PI / 2; S.add(b.root, 0.75, 0, 2.6); b.root.rotation.y = -Math.PI / 2; npc2 = [a, b];
+    props.ring = S.box(0.05, 0.05, 0.05, glowM('#ffd23f'), -0.3, 1.0, 2.6); props.phone = S.box(0.08, 0.15, 0.01, '#16161b', 0, 0, 0);
+    props.fx = 0.5; props.fy = 0.5; props.tx = 0.5; props.ty = 0.45; props.inT = 0; props.dragging = false; props.lx = 0; props.ly = 0;
+  } else if (kind === 'litter') {
+    S.cyl(4.8, 4.8, 0.02, '#e8d6a2', 0, 0.01, 0, 32);
+    props.bits = []; const cols = ['#e23b3b', '#38e8ff', '#ffd23f', '#f2f0e8', '#4cd964'];
+    for (let i = 0; i < 14; i++) { const a = rnd(0, 6.28), d = rnd(1.2, 4.2), m = Math.random() < 0.5 ? S.cyl(0.07, 0.07, 0.18, cols[i % 5], Math.sin(a) * d, 0.03, Math.cos(a) * d, 8) : S.box(0.26, 0.08, 0.2, cols[i % 5], Math.sin(a) * d, 0.03, Math.cos(a) * d); m.rotation.z = rnd(0, 1.5); m.userData.tag = 'bit'; props.bits.push(m); }
+    props.bag = S.box(0.3, 0.45, 0.3, '#2a2a30', 0.5, 0, 0.2); props.got = 0;
+  }
+  const NEED = { tyre: 1, chug: 1, jog: 1, sing: 5, roof: 5, film: 0.6, litter: 10 }[kind], TIME = { tyre: 14, chug: 9, jog: 16, sing: 16, roof: 16, film: 14, litter: 15 }[kind];
+  const mash = kind === 'tyre' || kind === 'chug' || kind === 'jog', timing = kind === 'sing' || kind === 'roof';
+  const HINT = { tyre: 'Tap fast to undo the wheel nuts!', chug: 'Tap fast to down it!', jog: 'Tap fast to keep pace!', sing: 'Tap when the marker is in the green', roof: 'Tap when the hammer is in the green', film: 'Drag to keep them in the frame', litter: 'Tap the rubbish to bag it' }[kind];
+  const newZone = () => { const w = kind === 'sing' ? 0.2 : 0.18, a = rnd(0.08, 0.92 - w); zone = [a, a + w]; };
+  return { see: true, title: o.title || 'Give it a go', hint: HINT, time: TIME,
+    init() { newZone(); },
+    down(x, y) {
+      tapT = 0.15; navigator.vibrate?.(8);
+      if (mash) { prog = Math.min(1, prog + (kind === 'tyre' ? 0.03 : kind === 'chug' ? 0.045 : 0.035)); sfx.click(); }
+      else if (timing) { if (mk >= zone[0] && mk <= zone[1]) { hits++; flash = 0.3; say(kind === 'sing' ? pick(['Lovely!', 'On key!', 'Yes!']) : 'Bang on!'); sfx.coin(); newZone(); if (kind === 'roof') props.tiles[Math.min(4, hits - 1)].visible = true; } else { miss++; say(kind === 'sing' ? 'Off key!' : 'Ouch!', '#ff5a5a'); sfx.fail(); } }
+      else if (kind === 'film') { props.dragging = true; props.lx = x; props.ly = y; }
+      else if (kind === 'litter') { const hit = pickAt(x, y, props.bits.filter(b => b.visible)); if (hit) { hit.visible = false; props.got++; sfx.coin(); say(`${props.got} bagged`); } }
+    },
+    move(x, y) { if (kind === 'film' && props.dragging) { props.fx = clamp(props.fx + (x - props.lx) / C.W(), 0.1, 0.9); props.fy = clamp(props.fy + (y - props.ly) / C.H(), 0.15, 0.85); props.lx = x; props.ly = y; } },
+    up() { props.dragging = false; },
+    update(dt, t) {
+      ph += dt * (mash ? 3 + prog * 8 : 3); msgT -= dt; flash -= dt; tapT -= dt;
+      if (kind === 'chug' || kind === 'jog') prog = Math.max(0, prog - dt * (kind === 'jog' ? 0.012 : 0.008));
+      if (timing) { mk += mdir * dt * (kind === 'sing' ? 0.85 : 1.05) * (1 + hits * 0.08); if (mk > 1) { mk = 1; mdir = -1; } if (mk < 0) { mk = 0; mdir = 1; } }
+      if (kind === 'film') { props.tx = 0.5 + Math.sin(t * 0.9) * 0.25 + Math.sin(t * 2.3) * 0.08; props.ty = 0.45 + Math.sin(t * 0.7 + 1) * 0.15; const inF = Math.abs(props.fx - props.tx) < 0.12 && Math.abs(props.fy - props.ty) < 0.12; if (inF) props.inT += dt; prog = props.inT / Math.max(1, t); }
+      if (mash && prog >= 1) return true; if (timing && hits >= NEED) return true; if (kind === 'litter' && props.got >= NEED) return true;
+    },
+    frame(dt) {
+      const h = S.hero(0, 0, 0);
+      if (kind === 'tyre') { S.hero(1.55, 0, 0.6, -Math.PI / 2); poseIdle(h); h.hips.position.y = h.legLen * 0.55; arm(h.armR, -1.3 + (tapT > 0 ? 0.3 : 0), -0.4); arm(h.armL, -1.1, -0.6); props.nuts.forEach((n, i) => { n.visible = prog < (i + 1) / 5; }); props.wheel.rotation.x += dt * prog * 2; S.cam(...CA); }
+      else if (kind === 'chug') { poseIdle(h); const k = prog; arm(h.armR, -1.2 - k * 1.3, -1.4 + k * 0.8); h.head.rotation.x = -k * 0.6; const hand = S.L(0.18, 1.35 + k * 0.25, 0.25); props.glass.position.copy(S.g.worldToLocal(hand.clone())); props.beer.position.copy(props.glass.position); props.beer.scale.y = Math.max(0.02, 1 - k); props.glass.rotation.x = props.beer.rotation.x = -k * 1.4; S.cam(...CA); }
+      else if (kind === 'jog') { poseIdle(h, { phase: ph, speed: 0.4 + prog * 0.6 }); arm(h.armL, Math.sin(ph) * 0.8, -1.2); arm(h.armR, -Math.sin(ph) * 0.8, -1.2); props.lines.forEach((l, i) => { l.position.z = ((i * 2 - ph * 1.2) % 20 + 20) % 20 - 10; }); props.runners.forEach((r, i) => { C.poseCharacter(r, { phase: ph + i, speed: 0.8, air: false, aim: 0, recoil: 0, t: C.time() }); r.root.position.z = -2 - i * 1.3 + (prog - 0.5) * 3 * (i + 1) * 0.5; }); S.cam(...CA); }
+      else if (kind === 'sing') { poseIdle(h); arm(h.armR, -2.2, -1.6); h.head.rotation.x = -0.2 + (flash > 0 ? -0.2 : 0); props.mic.position.copy(S.g.worldToLocal(S.L(0.12, 1.55, 0.25))); if (npc) { poseIdle(npc); arm(npc.armR, -0.6 + Math.sin(ph * 4) * 0.3, -1.2); } props.crowd.forEach((c, i) => { poseIdle(c); c.root.position.y = flash > 0 ? Math.abs(Math.sin(ph * 6 + i)) * 0.15 : 0; }); S.cam(...CA); }
+      else if (kind === 'roof') { S.hero(0, 0.1, 0); poseIdle(h); h.hips.position.y = h.legLen * 0.5; const sw = tapT > 0 ? 1 : 0; arm(h.armR, -2.4 + sw * 1.6, -0.5); props.ham.position.copy(S.g.worldToLocal(S.L(0.25, 1.1 + (1 - sw) * 0.5, 0.35))); S.cam(...CA); }
+      else if (kind === 'film') { S.hero(-0.45, 0, 0); poseIdle(h); arm(h.armR, -1.5, -0.3); arm(h.armL, -1.5, -0.3); props.phone.position.copy(S.g.worldToLocal(S.L(0, 1.45, 0.45))); npc2.forEach(n => poseIdle(n)); props.ring.visible = Math.sin(ph * 3) > -0.5; S.cam(...CA); }
+      else if (kind === 'litter') { poseIdle(h); h.hips.position.y = h.legLen * (tapT > 0 ? 0.7 : 1); arm(h.armR, tapT > 0 ? -0.6 : -0.2, 0); S.cam(...CA); }
+      C.cutRender(0);
+    },
+    draw(c) { const W = C.W(), H = C.H();
+      if (mash) { bar(c, W * 0.15, H * 0.86, W * 0.7, 18, prog, prog > 0.8 ? '#4cd964' : '#ff8a2a'); txt(c, kind === 'tyre' ? `${Math.min(5, Math.floor(prog * 5))} / 5 nuts` : kind === 'chug' ? `${Math.round(prog * 100)}%` : `${(prog * 10).toFixed(1)} km`, W / 2, H * 0.12, 30, '#ffd23f'); if (tapT > 0) txt(c, 'TAP!', W / 2, H * 0.78, 22, '#fff'); }
+      if (timing) { const x0 = W * 0.12, w = W * 0.76, y = H * 0.84; rr(c, x0, y, w, 22, 11); c.fillStyle = 'rgba(0,0,0,.45)'; c.fill(); rr(c, x0 + zone[0] * w, y, (zone[1] - zone[0]) * w, 22, 11); c.fillStyle = '#4cd964'; c.fill(); c.fillStyle = '#fff'; c.fillRect(x0 + mk * w - 3, y - 8, 6, 38); txt(c, `${hits} / ${NEED}`, W / 2, H * 0.12, 30, '#ffd23f'); }
+      if (kind === 'film') { const fw = W * 0.34, fh = H * 0.22, fx = props.fx * W, fy = props.fy * H, inF = Math.abs(props.fx - props.tx) < 0.12 && Math.abs(props.fy - props.ty) < 0.12; c.strokeStyle = inF ? '#4cd964' : '#ff5a5a'; c.lineWidth = 4; c.strokeRect(fx - fw / 2, fy - fh / 2, fw, fh); c.fillStyle = '#ffd23f'; c.beginPath(); c.arc(props.tx * W, props.ty * H, 8, 0, 6.3); c.fill(); txt(c, inF ? 'REC ●' : 'Lost them!', W / 2, H * 0.12, 24, inF ? '#ff3b4a' : '#fff'); bar(c, W * 0.15, H * 0.9, W * 0.7, 12, prog / NEED, '#4cd964'); }
+      if (kind === 'litter') txt(c, `${props.got} / ${NEED} bagged`, W / 2, H * 0.12, 28, '#ffd23f');
+      if (msgT > 0) txt(c, msg, W / 2, H * 0.74, 20, msgCol);
+    },
+    result() { const win = mash ? prog >= 1 : timing ? hits >= NEED : kind === 'film' ? prog >= NEED : props.got >= NEED; return { win, score: hits || props.got || Math.round(prog * 100) }; },
+    cleanup() { C.hero().head.visible = true; if (npc) drop(npc); if (npc2) npc2.forEach(drop); for (const k of ['runners', 'crowd']) (props[k] || []).forEach(drop); S.dispose(); } };
 };

@@ -24,8 +24,10 @@ export function initOnline(ctx) {
 function signedInAs(j) { ls.set('bc_sid', j.sid); ls.set('bc_email', j.email); NET.email = j.email; NET.error = ''; emit(); }
 export async function sendMagicLink(email) { try { const j = await api('/api/login', { email }); return { ok: true, dev: j.dev }; } catch (e) { return { ok: false, error: e.message }; } }
 export async function verifyCode(email, code) { try { const j = await api('/api/verify', { email, code }); signedInAs(j); return { ok: true }; } catch (e) { return { ok: false, error: e.message }; } }
-export async function signOut() { goOffline(); const sid = ls.get('bc_sid'); if (sid) api('/api/logout', {}, sid).catch(() => {}); ls.set('bc_sid', null); ls.set('bc_email', null); NET.email = ''; emit(); }
+export async function signOut() { goOffline(); const sid = ls.get('bc_sid'); if (sid) api('/api/logout', {}, sid).catch(() => {}); ls.set('bc_sid', null); ls.set('bc_email', null); ls.set('bc_admin', null); NET.email = ''; emit(); }
 export const signedIn = () => !!ls.get('bc_sid');
+export const isAdmin = () => signedIn() && ls.get('bc_admin') === '1';
+export async function checkAdmin() { if (!signedIn()) { ls.set('bc_admin', null); return false; } try { const j = await api('/api/me', null, ls.get('bc_sid')); ls.set('bc_admin', j.admin ? '1' : null); return !!j.admin; } catch (e) { return isAdmin(); } }
 // cloud save: the whole game (save, character, cars, guns, settings) kept against your account
 export async function cloudList() { return api('/api/saves', null, ls.get('bc_sid')); }
 export async function cloudLoad(slot) { return api('/api/save' + (slot ? '?slot=' + slot : ''), null, ls.get('bc_sid')); }

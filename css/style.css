@@ -915,3 +915,15 @@ body:has(#title) #keyHints { display: none; }
 #updCover .bt-logo span { display: block; color: #ffd23f; }
 #updCover p { margin: 0; font-weight: 900; font-size: 15px; display: flex; gap: 10px; align-items: center; }
 #updCover i { width: 16px; height: 16px; border-radius: 50%; border: 3px solid rgba(255,255,255,.3); border-top-color: #ffd23f; animation: ttSpin .8s linear infinite; }
+/* Event Lab (admin) */
+#labBadge { position: fixed; bottom: calc(4px + var(--sab, 0px)); left: 50%; transform: translateX(-50%); z-index: 30; padding: 4px 12px; border-radius: 999px; background: #e0384f; color: #fff; font-weight: 900; font-size: 11px; letter-spacing: .14em; pointer-events: none; box-shadow: 0 4px 14px rgba(0,0,0,.3); }
+.lab-top { display: flex; flex-direction: column; gap: 6px; margin: 4px 0 10px; } .lab-top b { font-size: 14px; }
+.lab-bar { height: 6px; border-radius: 9px; background: rgba(255,255,255,.2); overflow: hidden; } .lab-bar i { display: block; height: 100%; background: #4cd964; }
+.lab-tabs { display: flex; gap: 6px; margin: 10px 0; } .lab-tabs button { flex: 1; border: 0; border-radius: 999px; padding: 7px; font-weight: 900; font-size: 12px; background: rgba(255,255,255,.16); color: #fff; } .lab-tabs button.on { background: #fff; color: #2a1640; }
+.lab-list { display: flex; flex-direction: column; gap: 6px; }
+.lab-ev { display: flex; align-items: center; gap: 10px; padding: 9px 10px; border-radius: 14px; background: rgba(255,255,255,.12); }
+.lab-ev.done { opacity: .62; }
+.lab-tick { width: 26px; height: 26px; flex: none; border-radius: 8px; border: 2px solid rgba(255,255,255,.6); background: none; color: #fff; display: grid; place-items: center; padding: 0; }
+.lab-ev.done .lab-tick { background: #4cd964; border-color: #4cd964; }
+.lab-txt { flex: 1; min-width: 0; display: flex; flex-direction: column; } .lab-txt b { font-size: 13px; } .lab-txt b small { font-weight: 700; opacity: .7; font-size: 10px; } .lab-txt span { font-size: 11px; opacity: .78; }
+body:has(#mg:not(.hidden)) #keyHints { display: none; }

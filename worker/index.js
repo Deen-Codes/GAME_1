@@ -45,7 +45,7 @@ export class Hub extends DurableObject {
       if (p === '/api/ws') return this.ws(req, url);
       if (p === '/api/login' && req.method === 'POST') return await this.login(req, now);
       if (p === '/api/verify' && req.method === 'POST') return await this.verify(req, now);
-      if (p === '/api/me') { const s = this.session((req.headers.get('authorization') || '').replace(/^Bearer /, '')); return s ? json({ email: s.email }) : json({ error: 'Not signed in' }, 401); }
+      if (p === '/api/me') { const s = this.session((req.headers.get('authorization') || '').replace(/^Bearer /, '')); return s ? json({ email: s.email, admin: (await this.maxSlots(s.email)) > 3 }) : json({ error: 'Not signed in' }, 401); }
       if (p === '/api/logout' && req.method === 'POST') { const sid = (req.headers.get('authorization') || '').replace(/^Bearer /, ''); this.sql.exec('DELETE FROM sessions WHERE sid = ?', sid); return json({ ok: true }); }
       if (p === '/api/save' || p === '/api/saves') return await this.saveApi(req, now, url);
       if (p === '/api/status') return json({ ok: true, online: this.ctx.getWebSockets().length });
