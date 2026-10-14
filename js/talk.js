@@ -1,8 +1,8 @@
 // Conversations staged like a Pokémon battle: they stand on a platform facing you,
 // you see the back of your own head in the foreground, subtitles type out, you pick replies.
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, setFace } from './character.js?v=198';
-import { sfx, audio } from './audio.js?v=198';
+import { buildCharacter, poseCharacter, disposeObject, setFace } from './character.js?v=199';
+import { sfx, audio } from './audio.js?v=199';
 
 const $ = id => document.getElementById(id);
 const BG = {
@@ -169,7 +169,8 @@ export class Talk {
       const pc = this.nextPassenger; this.nextPassenger = null; // whoever's riding with you, in the passenger seat
       if (pc) { try { this.pass = buildCharacter(pc); root.add(this.pass.root); } catch (e) { this.pass = null; } }
     }
-    if (this.twoRide) { const R = this.twoRide; R.group.position.set(0, 0, 0); R.group.rotation.set(0, 0, 0); if (R.glow) R.glow.visible = false; this.scene.add(R.group); this.twoRoot = R.group; }
+    if (this.twoRide) { const R = this.twoRide; R.group.position.set(0, 0, 0); R.group.rotation.set(0, 0, 0); if (R.glow) R.glow.visible = false; this.scene.add(R.group); this.twoRoot = R.group;
+      const pc = this.nextPassenger; this.nextPassenger = null; if (pc && (R.boat || R.two === 'moto')) { try { this.pass = buildCharacter(pc); R.group.add(this.pass.root); } catch (e) { this.pass = null; } } } // pillion / the other boat seat
     if (seat && !this.realCar && !this.twoRide) { // car seat, dashboard and steering wheel
       const g = new THREE.Group(), m = c => new THREE.MeshStandardMaterial({ color: c, roughness: 0.7 });
       const seatB = new THREE.Mesh(new THREE.BoxGeometry(0.62, 0.16, 0.62), m('#2a2b30')); seatB.position.set(0, 0.47, -0.12); g.add(seatB);
@@ -236,7 +237,7 @@ export class Talk {
     if (this.prop) { this.scene.remove(this.prop); this.prop = null; }
     if (this.bubbles) { this.scene.remove(this.bubbles); this.bubbles = null; }
     if (this.seatG) { this.scene.remove(this.seatG); this.seatG = null; }
-    if (this.twoRoot) { this.scene.remove(this.twoRoot); disposeObject(this.twoRoot); this.twoRoot = null; }
+    if (this.twoRoot) { this.scene.remove(this.twoRoot); disposeObject(this.twoRoot); this.twoRoot = null; this.pass = null; }
     if (this.carRoot) { this.scene.remove(this.carRoot); disposeObject(this.carRoot); this.carRoot = null; this.pass = null; }
     if (this.carG) { this.scene.remove(this.carG); this.carG = null; }
     if (this.bedG) { this.scene.remove(this.bedG); this.bedG = null; }
@@ -366,6 +367,10 @@ export class Talk {
       y.root.updateMatrixWorld(true); y.armR.hand.getWorldPosition(h); this.gripErr = h.distanceTo(grip); }
     y.armL.pivot.rotation.set(-0.85, -0.15, 0.42); if (y.armL.elbow) y.armL.elbow.rotation.set(-2.6, 0, 0); // phone at the ear
     y.head.rotation.set(talking ? Math.sin(this.t * 11) * 0.06 : 0, 0.45, 0.1);
+    if (this.pass) { const q = this.pass, ql = q.legLen || 0.86; poseCharacter(q, { t: this.t + 2, aim: -1.45, speed: 0 }); q.root.rotation.set(0, 0, 0);
+      if (R.boat) { q.root.position.set(-R.seat.x, R.seat.y - ql + 0.03, R.seat.z); q.legL.pivot.rotation.set(-1.5, 0, 0.05); q.legR.pivot.rotation.set(-1.5, 0, -0.05); q.legL.knee.rotation.x = 1.35; q.legR.knee.rotation.x = 1.35; q.armL.pivot.rotation.set(-0.5, 0, 0.1); q.armR.pivot.rotation.set(-0.5, 0, -0.1); }
+      else { q.root.position.set(0, R.seatY - ql + 0.08, -0.5); q.legL.pivot.rotation.set(-1.2, 0, 0.12); q.legR.pivot.rotation.set(-1.2, 0, -0.12); q.legL.knee.rotation.x = 1.5; q.legR.knee.rotation.x = 1.5; q.armL.pivot.rotation.set(-1.0, 0, 0.35); q.armR.pivot.rotation.set(-1.0, 0, -0.35); } // on the back, holding on to you
+      q.head.rotation.set(0, Math.sin(this.t * 0.35) > 0.3 ? 0.5 : Math.sin(this.t * 0.6) * 0.1, 0); }
     y.root.updateMatrixWorld(true); const hp = new THREE.Vector3(); y.head.getWorldPosition(hp);
     this.cam.position.set(hp.x + 2.0, hp.y + 0.05, hp.z + 2.2); this.cam.lookAt(hp.x, hp.y - 0.55, hp.z + 0.35);
   }
