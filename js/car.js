@@ -1,7 +1,7 @@
 // Modular car builder. Car faces +Z, sits on y=0, origin at the centre of the wheelbase.
 import * as THREE from '../lib/three.module.min.js';
-import { BASIC } from './character.js?v=204';
-import { patternTexture } from './gun.js?v=204';
+import { BASIC } from './character.js?v=205';
+import { patternTexture } from './gun.js?v=205';
 
 export const BODIES = {
   hatch:  { label: 'Hatchback', L: 3.8, W: 1.75, bh: 0.55, cl: 2.0, ch: 0.62, co: -0.4,  wr: 0.34, mass: 1.0 },
@@ -271,7 +271,8 @@ function buildTractor(c, B) {
   bx(0.22, 0.14, 0.06, headM, -0.3, 1.25, 1.77); bx(0.22, 0.14, 0.06, headM, 0.3, 1.25, 1.77);
   bx(0.14, 0.1, 0.05, tailM, -0.6, 1.05, -1.4); bx(0.14, 0.1, 0.05, tailM, 0.6, 1.05, -1.4); bx(0.1, 0.08, 0.05, revM, 0, 1.05, -1.4);
   bx(1.1, 0.1, 0.3, steel, 0, 0.6, -1.6);                 // hitch
-  for (const sx of [-1, 1]) { bx(0.05, 1.0, 0.05, steel, sx * 0.72, 0.6, -0.55); bx(0.05, 1.0, 0.05, steel, sx * 0.72, 0.6, -0.95); for (const ry of [0.35, 0.65, 0.95]) bx(0.06, 0.04, 0.45, steel, sx * 0.72, ry, -0.75); } // ladder up to the cab
+  for (const sx of [-1, 1]) { for (const [ry, ox] of [[0.5, 0.86], [0.92, 0.8]]) { bx(0.3, 0.05, 0.24, steel, sx * ox, ry, 0.06); bx(0.04, ry - 0.3, 0.04, steel, sx * (ox - 0.12), 0.3 + (ry - 0.3) / 2 + 0.02, 0.06); } /* two step plates just in front of the big back wheel */
+    const gb = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.025, 0.55, 6), steel); gb.position.set(sx * 0.71, 1.62, -0.16); grp.add(gb); } // grab handle on the front cab post
   { const sw = new THREE.Mesh(new THREE.TorusGeometry(0.2, 0.03, 8, 22), dark); sw.position.set(0, 1.78, -0.42); sw.rotation.x = 0.7; grp.add(sw); // steering wheel
     const col = new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.035, 0.5, 8), dark); col.rotation.x = Math.PI / 2; col.position.z = 0.25; sw.add(col); } // column down into the dash
   for (const [fz, r, w] of [[1, 0.42, 0.3], [-1, 0.78, 0.5]]) for (const sx of [-1, 1]) {
@@ -284,7 +285,7 @@ function buildTractor(c, B) {
     if (fz < 0) bx(0.6, 0.06, 1.0, body, sx * 0.92, r * 2 + 0.05, -0.85); // mudguards
   }
   grp.traverse(m => { if (m.isMesh) m.castShadow = true; });
-  return { group: grp, wheels, headM, tailM, revM, glow: null, length: L, width: W, height: 2.9, wr: 0.6, tractor: true, seat: { x: 0, y: 1.32, z: -0.82 }, climb: { steps: [0.37, 0.67, 0.97], floor: 1.14, jump: true }, doorZ: -0.75 };
+  return { group: grp, wheels, headM, tailM, revM, glow: null, length: L, width: W, height: 2.9, wr: 0.6, tractor: true, seat: { x: 0, y: 1.32, z: -0.82 }, climb: { steps: [0.5, 0.92], floor: 1.14, grips: [[0.9, 1.66, -0.42], [0.71, 1.75, -0.16]] }, doorZ: 0.12 };
 }
 function buildTwo(c, B) {
   const grp = new THREE.Group(), M = (col, o = {}) => new THREE.MeshStandardMaterial({ color: col, roughness: 0.5, ...o });
@@ -367,7 +368,7 @@ function buildCarRaw(cfg) {
   if (B.tractor) return buildTractor(c, B);
   if (B.boat) return buildBoat(c, B);
   const grp = new THREE.Group();
-  let doors = null, seat = null, panes = null, rearZ = null;
+  let doors = null, seat = null, panes = null, rearZ = null, boxStep = null;
   const fin = c.finish;
   const look = { gloss: [0.25, 0.2], matte: [0.85, 0], metallic: [0.3, 0.75], chrome: [0.06, 1], camo: [0.8, 0], carbon: [0.35, 0.3] }[fin] || [0.3, 0.3];
   const bodyM = new THREE.MeshStandardMaterial({ color: c.bodyColor, roughness: look[0], metalness: look[1], flatShading: true });
@@ -424,7 +425,10 @@ function buildCarRaw(cfg) {
     const dl = Math.min(1.25, B.cl * 0.6), hz = B.co + Math.min(B.cl, 2.2) * 0.5 - 0.02;
     for (const sx of [-1, 1]) {
       const pv = new THREE.Group(); pv.position.set(sx * (W / 2 + 0.006), by, hz);
-      const dH = B.box ? top - clr * 0.15 : bh, dY = B.box ? (top + clr * 0.15) / 2 - by : 0; const d = new THREE.Mesh(new THREE.BoxGeometry(0.11, dH, dl - 0.01), bodyM); d.position.set(-sx * 0.061, dY, -dl / 2); /* flush with the body: it is the cabin wall (on a lorry it comes down over the steps) */ /* a thick door: it is the cabin wall */ d.castShadow = true; pv.add(d);
+      { const mk = (h, yc, z0, z1) => { const m = new THREE.Mesh(new THREE.BoxGeometry(0.11, h, z1 - z0), bodyM); m.position.set(-sx * 0.061, yc - by, (z0 + z1) / 2 - hz); m.castShadow = true; pv.add(m); return m; };
+        if (B.box) { /* a lorry door stops above the front wheel: cut round the arch */ const fwz = L * 0.31, a0 = fwz - wr - 0.08, a1 = fwz + wr + 0.08, aTop = Math.min(top - 0.05, wr * 2 + 0.08), bot = clr * 0.15, z0 = hz - dl + 0.005, z1 = hz - 0.005;
+          mk(top - aTop, (top + aTop) / 2, z0, z1); for (const [p0, p1] of [[z0, Math.min(z1, a0)], [Math.max(z0, a1), z1]]) if (p1 - p0 > 0.03) mk(aTop - bot, (aTop + bot) / 2, p0, p1); }
+        else mk(bh, by, hz - dl + 0.005, hz - 0.005); } /* flush with the body: the door is the cabin wall */
       if (c.decal === 'twotone') { const t2 = new THREE.Mesh(new THREE.BoxGeometry(0.045, bh * 0.4, dl), accM); t2.position.set(-sx * 0.0085, -bh * 0.23, -dl / 2); pv.add(t2); }
       const hd = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.05, 0.18), chrome); hd.position.set(sx * 0.03, bh * 0.22, -dl + 0.22); pv.add(hd); pv.userData.handle = hd;
       const card = new THREE.Mesh(new THREE.BoxGeometry(0.012, bh * 0.82, dl * 0.94), M2('#2c2d33')); card.position.set(-sx * 0.096, bh * 0.05, -dl / 2); pv.add(card); /* the door's inside: trim and an armrest, not more paintwork */
@@ -432,7 +436,10 @@ function buildCarRaw(cfg) {
       grp.add(pv); doors[sx] = pv;
     }
     doors.len = dl; // (front hinge at the pivot, door runs back from it)
-    if (B.box) for (const sx of [-1, 1]) for (const [sy, sd] of [[clr * 0.35, 0.3], [clr * 0.8, 0.18]]) bx(sd, 0.06, dl * 0.7, M2('#3a3d45'), sx * (W / 2 - 0.13 - sd / 2 + 0.12), sy, hz - dl / 2); // cab steps, tucked in behind the door
+    if (B.box) { const a1 = L * 0.31 + wr + 0.08, sz = (a1 + hz) / 2, sl = Math.max(0.12, hz - a1 - 0.04); boxStep = { z: sz, grips: [] };
+      for (const sx of [-1, 1]) { for (const [sy, sd] of [[clr * 0.35, 0.3], [clr * 0.8, 0.18]]) bx(sd, 0.06, sl, M2('#3a3d45'), sx * (W / 2 - 0.01 - sd / 2), sy, sz); // steps in front of the wheel, behind the door
+        const gb = new THREE.Mesh(new THREE.CylinderGeometry(0.022, 0.022, 0.7, 6), chrome); gb.position.set(sx * (W / 2 + 0.04), top + 0.35, hz + 0.06); grp.add(gb); } // grab handle up the door frame
+      boxStep.grips = [[W / 2 + 0.04, top + 0.1, hz + 0.06], [W / 2 + 0.04, top + 0.6, hz + 0.06]]; }
     if (c.decal === 'twotone') { for (const sx of [-1, 1]) bx(0.02, bh * 0.45, L + 0.02, accM, sx * (W / 2 + 0.01), clr + bh * 0.22, 0); for (const sz of [-1, 1]) bx(W + 0.02, bh * 0.45, 0.02, accM, 0, clr + bh * 0.22, sz * (halfL + 0.01)); } // lower half in the second colour (a skin, not a block through the cabin)
     if (c.decal === 'side') for (const sx of [-1, 1]) bx(0.02, 0.1, L * 0.86, accM, sx * (W / 2 + 0.005), by + 0.05, 0);
     if (c.decal === 'flames') for (const sx of [-1, 1]) for (let i = 0; i < 5; i++) { const len = L * (0.22 + (i % 2) * 0.12 + (i === 2 ? 0.12 : 0)); bx(0.02, 0.07, len, i % 2 ? M2('#ffd23f') : accM, sx * (W / 2 + 0.045), by - 0.1 + i * 0.07, L / 2 - len / 2 - 0.05); }
@@ -661,7 +668,7 @@ function buildCarRaw(cfg) {
     const lid = new THREE.Mesh(new THREE.BoxGeometry(W * 0.9, 0.03, bl), bodyM); lid.position.set(0, 0.016, bl / 2); lid.castShadow = true; bonnet.add(lid);
     for (const m of [...grp.children]) if (m.isMesh && m !== lid && m.position.y > top - 0.005 && m.position.y < top + 0.2 && m.position.z > bz0 + 0.05 && Math.abs(m.position.x) < W * 0.45 && m.material !== headM) { grp.remove(m); m.position.sub(bonnet.position); m.position.y += 0.03; bonnet.add(m); }
     const bay = new THREE.Mesh(new THREE.BoxGeometry(W * 0.84, 0.01, bl * 0.92), dark); bay.position.set(0, top + 0.002, bz0 + 0.02 + bl / 2); grp.add(bay); }
-  return { group: grp, wheels, headM, tailM, revM, glow, length: L, width: W, height: top + B.ch, wr, doors, heads, tails, bonnet, panes, rearZ, ch: B.ch, top, co: B.co, cl: B.cl, topless: !!B.topless, body: c.body, seat, drv: seat || { x: W * 0.22, y: Math.min(top - 0.12, top + B.ch - 0.74, top - bh * 0.45), z: B.co - 0.08 }, /* sat down in the car, not perched on it */ climb: B.box ? { steps: [clr * 0.35 + 0.03, clr * 0.8 + 0.03], floor: top - 0.3 } : null };
+  return { group: grp, wheels, headM, tailM, revM, glow, length: L, width: W, height: top + B.ch, wr, doors, heads, tails, bonnet, panes, rearZ, ch: B.ch, top, co: B.co, cl: B.cl, topless: !!B.topless, body: c.body, seat, drv: seat || { x: W * 0.22, y: Math.min(top - 0.12, top + B.ch - 0.74, top - bh * 0.45), z: B.co - 0.08 }, /* sat down in the car, not perched on it */ climb: B.box ? { steps: [clr * 0.35 + 0.03, clr * 0.8 + 0.03], floor: top - 0.3, grips: boxStep?.grips } : null, doorZ: boxStep ? boxStep.z : undefined, doorOpen: B.box ? 1.45 : 1.05 };
 }
 
 let _glowTex = null;

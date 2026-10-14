@@ -1,8 +1,8 @@
 // Conversations staged like a Pokémon battle: they stand on a platform facing you,
 // you see the back of your own head in the foreground, subtitles type out, you pick replies.
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, setFace } from './character.js?v=204';
-import { sfx, audio } from './audio.js?v=204';
+import { buildCharacter, poseCharacter, disposeObject, setFace } from './character.js?v=205';
+import { sfx, audio } from './audio.js?v=205';
 
 const $ = id => document.getElementById(id);
 const BG = {
@@ -227,7 +227,9 @@ export class Talk {
   }
   faceFrame() {
     const f = this.faceFig; if (!f) return; const talking = this.talking === 'npc', open = talking ? Math.abs(Math.sin(this.t * 15)) * (0.5 + 0.5 * Math.abs(Math.sin(this.t * 4.3))) : 0;
-    f.armR.pivot.rotation.set(-0.85, 0.15, -0.42); if (f.armR.elbow) f.armR.elbow.rotation.set(-2.6, 0, 0); f.root.rotation.y = -0.35; f.head.rotation.set(talking ? Math.sin(this.t * 11) * 0.05 : 0, 0.1, -0.1);
+    f.root.rotation.y = -0.35; f.head.rotation.set(0, 0.1, -0.1);
+    if (!f._earPose) { f.armR.pivot.rotation.set(-0.85, 0.15, -0.42); if (f.armR.elbow) f.armR.elbow.rotation.set(-2.6, 0, 0); this.earIK(f, f.armR, -1); f._earPose = [f.armR.pivot.rotation.clone(), f.armR.elbow?.rotation.clone()]; } /* phone right up at the ear */
+    f.armR.pivot.rotation.copy(f._earPose[0]); if (f.armR.elbow && f._earPose[1]) f.armR.elbow.rotation.copy(f._earPose[1]); f.head.rotation.x = talking ? Math.sin(this.t * 11) * 0.05 : 0;
     try { setFace(f, 'neutral', open); } catch (e) {}
     const hp = f.hp; this.faceCam.position.set(hp.x - 0.55, hp.y - 0.02, hp.z + 2.3); this.faceCam.lookAt(hp.x - 0.12, hp.y - 0.12, hp.z); this.faceR.render(this.faceScene, this.faceCam);
   }
@@ -299,7 +301,7 @@ export class Talk {
       c.armR.pivot.rotation.set(-0.15 - Math.max(0, g) * 1.4, 0, 0.12 + Math.max(0, g) * 0.3);
       c.armL.pivot.rotation.set(-0.1 + Math.min(0, g) * 1.2, 0, -0.12);
     }
-    if (this.phone && n && y) for (const c of [n, y]) { c.armR.pivot.rotation.set(-0.85, 0.15, -0.42); c.armR.elbow.rotation.set(-2.6, 0, 0); c.head.rotation.z = -0.12; } // hand up at the ear holding the phone
+    if (this.phone && n && y) for (const c of [n, y]) { c.armR.pivot.rotation.set(-0.85, 0.15, -0.42); c.armR.elbow.rotation.set(-2.6, 0, 0); c.head.rotation.z = -0.12; this.earIK(c, c.armR, -1); } // hand up at the ear holding the phone
     if (this.think && n) { // you, alone, hand on chin, mulling it over
       n.root.position.x = 0;
       if (this.bedG) { // tucked in, staring at the ceiling
@@ -325,7 +327,7 @@ export class Talk {
       this.seatG.position.copy(y.root.position); this.seatG.rotation.y = ry;
       y.root.rotation.y = ry; this.sitIn(y, this.seatG);
       y.armL.pivot.rotation.set(-1.25, 0, -0.32);
-      if (this.phone) { y.armR.pivot.rotation.set(-0.85, 0.15, -0.42); if (y.armR.elbow) y.armR.elbow.rotation.set(-2.6, 0, 0); y.head.rotation.set(0, 0.6 + (this.talking === 'you' ? Math.sin(this.t * 3.1) * 0.08 : 0), -0.12); } // on the phone at the wheel: one hand on it, phone at your ear
+      if (this.phone) { y.armR.pivot.rotation.set(-0.85, 0.15, -0.42); if (y.armR.elbow) y.armR.elbow.rotation.set(-2.6, 0, 0); this.earIK(y, y.armR, -1); y.head.rotation.set(0, 0.6 + (this.talking === 'you' ? Math.sin(this.t * 3.1) * 0.08 : 0), -0.12); } // on the phone at the wheel: one hand on it, phone at your ear
       else { if (this.talking !== 'you') y.armR.pivot.rotation.set(-1.25, 0, 0.32); y.head.rotation.y = 1.35 + (this.talking === 'you' ? Math.sin(this.t * 3.1) * 0.1 : 0); }
     }
     if (this.twoRide && n && y) this.twoPose(n, y);
@@ -349,6 +351,15 @@ export class Talk {
     }
   }
   // on your bike / scooter / motorbike / boat, phone at your ear, one hand on the bars or wheel
+  // bring the phone hand right up to the ear: a few nudges of shoulder and elbow until the hand sits beside the head
+  earIK(c, arm, sx) {
+    if (!c || !arm?.hand || !c.head) return; c.root.updateWorldMatrix(true, true);
+    if (!c._ear) { const bb = new THREE.Box3().setFromObject(c.head), ctr = c.head.worldToLocal(bb.getCenter(new THREE.Vector3())); c._ear = { ctr, hw: (bb.max.x - bb.min.x) / 2, hh: (bb.max.y - bb.min.y) / 2 }; }
+    const E = c._ear, T = c.head.localToWorld(new THREE.Vector3(E.ctr.x + sx * (E.hw * 0.95), E.ctr.y - E.hh * 0.3, E.ctr.z + 0.02)), h = new THREE.Vector3();
+    const f = () => { c.root.updateWorldMatrix(true, true); arm.hand.getWorldPosition(h); return h.distanceTo(T); };
+    const P = [[arm.pivot.rotation, 'x'], [arm.pivot.rotation, 'z'], [arm.pivot.rotation, 'y']]; if (arm.elbow) P.push([arm.elbow.rotation, 'x']);
+    let best = f(), st = 0.3; for (let i = 0; i < 30 && st > 0.01; i++) { let imp = false; for (const [o, k] of P) for (const d of [st, -st]) { o[k] += d; const v = f(); if (v < best - 1e-4) { best = v; imp = true; break; } o[k] -= d; } if (!imp) st *= 0.5; }
+  }
   twoPose(n, y) {
     const R = this.twoRide, kind = R.boat ? 'boat' : R.two, hl = y.legLen || 0.86, talking = this.talking === 'you';
     n.root.visible = false; this.pNpc.g.visible = false; this.pYou.g.visible = false; y.root.rotation.set(0, 0, 0);
@@ -365,7 +376,7 @@ export class Talk {
     { const h = new THREE.Vector3(), aim = grip.clone(); // a few correction passes so the hand lands right on the grip
       for (let i = 0; i < 4; i++) { y.root.updateMatrixWorld(true); y.armR.hand.getWorldPosition(h); aim.add(grip.clone().sub(h)); y.armR.pivot.getWorldPosition(sh); const d2 = aim.clone().sub(sh), l2 = d2.length(); y.armR.pivot.rotation.set(-Math.atan2(d2.z, -d2.y), 0, Math.asin(Math.max(-1, Math.min(1, d2.x / l2)))); }
       y.root.updateMatrixWorld(true); y.armR.hand.getWorldPosition(h); this.gripErr = h.distanceTo(grip); }
-    y.armL.pivot.rotation.set(-0.85, -0.15, 0.42); if (y.armL.elbow) y.armL.elbow.rotation.set(-2.6, 0, 0); // phone at the ear
+    y.armL.pivot.rotation.set(-0.85, -0.15, 0.42); if (y.armL.elbow) y.armL.elbow.rotation.set(-2.6, 0, 0); this.earIK(y, y.armL, 1); // phone at the ear
     y.head.rotation.set(talking ? Math.sin(this.t * 11) * 0.06 : 0, 0.45, 0.1);
     if (this.pass) { const q = this.pass, ql = q.legLen || 0.86; poseCharacter(q, { t: this.t + 2, aim: -1.45, speed: 0 }); q.root.rotation.set(0, 0, 0);
       if (R.boat) { q.root.position.set(-R.seat.x, R.seat.y - ql + 0.03, R.seat.z); q.legL.pivot.rotation.set(-1.5, 0, 0.05); q.legR.pivot.rotation.set(-1.5, 0, -0.05); q.legL.knee.rotation.x = 1.35; q.legR.knee.rotation.x = 1.35; q.armL.pivot.rotation.set(-0.5, 0, 0.1); q.armR.pivot.rotation.set(-0.5, 0, -0.1); }
@@ -381,7 +392,7 @@ export class Talk {
     const legLen = drv.legLen || 0.86; drv.root.position.y = top + 0.14 - legLen + 0.03; // hips on the cushion
     drv.legL.pivot.rotation.set(-1.5, 0, 0.05); drv.legR.pivot.rotation.set(-1.5, 0, -0.05); drv.legL.knee.rotation.x = 1.35; drv.legR.knee.rotation.x = 1.35; if (drv.hips) drv.hips.rotation.x = 0;
     drv.armR.pivot.rotation.set(-1.05, 0, -0.12); if (drv.armR.elbow) drv.armR.elbow.rotation.set(-0.55, 0, 0); // one hand on the wheel
-    if (this.phone) { drv.armL.pivot.rotation.set(-0.85, -0.15, 0.42); if (drv.armL.elbow) drv.armL.elbow.rotation.set(-2.6, 0, 0); drv.head.rotation.set(talkingMe ? Math.sin(this.t * 11) * 0.06 : 0, 0.45, 0.1); } // phone at the ear nearest the window
+    if (this.phone) { drv.armL.pivot.rotation.set(-0.85, -0.15, 0.42); if (drv.armL.elbow) drv.armL.elbow.rotation.set(-2.6, 0, 0); drv.head.rotation.set(talkingMe ? Math.sin(this.t * 11) * 0.06 : 0, 0.45, 0.1); this.earIK(drv, drv.armL, 1); } // phone at the ear nearest the window
     else { drv.armL.pivot.rotation.set(-1.05, 0, 0.12); if (drv.armL.elbow) drv.armL.elbow.rotation.set(-0.55, 0, 0); drv.head.rotation.set(talkingMe ? Math.sin(this.t * 11) * 0.06 : 0, other ? side * 1.1 : 0.2, 0); }
     if (this.wheel) this.wheel.rotation.z = Math.sin(this.t * 0.8) * 0.04;
     if (this.pass) { const q = this.pass, ll = q.legLen || 0.86; poseCharacter(q, { t: this.t + 2, aim: -1.45, speed: 0 }); q.root.position.set(-sx, top + 0.14 - ll + 0.03, sz + 0.02); q.root.rotation.set(0, 0, 0);
