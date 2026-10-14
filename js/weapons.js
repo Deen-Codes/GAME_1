@@ -1,6 +1,6 @@
 // The arsenal: every weapon slot, how it looks in the hand, its stats and its icon.
 import * as THREE from '../lib/three.module.min.js';
-import { buildGun, computeStats, GUN_PRESETS, DEFAULT_GUN, GUN_SCHEMA } from './gun.js?v=136';
+import { buildGun, computeStats, GUN_PRESETS, DEFAULT_GUN, GUN_SCHEMA } from './gun.js?v=137';
 
 export const SLOTS = [
   { id: 'fist', name: 'Fists', kind: 'melee', price: 0 },
@@ -53,7 +53,7 @@ export function smithSchema(id) {
   const rec = SLOT[id].receivers;
   return GUN_SCHEMA.map(t => ({ ...t, items: t.items.map(it => it.key === 'receiver' ? { ...it, options: it.options.filter(o => rec.includes(o[0])) } : it).filter(it => !(it.key === 'receiver' && rec.length < 2)) }));
 }
-export const SMITH_PRICES = { receiver: 400, fireMode: 200, barrel: 150, muzzle: 150, stock: 150, grip: 120, magazine: 180, sight: 150, under: 150, ammo: 220, finish: 120, bodyColor: 40, accentColor: 40, metalColor: 40, tracer: 40, name: 0 };
+export const SMITH_PRICES = { receiver: 400, fireMode: 200, barrel: 150, muzzle: 150, stock: 150, grip: 120, magazine: 180, sight: 150, under: 150, ammo: 220, finish: 120, charm: 60, bodyColor: 40, accentColor: 40, metalColor: 40, tracer: 40, name: 0 };
 
 // ---------------- models
 function mesh(geo, color, x = 0, y = 0, z = 0, opt = {}) {

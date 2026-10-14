@@ -1,28 +1,28 @@
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=136';
-import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun, partEffects, partPerk } from './gun.js?v=136';
-import { buildCar, computeCarStats, carStatBars, carClass, carPartEffects, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=136';
-import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, WIND_U, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=136';
-import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=136';
-import { buildPanel, renderStats } from './ui.js?v=136';
-import { Input } from './input.js?v=136';
-import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime, animalCall } from './audio.js?v=136';
-import { runMinigame } from './minigames.js?v=136';
-import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk, setReservedNames, seededLook } from './peds.js?v=136';
-import { citizens, whereNow } from './citizens.js?v=136';
-import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=136';
-import { findRoute } from './nav.js?v=136';
-import { COURSES, CAREERS, QUIZ } from './careers.js?v=136';
-import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=136';
-import { attachWheel } from './wheel.js?v=136';
-import { GROUND_U } from './groundtex.js?v=136';
-import { Animals, makeAnimalMesh } from './animals.js?v=136';
-import { Talk } from './talk.js?v=136';
-import { incomingText, classify, textOptions, textReply } from './texts.js?v=136';
-import { svg, drawIcon } from './icons.js?v=136';
-import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=136';
-import { FURN, CATALOG } from './furniture.js?v=136';
-import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=136';
+import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=137';
+import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun, partEffects, partPerk } from './gun.js?v=137';
+import { buildCar, computeCarStats, carStatBars, carClass, carPartEffects, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=137';
+import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, WIND_U, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=137';
+import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=137';
+import { buildPanel, renderStats } from './ui.js?v=137';
+import { Input } from './input.js?v=137';
+import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime, animalCall } from './audio.js?v=137';
+import { runMinigame } from './minigames.js?v=137';
+import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk, setReservedNames, seededLook } from './peds.js?v=137';
+import { citizens, whereNow } from './citizens.js?v=137';
+import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=137';
+import { findRoute } from './nav.js?v=137';
+import { COURSES, CAREERS, QUIZ } from './careers.js?v=137';
+import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=137';
+import { attachWheel } from './wheel.js?v=137';
+import { GROUND_U } from './groundtex.js?v=137';
+import { Animals, makeAnimalMesh } from './animals.js?v=137';
+import { Talk } from './talk.js?v=137';
+import { incomingText, classify, textOptions, textReply } from './texts.js?v=137';
+import { svg, drawIcon } from './icons.js?v=137';
+import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=137';
+import { FURN, CATALOG } from './furniture.js?v=137';
+import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=137';
 
 const $ = id => document.getElementById(id);
 let inside = null, editMode = false, held = null, pendingCar = false, homeMusic = false, phoneBadge = 0;
@@ -6477,7 +6477,7 @@ function saveGame() {
   store.set('bc_save', save); store.set('bc_arsenal', arsenal); store.set('bc_cars', garage);
 }
 // auto-update: bookmarks and home-screen apps can hold on to an old copy. Check version.json (never cached) and reload once if newer.
-const BUILD = 136;
+const BUILD = 137;
 function checkUpdate() {
   fetch('version.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(j => {
     if (!(j.v > BUILD)) return;
@@ -6713,17 +6713,25 @@ function openShop(kind, place) {
 // Call of Duty style gunsmith: spin the gun, every attachment shows what it does, better parts unlock as you level the gun up
 const PART_KEYS = ['barrel', 'muzzle', 'stock', 'grip', 'magazine', 'sight', 'under', 'ammo'];
 function partUnlock(slot, key, val) {
+  if (GUN_SKILL_SLOTS.includes(slot) && key === 'finish') { const i = Object.keys(PARTS.finish).indexOf(val); const need = i < 6 ? 1 : i < 10 ? 3 : Math.min(12, 4 + (i - 10) * 2); return lvl('gun_' + slot) >= need || shop?.orig?.finish === val ? 0 : need; }
   if (!GUN_SKILL_SLOTS.includes(slot) || !PART_KEYS.includes(key)) return 0;
   const i = Object.keys(PARTS[key]).indexOf(val); const need = i < 2 ? 1 : Math.min(12, 2 + (i - 2) * 2);
   return lvl('gun_' + slot) >= need || shop?.orig?.[key] === val ? 0 : need;
 }
 function smithSchemaRich(slot) {
   return smithSchema(slot).map(t => ({ ...t, items: t.items.map(it => {
-    if (it.type !== 'choice' || !(PART_KEYS.includes(it.key) || it.key === 'finish')) return it;
-    return { ...it, decorate: val => { const lock = partUnlock(slot, it.key, val), perk = partPerk(val), fx = it.key === 'finish' ? [] : partEffects(it.key, val);
-      return { fx, note: !fx.length ? (perk || (it.key === 'finish' ? 'Cosmetic' : 'Balanced')) : null, lock, price: shop?.orig?.[it.key] === val ? 'Fitted' : fmt(SMITH_PRICES[it.key] ?? 100) }; },
-      onLocked: (val, need) => { sfx.fail?.(); toast(`${PARTS[it.key][val].label} unlocks at ${SLOT[slot].name} level ${need}. Get kills or train at the range.`, 3); } };
+    if (it.type !== 'choice' || !(PART_KEYS.includes(it.key) || it.key === 'finish' || it.key === 'charm')) return it;
+    return { ...it, decorate: val => { const lock = partUnlock(slot, it.key, val), perk = partPerk(val), fx = it.key === 'finish' || it.key === 'charm' ? [] : partEffects(it.key, val);
+      return { fx, note: !fx.length ? (perk || (it.key === 'finish' || it.key === 'charm' ? 'Cosmetic' : 'Balanced')) : null, lock, price: shop?.orig?.[it.key] === val ? 'Fitted' : fmt(SMITH_PRICES[it.key] ?? 100) }; },
+      onLocked: (val, need) => { sfx.fail?.(); toast(`${PARTS[it.key]?.[val]?.label || val} unlocks at ${SLOT[slot].name} level ${need}. Get kills or train at the range.`, 3); } };
   }) }));
+}
+// blueprints: save up to three builds per gun and load one back (you only pay for the parts that change)
+function renderBlueprints(slot) {
+  const BP = (stats.blueprints ||= {})[slot] ||= [], el = $('presets');
+  el.innerHTML = BP.map((b, i) => `<button data-bp="${i}">${svg('gun', 'sm')} ${b.name}</button>`).join('') + (BP.length < 3 ? `<button data-bpsave="1">${svg('plus', 'sm')} Save as blueprint</button>` : '');
+  el.querySelectorAll('[data-bp]').forEach(b => b.onclick = () => { pvGunCfg = { ...BP[+b.dataset.bp].cfg }; pv.dirty = true; gunStatsPanel(); panel.refresh(); updateShopPrice(); sfx.click(); });
+  el.querySelectorAll('[data-bpsave]').forEach(b => b.onclick = () => { BP.push({ name: (pvGunCfg.name || SLOT[slot].name).slice(0, 14) + ' ' + (BP.length + 1), cfg: { ...pvGunCfg } }); saveGame(); renderBlueprints(slot); toast('Blueprint saved.', 1.6); });
 }
 function openGunsmith(slot, place, newGun = false) {
   const cfg0 = arsenal.cfg[slot] || { ...DEFAULT_CFGS[slot] };
@@ -6731,7 +6739,7 @@ function openGunsmith(slot, place, newGun = false) {
   pvGunCfg = { ...cfg0 }; previewCfg = null;
   setState('gun');
   $('customTitle').textContent = `${newGun ? 'Try out · ' : ''}${SLOT[slot].name} · ${GUN_SKILL_SLOTS.includes(slot) ? `Lvl ${lvl('gun_' + slot)}` : place.name}`; $('randBtn').classList.add('buy');
-  $('presets').innerHTML = '';
+  renderBlueprints(slot);
   panel = buildPanel({ tabsEl: $('tabs'), contentEl: $('content'), schema: smithSchemaRich(slot), getCfg: () => pvGunCfg, onChange: (k, v) => { pvGunCfg[k] = v; if (k === 'receiver') { pvGunCfg.fireMode = RECEIVERS[v].mode; panel.refresh(); } pv.dirty = true; gunStatsPanel(); updateShopPrice(); } });
   pv.dirty = true; gunStatsPanel(); updateShopPrice();
 }

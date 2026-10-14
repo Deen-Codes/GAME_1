@@ -1,6 +1,6 @@
 // Modular gun builder + stat model. Gun points along +Z, origin at the top of the grip (where the hand goes).
 import * as THREE from '../lib/three.module.min.js';
-import { BASIC } from './character.js?v=136';
+import { BASIC } from './character.js?v=137';
 
 // Base stats per frame. Every other part multiplies these.
 export const RECEIVERS = {
@@ -81,6 +81,7 @@ export const PARTS = {
   finish: {
     matte: opt('Matte'), satin: opt('Satin'), gloss: opt('Gloss'), metal: opt('Brushed metal'),
     chrome: opt('Chrome'), gold: opt('Gold plated'), camo: opt('Woodland camo'), digital: opt('Digital camo'), carbon: opt('Carbon fibre'), tiger: opt('Tiger stripe'),
+    zebra: opt('Zebra'), urban: opt('Urban grey'), dragon: opt('Dragon scale'), damascus: opt('Damascus'), neon: opt('Neon circuit'), diamond: opt('Diamond'),
   },
 };
 // what a part does, as shown on its chip: [label, '+25%', isGood]
@@ -117,6 +118,7 @@ export const GUN_SCHEMA = [
   ] },
   { tab: 'Paint', items: [
     { key: 'finish', type: 'choice', label: 'Finish', options: toOpts(PARTS.finish) },
+    { key: 'charm', type: 'choice', label: 'Charm', options: [['none', 'None'], ['dice', 'Fuzzy dice'], ['skull', 'Skull'], ['heart', 'Heart'], ['star', 'Gold star'], ['teddy', 'Teddy']] },
     { key: 'bodyColor', type: 'color', label: 'Body', palette: BASIC },
     { key: 'accentColor', type: 'color', label: 'Accent', palette: BASIC },
     { key: 'metalColor', type: 'color', label: 'Metal parts', palette: ['#2a2b30', '#4a4d55', '#8a8f99', '#c9ccd2', '#b08d57', '#d4af37', '#7a2e2e', '#2e4a7a'] },
@@ -209,6 +211,18 @@ export function patternTexture(kind, a, b) {
   } else if (kind === 'carbon') {
     x.fillStyle = '#1a1a1e'; x.fillRect(0, 0, 128, 128);
     for (let i = 0; i < 16; i++) for (let j = 0; j < 16; j++) { x.fillStyle = (i + j) % 2 ? '#2c2c33' : '#141417'; x.fillRect(i * 8, j * 8, 8, 4); x.fillStyle = (i + j) % 2 ? '#141417' : '#2c2c33'; x.fillRect(i * 8, j * 8 + 4, 8, 4); }
+  } else if (kind === 'zebra') {
+    x.fillStyle = '#f2f2f2'; x.fillRect(0, 0, 128, 128); x.strokeStyle = '#141414'; for (let i = 0; i < 14; i++) { x.lineWidth = 3 + rnd() * 5; x.beginPath(); const y0 = i * 9 + rnd() * 4; x.moveTo(0, y0); x.bezierCurveTo(40, y0 - 10 + rnd() * 20, 80, y0 - 10 + rnd() * 20, 128, y0); x.stroke(); }
+  } else if (kind === 'urban') {
+    for (const col of ['#8a8f99', '#5a5d64', '#c9ccd2', '#3a3d45']) { x.fillStyle = col; for (let i = 0; i < 26; i++) x.fillRect(Math.floor(rnd() * 8) * 16, Math.floor(rnd() * 16) * 8, 16 + Math.floor(rnd() * 3) * 16, 8 + Math.floor(rnd() * 2) * 8); }
+  } else if (kind === 'dragon') {
+    for (let j = 0; j < 12; j++) for (let i = 0; i < 9; i++) { const cx = i * 16 + (j % 2) * 8, cy = j * 11; const g2 = x.createRadialGradient(cx, cy, 1, cx, cy, 12); g2.addColorStop(0, b); g2.addColorStop(0.8, a); g2.addColorStop(1, dark); x.fillStyle = g2; x.beginPath(); x.arc(cx, cy, 10, 0, Math.PI); x.fill(); }
+  } else if (kind === 'damascus') {
+    for (let i = 0; i < 40; i++) { x.strokeStyle = i % 2 ? '#c9ccd2' : '#5a5d64'; x.lineWidth = 2; x.beginPath(); for (let t = 0; t <= 128; t += 4) { const yy = i * 3.4 + Math.sin(t / 11 + i * 0.4) * 6 + Math.sin(t / 5) * 1.5; t ? x.lineTo(t, yy) : x.moveTo(t, yy); } x.stroke(); }
+  } else if (kind === 'neon') {
+    x.fillStyle = '#0b0b14'; x.fillRect(0, 0, 128, 128); x.strokeStyle = b; x.lineWidth = 2; for (let i = 0; i < 18; i++) { let px = Math.floor(rnd() * 16) * 8, py = Math.floor(rnd() * 16) * 8; x.beginPath(); x.moveTo(px, py); for (let k = 0; k < 4; k++) { if (rnd() < 0.5) px += (rnd() < 0.5 ? -1 : 1) * 16; else py += (rnd() < 0.5 ? -1 : 1) * 16; x.lineTo(px, py); } x.stroke(); x.fillStyle = b; x.fillRect(px - 2, py - 2, 4, 4); }
+  } else if (kind === 'diamond') {
+    for (let j = 0; j < 8; j++) for (let i = 0; i < 8; i++) { const l = 0.55 + rnd() * 0.45; x.fillStyle = `rgb(${200 * l + 40 | 0},${220 * l + 30 | 0},${255 * l | 0})`; x.beginPath(); x.moveTo(i * 16 + 8, j * 16); x.lineTo(i * 16 + 16, j * 16 + 8); x.lineTo(i * 16 + 8, j * 16 + 16); x.lineTo(i * 16, j * 16 + 8); x.fill(); }
   } else if (kind === 'tiger') {
     x.fillStyle = b;
     for (let i = 0; i < 12; i++) { x.beginPath(); const y0 = rnd() * 128; x.moveTo(0, y0); x.quadraticCurveTo(64, y0 + (rnd() - 0.5) * 50, 128, y0 + (rnd() - 0.5) * 30); x.lineWidth = 3 + rnd() * 6; x.strokeStyle = b; x.stroke(); }
@@ -219,11 +233,11 @@ export function patternTexture(kind, a, b) {
 
 function makeMaterials(g) {
   const fin = g.finish;
-  const look = { matte: [0.85, 0.1], satin: [0.55, 0.3], gloss: [0.22, 0.15], metal: [0.38, 0.85], chrome: [0.08, 1], gold: [0.22, 0.95], camo: [0.8, 0.05], digital: [0.8, 0.05], carbon: [0.35, 0.3], tiger: [0.7, 0.1] }[fin] || [0.6, 0.2];
+  const look = { matte: [0.85, 0.1], satin: [0.55, 0.3], gloss: [0.22, 0.15], metal: [0.38, 0.85], chrome: [0.08, 1], gold: [0.22, 0.95], camo: [0.8, 0.05], digital: [0.8, 0.05], carbon: [0.35, 0.3], tiger: [0.7, 0.1], zebra: [0.6, 0.1], urban: [0.8, 0.05], dragon: [0.35, 0.5], damascus: [0.3, 0.85], neon: [0.4, 0.2], diamond: [0.08, 0.9] }[fin] || [0.6, 0.2];
   let bodyCol = g.bodyColor, metalCol = g.metalColor;
   if (fin === 'gold') { bodyCol = '#d4af37'; metalCol = '#b8962e'; }
   const body = new THREE.MeshStandardMaterial({ color: bodyCol, roughness: look[0], metalness: look[1], flatShading: true });
-  if (['camo', 'digital', 'carbon', 'tiger'].includes(fin)) { body.map = patternTexture(fin, g.bodyColor, g.accentColor); body.color.set('#ffffff'); }
+  if (['camo', 'digital', 'carbon', 'tiger', 'zebra', 'urban', 'dragon', 'damascus', 'neon', 'diamond'].includes(fin)) { body.map = patternTexture(fin, g.bodyColor, g.accentColor); body.color.set('#ffffff'); if (fin === 'neon') { body.emissiveMap = body.map; body.emissive.set('#ffffff'); body.emissiveIntensity = 0.9; } }
   const accent = new THREE.MeshStandardMaterial({ color: g.accentColor, roughness: 0.5, metalness: 0.2, flatShading: true });
   const metal = new THREE.MeshStandardMaterial({ color: metalCol, roughness: fin === 'chrome' ? 0.1 : 0.35, metalness: 0.85, flatShading: true });
   const dark = new THREE.MeshStandardMaterial({ color: '#141418', roughness: 0.8, metalness: 0.2, flatShading: true });
@@ -417,5 +431,13 @@ export function buildGun(cfg) {
 
   const muzzle = new THREE.Object3D(); muzzle.position.set(0, by, mEnd + 0.01); grp.add(muzzle);
   grp.traverse(o => { if (o.isMesh) o.castShadow = true; });
+  if (g.charm && g.charm !== 'none') { // a little charm on a chain, hanging off the side
+    const ch = new THREE.Group(); ch.position.set(w / 2 + 0.012, yc - h * 0.2, z0 + 0.05); grp.add(ch);
+    const link = new THREE.Mesh(new THREE.BoxGeometry(0.006, 0.05, 0.006), M.metal); link.position.y = -0.025; ch.add(link);
+    const C = { dice: ['#ffffff', 'box'], skull: ['#f2ece0', 'ico'], heart: ['#ff3b5a', 'ico'], star: ['#d4af37', 'oct'], teddy: ['#a0703a', 'ico'] }[g.charm] || ['#ffffff', 'box'];
+    const geo = C[1] === 'box' ? new THREE.BoxGeometry(0.03, 0.03, 0.03) : C[1] === 'oct' ? new THREE.OctahedronGeometry(0.022) : new THREE.IcosahedronGeometry(0.019, 0);
+    const bob = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ color: C[0], roughness: 0.5, metalness: g.charm === 'star' ? 0.9 : 0.1, flatShading: true })); bob.position.y = -0.065; ch.add(bob);
+    if (g.charm === 'dice') { const b2 = bob.clone(); b2.position.set(0.02, -0.07, 0.015); b2.rotation.set(0.5, 0.6, 0); ch.add(b2); }
+  }
   return { group: grp, muzzle, laserOrigin, length: mEnd - (z0 - 0.3), center: new THREE.Vector3(0, yc, (z0 - 0.15 + mEnd) / 2) };
 }
