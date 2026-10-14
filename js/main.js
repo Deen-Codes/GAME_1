@@ -1,26 +1,26 @@
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=99';
-import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=99';
-import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=99';
-import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=99';
-import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=99';
-import { buildPanel, renderStats } from './ui.js?v=99';
-import { Input } from './input.js?v=99';
-import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime } from './audio.js?v=99';
-import { runMinigame } from './minigames.js?v=99';
-import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk } from './peds.js?v=99';
-import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=99';
-import { findRoute } from './nav.js?v=99';
-import { COURSES, CAREERS, QUIZ } from './careers.js?v=99';
-import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=99';
-import { attachWheel } from './wheel.js?v=99';
-import { Animals } from './animals.js?v=99';
-import { Talk } from './talk.js?v=99';
-import { incomingText, classify, textOptions, textReply } from './texts.js?v=99';
-import { svg, drawIcon } from './icons.js?v=99';
-import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=99';
-import { FURN, CATALOG } from './furniture.js?v=99';
-import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=99';
+import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=100';
+import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=100';
+import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=100';
+import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=100';
+import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=100';
+import { buildPanel, renderStats } from './ui.js?v=100';
+import { Input } from './input.js?v=100';
+import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime } from './audio.js?v=100';
+import { runMinigame } from './minigames.js?v=100';
+import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk } from './peds.js?v=100';
+import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=100';
+import { findRoute } from './nav.js?v=100';
+import { COURSES, CAREERS, QUIZ } from './careers.js?v=100';
+import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=100';
+import { attachWheel } from './wheel.js?v=100';
+import { Animals } from './animals.js?v=100';
+import { Talk } from './talk.js?v=100';
+import { incomingText, classify, textOptions, textReply } from './texts.js?v=100';
+import { svg, drawIcon } from './icons.js?v=100';
+import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=100';
+import { FURN, CATALOG } from './furniture.js?v=100';
+import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=100';
 
 const $ = id => document.getElementById(id);
 let inside = null, editMode = false, held = null, pendingCar = false, homeMusic = false, phoneBadge = 0;
@@ -299,8 +299,10 @@ function applyTime(h, px, pz) {
 // ================================================================ SUBTITLES: people talking to you (and you to yourself) while you roam
 // A face with a moving mouth and an expression, their name, and the line, just above the controls. Nothing to answer.
 const subs = (() => {
-  const el = $('subs'), cv = $('subFace'), nameEl = $('subName'), txtEl = $('subTxt');
-  let R = null, scene = null, cam = null, cur = null, t = 0, frameT = 0, hideT = 0;
+  // ONE card at a time in the top-left slot: people talking (face + moving mouth), texts, notifications, little messages.
+  // Cards bubble in and out; if a few are waiting they move along a bit quicker, but always long enough to read.
+  const el = $('subs'), cv = $('subFace'), nameEl = $('subName'), txtEl = $('subTxt'), faceW = el.querySelector('.subFaceWrap'), icoW = $('subIco');
+  let R = null, scene = null, cam = null, cur = null, t = 0, frameT = 0, outT = 0;
   const queue = [], cache = new Map();
   function init() {
     R = new THREE.WebGLRenderer({ canvas: cv, alpha: true, antialias: true }); R.setPixelRatio(1); R.setSize(160, 160, false); R.outputColorSpace = THREE.SRGBColorSpace;
@@ -314,40 +316,62 @@ const subs = (() => {
     if (cache.size > 8) { const [k0, f0] = cache.entries().next().value; scene.remove(f0.root); disposeObject?.(f0.root); cache.delete(k0); }
     return f;
   }
-  // who: { key, name, cfg, pitch } or 'me'. o: { expr, radio, pri, tag }
+  function enqueue(line) {
+    if (line.now || (cur && line.pri > cur.pri + 1)) { queue.unshift(line); if (cur && outT <= 0) outT = 0.001; return; }
+    if (queue.length > 3) { const lo = queue.findIndex(q => q.pri < line.pri); if (lo < 0) return; queue.splice(lo, 1); }
+    if (cur && !cur.plain && cur.text === line.text) return; // no doubles
+    queue.push(line);
+  }
+  // who: { key, name, cfg, pitch } or 'me'. o: { expr, radio, pri, tag, silent, now }
   function say(who, text, o = {}) {
     if (who === 'me') who = { key: 'me', name: 'You', cfg: charCfg, pitch: 210, me: true };
     if (!who?.cfg) return;
-    const line = { who, text, expr: o.expr || 'neutral', radio: !!o.radio, pri: o.pri || 0, tag: o.tag, silent: !!o.silent };
-    if (o.now || (cur && line.pri > cur.pri + 1)) { queue.length = 0; start(line); return; }
-    if (queue.length > 2) { const lo = queue.findIndex(q => q.pri < line.pri); if (lo < 0) return; queue.splice(lo, 1); }
-    queue.push(line);
+    enqueue({ who, text, expr: o.expr || 'neutral', radio: !!o.radio, pri: o.pri || 0, tag: o.tag, silent: !!o.silent, now: !!o.now });
   }
+  function note(icon, title, text, o = {}) { enqueue({ plain: true, icon, title, text, cls: o.cls || '', pri: o.pri || 1, dur: o.dur, now: !!o.now }); }
+  const readTime = s => Math.max(1.9, s.split(/\s+/).length * 0.3 + 1.1);
   function start(line) {
-    if (!R) init();
-    if (cur) { const f = cache.get(cur.who.key); if (f) f.root.visible = false; }
-    cur = line; t = 0; cur.shown = -1; cur.len = line.text.length; cur.hold = Math.max(1.6, cur.len * 0.035 + 1.2);
-    const f = figFor(line.who.key, line.who.cfg); f.root.visible = true; cur.fig = f;
-    nameEl.textContent = line.who.name + (line.tag ? ` · ${line.tag}` : line.radio ? ' · radio' : ''); txtEl.textContent = '';
-    el.classList.toggle('radio', line.radio); el.classList.toggle('me', !!line.who.me); el.classList.remove('hidden'); slotSync(); frameT = 0;
-    if (line.radio) { const A = audio(); if (A) { sfx.note(1400, A.currentTime, 0.05, 'square', 0.02, 3000); sfx.note(1100, A.currentTime + 0.06, 0.05, 'square', 0.02, 3000); } }
+    if (!R && !line.plain) init();
+    for (const [, g] of cache) g.root.visible = false;
+    cur = line; t = 0; outT = 0; cur.shown = -1; cur.len = line.text.length;
+    const rush = queue.length ? 0.72 : 1;
+    if (line.plain) {
+      faceW.style.display = 'none'; icoW.style.display = line.icon ? 'grid' : 'none'; if (line.icon) icoW.innerHTML = svg(line.icon, 'sm');
+      nameEl.textContent = line.title || ''; nameEl.style.display = line.title ? '' : 'none'; txtEl.textContent = line.text; cur.total = Math.max(1.6, (line.dur ? Math.min(line.dur, readTime(line.text)) : readTime(line.text)) * rush);
+    } else {
+      faceW.style.display = ''; icoW.style.display = 'none'; nameEl.style.display = '';
+      const f = figFor(line.who.key, line.who.cfg); f.root.visible = true; cur.fig = f;
+      nameEl.textContent = line.who.name + (line.tag ? ` · ${line.tag}` : line.radio ? ' · radio' : ''); txtEl.textContent = line.text; // full text first so the card is the right size
+      cur.cps = queue.length ? 48 : 34; cur.total = (line.silent ? 0 : cur.len / cur.cps) + readTime(line.text) * 0.75 * rush;
+      if (line.radio) { const A = audio(); if (A) { sfx.note(1400, A.currentTime, 0.05, 'square', 0.02, 3000); sfx.note(1100, A.currentTime + 0.06, 0.05, 'square', 0.02, 3000); } }
+      frameT = 0; draw(0);
+    }
+    el.className = (line.plain ? 'plain ' + (line.cls || '') : '') + (line.radio ? ' radio' : '') + (line.who?.me ? ' me' : '');
+    el.classList.remove('hidden'); void el.offsetWidth; el.classList.add('show');
+    $('hud').style.setProperty('--slotH', el.offsetHeight + 'px'); if (!line.plain && !line.silent) txtEl.textContent = ''; slotSync();
   }
-  function stop() { if (cur?.fig) cur.fig.root.visible = false; cur = null; el.classList.add('hidden'); slotSync(); }
-  function update(dt) {
-    if (state !== 'play') { if (cur) stop(); return; }
-    if (!cur) { if (queue.length) start(queue.shift()); else return; }
-    t += dt; const shown = cur.silent ? cur.len : Math.min(cur.len, Math.floor(t * 34)), talking = !cur.silent && shown < cur.len;
-    if (shown !== cur.shown) { cur.shown = shown; txtEl.textContent = cur.text.slice(0, shown); if (talking && shown % 2 === 0 && cur.text[shown - 1] !== ' ') { const A = audio(); if (A) sfx.note((cur.who.pitch || 260) * (0.9 + Math.random() * 0.25), A.currentTime, 0.045, cur.radio ? 'sawtooth' : 'square', 0.012, cur.radio ? 1400 : 2400); } }
-    if (!talking && t > (cur.silent ? 3.6 : cur.len / 34 + cur.hold)) { stop(); return; }
-    frameT -= dt; if (frameT > 0) return; frameT = 1 / 24;
-    const f = cur.fig, mouth = talking ? Math.abs(Math.sin(t * 15)) * (0.5 + 0.5 * Math.abs(Math.sin(t * 4.3))) : 0;
+  function stop() { if (cur?.fig) cur.fig.root.visible = false; cur = null; outT = 0; el.classList.remove('show'); el.classList.add('hidden'); queue.length = 0; slotSync(); }
+  function draw(talkingT) {
+    const f = cur.fig; if (!f) return; const talking = talkingT > 0, mouth = talking ? Math.abs(Math.sin(t * 15)) * (0.5 + 0.5 * Math.abs(Math.sin(t * 4.3))) : 0;
     setFace(f, cur.expr, mouth);
     f.head.rotation.x = talking ? Math.sin(t * 9) * 0.05 : Math.sin(t * 1.4) * 0.02; f.head.rotation.y = Math.sin(t * 1.7) * 0.12 + (cur.expr === 'flirty' ? 0.15 : 0); f.head.rotation.z = cur.expr === 'flirty' ? 0.1 : cur.expr === 'sad' ? -0.06 : 0;
-    const hp = f.hp; cam.position.set(hp.x + 0.1, hp.y + 0.06, hp.z + 1.9); cam.lookAt(hp.x, hp.y + 0.02, hp.z);
-    for (const [k, g] of cache) g.root.visible = g === f;
-    R.render(scene, cam);
+    const hp = f.hp; cam.position.set(hp.x + 0.1, hp.y + 0.06, hp.z + 1.9); cam.lookAt(hp.x, hp.y + 0.02, hp.z); R.render(scene, cam);
   }
-  return { say, update, stop, get busy() { return !!cur || queue.length > 0; } };
+  function update(dt) {
+    if (state !== 'play') { if (cur) stop(); return; }
+    if (!cur) { if (queue.length) start(queue.shift()); return; }
+    t += dt;
+    if (outT > 0) { outT += dt; if (outT > 0.26) { if (cur.fig) cur.fig.root.visible = false; cur = null; outT = 0; if (queue.length) start(queue.shift()); else { el.classList.add('hidden'); slotSync(); } } return; }
+    let talking = false;
+    if (!cur.plain) {
+      const shown = cur.silent ? cur.len : Math.min(cur.len, Math.floor(t * cur.cps)); talking = !cur.silent && shown < cur.len;
+      if (shown !== cur.shown) { cur.shown = shown; txtEl.textContent = cur.text.slice(0, shown); if (talking && shown % 2 === 0 && cur.text[shown - 1] !== ' ') { const A = audio(); if (A) sfx.note((cur.who.pitch || 260) * (0.9 + Math.random() * 0.25), A.currentTime, 0.045, cur.radio ? 'sawtooth' : 'square', 0.012, cur.radio ? 1400 : 2400); } }
+      frameT -= dt; if (frameT <= 0) { frameT = 1 / 24; draw(talking ? 1 : 0); }
+    }
+    const limit = queue.length && !talking ? Math.min(cur.total, Math.max(1.5, cur.total * 0.75)) : cur.total;
+    if (!talking && t > limit) { outT = 0.001; el.classList.remove('show'); } // bubble out, then the next one bubbles in
+  }
+  return { say, note, update, stop, get busy() { return !!cur || queue.length > 0; } };
 })();
 // who's who for the subtitles
 const youSay = (text, expr = 'neutral', o = {}) => subs.say('me', text, { expr, ...o });
@@ -1265,10 +1289,11 @@ function meleeHit(step = 0) {
 let time = 0, clockH = 8, dayN = 1, shake = 0, saveT = 0, toastT = 0, hurtFlash = 0, timeScale = 1;
 const gameHours = () => dayN * 24 + clockH;
 function toast(msg, dur = 2.4) { const fm = typeof msg === 'string' && msg.match(/^([A-Z][\w.' ]{1,24}): "(.+?)"\s*(.*)$/); if (fm) { const w = faceFor(null, fm[1]); if (w) { subs.say(w, fm[2] + (fm[3] ? ` ${fm[3]}` : ''), { silent: true, expr: /!|love|yay|fun/i.test(fm[2]) ? 'happy' : 'neutral', pri: 2 }); return; } }
-  const t = $('toast'); t.textContent = msg; t.classList.add('on'); toastT = dur; slotSync(); }
+  if (state === 'play' && typeof msg === 'string') { subs.note(null, null, msg, { dur }); return; }
+  const t = $('toast'); t.textContent = msg; t.classList.add('on'); toastT = dur; }
 let noteT = 0;
-function slotNote(icon, title, sub, dur = 4, cls = '') { const n = $('note'); $('noteIco').innerHTML = svg(icon, 'sm'); $('noteT').textContent = title; $('noteS').textContent = sub || ''; n.className = 'note ' + cls; noteT = dur; slotSync(); }
-function slotSync() { $('hud').classList.toggle('slot', toastT > 0 || noteT > 0 || !$('subs').classList.contains('hidden')); }
+function slotNote(icon, title, sub, dur = 4, cls = '') { subs.note(icon, title, sub || '', { dur, cls }); }
+function slotSync() { $('hud').classList.toggle('slot', !$('subs').classList.contains('hidden')); }
 function hurt(d) { if (P.dead || d <= 0) return; P.hp = Math.max(0, P.hp - d);
   if (P.hp <= 0 && WANT.stars && !stats.jail && nearestCop(P.x, P.z) < 45) { P.hp = maxHP() * 0.25; toast('You went down. The police cuffed you.', 2.5); if (ride) exitCar(); busted(); return; } // taken down by police = arrested, not the morgue
   P.hurtT = 0; hurtFlash = 0.35; shake = Math.max(shake, 0.3); navigator.vibrate?.(30); if (P.hp <= 0) die(); }
@@ -2364,7 +2389,7 @@ function homeChoices(n) {
     out.push([it, d, w]); }
   return out;
 }
-const HOME_LINES = { sit: ['This show is so trashy. I love it.', 'Come sit with me.', 'Babe, you\'re blocking the TV.'], cook: ['Dinner\'s nearly ready!', 'Taste this. Good, right?', 'Don\'t touch, it\'s hot!'], read: ['This book is so good.', 'Shh, I\'m at the good bit.'], look: ['The fish are so calming.', 'I named that one after you.'], piano: ['I\'ve been practising!', 'Listen to this one.'], soak: ['Get in, the water\'s perfect.', 'I never want to leave this tub.'], dance: ['I love this song!', 'Dance with me!'], laptop: ['Just answering some emails.', 'Look at this video, haha.'], game: ['I\'m beating your high score!', 'One more go!'], drink: ['Want one?', 'Cheers to us.'], sleep: ['Mmm... come to bed.', 'Night night.'] };
+const HOME_LINES = { sit: ['This show is so trashy. I love it.', 'Come sit with me.', 'Shh, it\'s the good bit.'], cook: ['Dinner\'s nearly ready!', 'Taste this. Good, right?', 'Don\'t touch, it\'s hot!'], read: ['This book is so good.', 'Shh, I\'m at the good bit.'], look: ['The fish are so calming.', 'I named that one after you.'], piano: ['I\'ve been practising!', 'Listen to this one.'], soak: ['Get in, the water\'s perfect.', 'I never want to leave this tub.'], dance: ['I love this song!', 'Dance with me!'], laptop: ['Just answering some emails.', 'Look at this video, haha.'], game: ['I\'m beating your high score!', 'One more go!'], drink: ['Want one?', 'Cheers to us.'], sleep: ['Mmm... come to bed.', 'Night night.'] };
 function updateHomeLife(dt) {
   if (!inside?.prop) return;
   for (const n of inside.npcs) {
@@ -2401,7 +2426,8 @@ function updateHomeLife(dt) {
         else { l[2].rotation.set(0, 0, -0.08); l[3].rotation.set(0, 0, 0.08); I2.rotation.z = Math.sin(tt * 0.8) * 0.03; } }
       R.rotation.y = n.face;
       // she talks to you about what she's doing, now and then
-      L.say -= dt; if (L.say <= 0 && Math.hypot(P.x - n.x, P.z - n.z) < 7 && !subs.busy) { L.say = rand(25, 50); const lines = HOME_LINES[d]; if (lines) subs.say({ key: n.relId || n.name, name: n.name, cfg: n.cfg, pitch: n.role === 'kid' ? 420 : 330 }, n.role === 'kid' ? pick(KID_LINES[kidStage(n.fam)] || lines) : pick(lines), { expr: d === 'sleep' ? 'flirty' : pick(['happy', 'happy', 'flirty', 'neutral']) }); }
+      L.say -= dt; if (L.say <= 0 && Math.hypot(P.x - n.x, P.z - n.z) < 7 && !subs.busy) { L.say = rand(25, 50); const lines = HOME_LINES[d]; let line2 = null; if (d === 'sit') { const tv = inside.h.furn.find(f => FURN[f.t].act === 'tv' && Math.hypot(inside.h.toWorld(f.x, f.z).x - n.x, inside.h.toWorld(f.x, f.z).z - n.z) < 8); if (tv) { const w = inside.h.toWorld(tv.x, tv.z), ax = w.x - n.x, az = w.z - n.z, L2 = ax * ax + az * az, k = clamp(((P.x - n.x) * ax + (P.z - n.z) * az) / L2, 0, 1), dd = Math.hypot(n.x + ax * k - P.x, n.z + az * k - P.z); if (k > 0.15 && k < 0.95 && dd < 0.9) line2 = pick(['Babe, you\'re blocking the TV.', 'Move! I can\'t see!']); } } // only when you're actually stood in front of it
+        if (lines) subs.say({ key: n.relId || n.name, name: n.name, cfg: n.cfg, pitch: n.role === 'kid' ? 420 : 330 }, line2 || (n.role === 'kid' ? pick(KID_LINES[kidStage(n.fam)] || lines) : pick(lines)), { expr: d === 'sleep' ? 'flirty' : pick(['happy', 'happy', 'flirty', 'neutral']) }); }
     }
   }
 }
@@ -2486,7 +2512,7 @@ function exitInterior(silent) {
 }
 
 // ---------------- home: furniture use & edit mode
-const FURN_VERB = { shower: 'Shower', toilet: 'Use toilet', sleep: 'Sleep', eat: 'Eat', cook: 'Cook', sit: 'Sit', tv: 'Watch TV', read: 'Read', laptop: 'Laptop', lift: 'Lift', run: 'Run', music: 'Music', relax: 'Relax', arcade: 'Play' };
+const FURN_VERB = { shower: 'Shower', toilet: 'Use toilet', sleep: 'Sleep', eat: 'Eat', cook: 'Cook', sit: 'Sit', tv: 'Watch TV', read: 'Read', laptop: 'Laptop', lift: 'Lift', run: 'Run', music: 'Music', relax: 'Relax', arcade: 'Play', bath: 'Take a bath', hottub: 'Hot tub', piano: 'Play piano', drink: 'Pour a drink' };
 const FURN_ICON = { sleep: 'bed', eat: 'fridge', cook: 'food', sit: 'sofa', tv: 'tv', read: 'book', laptop: 'chart', lift: 'dumbbell', run: 'run', music: 'music', relax: 'smile', arcade: 'play' };
 let useCd = {};
 function advanceTime(h) { const steps = Math.ceil(h * 4); for (let i = 0; i < steps; i++) { const before = clockH; clockH += h / steps; if (clockH >= 24) clockH -= 24; if (before < 6 && clockH >= 6) newDay(); } }
@@ -5664,7 +5690,7 @@ function updateHUD(dt) {
   $('btnX').classList.toggle('idle', !ride && !editMode && (inside || false));
   $('btnY').classList.toggle('idle', !ride && !editMode && !(!inside && (ws.kind === 'gun' || ws.kind === 'rpg')));
   $('pad').classList.toggle('driving', !!ride && (settings.steer || 'screen') !== 'screen');
-  if (toastT > 0) { toastT -= dt; if (toastT <= 0) { $('toast').classList.remove('on'); slotSync(); } }
+  if (toastT > 0) { toastT -= dt; if (toastT <= 0) $('toast').classList.remove('on'); }
   if (noteT > 0) { noteT -= dt; if (noteT <= 0) { $('note').classList.add('hidden'); slotSync(); } }
   drawMinimap();
 }
@@ -6021,7 +6047,7 @@ function saveGame() {
   store.set('bc_save', save); store.set('bc_arsenal', arsenal); store.set('bc_cars', garage);
 }
 // auto-update: bookmarks and home-screen apps can hold on to an old copy. Check version.json (never cached) and reload once if newer.
-const BUILD = 99;
+const BUILD = 100;
 function checkUpdate() {
   fetch('version.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(j => {
     if (!(j.v > BUILD)) return;

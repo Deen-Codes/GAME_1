@@ -550,3 +550,21 @@ body.phone-out #mmWrap { opacity: 0; transition: opacity .1s; }
 #radioBtn.inpill.open { width: min(100%, calc(100vw - 150px)); }
 #radioBtn.inpill.hidden { display: none; }
 .ph-mini.on { background: #fff; color: #16161b; }
+
+/* ---- the slot, v3: one card at a time that bubbles in and out; everything under it glides out of the way ---- */
+.hud-l { position: relative; }
+#subs { position: absolute; left: 0; top: 46px; width: 100%; z-index: 3; opacity: 0; transform: translateY(-4px) scale(.86); transform-origin: 24px 24px; transition: opacity .2s ease, transform .3s cubic-bezier(.2,1.35,.4,1); pointer-events: none; }
+#subs.show { opacity: 1; transform: none; }
+#subs:not(.show) { transition: opacity .2s ease, transform .24s cubic-bezier(.5,0,.8,.4); }
+#subs.hidden { display: flex !important; visibility: hidden; }
+.subIco { flex: 0 0 40px; width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; background: #2f80ed; }
+#subs.radio-note .subIco, #subs.plain.radio .subIco { background: #9b51e0; }
+#subs.plain { padding: 8px 12px 8px 8px; }
+#subs.plain:not(:has(.subIco[style*="grid"])) { padding-left: 14px; }
+.hud-l .needs { transition: opacity .2s ease; }
+#hud.slot .hud-l .needs { display: flex; opacity: 0; }
+.hud-l #radioBtn, .hud-l .wanted { transition: transform .32s cubic-bezier(.2,.9,.3,1.05), width .35s cubic-bezier(.2,.9,.3,1.2), background .3s; }
+#hud.slot .hud-l #radioBtn, #hud.slot .hud-l .wanted { transform: translateY(calc(var(--slotH, 64px) - 40px)); }
+.toast { position: fixed; top: calc(var(--sat) + 10px); left: 50%; transform: translateX(-50%); width: max-content; max-width: calc(100vw - 40px); z-index: 30; display: block; text-align: center; border-radius: 999px; }
+.toast:not(.on) { display: none; }
+.note { display: none !important; }
