@@ -1,8 +1,8 @@
 // Conversations staged like a Pokémon battle: they stand on a platform facing you,
 // you see the back of your own head in the foreground, subtitles type out, you pick replies.
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject } from './character.js?v=187';
-import { sfx, audio } from './audio.js?v=187';
+import { buildCharacter, poseCharacter, disposeObject, setFace } from './character.js?v=188';
+import { sfx, audio } from './audio.js?v=188';
 
 const $ = id => document.getElementById(id);
 const BG = {
@@ -199,11 +199,29 @@ export class Talk {
     }
     for (const p of [this.pNpc, this.pYou]) p.g.visible = !car && !bed && !this.realCar;
     for (const c of [this.npc, this.you]) c.root.traverse(o => { if (o.isMesh) o.castShadow = true; });
+    this.facePhone(phone ? npcCfg : null);
     $('talkName').textContent = name; $('talkTag').textContent = tag || '';
     $('talkText').textContent = ''; $('talkOpts').innerHTML = ''; $('talkOpts').classList.add('hidden');
     $('talkUI').classList.remove('hidden');
     const f = $('talkFlash'); f.classList.remove('go'); void f.offsetWidth; f.classList.add('go');
     sfx.whoosh();
+  }
+  // on a call the other person isn't there: their head talks from a little portrait in the text box
+  facePhone(cfg) {
+    const cv = $('talkFace'); if (!cv) return;
+    if (this.faceFig) { this.faceScene.remove(this.faceFig.root); disposeObject(this.faceFig.root); this.faceFig = null; }
+    cv.classList.toggle('hidden', !cfg); $('talkBox').classList.toggle('with-face', !!cfg); if (!cfg) return;
+    if (!this.faceR) { this.faceR = new THREE.WebGLRenderer({ canvas: cv, alpha: true, antialias: true }); this.faceR.setPixelRatio(1); this.faceR.setSize(160, 160, false); this.faceR.outputColorSpace = THREE.SRGBColorSpace;
+      this.faceScene = new THREE.Scene(); this.faceScene.add(new THREE.HemisphereLight('#ffffff', '#3a3a50', 2.4)); const dl = new THREE.DirectionalLight('#ffffff', 1.8); dl.position.set(1.5, 2, 3); this.faceScene.add(dl); this.faceCam = new THREE.PerspectiveCamera(24, 1, 0.05, 20); }
+    const f = buildCharacter({ ...cfg, back: 'none' }); this.faceScene.add(f.root); f.root.updateMatrixWorld(true);
+    const ph = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.2, 0.1), new THREE.MeshStandardMaterial({ color: '#16161b', roughness: 0.3 })); ph.position.set(0, -0.02, 0.06); f.armR.hand.add(ph);
+    const hp = new THREE.Vector3(); f.head.getWorldPosition(hp); f.hp = hp; this.faceFig = f;
+  }
+  faceFrame() {
+    const f = this.faceFig; if (!f) return; const talking = this.talking === 'npc', open = talking ? Math.abs(Math.sin(this.t * 15)) * (0.5 + 0.5 * Math.abs(Math.sin(this.t * 4.3))) : 0;
+    f.armR.pivot.rotation.set(-0.85, 0.15, -0.42); if (f.armR.elbow) f.armR.elbow.rotation.set(-2.6, 0, 0); f.head.rotation.set(talking ? Math.sin(this.t * 11) * 0.05 : 0, -0.25, -0.1);
+    try { setFace(f, 'neutral', open); } catch (e) {}
+    const hp = f.hp; this.faceCam.position.set(hp.x + 0.35, hp.y + 0.05, hp.z + 1.7); this.faceCam.lookAt(hp.x + 0.08, hp.y - 0.02, hp.z); this.faceR.render(this.faceScene, this.faceCam);
   }
   clear() {
     for (const k of ['npc', 'you']) if (this[k]) { this.scene.remove(this[k].root); disposeObject(this[k].root); this[k] = null; }
@@ -301,6 +319,10 @@ export class Talk {
       if (this.phone) { y.armR.pivot.rotation.set(-0.85, 0.15, -0.42); if (y.armR.elbow) y.armR.elbow.rotation.set(-2.6, 0, 0); y.head.rotation.set(0, 0.6 + (this.talking === 'you' ? Math.sin(this.t * 3.1) * 0.08 : 0), -0.12); } // on the phone at the wheel: one hand on it, phone at your ear
       else { if (this.talking !== 'you') y.armR.pivot.rotation.set(-1.25, 0, 0.32); y.head.rotation.y = 1.35 + (this.talking === 'you' ? Math.sin(this.t * 3.1) * 0.1 : 0); }
     }
+    if (this.phone && !this.seat && n && y) { // a call on foot: just you, phone to your ear; they're in the portrait
+      n.root.visible = false; this.pNpc.g.visible = true; this.pYou.g.visible = false;
+      y.root.position.copy(this.pNpc.g.position); y.root.rotation.y = Math.atan2(this.cam.position.x - y.root.position.x, this.cam.position.z - y.root.position.z) * 0.8;
+    }
     if (this.realCar && n && y) this.realCarPose(n, y);
     else if (this.car && n && y) this.carPose(n, y);
     else if (this.actK && n && y) this.standAct(n, y);
@@ -329,7 +351,7 @@ export class Talk {
       this.cam.position.set(side * (W / 2 + 3.2), top + 1.0, sz + 4.2); this.cam.lookAt(sx + side * 0.75, top + 0.62, sz + 0.2);
     } else {
       if (other) other.root.visible = false; // a phone call: it's just you in the car
-      this.cam.position.set(side * (W / 2 + 2.7), top + 0.9, sz + 1.25); this.cam.lookAt(sx, top + 0.66, sz + 0.12);
+      this.cam.position.set(sx + side * 2.15, top + 0.95, sz + 0.6); this.cam.lookAt(sx - side * 0.05, top + 0.8, sz + 0.2); // through the window: head, shoulders and the hand on the wheel
     }
   }
   carPose(n, y) {
@@ -367,5 +389,5 @@ export class Talk {
     c.legL.knee.rotation.x = Math.PI / 2 - 0.1; c.legR.knee.rotation.x = Math.PI / 2 - 0.1;
     if (c.hips) c.hips.rotation.x = 0;
   }
-  render(renderer) { renderer.render(this.scene, this.cam); }
+  render(renderer) { renderer.render(this.scene, this.cam); this.faceFrame(); }
 }
