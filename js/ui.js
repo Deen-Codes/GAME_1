@@ -23,7 +23,7 @@ export function buildPanel({ tabsEl, contentEl, schema, getCfg, onChange, startT
           const b = document.createElement('button'), dec = it.decorate?.(val);
           b.className = 'chip' + (cfg[it.key] === val ? ' on' : '') + (dec ? ' rich' : '') + (dec?.lock ? ' locked' : '');
           if (dec) { // attachment chip: name, what it does (green good / red bad), price or lock
-            b.innerHTML = `<span class="cn">${text}</span>${dec.fx?.length ? `<span class="cfx">${dec.fx.map(([l, v, good]) => `<i class="${good ? 'up' : 'dn'}">${v} ${l}</i>`).join('')}</span>` : dec.note ? `<span class="cfx"><i>${dec.note}</i></span>` : ''}${dec.lock ? `<span class="clk">Gun level ${dec.lock}</span>` : dec.price ? `<span class="cpr">${dec.price}</span>` : ''}`;
+            b.innerHTML = `<span class="cn">${text}</span>${dec.fx?.length ? `<span class="cfx">${dec.fx.map(([l, v, good]) => `<i class="${good ? 'up' : 'dn'}">${v} ${l}</i>`).join('')}</span>` : dec.note ? `<span class="cfx"><i>${dec.note}</i></span>` : ''}${dec.lock ? `<span class="clk">${dec.lockText || `Gun level ${dec.lock}`}</span>` : dec.price ? `<span class="cpr">${dec.price}</span>` : ''}`;
           } else b.textContent = text;
           b.onclick = () => { if (dec?.lock) { it.onLocked?.(val, dec.lock); return; } onChange(it.key, val); [...wrap.children].forEach(c => c.classList.remove('on')); b.classList.add('on'); };
           wrap.appendChild(b);

@@ -1,28 +1,28 @@
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=140';
-import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun, partEffects, partPerk } from './gun.js?v=140';
-import { buildCar, computeCarStats, carStatBars, carClass, carPartEffects, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=140';
-import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, WIND_U, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=140';
-import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=140';
-import { buildPanel, renderStats } from './ui.js?v=140';
-import { Input } from './input.js?v=140';
-import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime, animalCall } from './audio.js?v=140';
-import { runMinigame } from './minigames.js?v=140';
-import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk, setReservedNames, seededLook } from './peds.js?v=140';
-import { citizens, whereNow } from './citizens.js?v=140';
-import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=140';
-import { findRoute } from './nav.js?v=140';
-import { COURSES, CAREERS, QUIZ } from './careers.js?v=140';
-import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=140';
-import { attachWheel } from './wheel.js?v=140';
-import { GROUND_U } from './groundtex.js?v=140';
-import { Animals, makeAnimalMesh } from './animals.js?v=140';
-import { Talk } from './talk.js?v=140';
-import { incomingText, classify, textOptions, textReply } from './texts.js?v=140';
-import { svg, drawIcon } from './icons.js?v=140';
-import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=140';
-import { FURN, CATALOG } from './furniture.js?v=140';
-import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=140';
+import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=141';
+import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun, partEffects, partPerk } from './gun.js?v=141';
+import { buildCar, computeCarStats, carStatBars, carClass, carPartEffects, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=141';
+import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, WIND_U, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=141';
+import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=141';
+import { buildPanel, renderStats } from './ui.js?v=141';
+import { Input } from './input.js?v=141';
+import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime, animalCall } from './audio.js?v=141';
+import { runMinigame } from './minigames.js?v=141';
+import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk, setReservedNames, seededLook } from './peds.js?v=141';
+import { citizens, whereNow } from './citizens.js?v=141';
+import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=141';
+import { findRoute } from './nav.js?v=141';
+import { COURSES, CAREERS, QUIZ } from './careers.js?v=141';
+import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=141';
+import { attachWheel } from './wheel.js?v=141';
+import { GROUND_U } from './groundtex.js?v=141';
+import { Animals, makeAnimalMesh } from './animals.js?v=141';
+import { Talk } from './talk.js?v=141';
+import { incomingText, classify, textOptions, textReply } from './texts.js?v=141';
+import { svg, drawIcon } from './icons.js?v=141';
+import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=141';
+import { FURN, CATALOG } from './furniture.js?v=141';
+import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=141';
 
 const $ = id => document.getElementById(id);
 let inside = null, editMode = false, held = null, pendingCar = false, homeMusic = false, phoneBadge = 0;
@@ -6487,7 +6487,7 @@ function saveGame() {
   store.set('bc_save', save); store.set('bc_arsenal', arsenal); store.set('bc_cars', garage);
 }
 // auto-update: bookmarks and home-screen apps can hold on to an old copy. Check version.json (never cached) and reload once if newer.
-const BUILD = 140;
+const BUILD = 141;
 function checkUpdate() {
   fetch('version.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(j => {
     if (!(j.v > BUILD)) return;
@@ -6689,7 +6689,7 @@ function openCustom(kind) {
   const pres = $('presets'); pres.innerHTML = '';
   if (kind === 'car') { shop = { kind: 'mods', orig: { ...carCfg } }; $('customTitle').textContent = 'Bay Customs'; $('randBtn').classList.add('buy'); }
   const get = () => kind === 'car' ? carCfg : charCfg;
-  const schema = kind === 'car' ? S.map(t => ({ ...t, items: t.items.filter(i => i.key !== 'body').map(i => i.key === 'roof' ? { ...i, options: i.options.filter(o => !['taxi', 'police'].includes(o[0])) } : i).map(i => i.type !== 'choice' || !CAR_PARTS[i.key] ? i : { ...i, decorate: val => { const e = carPartEffects(i.key, val); return { fx: e.fx, note: !e.fx.length ? (e.perk || (['engine', 'turbo', 'gearbox', 'brakes', 'weight', 'nitro', 'armour', 'glass', 'ram', 'tyres', 'suspension'].includes(i.key) ? 'Standard' : 'Looks only')) : null, price: shop?.orig?.[i.key] === val ? 'Fitted' : fmt(Math.round(modPrice(i.key, val) * (hasDegree('mechanics') ? 0.8 : 1))) }; } }) })) : S;
+  const schema = kind === 'car' ? S.map(t => ({ ...t, items: t.items.filter(i => i.key !== 'body').map(i => i.key === 'roof' ? { ...i, options: i.options.filter(o => !['taxi', 'police'].includes(o[0])) } : i).map(i => i.type !== 'choice' || !CAR_PARTS[i.key] ? i : { ...i, onLocked: val => rarePartJob(i.key, val), decorate: val => { const e = carPartEffects(i.key, val), rk = i.key + '.' + val, lock = RARE_PARTS[rk] && !(stats.rareParts || []).includes(rk) && shop?.orig?.[i.key] !== val; return { lock: lock ? 1 : 0, lockText: lock ? 'Rare part: tap for the job' : null, fx: e.fx, note: !e.fx.length ? (e.perk || (['engine', 'turbo', 'gearbox', 'brakes', 'weight', 'nitro', 'armour', 'glass', 'ram', 'tyres', 'suspension'].includes(i.key) ? 'Standard' : 'Looks only')) : null, price: shop?.orig?.[i.key] === val ? 'Fitted' : fmt(Math.round(modPrice(i.key, val) * (hasDegree('mechanics') ? 0.8 : 1))) }; } }) })) : S;
   panel = buildPanel({ tabsEl: $('tabs'), contentEl: $('content'), schema, getCfg: get, onChange: (k, v) => { get()[k] = v; changed(); } });
   pv.dirty = true; changed();
 }
@@ -6736,6 +6736,16 @@ function smithSchemaRich(slot) {
       onLocked: (val, need) => { sfx.fail?.(); toast(`${PARTS[it.key]?.[val]?.label || val} unlocks at ${SLOT[slot].name} level ${need}. Get kills or train at the range.`, 3); } };
   }) }));
 }
+// rare car parts: the mechanic can't just order them in; you go and get one, then it's in the catalogue for good
+const RARE_PARTS = { 'turbo.twin': ['A twin-turbo kit? Only place you\'ll find one is off a wrecked import. Lucky\'s chop shop had one come in. Go and get it.', 'chop'], 'nitro.big': ['Twin nitrous bottles... a racer at the start line owes me. Go collect them from the race gantry.', 'race'], 'armour.heavy': ['Heavy plating? There\'s an ex-security van rusting at the docks. Strip the armour off it.', 'docks'], 'glass.bulletproof': ['Bulletproof glass, legit? There\'s a guy at the Anchor Bar who can "find" some. Go see him.', 'bar'], 'engine.rocket': ['The Rocket engine? Only one guy builds them, out at the airport hangars. Go and pick one up.', 'airport'] };
+function rarePartJob(key, val) {
+  const rk = key + '.' + val, R = RARE_PARTS[rk]; if (!R) return;
+  if ((life().errands || []).some(e => e.key === 'rare_part' && e.data.rk === rk)) { toast('You\'re already on that job. Check your map.', 2.4); return; }
+  subs.note('wrench', 'Bay Customs', R[0], { dur: 6, pri: 3 });
+  const where = R[1] === 'docks' ? null : R[1] === 'airport' ? null : (PLACES.find(p => p.kind === R[1] || p.id === R[1] || p.interior === R[1])?.id || 'random');
+  if (where) lifeApi().errand(where, 'rare_part', { rk }, 'Pick up the rare part'); else { const at = R[1] === 'docks' ? { x: 620, z: 300 } : { x: 140, z: -670 }; (life().errands ||= []).push({ key: 'rare_part', x: at.x, z: at.z, label: 'Pick up the rare part', data: { rk }, until: gameHours() + 30 }); setWaypoint(at.x, at.z, 'Pick up the rare part'); }
+}
+ARRIVE.rare_part = (a, d) => { (stats.rareParts ||= []).push(d.rk); const [k, v] = d.rk.split('.'); logStory('Bay Customs', `Fetched a rare part: ${CAR_PARTS[k][v].label}`, 'Now in the catalogue at Bay Customs.', 'rare'); return `Got it: ${CAR_PARTS[k][v].label}. Take your car to Bay Customs to have it fitted.`; };
 // blueprints: save up to three builds per gun and load one back (you only pay for the parts that change)
 function renderBlueprints(slot) {
   const BP = (stats.blueprints ||= {})[slot] ||= [], el = $('presets');
