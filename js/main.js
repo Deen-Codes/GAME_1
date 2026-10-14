@@ -1,30 +1,30 @@
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=170';
-import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun, partEffects, partPerk } from './gun.js?v=170';
-import { buildCar, computeCarStats, carStatBars, carClass, carPartEffects, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=170';
-import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, STAIRS, unblockPillars, canyonAt, canyonNear, PEAK, SKYWAYS, SKY_Y, skyAt, skyY, rampSeg, windowShader, makeOceanMaterial, WATER_U, WIND_U, METRO, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=170';
-import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=170';
-import { buildPanel, renderStats } from './ui.js?v=170';
-import { Input } from './input.js?v=170';
-import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime, animalCall } from './audio.js?v=170';
-import { runMinigame } from './minigames.js?v=170';
-import { CUT, initCutGames } from './cutgames.js?v=170';
-import { initOnline, updateOnline, goOnline, goOffline, NET, onNet, sendMagicLink, signOut, signedIn } from './online.js?v=170';
-import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk, setReservedNames, seededLook } from './peds.js?v=170';
-import { citizens, whereNow } from './citizens.js?v=170';
-import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=170';
-import { findRoute } from './nav.js?v=170';
-import { COURSES, CAREERS, QUIZ } from './careers.js?v=170';
-import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=170';
-import { attachWheel } from './wheel.js?v=170';
-import { GROUND_U } from './groundtex.js?v=170';
-import { Animals, makeAnimalMesh } from './animals.js?v=170';
-import { Talk } from './talk.js?v=170';
-import { incomingText, classify, textOptions, textReply } from './texts.js?v=170';
-import { svg, drawIcon, ICONS as ICON_SET } from './icons.js?v=170';
-import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=170';
-import { FURN, CATALOG } from './furniture.js?v=170';
-import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=170';
+import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=171';
+import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun, partEffects, partPerk } from './gun.js?v=171';
+import { buildCar, computeCarStats, carStatBars, carClass, carPartEffects, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=171';
+import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, STAIRS, unblockPillars, canyonAt, canyonNear, PEAK, SKYWAYS, SKY_Y, skyAt, skyY, rampSeg, windowShader, makeOceanMaterial, WATER_U, WIND_U, METRO, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=171';
+import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=171';
+import { buildPanel, renderStats } from './ui.js?v=171';
+import { Input } from './input.js?v=171';
+import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime, animalCall } from './audio.js?v=171';
+import { runMinigame } from './minigames.js?v=171';
+import { CUT, initCutGames } from './cutgames.js?v=171';
+import { initOnline, updateOnline, goOnline, goOffline, NET, onNet, sendMagicLink, signOut, signedIn } from './online.js?v=171';
+import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk, setReservedNames, seededLook } from './peds.js?v=171';
+import { citizens, whereNow } from './citizens.js?v=171';
+import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=171';
+import { findRoute } from './nav.js?v=171';
+import { COURSES, CAREERS, QUIZ } from './careers.js?v=171';
+import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=171';
+import { attachWheel } from './wheel.js?v=171';
+import { GROUND_U } from './groundtex.js?v=171';
+import { Animals, makeAnimalMesh } from './animals.js?v=171';
+import { Talk } from './talk.js?v=171';
+import { incomingText, classify, textOptions, textReply } from './texts.js?v=171';
+import { svg, drawIcon, ICONS as ICON_SET } from './icons.js?v=171';
+import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=171';
+import { FURN, CATALOG } from './furniture.js?v=171';
+import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=171';
 
 const $ = id => document.getElementById(id);
 let inside = null, editMode = false, held = null, pendingCar = false, homeMusic = false, phoneBadge = 0;
@@ -6417,6 +6417,10 @@ function drawMinimap() {
     mctx.restore();
   }
 }
+const MAP_CATS = [['dealer', 'Dealers', 'deal', k => k === 'dealer'], ['shops', 'Shops', 'bag', k => ['guns', 'clothes', 'barber', 'tattoo'].includes(k)], ['fun', 'Food & fun', 'food', k => k === 'venue'],
+  ['act', 'Activities', 'play', k => ['game', 'job', 'ride', 'carny', 'stadium', 'marina'].includes(k)], ['cars', 'Cars & boats', 'car', k => ['service', 'mods', 'chop', 'race', 'boats', 'rides'].includes(k)], ['homes', 'Homes & business', 'house', k => k === 'property' || k === 'biz']];
+const placeCat = k => MAP_CATS.find(c => c[3](k))?.[0] || 'act';
+const catOn = id => !(stats.mapOff ||= {})[id];
 function drawMapTo(cv) {
   ensureMap();
   const PAD = cv.pad || 0, S = cv.width - PAD * 2, x = cv.getContext('2d'); x.fillStyle = '#3d8fd0'; x.fillRect(0, 0, cv.width, cv.height); x.drawImage(MAP.canvas, PAD, PAD, S, cv.height - PAD * 2);
@@ -6424,7 +6428,7 @@ function drawMapTo(cv) {
   if (route) { x.strokeStyle = '#b26bff'; x.lineWidth = 3 * k; x.lineJoin = 'round'; x.beginPath(); route.forEach(([a, b], i) => i ? x.lineTo(tx(a), tz(b)) : x.moveTo(tx(a), tz(b))); x.stroke(); }
   x.textAlign = 'center'; x.textBaseline = 'middle'; x.font = `900 ${Math.round(12 * k)}px ui-rounded, system-ui, sans-serif`;
   for (const [name, wx, wz] of LABELS) { x.lineWidth = 3.5 * k; x.strokeStyle = 'rgba(0,0,0,.55)'; x.strokeText(name, tx(wx), tz(wz)); x.fillStyle = '#fff'; x.fillText(name, tx(wx), tz(wz)); }
-  for (const m of markers) { x.fillStyle = 'rgba(20,18,38,.9)'; x.beginPath(); x.arc(tx(m.x), tz(m.z), 7.5 * k, 0, 7); x.fill(); drawIcon(x, markerIcon(m), tx(m.x), tz(m.z), 10.5 * k, { stroke: m.color, width: 2.4 }); }
+  for (const m of markers) { if (m.place && !catOn(placeCat(m.place.kind))) continue; x.fillStyle = 'rgba(20,18,38,.9)'; x.beginPath(); x.arc(tx(m.x), tz(m.z), 7.5 * k, 0, 7); x.fill(); drawIcon(x, markerIcon(m), tx(m.x), tz(m.z), 10.5 * k, { stroke: m.color, width: 2.4 }); }
   const dot = (wx, wz, col, r) => { x.fillStyle = col; x.strokeStyle = '#fff'; x.lineWidth = 2 * k; x.beginPath(); x.arc(tx(wx), tz(wz), r * k, 0, 7); x.fill(); x.stroke(); };
   if (myCar && ride !== myCar) dot(myCar.s.x, myCar.s.z, '#ff8a2a', 5);
   if (waypoint) { dot(waypoint.x, waypoint.z, '#ffd23f', 7); x.fillStyle = '#1a1a2a'; x.font = `900 ${Math.round(9 * k)}px sans-serif`; x.fillText('W', tx(waypoint.x), tz(waypoint.z) + k * 0.5); }
@@ -6597,7 +6601,14 @@ let phoneApp = 'home';
 // ---- the home screen: pages you swipe through, a dock, hold to wiggle, drag to rearrange, "−" to delete, App Store to get more
 const APP_DESC = { maps: 'Map of the city, set a route', msgs: 'Texts and missions', contacts: 'People you know', me: 'Your stats and skills', places: 'Every place in town', work: 'Jobs and shifts', wallet: 'Money and stash', garage: 'Your cars', homes: 'Buy and rent places', style: 'Outfits', radio: 'Bay City radio stations', azbay: 'Shop online, delivered', log: 'Every choice you made', online: 'Play with other people', settings: 'Settings', store: 'Get more apps', weather: 'Today\'s weather, live', news: 'What\'s happening in Bay City' };
 const CORE_APPS = ['maps', 'msgs', 'contacts', 'settings', 'store', 'me'];
-function phoneUI() { const U = (stats.phoneUI ||= { dock: ['msgs', 'maps', 'contacts', 'settings'], apps: ['me', 'places', 'work', 'wallet', 'garage', 'homes', 'style', 'radio', 'azbay', 'log', 'online', 'store'] }); for (const id of CORE_APPS) if (!U.dock.includes(id) && !U.apps.includes(id)) U.apps.push(id); return U; }
+let MAP_LIST = [];
+function mapListHtml() { // every place, nearest first, filtered by the category toggles (which also hide them on the map)
+  const f = inside ? inside.back : focusPos(), dist = p => Math.hypot(p.x - f.x, p.z - f.z);
+  MAP_LIST = [...PLACES, ...PROPERTIES.map(p => ({ ...p, kind: 'property' }))].filter(p => catOn(placeCat(p.kind))).sort((a, b) => dist(a) - dist(b));
+  const chips = MAP_CATS.map(([id, t, ic]) => `<button class="ph-cat ${catOn(id) ? 'on' : ''}" data-cat="${id}">${svg(ic, 'sm')}<span>${t}</span></button>`).join('');
+  return `<div class="ph-sec">Places</div><div class="ph-cats">${chips}</div><div class="ph-list">${MAP_LIST.map((p, i) => { const d = dist(p); return `<button class="ph-row" data-pl="${i}"><span>${svg(p.icon, 'sm')} ${placeLabel(p)}${p.kind === 'property' ? ` <small>${owned.has(p.id) ? '· owned' : '· ' + fmt(p.price)}</small>` : ''}</span><small>${d > 1000 ? (d / 1000).toFixed(1) + ' km' : Math.round(d) + ' m'}</small></button>`; }).join('') || '<p class="ph-hint">Everything\'s switched off. Tap a category to show it.</p>'}</div>`;
+}
+function phoneUI() { const U = (stats.phoneUI ||= { dock: ['msgs', 'maps', 'contacts', 'settings'], apps: ['me', 'work', 'wallet', 'garage', 'homes', 'style', 'radio', 'azbay', 'log', 'online', 'store'] }); for (const id of CORE_APPS) if (!U.dock.includes(id) && !U.apps.includes(id)) U.apps.push(id); return U; }
 let homePage = 0, jiggle = false, hs = null;
 function renderHome(el) {
   const U = phoneUI(), byId = Object.fromEntries(APPS.map(a => [a[0], a])); el.classList.add('home');
@@ -6666,7 +6677,6 @@ const APPS = [
   ['msgs', 'Messages', 'chat', 'linear-gradient(135deg,#5ee07a,#2fbf55)'],
   ['contacts', 'Contacts', 'heart', 'linear-gradient(135deg,#ff6fb5,#c9306f)'],
   ['me', 'Me', 'user', 'linear-gradient(135deg,#38e8ff,#2f80ed)'],
-  ['places', 'Places', 'pin', 'linear-gradient(135deg,#ff6a74,#e23b3b)'],
   ['work', 'Work', 'case', 'linear-gradient(135deg,#ffd23f,#ff8a2a)'],
   ['wallet', 'Wallet', 'wallet', 'linear-gradient(135deg,#3a3a44,#111)'],
   ['garage', 'Garage', 'car', 'linear-gradient(135deg,#ff8a2a,#e05a10)'],
@@ -6822,7 +6832,7 @@ function renderPhone() {
     const L = [...(stats.storyLog || [])].reverse();
     el.innerHTML = `${back}<h4>My Story</h4><p class="ph-hint">Every choice you made, and what came of it.</p><div class="ph-list">${L.length ? L.map(e => `<div class="ph-msg"><div class="av">${svg(e.tag === 'favour' ? 'star' : 'chat')}</div><div><b>${e.who}</b> <small style="opacity:.6">Day ${e.d}, ${String(e.h).padStart(2, '0')}:00</small><p><i>"${e.c}"</i></p>${e.r ? `<p class="goal">${e.r}</p>` : ''}</div></div>`).join('') : '<p class="ph-hint">Nothing yet. Life happens out there.</p>'}</div>`;
   } else if (phoneApp === 'maps') {
-    el.innerHTML = `${back}<h4>Maps</h4><div class="ph-mapwrap"><canvas id="phMap"></canvas><div class="ph-mapbtns"><button id="mzIn">+</button><button id="mzOut">−</button><button id="mzMe">${svg('pin', 'sm')}</button></div></div><p class="ph-hint">${waypoint ? 'Waypoint set. Tap it again to clear. Follow the purple route.' : 'Drag to move, pinch to zoom, tap to set a waypoint.'}</p>${waypoint ? '<button class="ph-btn" id="phClear">Clear waypoint</button>' : ''}`;
+    el.innerHTML = `${back}<h4>Maps</h4><div class="ph-mapwrap"><canvas id="phMap"></canvas><div class="ph-mapbtns"><button id="mzIn">+</button><button id="mzOut">−</button><button id="mzMe">${svg('pin', 'sm')}</button></div></div><p class="ph-hint">${waypoint ? 'Waypoint set. Tap it again to clear. Follow the purple route.' : 'Drag to move, pinch to zoom, tap to set a waypoint.'}</p>${waypoint ? '<button class="ph-btn" id="phClear">Clear waypoint</button>' : ''}${mapListHtml()}`;
     const cv = $('phMap'), r0 = cv.getBoundingClientRect(), dpr = Math.min(devicePixelRatio, 2), W2 = Math.round(r0.width * dpr), H2 = Math.round(r0.height * dpr); cv.width = W2; cv.height = H2;  // never zoom out past the map's own shape (it used to squash)
     const off = mapView.off ||= document.createElement('canvas'); ensureMap(); off.pad = 160; off.width = 1536 + 320; off.height = Math.round(1536 * MAP.canvas.height / MAP.canvas.width) + 320;
     const info = drawMapTo(off), ctx2 = cv.getContext('2d'), ZMIN = Math.min(1, off.width * H2 / (W2 * off.height)); // all the way out = the whole map, never squashed
@@ -6858,6 +6868,8 @@ function renderPhone() {
     $('mzOut').onclick = () => { mapView.z = clamp(mapView.z / 1.5, ZMIN, 8); draw(); };
     $('mzMe').onclick = () => { const f = inside ? inside.back : focusPos(); mapView.cx = info.tx(f.x); mapView.cz = info.tz(f.z); draw(); };
     $('phClear') && ($('phClear').onclick = () => { clearWaypoint(); renderPhone(); });
+    el.querySelectorAll('[data-cat]').forEach(b => b.onclick = () => { const id = b.dataset.cat; stats.mapOff[id] = !stats.mapOff[id]; const st = el.scrollTop; renderPhone(); el.scrollTop = st; });
+    el.querySelectorAll('[data-pl]').forEach(b => b.onclick = () => { const p = MAP_LIST[+b.dataset.pl]; setWaypoint(p.x, p.z, placeLabel(p)); if (!inside) { const f = focusPos(); route = findRoute(f.x, f.z, p.x, p.z); routeT = 1.5; routeFrom = [f.x, f.z]; } mapView.cx = info.tx(p.x); mapView.cz = info.tz(p.z); mapView.z = Math.max(mapView.z, 3); toast(placeLabel(p), 1.6); renderPhone(); $('phApp').scrollTop = 0; });
   } else if (phoneApp === 'thread') {
     const id = phoneThread, name = nameOf(id), T = stats.texts[id] || [];
     const f = fam(), isKid = id.startsWith('kid:'), isP = f.partner?.id === id;
@@ -6909,7 +6921,8 @@ function renderPhone() {
       <p class="ph-hint">Gym, running and fights build your body. Reading, chatting and haggling build Charm. Trading builds Dealing. Range practice builds weapon skills.</p>
       ${job ? `<button class="ph-btn" id="phQuit">${svg('x', 'sm')} Quit current job</button>` : ''}`;
     $('phQuit') && ($('phQuit').onclick = () => { endJob('Shift ended.'); closePhone(); });
-  } else if (phoneApp === 'places') {
+  } else if (phoneApp === 'places') { phoneApp = 'maps'; return renderPhone(); // (Places lives under the map now)
+  } else if (phoneApp === 'places_old') {
     const groups = [['Dealers', 'deal', PLACES.filter(p => p.kind === 'dealer')], ['Shops', 'bag', PLACES.filter(p => ['guns', 'clothes', 'barber'].includes(p.kind))], ['Food, fun & services', 'food', PLACES.filter(p => p.kind === 'venue')], ['Activities & jobs', 'play', PLACES.filter(p => ['game', 'race', 'chop', 'job'].includes(p.kind))], ['Real estate', 'house', PROPERTIES]];
     const f = inside ? inside.back : focusPos(), all = [];
     el.innerHTML = `${back}<h4>Places</h4><div class="ph-list">${groups.map(([t, ic, list]) => `<div class="ph-sec">${svg(ic, 'sm')} ${t}</div>` + list.map(p => { all.push(p); const d = Math.hypot(p.x - f.x, p.z - f.z); return `<button class="ph-row" data-i="${all.length - 1}"><span>${svg(p.icon, 'sm')} ${placeLabel(p)}${p.price !== undefined && p.home ? ` <small>${owned.has(p.id) ? '· owned' : '· ' + fmt(p.price)}</small>` : ''}</span><small>${d > 1000 ? (d / 1000).toFixed(1) + 'km' : Math.round(d) + 'm'}</small></button>`; }).join('')).join('')}</div>`;
@@ -7008,7 +7021,7 @@ function saveGame() {
   store.set('bc_save', save); store.set('bc_arsenal', arsenal); store.set('bc_cars', garage);
 }
 // auto-update: bookmarks and home-screen apps can hold on to an old copy. Check version.json (never cached) and reload once if newer.
-const BUILD = 170;
+const BUILD = 171;
 function checkUpdate() {
   fetch('version.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(j => {
     if (!(j.v > BUILD)) return;

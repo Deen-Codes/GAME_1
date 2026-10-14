@@ -235,7 +235,7 @@ input[type=text] { width: 100%; padding: 10px 12px; border-radius: 10px; border:
 .ph-screen { position: relative; width: 100%; height: 100%; border-radius: 42px; overflow: hidden; background: linear-gradient(170deg, #ff9a62 0%, #e0567a 38%, #6a3fa0 70%, #23224f 100%); color: #fff; display: flex; flex-direction: column; }
 .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 34%; height: 30px; background: #000; border-radius: 20px; z-index: 3; }
 .ph-status { display: flex; justify-content: space-between; padding: 14px 26px 0; font-size: 13px; font-weight: 800; height: 44px; flex: none; }
-#phApp { flex: 1; overflow-y: auto; padding: 8px 16px 40px; touch-action: pan-y; -webkit-overflow-scrolling: touch; }
+#phApp { flex: 1; overflow-y: auto; overflow-x: hidden; padding: 8px 16px 40px; touch-action: pan-y; -webkit-overflow-scrolling: touch; }
 .homebar { position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); width: 38%; height: 5px; border-radius: 3px; background: rgba(255,255,255,.85); padding: 0; }
 .homebar::after { content: ''; position: absolute; inset: -16px -10px; }
 .ph-home { text-align: center; }
@@ -809,3 +809,11 @@ body.wheel-compact #pad .face, body.wheel-compact #wpnBtn { opacity: 0; transiti
 .radio-row .wanted { margin: 2px 0 0; }
 #hud.slot .hud-l .radio-row { transform: translateY(calc(var(--slotH, 64px) - 32px)); }
 #hud.slot .hud-l .radio-row #radioBtn, #hud.slot .hud-l .radio-row .wanted { transform: none; }
+
+/* Maps: category toggles above the list of places */
+.ph-cats { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0 10px; }
+.ph-cat { display: flex; align-items: center; gap: 5px; padding: 6px 10px 6px 8px; border-radius: 999px; font-size: 12px; font-weight: 800; color: rgba(255,255,255,.55); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); }
+.ph-cat .ic { width: 16px; height: 16px; opacity: .55; }
+.ph-cat.on { color: #fff; background: rgba(255,255,255,.22); border-color: rgba(255,255,255,.4); }
+.ph-cat.on .ic { opacity: 1; }
+.ph-row > span { min-width: 0; }
