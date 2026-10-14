@@ -38,7 +38,7 @@ export class Input {
   bindTouch({ zone, base, knob, buttons, canvas }) {
     let id = null, ox = 0, oy = 0;
     const R = 52;
-    const home = () => { base.style.left = ''; base.style.top = ''; base.classList.remove('live'); knob.style.transform = 'translate(-50%,-50%)'; };
+    const home = () => { base.style.left = ''; base.style.top = ''; base.classList.remove('live', 'run'); base.style.setProperty('--p', 0); knob.style.transform = 'translate(-50%,-50%)'; };
     this.resetStick = () => { id = null; this.sx = this.sy = 0; home(); };
     zone.addEventListener('pointerdown', e => {
       // a new touch always takes the stick: if the old finger's 'up' got lost (pad hidden mid-drag, iOS gesture), don't stay jammed
@@ -55,6 +55,7 @@ export class Input {
       if (d > R) { dx *= R / d; dy *= R / d; }
       this.sx = d < 6 ? 0 : dx / R; this.sy = d < 6 ? 0 : -dy / R;
       knob.style.transform = `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px))`;
+      const k = Math.min(1, d / R); base.style.setProperty('--a', (Math.atan2(dx, -dy) * 180 / Math.PI) + 'deg'); base.style.setProperty('--p', d < 6 ? 0 : (0.35 + k * 0.65).toFixed(2)); base.classList.toggle('run', k > 0.85); // rim light points where you push; orange = running
     });
     const end = e => { if (e.pointerId !== id) return; id = null; this.sx = this.sy = 0; home(); };
     zone.addEventListener('pointerup', end); zone.addEventListener('pointercancel', end); zone.addEventListener('lostpointercapture', end);

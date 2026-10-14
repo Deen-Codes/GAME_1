@@ -83,10 +83,23 @@ input[type=text] { width: 100%; padding: 10px 12px; border-radius: 10px; border:
   background: linear-gradient(to top, rgba(8, 8, 22, .38), rgba(8, 8, 22, .1) 55%, transparent);
   padding-bottom: var(--sab); }
 #stickZone { position: absolute; left: 0; top: 0; bottom: 0; width: 50%; touch-action: none; }
+/* the stick: a frosted glass ring, faint until your thumb lands (it appears right there), with a rim light that points where
+   you're pushing and turns orange once you're pushing hard enough to run */
 #stickBase { position: absolute; left: calc(76px + var(--sal)); top: 62%; width: 112px; height: 112px; margin: -56px 0 0 -56px; border-radius: 50%;
-  background: rgba(255,255,255,.05); border: 1.5px solid rgba(255,255,255,.24); transition: opacity .2s; opacity: .75; }
-#stickBase.live { opacity: 1; transition: none; }
-#stickKnob { position: absolute; left: 50%; top: 50%; width: 46px; height: 46px; border-radius: 50%; background: rgba(255,255,255,.42); box-shadow: 0 1px 6px rgba(0,0,0,.2); transform: translate(-50%,-50%); }
+  background: radial-gradient(circle at 50% 38%, rgba(255,255,255,.13), rgba(255,255,255,.04) 58%, rgba(10,10,30,.10));
+  border: 1.5px solid rgba(255,255,255,.3); box-shadow: inset 0 0 18px rgba(255,255,255,.08), 0 6px 20px rgba(0,0,0,.18);
+  backdrop-filter: blur(7px) saturate(1.3); -webkit-backdrop-filter: blur(7px) saturate(1.3);
+  opacity: .34; transform: scale(.92); transition: opacity .35s ease, transform .25s ease, border-color .15s, box-shadow .15s; }
+#stickBase.live { opacity: 1; transform: scale(1); transition: opacity .08s, transform .12s, border-color .15s, box-shadow .15s; }
+#stickBase::before { content: ''; position: absolute; inset: -4px; border-radius: 50%; pointer-events: none;
+  background: conic-gradient(from calc(var(--a, 0deg) - 45deg), var(--rim, rgba(255,255,255,.85)) 0deg 90deg, transparent 90deg 360deg);
+  -webkit-mask: radial-gradient(closest-side, transparent calc(100% - 5px), #000 calc(100% - 4px)); mask: radial-gradient(closest-side, transparent calc(100% - 5px), #000 calc(100% - 4px));
+  opacity: var(--p, 0); filter: blur(.4px); }
+#stickBase.run { --rim: #ff8a2a; border-color: rgba(255,138,42,.75); box-shadow: inset 0 0 18px rgba(255,138,42,.18), 0 0 24px rgba(255,138,42,.45); }
+#stickKnob { position: absolute; left: 50%; top: 50%; width: 48px; height: 48px; border-radius: 50%; transform: translate(-50%,-50%);
+  background: radial-gradient(circle at 36% 30%, rgba(255,255,255,.96), rgba(255,255,255,.62) 46%, rgba(235,238,255,.42));
+  border: 1px solid rgba(255,255,255,.7); box-shadow: 0 5px 14px rgba(0,0,0,.28), inset 0 -3px 7px rgba(0,0,0,.12); transition: box-shadow .15s; }
+#stickBase.run #stickKnob { box-shadow: 0 0 16px rgba(255,138,42,.85), 0 5px 14px rgba(0,0,0,.25), inset 0 -3px 7px rgba(255,138,42,.25); }
 .mid-btns { position: absolute; left: 50%; top: 12px; transform: translateX(-50%); display: flex; gap: 8px; }
 .sbtn { background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.25); border-radius: 999px; padding: 6px 12px; font-size: 12px; font-weight: 900; letter-spacing: .05em; }
 /* action buttons sit on an arc round where the right thumb rests: the main attack biggest and lowest, the rest fanned above it */
