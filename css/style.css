@@ -822,3 +822,14 @@ body.wheel-compact #pad .face, body.wheel-compact #wpnBtn { opacity: 0; transiti
 .ph-mailapps { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
 .ph-mailapps .ph-btn { display: flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; color: #fff; }
 .ph-mailapps .ph-btn.alt { background: rgba(255,255,255,.1); }
+/* action buttons in the same frosted glass as the stick: soft inner light, a coloured rim per role, and they glow when pressed */
+.fbtn, #pad.wpnslot #wpnBtn { --tint: 255,255,255;
+  background: radial-gradient(circle at 50% 30%, rgba(255,255,255,.16), rgba(255,255,255,.05) 60%, rgba(10,10,30,.12));
+  border: 1.5px solid rgba(var(--tint), .38); box-shadow: inset 0 0 16px rgba(var(--tint), .08), 0 6px 18px rgba(0,0,0,.2);
+  backdrop-filter: blur(7px) saturate(1.3); -webkit-backdrop-filter: blur(7px) saturate(1.3);
+  transition: transform .1s, box-shadow .15s, border-color .15s, background .15s; }
+#pad .fbtn.x { --tint: 255,110,90; } #pad.driving .fbtn.x { --tint: 255,80,90; } #pad.driving .fbtn.a { --tint: 76,217,100; }
+#pad .fbtn.x, #pad.driving .fbtn.x, #pad.driving .fbtn.a { border-color: rgba(var(--tint), .8); background: radial-gradient(circle at 50% 30%, rgba(var(--tint), .26), rgba(var(--tint), .08) 62%, rgba(10,10,30,.12)); }
+.fbtn.ready { --tint: 76,217,100; border-color: rgba(76,217,100,.85); background: radial-gradient(circle at 50% 30%, rgba(76,217,100,.42), rgba(76,217,100,.16) 62%, rgba(10,10,30,.12)); }
+.fbtn.down, #pad.wpnslot #wpnBtn:active { transform: scale(.92); border-color: rgba(var(--tint), 1); box-shadow: inset 0 0 18px rgba(var(--tint), .3), 0 0 22px rgba(var(--tint), .55); background: radial-gradient(circle at 50% 30%, rgba(var(--tint), .4), rgba(var(--tint), .14) 62%, rgba(10,10,30,.1)); }
+#pad.wpnslot #wpnBtn { --tint: 255,210,63; }

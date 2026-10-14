@@ -1,30 +1,30 @@
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=172';
-import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun, partEffects, partPerk } from './gun.js?v=172';
-import { buildCar, computeCarStats, carStatBars, carClass, carPartEffects, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=172';
-import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, STAIRS, unblockPillars, canyonAt, canyonNear, PEAK, SKYWAYS, SKY_Y, skyAt, skyY, rampSeg, windowShader, makeOceanMaterial, WATER_U, WIND_U, METRO, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=172';
-import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=172';
-import { buildPanel, renderStats } from './ui.js?v=172';
-import { Input } from './input.js?v=172';
-import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime, animalCall } from './audio.js?v=172';
-import { runMinigame } from './minigames.js?v=172';
-import { CUT, initCutGames } from './cutgames.js?v=172';
-import { initOnline, updateOnline, goOnline, goOffline, NET, onNet, sendMagicLink, verifyCode, signOut, signedIn } from './online.js?v=172';
-import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk, setReservedNames, seededLook } from './peds.js?v=172';
-import { citizens, whereNow } from './citizens.js?v=172';
-import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=172';
-import { findRoute } from './nav.js?v=172';
-import { COURSES, CAREERS, QUIZ } from './careers.js?v=172';
-import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=172';
-import { attachWheel } from './wheel.js?v=172';
-import { GROUND_U } from './groundtex.js?v=172';
-import { Animals, makeAnimalMesh } from './animals.js?v=172';
-import { Talk } from './talk.js?v=172';
-import { incomingText, classify, textOptions, textReply } from './texts.js?v=172';
-import { svg, drawIcon, ICONS as ICON_SET } from './icons.js?v=172';
-import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=172';
-import { FURN, CATALOG } from './furniture.js?v=172';
-import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=172';
+import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=173';
+import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun, partEffects, partPerk } from './gun.js?v=173';
+import { buildCar, computeCarStats, carStatBars, carClass, carPartEffects, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=173';
+import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, STAIRS, unblockPillars, canyonAt, canyonNear, PEAK, SKYWAYS, SKY_Y, skyAt, skyY, rampSeg, windowShader, makeOceanMaterial, WATER_U, WIND_U, METRO, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=173';
+import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=173';
+import { buildPanel, renderStats } from './ui.js?v=173';
+import { Input } from './input.js?v=173';
+import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime, animalCall } from './audio.js?v=173';
+import { runMinigame } from './minigames.js?v=173';
+import { CUT, initCutGames } from './cutgames.js?v=173';
+import { initOnline, updateOnline, goOnline, goOffline, NET, onNet, sendMagicLink, verifyCode, signOut, signedIn } from './online.js?v=173';
+import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk, setReservedNames, seededLook } from './peds.js?v=173';
+import { citizens, whereNow } from './citizens.js?v=173';
+import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=173';
+import { findRoute } from './nav.js?v=173';
+import { COURSES, CAREERS, QUIZ } from './careers.js?v=173';
+import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=173';
+import { attachWheel } from './wheel.js?v=173';
+import { GROUND_U } from './groundtex.js?v=173';
+import { Animals, makeAnimalMesh } from './animals.js?v=173';
+import { Talk } from './talk.js?v=173';
+import { incomingText, classify, textOptions, textReply } from './texts.js?v=173';
+import { svg, drawIcon, ICONS as ICON_SET } from './icons.js?v=173';
+import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=173';
+import { FURN, CATALOG } from './furniture.js?v=173';
+import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=173';
 
 const $ = id => document.getElementById(id);
 let inside = null, editMode = false, held = null, pendingCar = false, homeMusic = false, phoneBadge = 0;
@@ -6024,7 +6024,7 @@ function updateCamera(dt, snap) {
   G.cam.lookAt(camLook.x + sx, camLook.y, camLook.z + sz);
   G.scene.fog.near = camDist + 25; G.scene.fog.far = camDist + 130;
   fadeU.uPlayer.value.set(f.x, ride ? ty : P.y, f.z); fadeU.uCam.value.copy(G.cam.position); fadeU.uFade.value = P.ladder && !ride ? 0 : 1; /* on a ladder you're outside the building: no see-through hole cut in the wall above you */
-  { const py = ride ? ty : P.y, ax = ride ? (f.vx || 0) * 0.7 : 0, az = ride ? (f.vz || 0) * 0.7 : 0, under = !inside && py < 3 && [[0, 0], [5, 0], [-5, 0], [0, 5], [0, -5], [ax, az], [ax * 2, az * 2]].some(([ox, oz]) => { const k = skyAt(f.x + ox, f.z + oz); return k && !k.ramp; }); fadeU.uBig.value = damp(fadeU.uBig.value, under ? (ride ? 3.6 + Math.min(1.6, Math.abs(ride.s.v) * 0.05) : 2.6) : 1, ride ? 8 : 5, dt); } // a car needs a bigger window, and it opens ahead of you at speed // under a skyway: a much bigger window through the deck
+  { const py = ride ? ty : P.y, ax = ride ? (f.vx || 0) * 0.7 : 0, az = ride ? (f.vz || 0) * 0.7 : 0, under = !inside && py < 3 && [[0, 0], [5, 0], [-5, 0], [0, 5], [0, -5], [ax, az], [ax * 2, az * 2]].some(([ox, oz]) => { const k = skyAt(f.x + ox, f.z + oz); return k && !k.ramp; }); for (const t of traffic) if (t.mesh) t.mesh.visible = !(under && (t.y ?? 0) > py + 2.5 && Math.hypot(t.rx - f.x, t.rz - f.z) < 45); for (const v of vehicles) if (v !== ride) v.b.group.visible = !(under && (v.s.y || 0) > py + 2.5 && Math.hypot(v.s.x - f.x, v.s.z - f.z) < 45); /* under a bridge: cars up on the deck aren't drawn through the see-through window */ fadeU.uBig.value = damp(fadeU.uBig.value, under ? (ride ? 3.6 + Math.min(1.6, Math.abs(ride.s.v) * 0.05) : 2.6) : 1, ride ? 8 : 5, dt); } // a car needs a bigger window, and it opens ahead of you at speed // under a skyway: a much bigger window through the deck
   lantern.position.set(f.x, ty + 3, f.z);
   boomLight.intensity = Math.max(0, boomLight.intensity - dt * 160);
 }
@@ -7048,7 +7048,7 @@ function saveGame() {
   store.set('bc_save', save); store.set('bc_arsenal', arsenal); store.set('bc_cars', garage);
 }
 // auto-update: bookmarks and home-screen apps can hold on to an old copy. Check version.json (never cached) and reload once if newer.
-const BUILD = 172;
+const BUILD = 173;
 function checkUpdate() {
   fetch('version.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(j => {
     if (!(j.v > BUILD)) return;
