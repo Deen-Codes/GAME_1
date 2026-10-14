@@ -1,6 +1,6 @@
 // Open-world map: layout, deterministic generation, colliders, chunk meshing and minimap.
 import * as THREE from '../lib/three.module.min.js';
-import { groundMaterial, GT } from './groundtex.js?v=126';
+import { groundMaterial, GT } from './groundtex.js?v=127';
 
 export const WORLD = { x0: -560, x1: 800, z0: -800, z1: 520 };
 export const CHUNK = 64;
@@ -779,6 +779,30 @@ export function windowShader(sh) {
       vec3 em = mix(room, refl, fres);
       if (abs(w.x - 0.5) < 0.025 || w.y < 0.03 || w.y > 0.97 || w.x < 0.03 || w.x > 0.97) { diffuseColor.rgb = vec3(0.22, 0.23, 0.26); }
       else { diffuseColor.rgb = vec3(0.02); totalEmissiveRadiance = em; roughnessFactor = 0.18; metalnessFactor = 0.0; }
+    } else {
+      // the wall between windows: brick courses on warm walls, curtain-wall spandrels on glass towers, render panels with
+      // rain streaks on the rest; a ledge under every row of windows. Fades out with distance so nothing shimmers.
+      vec3 vc = vColor.rgb; vec2 m = vMapUv * vec2(12.0, 24.0);
+      float k = 1.0 - smoothstep(35.0, 110.0, length(vWP - cameraPosition)), aa = max(fwidth(m.x), fwidth(m.y));
+      float sh = 1.0;
+      bool glassB = vc.b > vc.r * 1.12 && vc.b > 0.4;
+      bool brick = !glassB && vc.r > vc.g * 1.18 && vc.r > vc.b * 1.35;
+      if (brick) {
+        vec2 bc = vec2(m.x / 0.62 + mod(floor(m.y / 0.21), 2.0) * 0.5, m.y / 0.21), bf = fract(bc);
+        float mx = smoothstep(0.0, 0.07 + aa * 2.5, bf.x) * smoothstep(1.0, 0.93 - aa * 2.5, bf.x), my = smoothstep(0.0, 0.11 + aa * 6.0, bf.y) * smoothstep(1.0, 0.89 - aa * 6.0, bf.y);
+        float bv = fract(sin(dot(floor(bc), vec2(12.9898, 78.233))) * 43758.5453);
+        sh = mix(1.18, 0.9 + bv * 0.2, mx * my);
+      } else if (glassB) {
+        float band = step(f.y, 3.0 / 16.0) + step(13.0 / 16.0, f.y);
+        sh = mix(1.0, 0.72, band); if (abs(f.x) < 0.02 || abs(f.x - 1.0) < 0.02) sh = 0.55;
+      } else {
+        vec2 pf = fract(m / vec2(1.5, 3.0)); float seam = min(smoothstep(0.0, 0.015 + aa * 0.7, pf.x), smoothstep(0.0, 0.01 + aa * 0.35, pf.y));
+        float streak = (f.x > 3.0 / 16.0 && f.x < 13.0 / 16.0 && f.y < 3.0 / 16.0) ? 1.0 - (3.0 / 16.0 - f.y) * 1.6 : 1.0;
+        float n = fract(sin(dot(floor(m * 2.0), vec2(127.1, 311.7))) * 43758.5453);
+        sh = mix(0.86, 1.0, seam) * streak * (0.96 + n * 0.06);
+      }
+      float ledge = abs(f.y - 2.7 / 16.0) < 0.022 ? 1.22 : abs(f.y - 2.3 / 16.0) < 0.02 ? 0.72 : 1.0; // sill highlight with its shadow underneath
+      diffuseColor.rgb *= mix(1.0, sh * ledge, k);
     }
   }`);
 }
