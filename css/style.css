@@ -717,3 +717,13 @@ body.armory .drag-hint { bottom: calc(60dvh + 6px); }
 #mgBanner b { font-size: 34px; font-weight: 900; color: #fff; text-shadow: 0 3px 16px rgba(0,0,0,.8); letter-spacing: .02em; }
 #mgBanner.show { opacity: 1; transform: translate(-50%, -50%) scale(1); }
 #mgBanner.win b { color: #6dff8a; } #mgBanner.lose b { color: #ff6b78; }
+/* jail pay phone dial screen */
+#payphone { position: fixed; inset: 0; z-index: 40; display: grid; place-items: end center; padding: 16px 16px calc(24px + var(--sab)); background: rgba(10,8,20,.55); }
+#payphone .pp { width: min(420px, 100%); background: #2b2d34; border: 3px solid #16161b; border-radius: 22px; padding: 14px; display: grid; gap: 12px; box-shadow: 0 16px 40px rgba(0,0,0,.5); }
+#payphone .pphead b { display: block; color: #fff; font-size: 18px; font-weight: 900; } #payphone .pphead small { color: rgba(255,255,255,.6); font-weight: 700; }
+#payphone .ppbtns { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+#payphone .ppbtns button { background: #3d4049; color: #fff; border-radius: 14px; padding: 12px; font-weight: 900; text-align: left; display: flex; gap: 8px; align-items: center; border-bottom: 4px solid #1b1c22; }
+#payphone .ppbtns button small { display: block; color: #ffd23f; }
+.fbtn span { max-width: 88%; text-align: center; line-height: 1.05; overflow-wrap: anywhere; }
+.fbtn span.sm { font-size: 8.5px; letter-spacing: .01em; }
+.fbtn span.xs { font-size: 7.6px; letter-spacing: 0; }

@@ -1,7 +1,7 @@
 // Modular car builder. Car faces +Z, sits on y=0, origin at the centre of the wheelbase.
 import * as THREE from '../lib/three.module.min.js';
-import { BASIC } from './character.js?v=147';
-import { patternTexture } from './gun.js?v=147';
+import { BASIC } from './character.js?v=148';
+import { patternTexture } from './gun.js?v=148';
 
 export const BODIES = {
   hatch:  { label: 'Hatchback', L: 3.8, W: 1.75, bh: 0.55, cl: 2.0, ch: 0.62, co: -0.4,  wr: 0.34, mass: 1.0 },
@@ -515,15 +515,25 @@ export function buildCar(cfg) {
     if (['fivespoke', 'mesh', 'turbine', 'wire', 'split'].includes(c.wheels)) { const cal = new THREE.Mesh(new THREE.BoxGeometry(0.06, rimR * 0.45, rimR * 0.35), new THREE.MeshStandardMaterial({ color: c.accentColor || '#e23b3b', roughness: 0.4 })); cal.position.set(sx * (h - 0.09), rimR * 0.45, -fz * rimR * 0.2); pivot.add(cal); }
     wheels.push({ pivot, spin, front: fz > 0 });
   }
-  // underglow
+  // underglow: a soft oval pool that fades out past the sills
   let glow = null;
   if (c.underglow === 'on') {
-    glow = new THREE.Mesh(new THREE.PlaneGeometry(W + 1.2, L + 1.2), new THREE.MeshBasicMaterial({ color: c.glowColor, transparent: true, opacity: 0.55, blending: THREE.AdditiveBlending, depthWrite: false }));
-    glow.rotation.x = -Math.PI / 2; glow.position.y = 0.03; grp.add(glow);
+    glow = new THREE.Mesh(new THREE.PlaneGeometry(W + 3.2, L + 2.8), new THREE.MeshBasicMaterial({ color: c.glowColor, map: glowTex(), transparent: true, opacity: 0.55, blending: THREE.AdditiveBlending, depthWrite: false }));
+    glow.rotation.x = -Math.PI / 2; glow.position.y = 0.03; glow.renderOrder = 2; grp.add(glow);
   }
   grp.traverse(m => { if (m.isMesh) m.castShadow = true; });
   const heads = { '-1': [], '1': [] }; grp.traverse(m => { if (m.material === headM) heads[m.position.x < 0 ? '-1' : '1'].push(m); }); // each side's headlamp, so one can get smashed
   return { group: grp, wheels, headM, tailM, revM, glow, length: L, width: W, height: top + B.ch, wr, doors, heads };
+}
+
+let _glowTex = null;
+function glowTex() {
+  if (_glowTex) return _glowTex;
+  const N = 128, cv = document.createElement('canvas'); cv.width = cv.height = N; const x = cv.getContext('2d');
+  const g = x.createRadialGradient(N / 2, N / 2, 0, N / 2, N / 2, N / 2);
+  for (let i = 0; i <= 12; i++) { const t = i / 12; const a = t < 0.3 ? 1 : Math.pow(Math.cos((t - 0.3) / 0.7 * Math.PI / 2), 1.7); g.addColorStop(t, `rgba(255,255,255,${a.toFixed(3)})`); }
+  x.fillStyle = g; x.fillRect(0, 0, N, N);
+  _glowTex = new THREE.CanvasTexture(cv); _glowTex.colorSpace = THREE.SRGBColorSpace; return _glowTex;
 }
 
 export const CAR_PRICES = { compact: 5000, hothatch: 21000, jeep: 28000, minivan: 15000, gt: 64000, tractor: 12000, scooter: 800, bike: 400, moto: 9000, hatch: 6000, sedan: 9000, wagon: 11000, coupe: 16000, van: 14000, pickup: 18000, suv: 26000, classic: 30000, lowrider: 24000, convertible: 38000, muscle: 42000, buggy: 15000, boxtruck: 22000, sports: 85000, limo: 70000, hyper: 160000 };

@@ -1,6 +1,6 @@
 // Open-world map: layout, deterministic generation, colliders, chunk meshing and minimap.
 import * as THREE from '../lib/three.module.min.js';
-import { groundMaterial, GT } from './groundtex.js?v=147';
+import { groundMaterial, GT } from './groundtex.js?v=148';
 
 export const WORLD = { x0: -560, x1: 800, z0: -800, z1: 520 };
 export const CHUNK = 64;
