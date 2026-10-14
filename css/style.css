@@ -572,3 +572,12 @@ body.phone-out #mmWrap { opacity: 0; transition: opacity .1s; }
 /* incoming call: the phone-map buzzes */
 #mmWrap.ring { animation: phoneRing .12s linear 12; }
 @keyframes phoneRing { 0% { transform: rotate(0) translateX(0); } 25% { transform: rotate(-4deg) translateX(-2px); } 75% { transform: rotate(4deg) translateX(2px); } 100% { transform: rotate(0) translateX(0); } }
+
+/* sat-nav strip on the phone-map: distance big, where you're going under it */
+#mmNav { position: absolute; left: 0; right: 0; bottom: 0; padding: 4px 6px 5px 6px; background: linear-gradient(transparent, rgba(10,10,24,.85) 30%); display: flex; flex-direction: column; align-items: flex-end; text-align: right; z-index: 2; pointer-events: none; text-shadow: 0 1px 2px #000; }
+#mmNav.hidden { display: none; }
+#mmNav b { font-size: 13px; font-weight: 900; color: #ffd23f; line-height: 1.1; }
+#mmNav small { font-size: 8.5px; font-weight: 800; color: #fff; max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.15; }
+#mmWrap.navving #mmNav { padding-left: 48px; }
+#mmWrap:not(:has(#mmSpeed.hidden)) #mmNav { padding-left: 48px; }
+#mmWrap:has(#mmSpeed.hidden) #mmNav { align-items: center; text-align: center; padding-left: 6px; }
