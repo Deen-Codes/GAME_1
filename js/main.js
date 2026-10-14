@@ -1,28 +1,28 @@
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=149';
-import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun, partEffects, partPerk } from './gun.js?v=149';
-import { buildCar, computeCarStats, carStatBars, carClass, carPartEffects, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=149';
-import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, SKYWAYS, SKY_Y, skyAt, skyY, rampSeg, windowShader, makeOceanMaterial, WATER_U, WIND_U, METRO, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=149';
-import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=149';
-import { buildPanel, renderStats } from './ui.js?v=149';
-import { Input } from './input.js?v=149';
-import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime, animalCall } from './audio.js?v=149';
-import { runMinigame } from './minigames.js?v=149';
-import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk, setReservedNames, seededLook } from './peds.js?v=149';
-import { citizens, whereNow } from './citizens.js?v=149';
-import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=149';
-import { findRoute } from './nav.js?v=149';
-import { COURSES, CAREERS, QUIZ } from './careers.js?v=149';
-import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=149';
-import { attachWheel } from './wheel.js?v=149';
-import { GROUND_U } from './groundtex.js?v=149';
-import { Animals, makeAnimalMesh } from './animals.js?v=149';
-import { Talk } from './talk.js?v=149';
-import { incomingText, classify, textOptions, textReply } from './texts.js?v=149';
-import { svg, drawIcon } from './icons.js?v=149';
-import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=149';
-import { FURN, CATALOG } from './furniture.js?v=149';
-import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=149';
+import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=150';
+import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun, partEffects, partPerk } from './gun.js?v=150';
+import { buildCar, computeCarStats, carStatBars, carClass, carPartEffects, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=150';
+import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, SKYWAYS, SKY_Y, skyAt, skyY, rampSeg, windowShader, makeOceanMaterial, WATER_U, WIND_U, METRO, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=150';
+import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=150';
+import { buildPanel, renderStats } from './ui.js?v=150';
+import { Input } from './input.js?v=150';
+import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime, animalCall } from './audio.js?v=150';
+import { runMinigame } from './minigames.js?v=150';
+import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk, setReservedNames, seededLook } from './peds.js?v=150';
+import { citizens, whereNow } from './citizens.js?v=150';
+import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=150';
+import { findRoute } from './nav.js?v=150';
+import { COURSES, CAREERS, QUIZ } from './careers.js?v=150';
+import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=150';
+import { attachWheel } from './wheel.js?v=150';
+import { GROUND_U } from './groundtex.js?v=150';
+import { Animals, makeAnimalMesh } from './animals.js?v=150';
+import { Talk } from './talk.js?v=150';
+import { incomingText, classify, textOptions, textReply } from './texts.js?v=150';
+import { svg, drawIcon } from './icons.js?v=150';
+import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=150';
+import { FURN, CATALOG } from './furniture.js?v=150';
+import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=150';
 
 const $ = id => document.getElementById(id);
 let inside = null, editMode = false, held = null, pendingCar = false, homeMusic = false, phoneBadge = 0;
@@ -526,7 +526,7 @@ function evBusk() {
 function evCrash() {
   const s = randomRoadSpot(45, 110); if (!s) return; ensureCarLib();
   const h = rand(0, 6.28), a = makeVehicle(pick(carLib).cfg, s.x, s.z, h, false), b = makeVehicle(pick(carLib).cfg, s.x + Math.sin(h + 1.3) * 3.4, s.z + Math.cos(h + 1.3) * 3.4, h + 2.2, false);
-  for (const v of [a, b]) { damageCar(v, 78, (a.s.x + b.s.x) / 2, (a.s.z + b.s.z) / 2); v.ai = null; }
+  for (const v of [a, b]) { damageCar(v, 66, (a.s.x + b.s.x) / 2, (a.s.z + b.s.z) / 2); v.ai = null; }
   const hurtP = eventPed({ fem: Math.random() < 0.5 }, s.x + 2.8, s.z + 1.5); peds.knock(hurtP, 1, 0, 0.5); hurtP.injured = true; hurtP.t = 60;
   const other = eventPed({ fem: Math.random() < 0.5 }, s.x - 2.6, s.z - 1, { state: 'talk', lookX: s.x, lookZ: s.z });
   setTimeout(() => dispatch('med', hurtP.x, hurtP.z), 5000);
@@ -1260,13 +1260,13 @@ function updateBullets(dt) {
       b.x += b.vx * dt / steps; b.z += b.vz * dt / steps;
       if (solidPoint(b.x, b.z, b.y)) dead = true;
       for (const t of traffic) if (Math.hypot(t.rx - b.x, t.rz - b.z) < 1.6 && b.y < 2) { dead = true; t.stun = 3; }
-      if (!dead) for (const v of vehicles) if ((b.cop ? v === ride : v !== ride) && Math.hypot(v.s.x - b.x, v.s.z - b.z) < Math.max(1.2, v.b.length * 0.45) && b.y < 2) { dead = true; damageCar(v, 4 * clamp((b.dmg || 24) / 24, 0.5, 4) * (b.ammo === 'ap' ? 2.2 : 1) * (v.st?.bp ? 0.3 : 1) * (v.st?.runflat ? 0.8 : 1), b.x, b.z); if (b.ammo === 'incendiary' && Math.random() < 0.08) addFire(v.s.x, v.s.z); break; } /* armour piercing chews through cars; incendiary can set them alight */
+      if (!dead) for (const v of vehicles) if ((b.cop ? v === ride : v !== ride) && Math.hypot(v.s.x - b.x, v.s.z - b.z) < Math.max(1.2, v.b.length * 0.45) && b.y < 2) { dead = true; damageCar(v, 4 * clamp((b.dmg || 24) / 24, 0.5, 4) * (b.ammo === 'ap' ? 2.2 : 1) * (v.st?.bp ? 0.3 : 1) * (v.st?.runflat ? 0.8 : 1), b.x, b.z, !b.cop); if (b.ammo === 'incendiary' && Math.random() < 0.08) addFire(v.s.x, v.s.z); break; } /* armour piercing chews through cars; incendiary can set them alight */
       for (const p of peds.list) if (p.state !== 'down' && Math.hypot(p.x - b.x, p.z - b.z) < 0.6) {
         if (b.cop) continue; dead = true; const d = Math.hypot(b.vx, b.vz); if (peds.knock(p, b.vx / d, b.vz / d, 4)) { p.injured = true; p.t = 40; } if (b.ammo === 'frost') p.frostT = 4; if (b.ammo === 'incendiary') spawnParticles(p.x, 1.2, p.z, ['#ffb02e', '#ff5a1f', '#ffe08a'], 10, 1.5, 0.8, 0.12, 2); crime(p.kind === 'cop' ? 2 : 1); witness('gun', P.x, P.z, p); peds.scare(p.x, p.z, 20); gainXP('gun_' + b.slot, 3);
         spawnParticles(b.x, b.y, b.z, ['#ffffff', '#ffd23f'], 4, 2, 0.3, 0.08); if (Math.random() < 0.5) dropCash(p.x, p.z, 5 + Math.floor(Math.random() * 30)); break;
       }
       if (dead) {
-        if (b.ammo === 'explosive') explode(b.x, b.y, b.z, 2.2, 0.35);
+        if (b.ammo === 'explosive') explode(b.x, b.y, b.z, 2.2, 0.35, !b.cop);
         else spawnParticles(b.x, b.y, b.z, b.ammo === 'frost' ? ['#bff4ff', '#6fd8ff'] : b.ammo === 'incendiary' ? ['#ffb02e', '#ff5a1f'] : ['#ffe08a', '#ffffff'], 4, 3, 0.35, 0.07, 6);
       }
     }
@@ -1315,16 +1315,17 @@ function updateProjectiles(dt) {
     if (boom) { explode(p.x, p.y, p.z, p.kind === 'rocket' ? 6 : 5.5, 1); dyn.remove(p.m); projectiles.splice(i, 1); }
   }
 }
-function explode(x, y, z, r, power) {
+function explode(x, y, z, r, power, byYou = true) { // byYou: only blasts you caused count as your crime
   spawnParticles(x, y + 0.5, z, ['#ffd23f', '#ff8a2a', '#ff4d2a', '#ffffff'], Math.round(30 * power) + 6, 9 * power + 3, 0.6, 0.35 * power + 0.15, 4);
   spawnParticles(x, y + 0.5, z, ['#3a3040', '#5a5060', '#777'], Math.round(16 * power) + 3, 3, 1.3, 0.6 * power + 0.2, -2);
   boomLight.position.set(x, y + 2, z); boomLight.intensity = 60 * power;
-  shake = Math.max(shake, 0.25 + 0.6 * power); sfx.boom(); navigator.vibrate?.([40, 20, 80]);
+  { const f = focusPos(), fd = Math.hypot(f.x - x, f.z - z), near = clamp(1 - fd / 70, 0, 1); shake = Math.max(shake, (0.25 + 0.6 * power) * near); if (near > 0.5) navigator.vibrate?.([40, 20, 80]); }
+  sfx.boom();
   if (power < 0.5) return;
   for (const p of peds.list) { const dx = p.x - x, dz = p.z - z, d = Math.hypot(dx, dz); if (d < r) { peds.knock(p, dx / (d || 1), dz / (d || 1), 14 * (1 - d / r) + 3); if (Math.random() < 0.4) dropCash(p.x, p.z, 10 + Math.floor(Math.random() * 40)); } }
-  peds.scare(x, z, 45); crime(1.5, x, z); if (power >= 0.9) addFire(x, z);
+  peds.scare(x, z, 45); if (byYou) crime(1.5, x, z); if (power >= 0.9) addFire(x, z);
   for (const t of traffic) if (Math.hypot(t.rx - x, t.rz - z) < r + 2) { t.stun = 6; t.speed = 0; spawnParticles(t.rx, 1.2, t.rz, ['#ff8a2a', '#333'], 8, 3, 0.8, 0.3, -1); }
-  for (const v of vehicles) { const dx = v.s.x - x, dz = v.s.z - z, d = Math.hypot(dx, dz); if (d < r + 2 && !v.wrecked && d > 0.5) damageCar(v, 70 * (1 - d / (r + 2)), x, z); if (d < r + 2) { v.s.vx += dx / (d || 1) * 10; v.s.vz += dz / (d || 1) * 10; } }
+  for (const v of vehicles) { const dx = v.s.x - x, dz = v.s.z - z, d = Math.hypot(dx, dz); if (d < r + 2 && !v.wrecked && d > 0.5) damageCar(v, 70 * (1 - d / (r + 2)), x, z, byYou); if (d < r + 2) { v.s.vx += dx / (d || 1) * 10; v.s.vz += dz / (d || 1) * 10; } }
   const f = focusPos(), d = Math.hypot(f.x - x, f.z - z);
   if (d < r) hurt((ride ? 30 : 70) * (1 - d / r));
 }
@@ -1941,8 +1942,9 @@ function gymCut(o = {}) {
 }
 // ---------------- car damage: dents where you hit, smoke, fire, then it blows
 const BROKEN_LAMP = new THREE.MeshStandardMaterial({ color: '#2a2a30', roughness: 0.9 });
-function damageCar(v, amt, ix, iz) {
+function damageCar(v, amt, ix, iz, byYou = false) {
   if (!v || v.wrecked || amt <= 0) return;
+  if (byYou && v !== ride) v.youHitT = time; // so if it blows up soon after, that's on you
   if (v === ride && amt > 10 && chatCd('crash', 8)) { if (date?.inCar) subs.say(dateWho(), pick(['Oh my god! Watch the road!', 'Are you CRAZY?!', 'I nearly hit my head!', 'Seriously?!']), { expr: 'shock', pri: 3, now: true }); else if (Math.random() < 0.5) youSay(pick(['Whoops.', 'My bad, my bad.', 'That\'s gonna leave a mark.', 'Who put that there?']), 'shock', { pri: 2 }); }
   v.hp ??= 100; v.hp -= amt * (v.b.two ? 1.4 : 1) / (v.st?.tough || 1);
   // crumple the panels nearest the impact
@@ -1966,7 +1968,7 @@ function damageCar(v, amt, ix, iz) {
 }
 function wreckCar(v) {
   v.wrecked = true; v.hp = 0;
-  explode(v.s.x, 0.8, v.s.z, 6, 1);
+  explode(v.s.x, 0.8, v.s.z, 6, 1, time - (v.youHitT ?? -1e9) < 30);
   v.b.group.traverse(m => { if (m.isMesh && m.material?.color) { m.material = m.material.clone(); m.material.color.set('#1c1a1a'); if (m.material.emissive) m.material.emissive.set('#000000'); } });
   v.burnT = 25;
   if (ride === v) { const s = v.s; exitCar(); carAnim = null; P.x = s.x + Math.cos(s.h) * 2.6; P.z = s.z - Math.sin(s.h) * 2.6; heroRoot.visible = true; }
@@ -2046,8 +2048,9 @@ function collideCars(v, o, spd) {
     hit = rel;
   }
   placeVehicle(o);
-  if (hit > 5) { const mx = (v.s.x + o.s.x) / 2, mz = (v.s.z + o.s.z) / 2; damageCar(v, hit * 1.1, mx, mz); damageCar(o, hit * 1.1, mx, mz); }
-  if (hit > 6 && (v.hitCd || 0) < time) { v.hitCd = time + 0.5; sfx.thud(); shake = Math.max(shake, Math.min(0.5, hit / 30)); spawnParticles((v.s.x + o.s.x) / 2, 0.7, (v.s.z + o.s.z) / 2, ['#ffd23f', '#ffffff', '#888'], 8, 4, 0.35, 0.1); if (v === ride && hit > 16) hurt((hit - 16) * 1.2); }
+  const you = v === ride || o === ride;
+  if (hit > 5) { const mx = (v.s.x + o.s.x) / 2, mz = (v.s.z + o.s.z) / 2; damageCar(v, hit * 1.1, mx, mz, you); damageCar(o, hit * 1.1, mx, mz, you); }
+  if (hit > 6 && (v.hitCd || 0) < time) { v.hitCd = time + 0.5; sfx.thud(); if (you) shake = Math.max(shake, Math.min(0.5, hit / 30)); spawnParticles((v.s.x + o.s.x) / 2, 0.7, (v.s.z + o.s.z) / 2, ['#ffd23f', '#ffffff', '#888'], 8, 4, 0.35, 0.1); if (v === ride && hit > 16) hurt((hit - 16) * 1.2); }
 }
 let driveDist = 0;
 function updateVehicles(dt) {
@@ -6742,7 +6745,7 @@ function saveGame() {
   store.set('bc_save', save); store.set('bc_arsenal', arsenal); store.set('bc_cars', garage);
 }
 // auto-update: bookmarks and home-screen apps can hold on to an old copy. Check version.json (never cached) and reload once if newer.
-const BUILD = 149;
+const BUILD = 150;
 function checkUpdate() {
   fetch('version.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(j => {
     if (!(j.v > BUILD)) return;
