@@ -1,6 +1,6 @@
 // Open-world map: layout, deterministic generation, colliders, chunk meshing and minimap.
 import * as THREE from '../lib/three.module.min.js';
-import { groundMaterial, GT } from './groundtex.js?v=167';
+import { groundMaterial, GT } from './groundtex.js?v=168';
 
 export const WORLD = { x0: -1560, x1: 1420, z0: -800, z1: 760 };
 export const CHUNK = 64;
@@ -11,6 +11,7 @@ export const CITIES = [
   { id: 'east', name: 'Eastport', cx: 600, cz: 0, kx: [-3, 3], kz: [-3, 3], style: 'suburb' },
   { id: 'north', name: 'Northfield', cx: 0, cz: -520, kx: [-4, 4], kz: [-1, 1], style: 'mid' },
   { id: 'nport', name: 'Northport', cx: 648, cz: -432, kx: [-2, 2], kz: [-3, 3], style: 'nport' }, // across the river from Eastport
+  { id: 'strip', name: 'Sun Valley', cx: -960, cz: -300, kx: [-1, 1], kz: [-3, 3], style: 'strip' }, // a Vegas-style casino strip out in the desert
   { id: 'isle', name: 'Long Beach', cx: 1056, cz: 0, kx: [-2, 2], kz: [-9, 6], style: 'island' }, // long enough to reach up level with Northport // the long island city out in the east bay
 ];
 for (const c of CITIES) {
@@ -84,6 +85,7 @@ function westBase(x, z, h) { // x < -560: valley noise h comes in; shape it into
   let y = (h * 0.55 + 2) * (1 - desert) + (7 + 1.4 * Math.sin(x / 31) * Math.cos(z / 43) + 0.8 * Math.sin(z / 17 + x / 23)) * desert + ridge;
   for (const M of MESAS) { const d = Math.hypot(x - M.x, z - M.z); if (d < M.r + 8) y += M.h * ss((M.r + 8 - d) / 8); } // flat-topped mesas with steep sides
   { const d = Math.abs(x - redRiverX(z)); if (d < 44) { const ford = FORDS.some(f => Math.abs(z - f) < 16), bed = ford ? -1.05 : -2.8; y = d < 13 ? bed : bed + (y - bed) * ss((d - 13) / 31); } } // the river gorge (shallow at the fords)
+  { const C2 = CITIES.find(c => c.id === 'strip'), dx = Math.max(C2.x0 - x, 0, x - C2.x1), dz = Math.max(C2.z0 - z, 0, z - C2.z1); y *= ss((Math.hypot(dx, dz) - 6) / 70); } // Sun Valley sits flat in a basin
   y *= ss((x - coastW(z) - 20) / 90); // the desert slopes down to West Beach
   y *= ss((z - northZ(x) - 26) / 70); // and to the north shore
   return y;
@@ -126,7 +128,7 @@ export const CANYON = [
   { id: 'peak', name: 'Peak Road', pts: (() => { const c = { x: -502, z: -250 }, P0 = [[-430, -205], [-452, -207], [-476, -209]]; for (let k = 0; k <= 18; k++) { const a = (90 + k * 25) * Math.PI / 180, r = 39 - k * 1.5; P0.push([+(c.x + Math.cos(a) * r).toFixed(1), +(c.z + Math.sin(a) * r).toFixed(1)]); } return P0; })() }, // heads straight west off the crossroad, then spirals up anticlockwise, finishing at the summit car park
   // dirt trails through Wildwood and the desert, splashing across the Red River at the fords
   { id: 'wtrail', name: 'Wildwood Trail', dirt: true, pts: [[-540, 0], [-580, 4], [-630, 18], [-690, 28], [-750, 6], [-800, -50], [-850, -110], [-900, -150], [-970, -150], [-1040, -118], [-1085, -102], [+redRiverX(-100).toFixed(1), -100], [-1160, -96], [-1220, -80], [-1290, -40], [-1335, -12]] },
-  { id: 'dloop', name: 'Desert Loop', dirt: true, pts: [[-970, -150], [-985, -260], [-1010, -360], [-1045, -440], [+redRiverX(-452).toFixed(1), -452], [-1130, -460], [-1190, -470], [-1255, -400], [-1262, -300], [-1240, -180], [-1220, -80]] },
+  { id: 'dloop', name: 'Desert Loop', dirt: true, pts: [[-1040, -118], [-1046, -200], [-1048, -300], [-1052, -390], [-1058, -440], [+redRiverX(-452).toFixed(1), -452], [-1130, -460], [-1190, -470], [-1255, -400], [-1262, -300], [-1240, -180], [-1220, -80]] },
   { id: 'strail', name: 'Canyon Run', dirt: true, pts: [[-690, 28], [-730, 120], [-780, 210], [-860, 250], [-950, 252], [-1030, 250], [+redRiverX(250).toFixed(1), 250], [-1130, 240], [-1180, 180], [-1210, 80], [-1220, -80]] },
   { id: 'dw_mansion', name: 'Driveway', pts: [[-432, -367], [-426, -362], [-420, -358]] },
   { id: 'dw_lake', name: 'Driveway', pts: [[-410, 141], [-398, 142], [-385, 144]] },
@@ -274,7 +276,7 @@ export function zoneName(x, z) {
   { const il = isletAt(x, z); if (il && il.d < 2) return il.I.light ? 'Lighthouse Isle' : 'Little Isle'; }
   if (x > 760) { const di = isleD(x, z); if (di < 0) return cityAt(x, z, 6) ? 'Long Beach' : 'Long Beach Sands'; if (x > coastX(z) - 8) return 'East Bay'; if (x > coastX(z) - 44 && z < 330) return 'East Shore'; }
   if (riverD(x, z) < RIVER.hw + 6) return 'Bay River';
-  if (x < -560) { const wet = groundH0(x, z) < WATER_Y; if (Math.abs(x - redRiverX(z)) < 20 && (wet || x < -880)) return 'Red River'; if (wet) return 'Open Sea'; if (x < coastW(z) + 48) return 'West Beach'; if (z < northZ(x) + 40) return 'North Shore'; if (x < -880) return Math.abs(x - redRiverX(z)) < 46 ? 'Red River Canyon' : 'Red Rock Desert'; return 'Wildwood'; }
+  if (x < -560) { const tc = cityAt(x, z, 10); if (tc) return tc.name; const wet = groundH0(x, z) < WATER_Y; if (Math.abs(x - redRiverX(z)) < 20 && (wet || x < -880)) return 'Red River'; if (wet) return 'Open Sea'; if (x < coastW(z) + 48) return 'West Beach'; if (z < northZ(x) + 40) return 'North Shore'; if (x < -880) return Math.abs(x - redRiverX(z)) < 46 ? 'Red River Canyon' : 'Red Rock Desert'; return 'Wildwood'; }
   if (z > sandLine(x) - 4) return 'Bay Beach';
   if (x < -300) return 'Hidden Hills';
   if (x > 530 && x < 710 && z > 288 && z < 328) return 'Eastport Docks';
@@ -574,6 +576,7 @@ function genBlock(city, bx0, bz0, r, bi, bj) {
   }
   if (city.id === 'main' && cz > 280) type = r() < 0.75 ? 'beach' : 'park';
   else if (city.style === 'downtown') type = r() < 0.1 ? 'park' : r() < 0.08 ? 'parking' : dCenter < 110 ? 'tower' : dCenter < 210 ? 'mid' : r() < 0.4 ? 'house' : 'mid';
+  else if (city.style === 'strip') type = bi === -1 && bj === 0 ? 'park' : 'casino';
   else if (city.style === 'island') { // Long Beach: hotels and beach bars on the outside blocks facing the sand, glass towers up the middle
     const edge = bi === city.kx[0] || bi === city.kx[1] - 1 || bj === city.kz[0] || bj === city.kz[1] - 1;
     type = edge ? (r() < 0.82 ? 'resort' : 'park') : r() < 0.07 ? 'park' : 'sky'; }
@@ -627,6 +630,13 @@ function genBlock(city, bx0, bz0, r, bi, bj) {
       building(lx + ox, lz - 3, w, 18, 7 + r() * 9, PAL.beach[Math.floor(r() * PAL.beach.length)], { top: r() < 0.5 ? 'ac' : null, awning: true });
     }
     for (let i = 0; i < 3; i++) tree(lx - 12 + i * 12, lz + 13, 'palm', 1 + r() * 0.3);
+    return;
+  }
+  if (type === 'casino') { // Sun Valley: giant casino hotels, gold and pastel, with a neon sign out front on the Strip
+    const pal = ['#f2e6c9', '#ffd6a5', '#f6d1c1', '#e8e4dc', '#ffeaa0', '#d8c4ff', '#c9e4ff'], neon = ['#ff3bd2', '#38e8ff', '#ffd23f', '#ff6a3c', '#b26bff', '#4cd964'];
+    if (r() < 0.6) building(lx, lz, 28, 28, 30 + r() * 26, pal[Math.floor(r() * pal.length)], { top: r() < 0.5 ? 'helipad' : 'setback', awning: true });
+    else { building(lx, lz - 6, 30, 16, 36 + r() * 20, pal[Math.floor(r() * pal.length)], { top: 'antenna' }); building(lx, lz + 9, 30, 10, 8, pal[Math.floor(r() * pal.length)], { top: 'ac', awning: true }); } // tower and podium
+    const sx = lx + (lx < city.cx ? 16.4 : -16.4); addObj({ t: 'neon', x: sx, z: lz - 9, h: 9 + r() * 5, col: neon[Math.floor(r() * neon.length)], col2: neon[Math.floor(r() * neon.length)] }); addCollider({ x: sx, z: lz - 9, r: 0.4 });
     return;
   }
   if (type === 'sky') { // Long Beach skyline: the tallest towers in the city, tallest in the middle of the island
@@ -768,7 +778,7 @@ function genWorld() {
   // Red Rock Desert: saguaro cacti and boulders, nothing growing in the gorge or on the trails
   for (let x = -1350; x < -880; x += 11) for (let z = -730; z < 330; z += 11) {
     const tx = x + (hash(x | 0, z | 0, 61) - 0.5) * 8, tz = z + (hash(x | 0, z | 0, 62) - 0.5) * 8, hh = hash(x | 0, z | 0, 63);
-    if (hh > 0.2 || tx < coastW(tz) + 50 || tz < northZ(tx) + 44 || tz > sandLine(tx) - 12 || Math.abs(tx - redRiverX(tz)) < 48 || nearRoad(tx, tz, 3) || MESAS.some(M => Math.hypot(tx - M.x, tz - M.z) < M.r + 10)) continue;
+    if (hh > 0.2 || cityAt(tx, tz, 14) || tx < coastW(tz) + 50 || tz < northZ(tx) + 44 || tz > sandLine(tx) - 12 || Math.abs(tx - redRiverX(tz)) < 48 || nearRoad(tx, tz, 3) || MESAS.some(M => Math.hypot(tx - M.x, tz - M.z) < M.r + 10)) continue;
     if (hh < 0.12) { addObj({ t: 'cactus', x: tx, z: tz, s: 0.8 + hash(x | 0, z | 0, 64) * 0.7, arms: Math.floor(hash(x | 0, z | 0, 65) * 3) }); addCollider({ x: tx, z: tz, r: 0.45 }); }
     else { const w = 1.6 + hash(x | 0, z | 0, 66) * 3; addObj({ t: 'boulder', x: tx, z: tz, w, h: w * 0.7 }); addCollider({ x: tx, z: tz, r: w * 0.5, h: w * 0.7 }); }
   }
@@ -1372,6 +1382,7 @@ function drawObj(o, B) {
       if (o.arms > 1) { B.box(o.x - 0.55 * S2, gy + 2.2 * S2, o.z, 0.9 * S2, 0.42 * S2, 0.42 * S2, c); B.box(o.x - 0.95 * S2, gy + 2.2 * S2, o.z, 0.42 * S2, 1.3 * S2, 0.42 * S2, c); } break; }
     case 'boulder': { const gy = groundH(o.x, o.z) - 0.4; B.box(o.x, gy, o.z, o.w, o.h + 0.4, o.w * 0.8, '#9a5a3a', { rot: o.x * 0.37 }); B.box(o.x + o.w * 0.2, gy + o.h * 0.7, o.z, o.w * 0.6, o.h * 0.5, o.w * 0.5, '#b0683f', { rot: o.z * 0.29 }); break; }
     case 'lighthouse': { const gy = groundH(o.x, o.z); for (let k = 0; k < 6; k++) B.cyl(o.x, gy + k * 3.4, o.z, 2.6 - k * 0.2, 3.4, k % 2 ? '#c9302c' : '#f4f1ea', 12); B.cyl(o.x, gy + 20.4, o.z, 1.6, 2.2, '#fff1c4', 10, 'glow'); B.cyl(o.x, gy + 22.6, o.z, 2, 0.5, '#2a2a2e', 10); break; } // red and white bands, a lamp room on top
+    case 'neon': { B.box(o.x, 0, o.z, 0.5, o.h, 0.5, '#3a3d45'); B.box(o.x, o.h, o.z, 0.7, 4.2, 5.2, o.col, { key: 'glow' }); B.box(o.x, o.h + 4.2, o.z, 0.7, 1.4, 3.6, o.col2, { key: 'glow' }); B.box(o.x, o.h - 0.3, o.z, 0.9, 0.3, 5.6, '#2a2a2e'); break; } // a tall neon sign on a pole
     case 'otank': { B.cyl(o.x, 0, o.z, o.r, o.h, '#dcdcd8', 16, 'solid', '#c4c4c0'); B.cyl(o.x, o.h * 0.45, o.z, o.r + 0.05, 0.6, '#c9302c', 16); B.box(o.x + o.r - 0.1, 0, o.z, 0.3, o.h + 0.6, 0.3, '#6a6d74'); break; } // fuel tank with a red band and a ladder
     case 'quaywall': { B.box(o.x, 0, o.z, o.w, 0.6, o.d, '#c9c4ba'); const along = o.w > o.d, L = along ? o.w : o.d; for (let i = -L / 2 + 4; i < L / 2; i += 12) B.cyl(o.x + (along ? i : 0), 0.6, o.z + (along ? 0 : i), 0.25, 0.4, '#2a2a2e', 6); break; } // edge kerb with bollards
     case 'ship': { const x = o.x, z = o.z; // a cargo ship: dark hull, red waterline, white bridge at the stern, containers stacked on deck
@@ -1617,7 +1628,7 @@ export function drawMap(size = 512) {
   return { canvas: cv, tx, tz, sx, sz };
 }
 export const LABELS = [
-  ['DOWNTOWN', 0, 0], ['BAY BEACH', 100, 395], ['HIDDEN HILLS', -420, -60], ['BAYWOOD PEAK', -502, -232], ['EASTPORT', 600, 0], ['NORTHFIELD', 0, -520], ['NORTHPORT', 648, -432], ['LONG BEACH', 1056, 0], ['BAY RIVER', 505, -620], ['EAST BAY', 850, 200], ['BAY PORT', 1056, -650], ['WILDWOOD', -740, -200], ['RED ROCK DESERT', -1000, -300], ['RED RIVER', -1100, 60], ['WEST BEACH', -1350, 150], ['AIRPORT', 20, -690], ['FARMLAND', 370, 160],
+  ['DOWNTOWN', 0, 0], ['BAY BEACH', 100, 395], ['HIDDEN HILLS', -420, -60], ['BAYWOOD PEAK', -502, -232], ['EASTPORT', 600, 0], ['NORTHFIELD', 0, -520], ['NORTHPORT', 648, -432], ['LONG BEACH', 1056, 0], ['BAY RIVER', 505, -620], ['EAST BAY', 850, 200], ['BAY PORT', 1056, -650], ['WILDWOOD', -740, -200], ['SUN VALLEY', -960, -300], ['RED ROCK DESERT', -1000, -300], ['RED RIVER', -1100, 60], ['WEST BEACH', -1350, 150], ['AIRPORT', 20, -690], ['FARMLAND', 370, 160],
 ];
 export const SPAWN = { x: 8.2, z: 30, carX: 3, carZ: 40, carH: Math.PI };
 

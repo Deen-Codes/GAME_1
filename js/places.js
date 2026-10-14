@@ -1,5 +1,5 @@
 // Everything you can walk or drive up to: shops, barbers, property, dealers, minigames, chop shop, race.
-import { blockSide, attachDoor, addStructure } from './world.js?v=167';
+import { blockSide, attachDoor, addStructure } from './world.js?v=168';
 
 const S = (city, i, j, side) => blockSide(city, i, j, side);
 
@@ -70,6 +70,8 @@ export const PLACES = [
   { id: 'h_west', kind: 'boats', name: 'West Beach Boat Hire', icon: 'wave', desc: 'Hire a speedboat. $60.', x: -1348, z: 40 },
   { id: 'r_buggy', kind: 'rides', ride: 'buggy', name: 'Wildwood Buggy Hire', icon: 'car', desc: 'Dune buggies for the dirt trails. $40.', x: -560, z: 14 },
   { id: 'r_moto', kind: 'rides', ride: 'moto', name: 'Desert Dirt Bikes', icon: 'run', desc: 'Dirt bikes for the desert trails. $40.', x: -975, z: -136 },
+  { id: 'v_palace', kind: 'venue', interior: 'casino', name: 'Sun Valley Palace Casino', icon: 'cards', desc: 'The biggest casino in the desert. High rollers welcome.', ...S('strip', 0, -1, 'w') },
+  { id: 'd_strip', kind: 'dealer', npc: 'Vegas Vic', name: 'Sun Valley Dealer', icon: 'deal', ...S('strip', -1, 1, 'e'), area: 'isle' },
   // ---- outdoor activities & jobs
   { id: 'g_taco', kind: 'game', game: 'taco', name: 'Taco Truck (job)', icon: 'taco', desc: 'Work a shift on the taco truck. Fill orders fast for cash.', x: 70, z: 364 },
   { id: 'g_gallery', kind: 'game', game: 'gallery', name: 'Pier Shooting Gallery', icon: 'target', desc: 'Hit the targets, miss the civilians.', x: 94, z: 486 },
@@ -109,6 +111,7 @@ export const PROPERTIES = [
   { id: 'p_nport', name: 'Northport Townhouse', icon: 'house', home: 'house', price: 32000, income: 260, ...S('nport', 1, -2, 's') },
   { id: 'p_condo', name: 'Long Beach Sky Condo', icon: 'house', home: 'penthouse', price: 140000, income: 1150, ...S('isle', 1, 4, 'w') },
   { id: 'p_islevilla', name: 'Island Beach Villa', icon: 'house', home: 'villa', price: 180000, income: 1500, x: 1182, z: -262 },
+  { id: 'p_strip', name: 'Sun Valley Penthouse', icon: 'house', home: 'penthouse', price: 210000, income: 1800, ...S('strip', 0, 1, 'w') },
   { id: 'p_mansion', name: 'Baywood Hills Mansion', icon: 'house', home: 'mansion', price: 250000, income: 2200, x: -432, z: -370 },
 ];
 
