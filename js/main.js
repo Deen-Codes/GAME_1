@@ -1,28 +1,28 @@
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=139';
-import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun, partEffects, partPerk } from './gun.js?v=139';
-import { buildCar, computeCarStats, carStatBars, carClass, carPartEffects, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=139';
-import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, WIND_U, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=139';
-import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=139';
-import { buildPanel, renderStats } from './ui.js?v=139';
-import { Input } from './input.js?v=139';
-import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime, animalCall } from './audio.js?v=139';
-import { runMinigame } from './minigames.js?v=139';
-import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk, setReservedNames, seededLook } from './peds.js?v=139';
-import { citizens, whereNow } from './citizens.js?v=139';
-import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=139';
-import { findRoute } from './nav.js?v=139';
-import { COURSES, CAREERS, QUIZ } from './careers.js?v=139';
-import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=139';
-import { attachWheel } from './wheel.js?v=139';
-import { GROUND_U } from './groundtex.js?v=139';
-import { Animals, makeAnimalMesh } from './animals.js?v=139';
-import { Talk } from './talk.js?v=139';
-import { incomingText, classify, textOptions, textReply } from './texts.js?v=139';
-import { svg, drawIcon } from './icons.js?v=139';
-import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=139';
-import { FURN, CATALOG } from './furniture.js?v=139';
-import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=139';
+import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=140';
+import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun, partEffects, partPerk } from './gun.js?v=140';
+import { buildCar, computeCarStats, carStatBars, carClass, carPartEffects, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=140';
+import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, WIND_U, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=140';
+import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=140';
+import { buildPanel, renderStats } from './ui.js?v=140';
+import { Input } from './input.js?v=140';
+import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime, animalCall } from './audio.js?v=140';
+import { runMinigame } from './minigames.js?v=140';
+import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk, setReservedNames, seededLook } from './peds.js?v=140';
+import { citizens, whereNow } from './citizens.js?v=140';
+import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=140';
+import { findRoute } from './nav.js?v=140';
+import { COURSES, CAREERS, QUIZ } from './careers.js?v=140';
+import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=140';
+import { attachWheel } from './wheel.js?v=140';
+import { GROUND_U } from './groundtex.js?v=140';
+import { Animals, makeAnimalMesh } from './animals.js?v=140';
+import { Talk } from './talk.js?v=140';
+import { incomingText, classify, textOptions, textReply } from './texts.js?v=140';
+import { svg, drawIcon } from './icons.js?v=140';
+import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=140';
+import { FURN, CATALOG } from './furniture.js?v=140';
+import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=140';
 
 const $ = id => document.getElementById(id);
 let inside = null, editMode = false, held = null, pendingCar = false, homeMusic = false, phoneBadge = 0;
@@ -4020,7 +4020,7 @@ function kidCfg(k) {
   const r = seeded(k.seed), c = a => a[Math.floor(r() * a.length)];
   const cols = ['#e23b3b', '#2f80ed', '#4cd964', '#ffd23f', '#ff8a2a', '#9b51e0', '#ff6fb5', '#1fb5a8'];
   return { ...DEFAULT_CHAR, skin: k.skin, hairColor: k.hairColor, hair: k.girl ? c(['long', 'ponytail', 'bob', 'bun']) : c(['short', 'buzz', 'afro', 'spiky']), facialHair: 'none', mask: 'none', back: 'none', eyewear: 'none', hat: 'none', mouth: 'smile', eyes: 'normal',
-    top: st === 'Baby' ? 'tshirt' : c(['tshirt', 'hoodie', 'tank']), topColor: c(cols), accent: c(cols), pants: st === 'Baby' || st === 'Toddler' ? 'shorts' : c(['jeans', 'shorts']), pantsColor: c(['#2f80ed', '#16161b', '#c2b280']), shoes: 'sneakers', shoeColor: '#ffffff',
+    top: st === 'Baby' ? 'tshirt' : ['rain', 'storm'].includes(wx().k) && st !== 'Adult' ? c(['puffer', 'hoodie']) : c(st === 'Teen' ? ['tshirt', 'hoodie', 'tracksuit', 'jersey', 'puffer'] : ['tshirt', 'hoodie', 'tank', 'jersey']), topColor: c(cols), accent: c(cols), pants: st === 'Baby' || st === 'Toddler' ? 'shorts' : c(['jeans', 'shorts']), pantsColor: c(['#2f80ed', '#16161b', '#c2b280']), shoes: 'sneakers', shoeColor: '#ffffff',
     height: h, headSize: st === 'Baby' ? 1.5 : st === 'Toddler' ? 1.35 : st === 'Child' ? 1.15 : 1, build: st === 'Adult' ? 1 : 0.85 };
 }
 function partner() { return fam().partner; }
@@ -4907,14 +4907,16 @@ function redressDate(D) {
 }
 // ---------------- clothes for her: she has a style; outfits she owns get worn on later dates
 const HER_STYLES = {
-  glam: { tops: ['crop', 'tank', 'crop'], pants: ['skirt', 'skirt', 'jeans'], cols: ['#ff6fb5', '#16161b', '#e23b3b', '#ffffff', '#ffd23f'] },
-  casual: { tops: ['tshirt', 'hoodie', 'long'], pants: ['jeans', 'cargo', 'jeans'], cols: ['#2f80ed', '#ffffff', '#c2b280', '#3a3d45', '#1fb5a8'] },
-  street: { tops: ['hoodie', 'jacket', 'tshirt'], pants: ['cargo', 'jeans', 'shorts'], cols: ['#16161b', '#ff8a2a', '#9b51e0', '#3a3d45', '#ffd23f'] },
-  sporty: { tops: ['tank', 'tshirt', 'crop'], pants: ['shorts', 'shorts', 'jeans'], cols: ['#4cd964', '#2f80ed', '#ffffff', '#ff3b8a', '#16161b'] },
+  glam: { tops: ['crop', 'tank', 'crop', 'dress', 'leather'], pants: ['skirt', 'skirt', 'jeans', 'leggings'], cols: ['#ff6fb5', '#16161b', '#e23b3b', '#ffffff', '#ffd23f'], shoes: ['heels', 'heels', 'boots'], neck: ['pearls', 'chain', 'none'] },
+  casual: { tops: ['tshirt', 'hoodie', 'long', 'polo'], pants: ['jeans', 'cargo', 'jeans', 'longskirt'], cols: ['#2f80ed', '#ffffff', '#c2b280', '#3a3d45', '#1fb5a8'], shoes: ['sneakers', 'sandals', 'loafers'], neck: ['none', 'none', 'scarf'] },
+  street: { tops: ['hoodie', 'jacket', 'tshirt', 'puffer', 'tracksuit'], pants: ['cargo', 'jeans', 'shorts', 'joggers'], cols: ['#16161b', '#ff8a2a', '#9b51e0', '#3a3d45', '#ffd23f'], shoes: ['hightops', 'sneakers'], neck: ['chain', 'none'] },
+  sporty: { tops: ['tank', 'tshirt', 'crop', 'tracksuit'], pants: ['shorts', 'shorts', 'leggings', 'joggers'], cols: ['#4cd964', '#2f80ed', '#ffffff', '#ff3b8a', '#16161b'], shoes: ['sneakers', 'hightops'], neck: ['none'] },
 };
 function herStyle(D) { const pr = D.prefs; return pr.style ||= pr.love.includes('fitness') ? 'sporty' : pr.love.includes('nightlife') ? 'glam' : pr.att === 'edgy' ? 'street' : pick(Object.keys(HER_STYLES)); }
-function outfitIn(style) { const S2 = HER_STYLES[style]; return { top: pick(S2.tops), pants: pick(S2.pants), topColor: pick(S2.cols), pantsColor: pick(['#16161b', '#2f80ed', '#ffffff', '#8b1e3f', '#c2b280', '#3a3d45']), shoes: pick(['sneakers', 'boots']) }; }
-const TOP_N = { crop: 'crop top', tank: 'tank top', tshirt: 'tee', hoodie: 'hoodie', long: 'long-sleeve top', jacket: 'jacket' }, PANT_N = { skirt: 'skirt', jeans: 'jeans', cargo: 'cargos', shorts: 'shorts' };
+function outfitIn(style) { const S2 = HER_STYLES[style]; return weatherWear({ top: pick(S2.tops), pants: pick(S2.pants), topColor: pick(S2.cols), pantsColor: pick(['#16161b', '#2f80ed', '#ffffff', '#8b1e3f', '#c2b280', '#3a3d45']), shoes: pick(S2.shoes || ['sneakers', 'boots']), neck: pick(S2.neck || ['none']) }); }
+// dressed for the weather: a coat and boots in the rain, a jacket on cold foggy mornings, light clothes in the sun
+function weatherWear(o) { const k = wx().k; if ((k === 'rain' || k === 'storm') && !inside) { o.top = pick(['trench', 'puffer', 'hoodie']); if (o.shoes === 'sandals' || o.shoes === 'heels') o.shoes = 'boots'; } else if (k === 'fog' && ['tank', 'crop'].includes(o.top)) o.top = pick(['jacket', 'hoodie']); return o; }
+const TOP_N = { crop: 'crop top', tank: 'tank top', tshirt: 'tee', hoodie: 'hoodie', long: 'long-sleeve top', jacket: 'jacket', dress: 'dress', leather: 'leather jacket', polo: 'polo', puffer: 'puffer', tracksuit: 'tracksuit top', trench: 'trench coat', jersey: 'jersey' }, PANT_N = { skirt: 'skirt', jeans: 'jeans', cargo: 'cargos', shorts: 'shorts', leggings: 'leggings', longskirt: 'long skirt', joggers: 'joggers' };
 const COL_N = { '#ff6fb5': 'pink', '#16161b': 'black', '#e23b3b': 'red', '#ffffff': 'white', '#ffd23f': 'yellow', '#2f80ed': 'blue', '#c2b280': 'beige', '#3a3d45': 'grey', '#1fb5a8': 'teal', '#ff8a2a': 'orange', '#9b51e0': 'purple', '#4cd964': 'green', '#ff3b8a': 'hot pink', '#8b1e3f': 'burgundy' };
 async function shopForHer(D) {
   const shop = inside.place, mult = shop.style === 'luxe' ? 2.4 : shop.style === 'vintage' ? 0.7 : 1, mine = herStyle(D);
@@ -4934,7 +4936,7 @@ function dateOutfit(id) {
   const d = stats.dates?.[id]; if (!d?.cfg) return null;
   const r = Math.random(); if (d.wardrobe?.length && r < 0.5) return { ...d.cfg, ...pick(d.wardrobe) };
   if (r < 0.8) { const pr = prefsOf(id); const st = pr.style || pick(Object.keys(HER_STYLES)); return { ...d.cfg, ...outfitIn(st) }; }
-  return d.cfg;
+  return { ...d.cfg, ...weatherWear({ top: d.cfg.top, shoes: d.cfg.shoes }) };
 }
 
 /* distance in one line, 3 digits max: 40 m, 850 m, 1.2 km, 12 km, 120 km */
@@ -6485,7 +6487,7 @@ function saveGame() {
   store.set('bc_save', save); store.set('bc_arsenal', arsenal); store.set('bc_cars', garage);
 }
 // auto-update: bookmarks and home-screen apps can hold on to an old copy. Check version.json (never cached) and reload once if newer.
-const BUILD = 139;
+const BUILD = 140;
 function checkUpdate() {
   fetch('version.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(j => {
     if (!(j.v > BUILD)) return;
