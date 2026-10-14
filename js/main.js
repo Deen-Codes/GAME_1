@@ -1,28 +1,28 @@
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=151';
-import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun, partEffects, partPerk } from './gun.js?v=151';
-import { buildCar, computeCarStats, carStatBars, carClass, carPartEffects, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=151';
-import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, SKYWAYS, SKY_Y, skyAt, skyY, rampSeg, windowShader, makeOceanMaterial, WATER_U, WIND_U, METRO, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=151';
-import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=151';
-import { buildPanel, renderStats } from './ui.js?v=151';
-import { Input } from './input.js?v=151';
-import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime, animalCall } from './audio.js?v=151';
-import { runMinigame } from './minigames.js?v=151';
-import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk, setReservedNames, seededLook } from './peds.js?v=151';
-import { citizens, whereNow } from './citizens.js?v=151';
-import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=151';
-import { findRoute } from './nav.js?v=151';
-import { COURSES, CAREERS, QUIZ } from './careers.js?v=151';
-import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=151';
-import { attachWheel } from './wheel.js?v=151';
-import { GROUND_U } from './groundtex.js?v=151';
-import { Animals, makeAnimalMesh } from './animals.js?v=151';
-import { Talk } from './talk.js?v=151';
-import { incomingText, classify, textOptions, textReply } from './texts.js?v=151';
-import { svg, drawIcon } from './icons.js?v=151';
-import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=151';
-import { FURN, CATALOG } from './furniture.js?v=151';
-import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=151';
+import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=152';
+import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun, partEffects, partPerk } from './gun.js?v=152';
+import { buildCar, computeCarStats, carStatBars, carClass, carPartEffects, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=152';
+import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, canyonAt, canyonNear, SKYWAYS, SKY_Y, skyAt, skyY, rampSeg, windowShader, makeOceanMaterial, WATER_U, WIND_U, METRO, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=152';
+import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=152';
+import { buildPanel, renderStats } from './ui.js?v=152';
+import { Input } from './input.js?v=152';
+import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime, animalCall } from './audio.js?v=152';
+import { runMinigame } from './minigames.js?v=152';
+import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk, setReservedNames, seededLook } from './peds.js?v=152';
+import { citizens, whereNow } from './citizens.js?v=152';
+import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=152';
+import { findRoute } from './nav.js?v=152';
+import { COURSES, CAREERS, QUIZ } from './careers.js?v=152';
+import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=152';
+import { attachWheel } from './wheel.js?v=152';
+import { GROUND_U } from './groundtex.js?v=152';
+import { Animals, makeAnimalMesh } from './animals.js?v=152';
+import { Talk } from './talk.js?v=152';
+import { incomingText, classify, textOptions, textReply } from './texts.js?v=152';
+import { svg, drawIcon } from './icons.js?v=152';
+import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=152';
+import { FURN, CATALOG } from './furniture.js?v=152';
+import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=152';
 
 const $ = id => document.getElementById(id);
 let inside = null, editMode = false, held = null, pendingCar = false, homeMusic = false, phoneBadge = 0;
@@ -1002,7 +1002,7 @@ function rebuildMyCar(at) {
   if (!headSpot) { headSpot = new THREE.SpotLight('#fff4dd', 0, 45, 0.55, 0.6, 1.2); headTarget = new THREE.Object3D(); G.scene.add(headSpot, headTarget); headSpot.target = headTarget; }
   headSpot.color.set(carCfg.headlights || '#ffffff');
 }
-function vehY(x, z, py = 0) { { const sy = skyY(x, z, py); if (sy != null) return sy; } if (py > -2.5 && onBridge(x, z)) return 0.12; const r = roadAt(x, z); return r ? (r.city ? 0.04 : roadY(x, z)) : Math.max(groundH(x, z), cityAt(x, z, -6) ? 0.17 : cityAt(x, z, 4) ? 0 : -6); } // on the pavement you're up on the kerb
+function vehY(x, z, py = 0) { { const sy = skyY(x, z, py); if (sy != null) return sy; } if (x < -290) { const cr = canyonAt(x, z); if (cr) return cr.y; } if (py > -2.5 && onBridge(x, z)) return 0.12; const r = roadAt(x, z); return r ? (r.city ? 0.04 : roadY(x, z)) : Math.max(groundH(x, z), cityAt(x, z, -6) ? 0.17 : cityAt(x, z, 4) ? 0 : -6); } // on the pavement you're up on the kerb
 // headlight beams: a soft cone of light out of each lamp, lying on the road
 let BEAM = null;
 function headBeams(W, L) {
@@ -1416,7 +1416,7 @@ function updateHealth(dt) {
 }
 
 // ---------------- on foot
-function baseY(x, z, py) { if (inside) return 0; { const k = skyAt(x, z); if (k && (k.ramp || (py ?? 0) > k.y - 1.6)) return k.y; } if (onPier(x, z)) return 0.28; { const r = roadAt(x, z); if (r) return r.city ? 0.04 : roadY(x, z); } if (cityAt(x, z, -6)) return 0.17; return groundH(x, z); }
+function baseY(x, z, py) { if (inside) return 0; if (x < -290) { const cr = canyonAt(x, z); if (cr) return cr.y; } { const k = skyAt(x, z); if (k && (k.ramp || (py ?? 0) > k.y - 1.6)) return k.y; } if (onPier(x, z)) return 0.28; { const r = roadAt(x, z); if (r) return r.city ? 0.04 : roadY(x, z); } if (cityAt(x, z, -6)) return 0.17; return groundH(x, z); }
 function swimmable(x, z) { return x > WORLD.x0 + 22 && x < WORLD.x1 - 8 && z < WORLD.z1 - 2 && groundH(x, z) - dip(x, z) < WATER_Y; }
 function inWater(x, z) { return !inside && !onPier(x, z) && groundH(x, z) - dip(x, z) < WATER_Y - 0.9; }
 function nearLadder() { if (inside || ride) return null; for (const L of LADDERS) { if (Math.abs(L.x - P.x) > 20 || Math.abs(L.z - P.z) > 20) continue; const bot = Math.hypot(L.x - P.x, L.z - P.z) < 1.3 && P.y < 1.5, top = Math.hypot(L.x - L.nx * 1.2 - P.x, L.z - L.nz * 1.2 - P.z) < 1.4 && Math.abs(P.y - L.top) < 0.6; if (bot || top) return { L, top }; } return null; }
@@ -3481,7 +3481,7 @@ function hotTip(except) {
 function dealerPricesFor(p) {
   const base = dealerPrices(p, dayN), m = relPriceMod(rel(p.id)), dl = 1 - (lvl('dealing') - 1) * 0.012, hag = stats.haggle[p.id] === dayN ? 0.93 : 1, out = {};
   const east = cityAt(p.x, p.z, 4)?.id === 'east' ? 0.85 : 1; // Eastport: cheaper to buy
-  for (const g of GOODS) { const b = base[g.id]; out[g.id] = { ...b, buy: Math.max(1, Math.round(b.buy * m * dl * hag * east)), sell: Math.round(b.sell * (2 - m) * (2 - dl) * (2 - hag)) }; }
+  for (const g of GOODS) { const b = base[g.id]; const buy = Math.max(1, Math.round(b.buy * m * dl * hag * east)); out[g.id] = { ...b, buy, sell: Math.min(Math.round(b.sell * (2 - m) * (2 - dl) * (2 - hag)), Math.floor(buy * 0.72)) }; } // a dealer never buys back for more than ~70% of what they sell it for: profit comes from moving product between dealers
   return out;
 }
 async function talkDealer(p) {
@@ -3844,7 +3844,7 @@ function ditchJumpsuit() { if (!stats.escaped || stats.jail) return; charCfg = {
 // Lights are Auto (on after dark) or Off. Off is sneakier at night (cops spot you from less far away),
 // but a cop who sees you driving in the dark with no lights pulls you over. So does serious speeding in town.
 // US-style limits: 25 in the suburbs, 30 downtown, 35 elsewhere in town, 55 on the open road; none off-road
-function speedLimit(x, z, y = ride ? ride.s.y || 0 : P.y) { { const k = skyAt(x, z); if (k && (k.ramp || y > k.y - 1.6)) return 60; } const r = roadAt(x, z); if (!r) return 0; const c = cityAt(x, z, 2); if (!c) return 55; return c.style === 'suburb' ? 25 : c.style === 'downtown' ? 30 : 35; }
+function speedLimit(x, z, y = ride ? ride.s.y || 0 : P.y) { { const k = skyAt(x, z); if (k && (k.ramp || y > k.y - 1.6)) return 60; } if (x < -290 && canyonAt(x, z)) return 40; const r = roadAt(x, z); if (!r) return 0; const c = cityAt(x, z, 2); if (!c) return 55; return c.style === 'suburb' ? 25 : c.style === 'downtown' ? 30 : 35; }
 const lightsOn = () => stats.lights !== 'off';
 function toggleLights() { stats.lights = lightsOn() ? 'off' : 'auto'; sfx.click(); toast(lightsOn() ? 'Headlights: auto' : 'Headlights off', 1.4); }
 let stopCheckT = 0;
@@ -5592,6 +5592,8 @@ function dealRing({ mode, label, base, relId, face }) {
     draw(); raf = requestAnimationFrame(tick);
   });
 }
+// you can't flip product straight back to the dealer who sold it to you: move it somewhere else
+const ownStock = (p, gid) => (stats.dealBuys?.[p.id + ':' + gid] ?? -99) >= dayN - 1;
 function openTrade(p) {
   const prices = dealerPricesFor(p);
   let sel = GOODS[0].id, qty = 1, volume = 0;
@@ -5605,7 +5607,7 @@ function openTrade(p) {
       <div class="trows">${rows}</div>
       <div class="tbar"><div class="qty"><button data-q="-">−</button><b>${qty}</b><button data-q="+">+</button><button data-q="max">MAX</button><button class="done" data-done="1">Done</button></div>
       <button class="tbuy" ${qty > maxBuy ? 'disabled' : ''}>Buy ${fmt(pr.buy * qty)}</button>
-      <button class="tsell" ${have ? '' : 'disabled'}>Sell ${fmt(pr.sell * Math.min(qty, have))}</button></div>`;
+      ${ownStock(p, sel) ? `<button class="tsell" disabled>Their own stock</button>` : `<button class="tsell" ${have ? '' : 'disabled'}>Sell ${fmt(pr.sell * Math.min(qty, have))}</button>`}</div>`;
   }, (root, close, draw) => {
     const pr = prices[sel], have = stash[sel] || 0, room = stashCap() - stashCount(), maxBuy = Math.max(0, Math.min(room, Math.floor(money / pr.buy)));
     root.querySelectorAll('.trow').forEach(b => b.onclick = () => { sel = b.dataset.g; qty = 1; sfx.click(); draw(); });
@@ -5613,9 +5615,9 @@ function openTrade(p) {
     root.querySelector('.tbuy').onclick = async () => { if (qty > maxBuy) return; const g = GOODS.find(q => q.id === sel), base = pr.buy * qty, n0 = qty;
       const r = await dealRing({ mode: 'buy', label: `${n0} × ${g.name}`, base, relId: p.id });
       const v = Math.round(base * (r.k || 1)), got = r.kind === 'miss' ? Math.max(1, Math.floor(n0 * r.short)) : n0; if (v > money) return;
-      spend(v); stash[sel] = (stash[sel] || 0) + got; volume += v; sheet.value = volume; gainXP('dealing', Math.round(v / 60)); qty = 1; saveGame(); draw();
+      spend(v); stash[sel] = (stash[sel] || 0) + got; (stats.dealBuys ||= {})[p.id + ':' + sel] = dayN; volume += v; sheet.value = volume; gainXP('dealing', Math.round(v / 60)); qty = 1; saveGame(); draw();
       toast(r.kind === 'sweet' ? `Bought ${got} ${g.name} for ${fmt(v)}. Saved ${fmt(base - v)}.` : r.kind === 'miss' ? `${p.npcName || 'They'} shorted you: ${got} of ${n0} ${g.name} for ${fmt(v)}.` : `Bought ${got} ${g.name} for ${fmt(v)}.`, 2.6); };
-    root.querySelector('.tsell').onclick = async () => { const n = Math.min(qty, have); if (!n) return; const g = GOODS.find(q => q.id === sel), base = pr.sell * n;
+    root.querySelector('.tsell').onclick = async () => { const n = Math.min(qty, have); if (!n || ownStock(p, sel)) return; const g = GOODS.find(q => q.id === sel), base = pr.sell * n;
       const r = await dealRing({ mode: 'sell', label: `${n} × ${g.name}`, base, relId: p.id });
       const v = Math.round(base * (r.kind === 'miss' ? r.short : r.k || 1)); stash[sel] = Math.max(0, (stash[sel] || 0) - n); addMoney(v); volume += v; sheet.value = volume; gainXP('dealing', Math.round(v / 40)); qty = 1; saveGame(); draw();
       toast(r.kind === 'sweet' ? `Sold ${n} ${g.name} for ${fmt(v)}. ${fmt(v - base)} extra.` : r.kind === 'miss' ? `${p.npcName || 'They'} lowballed you: ${fmt(v)} for ${n} ${g.name}.` : `Sold ${n} ${g.name} for ${fmt(v)}.`, 2.6); };
@@ -6754,7 +6756,7 @@ function saveGame() {
   store.set('bc_save', save); store.set('bc_arsenal', arsenal); store.set('bc_cars', garage);
 }
 // auto-update: bookmarks and home-screen apps can hold on to an old copy. Check version.json (never cached) and reload once if newer.
-const BUILD = 151;
+const BUILD = 152;
 function checkUpdate() {
   fetch('version.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(j => {
     if (!(j.v > BUILD)) return;
@@ -6817,19 +6819,21 @@ function startGame() {
 }
 function bringCar(silent) {
   let best = null;
-  for (let r = 4; r < 60 && !best; r += 4) for (let a = 0; a < Math.PI * 2 && !best; a += Math.PI / 8) { const x = P.x + Math.cos(a) * r, z = P.z + Math.sin(a) * r; if (roadAt(x, z) && walkable(x, z, false)) { const p = { x, z }; if (!resolve(p, 1.4, 0)) best = p; } }
+  for (let r = 4; r < 60 && !best; r += 4) for (let a = 0; a < Math.PI * 2 && !best; a += Math.PI / 8) { const x = P.x + Math.cos(a) * r, z = P.z + Math.sin(a) * r; if ((roadAt(x, z) || canyonAt(x, z)) && walkable(x, z, false)) { const p = { x, z }; if (!resolve(p, 1.4, 0)) best = p; } }
   if (!best) best = { x: P.x + 4, z: P.z };
   // damaged or wrecked? the garage fixes it on the way over and bills you
   const dmg = myCar.wrecked ? 100 : 100 - (myCar.hp ?? 100), fee = myCar.wrecked ? 1500 : Math.round(dmg * 6);
   if (dmg > 0.5) { const was = myCar.wrecked, paid = Math.min(money, fee); money -= paid; rebuildMyCar({ x: best.x, z: best.z, h: myCar.s.h }); myCar.hp = 100; myCar.fuse = 0; if (!silent) toast(was ? `The garage rebuilt your wrecked car and dropped it off. Bill: ${fmt(paid)}` : `Your car was repaired on the way over. Repair bill: ${fmt(paid)}`, 3.5); }
   // a driver brings it round: it drives in along the road and they hand you the keys
-  const from = !silent && !inside && roadAt(best.x, best.z) ? randomRoadSpot(55, 110) : null;
-  if (from && roadAt(from.x, from.z)) {
+  const canyon = !roadAt(best.x, best.z) && canyonAt(best.x, best.z), from = !silent && !inside && (roadAt(best.x, best.z) || canyon) ? (canyon ? canyonSpot(best, 70, 120) : randomRoadSpot(55, 110)) : null;
+  if (from && (roadAt(from.x, from.z) || canyonAt(from.x, from.z))) {
     Object.assign(myCar.s, { x: from.x, z: from.z, h: Math.atan2(best.x - from.x, best.z - from.z), v: 0, vx: 0, vz: 0 }); placeVehicle(myCar);
     myCar.ai = 'respond'; myCar.target = { x: best.x, z: best.z }; myCar.delivery = { t: 0, to: best }; if (dmg <= 0.5) toast('Your car is on its way. Keep an eye on the road.', 2.6); return;
   }
   Object.assign(myCar.s, { x: best.x, z: best.z, v: 0, vx: 0, vz: 0 }); placeVehicle(myCar); if (!silent && dmg <= 0.5) toast('Your car has been delivered. It\'s waiting nearby.');
 }
+// a spot on the canyon roads 70-120 m from p (along the road), for the valet to start from
+function canyonSpot(p, d0, d1) { const c = canyonNear(p.x, p.z); if (!c) return null; const S2 = c.q.R.s, i = c.q.i; for (const dir of Math.random() < 0.5 ? [1, -1] : [-1, 1]) { const j = i + dir * Math.round(rand(d0, d1) / 2); if (j >= 0 && j < S2.length) return { x: S2[j].x, z: S2[j].z }; } return null; }
 function updateDelivery(dt) {
   const v = myCar, D = v?.delivery; if (!D) return; D.t += dt;
   if (ride === v) { v.delivery = null; v.ai = null; return; }

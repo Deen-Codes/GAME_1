@@ -1,6 +1,6 @@
 // Open-world map: layout, deterministic generation, colliders, chunk meshing and minimap.
 import * as THREE from '../lib/three.module.min.js';
-import { groundMaterial, GT } from './groundtex.js?v=151';
+import { groundMaterial, GT } from './groundtex.js?v=152';
 
 export const WORLD = { x0: -560, x1: 800, z0: -800, z1: 520 };
 export const CHUNK = 64;
@@ -55,6 +55,39 @@ export const PADS = [
   { id: 'mansion4', x: -410, z: 120, r: 17 },
 ];
 for (const p of PADS) p.h = rawHills(p.x, p.z);
+// ---- Canyon roads: winding two-lane roads through the Hidden Hills. Canyon Drive runs from the coast road up past every
+// hills house and the BAYWOOD sign to Ridge House; Canyon Road links it to downtown. The hillside is levelled under them.
+export const CR_HW = 4.2;
+export const CANYON = [
+  { id: 'drive', name: 'Canyon Drive', pts: [[-340, 336], [-366, 300], [-390, 240], [-386, 184], [-391, 146], [-384, 112], [-380, 70], [-382, 36], [-386, 0], [-404, -48], [-436, -96], [-452, -132], [-444, -172], [-430, -205], [-414, -246], [-410, -290], [-422, -334], [-428, -364], [-410, -374], [-400, -404], [-405, -438], [-396, -472], [-384, -520], [-392, -562]] },
+  { id: 'road', name: 'Canyon Road', pts: [[-294, -144], [-318, -146], [-350, -158], [-382, -180], [-410, -196], [-430, -205]] },
+];
+{ // sample each road every 2 m along a Catmull-Rom curve, with a smoothed height profile (houses' pads hold their level)
+  const prof = (x, z) => { for (const p of PADS) if (Math.hypot(x - p.x, z - p.z) < p.r + 10) return p.h; return x < -300 ? rawHills(x, z) : 0; };
+  for (const R of CANYON) {
+    const P2 = R.pts, out = [];
+    for (let i = 0; i < P2.length - 1; i++) {
+      const p0 = P2[Math.max(0, i - 1)], p1 = P2[i], p2 = P2[i + 1], p3 = P2[Math.min(P2.length - 1, i + 2)], L = Math.hypot(p2[0] - p1[0], p2[1] - p1[1]), n = Math.max(2, Math.ceil(L / 2));
+      for (let k = 0; k < n; k++) { const t = k / n, t2 = t * t, t3 = t2 * t, f = (a, b, c, d) => 0.5 * (2 * b + (-a + c) * t + (2 * a - 5 * b + 4 * c - d) * t2 + (-a + 3 * b - 3 * c + d) * t3); out.push({ x: f(p0[0], p1[0], p2[0], p3[0]), z: f(p0[1], p1[1], p2[1], p3[1]) }); }
+    }
+    out.push({ x: P2[P2.length - 1][0], z: P2[P2.length - 1][1] });
+    let hs = out.map(q => prof(q.x, q.z));
+    for (let pass = 0; pass < 3; pass++) hs = hs.map((_, i) => { let a = 0, n = 0; for (let k = -12; k <= 12; k++) { const j = i + k; if (j >= 0 && j < hs.length) { a += hs[j]; n++; } } return a / n; });
+    out.forEach((q, i) => { q.h = hs[i]; const a = out[Math.max(0, i - 1)], b = out[Math.min(out.length - 1, i + 1)], l = Math.hypot(b.x - a.x, b.z - a.z) || 1; q.nx = (b.z - a.z) / l; q.nz = -(b.x - a.x) / l; q.i = i; q.R = R; });
+    R.s = out;
+  }
+}
+const CGRID = new Map(), CG2 = 12;
+for (const R of CANYON) for (const q of R.s) { const k = Math.floor(q.x / CG2) + ',' + Math.floor(q.z / CG2); let a = CGRID.get(k); if (!a) CGRID.set(k, a = []); a.push(q); }
+// nearest canyon road sample: { d, h, q } (within ~24 m) or null
+export function canyonNear(x, z) {
+  const i0 = Math.floor(x / CG2), j0 = Math.floor(z / CG2); let best = null, bd = 1e9;
+  for (let i = i0 - 2; i <= i0 + 2; i++) for (let j = j0 - 2; j <= j0 + 2; j++) for (const q of CGRID.get(i + ',' + j) || []) { const d = (q.x - x) ** 2 + (q.z - z) ** 2; if (d < bd) { bd = d; best = q; } }
+  if (!best) return null; const end = best.i === 0 || best.i === best.R.s.length - 1, d = end ? Math.hypot(x - best.x, z - best.z) : Math.abs((x - best.x) * best.nx + (z - best.z) * best.nz); return { d, h: best.h, q: best };
+}
+// on a canyon road? { y } (the surface sits a touch proud of the dirt)
+const crEnds = q => { const e = Math.min(q.i, q.R.s.length - 1 - q.i); return e < 3 ? 0.06 + e * 0.05 : 0.22; }; // blend into the road it joins
+export function canyonAt(x, z) { const c = canyonNear(x, z); if (!c || c.d > CR_HW) return null; return { y: c.h + crEnds(c.q), R: c.q.R }; }
 // ---- rolling countryside between the districts (flat in towns, at the airport, on the beach and along the railway)
 const sm = t => t <= 0 ? 0 : t >= 1 ? 1 : t * t * (3 - 2 * t);
 function rectDist(x, z, r) { return Math.hypot(Math.max(r.x0 - x, 0, x - r.x1), Math.max(r.z0 - z, 0, z - r.z1)); }
@@ -107,6 +140,7 @@ export function groundH(x, z) {
     const d = Math.hypot(x - p.x, z - p.z);
     if (d < p.r + 18) { const w = Math.min(1, Math.max(0, (d - p.r) / 18)); h = p.h * (1 - w) + h * w; }
   }
+  { const c = canyonNear(x, z); if (c && c.d < CR_HW + 12) { const w = sm((c.d - CR_HW - 1) / 11); h = c.h * (1 - w) + h * w; } } // the road is cut level into the hillside
   return h;
 }
 export const FIELDS = [
@@ -138,7 +172,7 @@ ROADS.push({ x0: -HR, x1: HR, z0: -620, z1: -568, axis: 'z', hwy: true });      
 ROADS.push({ x0: -540, x1: -288 - HR - 0.2, z0: -3.5, z1: 3.5, axis: 'x', dirt: true }); // forest trail (stops at the city road so the surfaces don't z-fight)
 export function roadY(x, z) { return Math.max(groundH(x, z), -6) + 0.1; }
 export function roadAt(x, z) { for (const r of ROADS) if (inR(r, x, z)) return r; return null; }
-function nearRoad(x, z, m) { for (const r of ROADS) if (inR(r, x, z, m)) return true; return false; }
+function nearRoad(x, z, m) { for (const r of ROADS) if (inR(r, x, z, m)) return true; const c = canyonNear(x, z); return !!(c && c.d < CR_HW + m); }
 export function cityAt(x, z, m = 0) { for (const c of CITIES) if (inR(c, x, z, m)) return c; return null; }
 
 export function zoneName(x, z) {
@@ -639,6 +673,8 @@ function genWorld() {
   for (const [px, pz] of [[-90, -642], [-20, -642], [50, -642]]) { addObj({ t: 'plane', x: px, z: pz, rot: 0, col: '#ffffff', acc: ['#2f80ed', '#e23b3b', '#1fb5a8'][(px + 90) / 70 | 0] }); for (const [x0, x1, z0, z1, h] of [[px - 2.2, px + 2.2, pz - 17.5, pz + 17.5, 6], [px - 15, px + 15, pz - 1.8, pz + 3.8, 3], [px - 5, px + 5, pz - 17.3, pz - 14.7, 5]]) addCollider({ x0, x1, z0, z1, h, plane: true }); } // fuselage, wings, tail: no invisible walls
 }
 genWorld();
+// nothing growing or parked on the canyon roads
+for (const ch of chunks.values()) for (let i = ch.objs.length - 1; i >= 0; i--) { const o = ch.objs[i]; if (!['tree', 'bush', 'hedge', 'rock', 'parked', 'bench'].includes(o.t)) continue; const c = canyonNear(o.x, o.z); if (!c || c.d > CR_HW + 2.2) continue; ch.objs.splice(i, 1); for (const cc of collidersNear(o.x, o.z).slice()) if ((cc.r && Math.abs(cc.x - o.x) < 0.01 && Math.abs(cc.z - o.z) < 0.01) || cc === o.col) removeCollider(cc); }
 // nothing parked or growing on the skyway ramps
 for (const S of SKYWAYS) for (const [ua, ub] of [[S.a0, S.a0 + S.ramp], [S.a1 - S.ramp, S.a1]]) { const [xa, za] = skyXZ(S, ua, -SKY_HW - 0.5), [xb, zb] = skyXZ(S, ub, SKY_HW + 0.5); clearRect(Math.min(xa, xb), Math.min(za, zb), Math.max(xa, xb), Math.max(za, zb)); }
 // tidy-up: no trees growing through buildings or on the railway
@@ -1285,9 +1321,22 @@ function buildTerrain(cx, cz, B) {
   }
 }
 
+function buildCanyon(cx, cz, B) {
+  const x0 = cx * CHUNK, z0 = cz * CHUNK, x1 = x0 + CHUNK, z1 = z0 + CHUNK, HW = CR_HW;
+  const ends = crEnds;
+  for (const R of CANYON) for (let i = 0; i < R.s.length - 1; i++) {
+    const a = R.s[i], b = R.s[i + 1], mx = (a.x + b.x) / 2, mz = (a.z + b.z) / 2; if (mx < x0 || mx >= x1 || mz < z0 || mz >= z1) continue;
+    const P2 = (q, w, up) => [q.x + q.nx * w, q.h + ends(q) + up, q.z + q.nz * w], c3 = [mx, -100, mz];
+    B.gt = GT.asphalt; B.quad('ground', P2(a, -HW, 0), P2(a, HW, 0), P2(b, HW, 0), P2(b, -HW, 0), '#4b4b53', c3);
+    for (const s2 of [-1, 1]) { B.quad('solid', P2(a, s2 * (HW - 0.45), 0.012), P2(a, s2 * (HW - 0.3), 0.012), P2(b, s2 * (HW - 0.3), 0.012), P2(b, s2 * (HW - 0.45), 0.012), '#e8e8e2', c3); // white edge lines
+      B.quad('solid', P2(a, s2 * HW, 0), P2(a, s2 * (HW + 0.8), -0.32), P2(b, s2 * (HW + 0.8), -0.32), P2(b, s2 * HW, 0), '#8a7a60', c3); } // dirt verge so the edge never floats
+    if (i % 4 < 2) B.quad('solid', P2(a, -0.09, 0.014), P2(a, 0.09, 0.014), P2(b, 0.09, 0.014), P2(b, -0.09, 0.014), '#f2c84a', c3); // dashed yellow centre
+    if (i % 22 === 11 && !R.s.slice(Math.max(0, i - 3), i + 3).some(q => q.i < 4)) { const L = 1, lx = a.x + a.nx * (HW + 1.4), lz = a.z + a.nz * (HW + 1.4), gy = groundH(lx, lz); B.box(lx, gy, lz, 0.16, 4.6, 0.16, '#3a3d45'); B.box(lx - a.nx * 0.5, gy + 4.5, lz - a.nz * 0.5, 0.5, 0.16, 0.5, '#fff1c4', { key: 'glow' }); } // road lamps
+  }
+}
 export function buildChunk(cx, cz) {
   const B = new GB();
-  buildTerrain(cx, cz, B);
+  buildTerrain(cx, cz, B); buildCanyon(cx, cz, B);
   for (const o of chunks.get(ckey(cx, cz))?.objs || []) { B.oy = o.t === 'rail' || o.t === 'platform' || o.t === 'ubridge' ? 0 : rolling(o.x, o.z) + (o.t === 'paint' ? dip(o.x, o.z) : 0); if (o.t === 'paint' && B.oy) B.oy += 0.08; drawObj(o, B); }
   B.oy = 0;
   const g = new THREE.Group();
@@ -1319,6 +1368,7 @@ export function drawMap(size = 512) {
   x.fillStyle = '#46464d'; x.fillRect(tx(-230), tz(-720), 500 / sx, 30 / sz);
   x.fillStyle = '#5a4a3e'; x.fillRect(tx(RAIL.x0), tz(RAIL.z) - 1, (RAIL.x1 - RAIL.x0) / sx, 2.2); x.fillStyle = '#d8d2c8'; for (let rx = RAIL.x0; rx < RAIL.x1; rx += 16) x.fillRect(tx(rx), tz(RAIL.z) - 0.4, 1, 0.8);
   for (const st of RAIL.stations) { x.fillStyle = '#2f80ed'; x.fillRect(tx(st.x - 15), tz(RAIL.z + 2.4), 30 / sx, 4 / sz + 1); }
+  x.strokeStyle = '#55555c'; x.lineWidth = Math.max(2, CR_HW * 2 / sx); x.lineJoin = 'round'; for (const R of CANYON) { x.beginPath(); R.s.forEach((q, i) => i ? x.lineTo(tx(q.x), tz(q.z)) : x.moveTo(tx(q.x), tz(q.z))); x.stroke(); }
   for (const S of SKYWAYS) { const [xa, za] = skyXZ(S, S.a0, -SKY_HW - 0.4), [xb, zb] = skyXZ(S, S.a1, SKY_HW + 0.4); x.fillStyle = '#8c8f9a'; x.fillRect(tx(Math.min(xa, xb)), tz(Math.min(za, zb)), Math.max(2, Math.abs(xb - xa) / sx), Math.max(2, Math.abs(zb - za) / sz)); x.fillStyle = '#f2d14a'; const [ma, na] = skyXZ(S, S.a0, 0), [mb, nb] = skyXZ(S, S.a1, 0); x.fillRect(tx(Math.min(ma, mb)) - (S.axis === 'z' ? 0.4 : 0), tz(Math.min(na, nb)) - (S.axis === 'x' ? 0.4 : 0), S.axis === 'x' ? Math.abs(mb - ma) / sx : 0.8, S.axis === 'z' ? Math.abs(nb - na) / sz : 0.8); } // skyways: lighter, with a yellow centre line
   x.strokeStyle = '#ffd23f'; x.lineWidth = 2; x.beginPath(); METRO.pts.forEach(([px, pz], i) => i ? x.lineTo(tx(px), tz(pz)) : x.moveTo(tx(px), tz(pz))); x.closePath(); x.stroke(); for (const st of METRO.stations) { x.fillStyle = '#ffd23f'; x.beginPath(); x.arc(tx(st.x), tz(st.z), 3, 0, 7); x.fill(); }
   for (const ch of chunks.values()) for (const o of ch.objs) {

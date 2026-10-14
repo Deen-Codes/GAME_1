@@ -1,12 +1,12 @@
 // GPS: A* over a road mask so waypoints draw a route along the streets, like GTA.
-import { WORLD, roadAt, skyAt, ROADS } from './world.js?v=151';
+import { WORLD, roadAt, skyAt, ROADS, canyonAt } from './world.js?v=152';
 
 const C = 6, X0 = WORLD.x0, Z0 = WORLD.z0;
 const NX = Math.ceil((WORLD.x1 - X0) / C), NZ = Math.ceil((WORLD.z1 - Z0) / C), N = NX * NZ;
 let mask = null;
 function build() {
   mask = new Uint8Array(N);
-  for (let j = 0; j < NZ; j++) for (let i = 0; i < NX; i++) { const x = X0 + (i + 0.5) * C, z = Z0 + (j + 0.5) * C; if (roadAt(x, z) && !skyAt(x, z)?.ramp) mask[j * NX + i] = 1; } // skyway ramps aren't street routes (you can't turn off them)
+  for (let j = 0; j < NZ; j++) for (let i = 0; i < NX; i++) { const x = X0 + (i + 0.5) * C, z = Z0 + (j + 0.5) * C; if ((roadAt(x, z) && !skyAt(x, z)?.ramp) || (x < -290 && canyonAt(x, z))) mask[j * NX + i] = 1; } // skyway ramps aren't street routes (you can't turn off them)
 }
 const cell = (x, z) => [Math.max(0, Math.min(NX - 1, Math.floor((x - X0) / C))), Math.max(0, Math.min(NZ - 1, Math.floor((z - Z0) / C)))];
 function nearest(i, j) {
