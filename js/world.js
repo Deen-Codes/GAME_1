@@ -1,6 +1,6 @@
 // Open-world map: layout, deterministic generation, colliders, chunk meshing and minimap.
 import * as THREE from '../lib/three.module.min.js';
-import { groundMaterial, GT } from './groundtex.js?v=154';
+import { groundMaterial, GT } from './groundtex.js?v=155';
 
 export const WORLD = { x0: -560, x1: 800, z0: -800, z1: 520 };
 export const CHUNK = 64;
@@ -570,8 +570,8 @@ function genWorld() {
     for (const cx of [575, 665]) { addObj({ t: 'crane', x: cx, z: 307 }); for (const sz of [-15, 15]) for (const sx of [-5, 5]) addCollider({ x: cx + sx, z: 307 + sz, r: 0.7 }); }
     addObj({ t: 'fence', x0: 532, x1: 708, z: 290 }); }
   // Bay Metro viaduct: deck segments every 4 m, pillars every 16 m (but never in a junction), stations with stair towers
-  { const M = METRO; for (let s = 0; s < M.len; s += 4) { const a = M.at(s + 2); addObj({ t: 'via', x: a.x, z: a.z, h: a.h }); }
-    for (let s = 0; s < M.len; s += 16) { const a = M.at(s); const jx = Math.round(a.x / 48) * 48, jz = Math.round(a.z / 48) * 48; if (Math.abs(a.x - jx) < 9 && Math.abs(a.z - jz) < 9) continue; const onRd = !!roadAt(a.x, a.z); addObj({ t: 'vpillar', x: a.x, z: a.z, h: a.h, portal: onRd }); if (onRd) { const cs = Math.cos(a.h), sn = Math.sin(a.h); for (const sw of [-7.3, 7.3]) addCollider({ x: a.x + cs * sw, z: a.z - sn * sw, r: 0.6 }); } else addCollider({ x: a.x, z: a.z, r: 0.75 }); } // over a street: legs on the pavements, the road stays clear
+  { const M = METRO; for (let s = 0; s < M.len; ) { const a0 = M.at(s), a1 = M.at(s + 4), bend = Math.abs(Math.atan2(Math.sin(a1.h - a0.h), Math.cos(a1.h - a0.h))) > 0.02, step = bend ? 1.5 : 4, a = M.at(s + step / 2); addObj({ t: 'via', x: a.x, z: a.z, h: a.h, len: bend ? 1.9 : 4.15 }); s += step; }
+    for (let s = 0; s < M.len; s += 16) { const a = M.at(s); const jx = Math.round(a.x / 48) * 48, jz = Math.round(a.z / 48) * 48; if (Math.abs(a.x - jx) < 9 && Math.abs(a.z - jz) < 9) continue; const onRd = !!roadAt(a.x, a.z), o = { t: 'vpillar', x: a.x, z: a.z, h: a.h, portal: onRd, s, cols: [] }; addObj(o); if (onRd) { const cs = Math.cos(a.h), sn = Math.sin(a.h); for (const sw of [-7.3, 7.3]) { const c = { x: a.x + cs * sw, z: a.z - sn * sw, r: 0.6 }; addCollider(c); o.cols.push(c); } } else { const c = { x: a.x, z: a.z, r: 0.75 }; addCollider(c); o.cols.push(c); } } // over a street: legs on the pavements, the road stays clear
     for (const st of M.stations) { addObj({ t: 'vstation', x: st.x, z: st.z, ox: st.ox, oz: st.oz, tx: st.tower.x, tz: st.tower.z, name: st.name }); addCollider({ x0: st.tower.x - 1.4, x1: st.tower.x + 1.4, z0: st.tower.z - 1.4, z1: st.tower.z + 1.4, h: 9 }); } }
   // Bay Skyways: deck segments, pillars clear of junctions, ramp strips, parapets and lamps
   for (const S of SKYWAYS) {
@@ -579,7 +579,7 @@ function genWorld() {
     const nearCross = u => cross != null && Math.abs(u - cross) < SKY_HW + 0.4;
     const d0 = S.a0 + S.ramp, d1 = S.a1 - S.ramp;
     for (let u = d0; u < d1 - 1e-6; u += 4) { const um = Math.min(u + 2, d1 - 0.01), [x, z] = skyXZ(S, um, 0); if (S.id === 'B' && nearCross(um)) { addObj({ t: 'skydeck', x, z, S: S.id, u: um, len: 4, skip: true }); continue; } addObj({ t: 'skydeck', x, z, S: S.id, u: um, len: Math.min(4, d1 - u), cross: nearCross(um) }); }
-    for (let u = d0 + 6; u < d1 - 4; u += 12) { const jn = Math.round(u / 48) * 48; if (Math.abs(u - jn) < 9) continue; const [x, z] = skyXZ(S, u, 0); addObj({ t: 'skypillar', x, z, S: S.id }); for (const sw of [-1, 1]) { const [lx, lz] = skyXZ(S, u, sw * 7.3); addCollider({ x: lx, z: lz, r: 0.6, under: true }); } }
+    for (let u = d0 + 6; u < d1 - 4; u += 12) { const jn = Math.round(u / 48) * 48; if (Math.abs(u - jn) < 9) continue; const [x, z] = skyXZ(S, u, 0), o = { t: 'skypillar', x, z, S: S.id, u, cols: [] }; addObj(o); for (const sw of [-1, 1]) { const [lx, lz] = skyXZ(S, u, sw * 7.3), c = { x: lx, z: lz, r: 0.6, under: true }; addCollider(c); o.cols.push(c); } }
     for (const [ua, ub] of [[S.a0, d0], [d1, S.a1]]) for (let u = ua; u < ub - 1e-6; u += 2) { const [x, z] = skyXZ(S, u + 1, 0); addObj({ t: 'skyramp', x, z, S: S.id, u0: u, u1: Math.min(ub, u + 2) }); }
     // colliders: solid ramp side walls, an abutment under each ramp top, parapets along the deck (gap at the sky junction)
     const box = (u0, u1, w0, w1, extra) => { const [xa, za] = skyXZ(S, u0, w0), [xb, zb] = skyXZ(S, u1, w1); addCollider({ x0: Math.min(xa, xb), x1: Math.max(xa, xb), z0: Math.min(za, zb), z1: Math.max(za, zb), ...extra }); };
@@ -691,6 +691,26 @@ function genWorld() {
   for (const [px, pz] of [[-90, -642], [-20, -642], [50, -642]]) { addObj({ t: 'plane', x: px, z: pz, rot: 0, col: '#ffffff', acc: ['#2f80ed', '#e23b3b', '#1fb5a8'][(px + 90) / 70 | 0] }); for (const [x0, x1, z0, z1, h] of [[px - 2.2, px + 2.2, pz - 17.5, pz + 17.5, 6], [px - 15, px + 15, pz - 1.8, pz + 3.8, 3], [px - 5, px + 5, pz - 17.3, pz - 14.7, 5]]) addCollider({ x0, x1, z0, z1, h, plane: true }); } // fuselage, wings, tail: no invisible walls
 }
 genWorld();
+// pillar legs stand on the pavement: never in front of a doorway. Slide the pillar along its line until it's clear.
+export function unblockPillars(doors) {
+  const blocked = pts => pts.some(([x, z]) => doors.some(d => Math.hypot(d.x - x, d.z - z) < 3.4));
+  const moveObj = (o, x, z) => { const c0 = chunks.get(ckey(...chunkOf(o.x, o.z))); const i = c0?.objs.indexOf(o); if (i >= 0) c0.objs.splice(i, 1); o.x = x; o.z = z; addObj(o); };
+  for (const ch of [...chunks.values()]) for (const o of [...ch.objs]) {
+    if (o.t === 'skypillar') { const S = SKYWAYS.find(q => q.id === o.S), legs = u => [-1, 1].map(sw => skyXZ(S, u, sw * 7.3)); if (!blocked(legs(o.u))) continue;
+      let nu = null; for (const du of [2, -2, 4, -4, 6, -6]) { const u = o.u + du, jn = Math.round(u / 48) * 48; if (Math.abs(u - jn) >= 9 && !blocked(legs(u))) { nu = u; break; } }
+      for (const c of o.cols) removeCollider(c); o.cols = [];
+      if (nu == null) { const c0 = chunks.get(ckey(...chunkOf(o.x, o.z))); c0.objs.splice(c0.objs.indexOf(o), 1); continue; }
+      o.u = nu; const [x, z] = skyXZ(S, nu, 0); moveObj(o, x, z); for (const [lx, lz] of legs(nu)) { const c = { x: lx, z: lz, r: 0.6, under: true }; addCollider(c); o.cols.push(c); } }
+    else if (o.t === 'vpillar' && o.portal) { const legsAt = a => [-7.3, 7.3].map(sw => [a.x + Math.cos(a.h) * sw, a.z - Math.sin(a.h) * sw]); if (!blocked(legsAt(o))) continue;
+      let na = null; for (const ds of [2, -2, 4, -4, 6, -6]) { const a = METRO.at(o.s + ds); if (roadAt(a.x, a.z) && !blocked(legsAt(a))) { const jx = Math.round(a.x / 48) * 48, jz = Math.round(a.z / 48) * 48; if (Math.abs(a.x - jx) < 9 && Math.abs(a.z - jz) < 9) continue; na = a; o.s += ds; break; } }
+      for (const c of o.cols) removeCollider(c); o.cols = [];
+      if (!na) { const c0 = chunks.get(ckey(...chunkOf(o.x, o.z))); c0.objs.splice(c0.objs.indexOf(o), 1); continue; }
+      o.h = na.h; moveObj(o, na.x, na.z); for (const [lx, lz] of legsAt(na)) { const c = { x: lx, z: lz, r: 0.6 }; addCollider(c); o.cols.push(c); } } }
+}
+{ const doors = []; for (const ch of chunks.values()) for (const o of ch.objs) if (o.t === 'door') doors.push(o); unblockPillars(doors); }
+// a fire-escape ladder must lead to a roof: drop any whose building was cleared away (station plazas etc.)
+for (let i = LADDERS.length - 1; i >= 0; i--) { const L = LADDERS[i], bx = L.x - L.nx, bz = L.z - L.nz; if (collidersNear(bx, bz).some(c => !c.r && c.top && bx > c.x0 - 0.3 && bx < c.x1 + 0.3 && bz > c.z0 - 0.3 && bz < c.z1 + 0.3 && Math.abs(c.top - L.top) < 0.6)) continue;
+  LADDERS.splice(i, 1); const ch = chunks.get(ckey(...chunkOf(L.x, L.z))); if (ch) { const j = ch.objs.findIndex(o => o.t === 'ladder' && Math.abs(o.x - L.x) < 0.01 && Math.abs(o.z - L.z) < 0.01); if (j >= 0) ch.objs.splice(j, 1); } }
 // nothing growing or parked on the canyon roads
 for (const ch of chunks.values()) for (let i = ch.objs.length - 1; i >= 0; i--) { const o = ch.objs[i]; if (!['tree', 'bush', 'hedge', 'rock', 'parked', 'bench'].includes(o.t)) continue; const c = canyonNear(o.x, o.z); if (!c || c.d > CR_HW + 2.2) continue; ch.objs.splice(i, 1); for (const cc of collidersNear(o.x, o.z).slice()) if ((cc.r && Math.abs(cc.x - o.x) < 0.01 && Math.abs(cc.z - o.z) < 0.01) || cc === o.col) removeCollider(cc); }
 // Baywood Peak lookout: a car park on the summit with a railing, benches and a coin telescope
@@ -1165,10 +1185,10 @@ function drawObj(o, B) {
       if (o.flowers) for (let i = 0; i < 6; i++) B.blob(o.x + (R2() - 0.5) * 0.9 * o.s, yb + (0.6 + R2() * 0.25) * o.s, o.z + (R2() - 0.5) * 0.9 * o.s, 0.1, 0.09, 0.1, ['#ff6fb5', '#ffd23f', '#ffffff', '#e23b3b', '#b26bff'][(sd + i) % 5], sd + i * 3);
       break; }
     case 'hedge': { const yb = groundH(o.x, o.z) + 0.15; B.box(o.x, yb, o.z, o.w, 0.85, 0.7, '#3f7d3a', { key: 'leaf' }); for (let i = 0; i < Math.floor(o.w / 1.2); i++) B.blob(o.x - o.w / 2 + 0.6 + i * 1.2, yb + 0.9, o.z, 0.62, 0.32, 0.4, i % 2 ? '#4a8f42' : '#3f7d3a', (o.seed || 1) + i); break; }
-    case 'via': { const Y = METRO.Y, o2 = { rot: o.h }; B.box(o.x, Y - 0.5, o.z, 6.2, 0.7, 4.15, '#b9b4aa', o2); // deck
-      const cs = Math.cos(o.h), sn = Math.sin(o.h); for (const sx of [-3.0, 3.0]) B.box(o.x + cs * sx, Y + 0.2, o.z - sn * sx, 0.25, 0.9, 4.15, '#d2cec6', o2); // parapets
-      for (const sx of [-0.75, 0.75]) B.box(o.x + cs * sx, Y + 0.2, o.z - sn * sx, 0.12, 0.14, 4.15, '#6a6d74', o2); // rails
-      B.box(o.x, Y - 0.85, o.z, 4.2, 0.35, 4.15, '#8f8b84', o2); break; }
+    case 'via': { const Y = METRO.Y, o2 = { rot: o.h }, L = o.len || 4.15; B.box(o.x, Y - 0.5, o.z, 6.2, 0.7, L, '#b9b4aa', o2); // deck
+      const cs = Math.cos(o.h), sn = Math.sin(o.h); for (const sx of [-3.0, 3.0]) B.box(o.x + cs * sx, Y + 0.2, o.z - sn * sx, 0.25, 0.9, L, '#d2cec6', o2); // parapets
+      for (const sx of [-0.75, 0.75]) B.box(o.x + cs * sx, Y + 0.2, o.z - sn * sx, 0.12, 0.14, L, '#6a6d74', o2); // rails
+      B.box(o.x, Y - 0.85, o.z, 4.2, 0.35, L, '#8f8b84', o2); break; }
     case 'skydeck': { if (o.skip) break; const S = SKYWAYS.find(q => q.id === o.S), Y = SKY_Y, ax = S.axis === 'x', L = o.len + 0.02, W = 12.8, bw = ax ? L : W, bd = ax ? W : L;
       B.box(o.x, Y - 0.55, o.z, bw, 0.55, bd, '#b9b4aa', { topCol: '#4a4a52' }); // deck slab with an asphalt top
       B.box(o.x, Y - 1.05, o.z, ax ? L : 8.4, 0.5, ax ? 8.4 : L, '#9e9a92'); // box girder underneath

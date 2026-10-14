@@ -3,7 +3,7 @@
   --hot: #ff8a2a; --hot2: #ffd23f;
   --sat: env(safe-area-inset-top, 0px); --sab: env(safe-area-inset-bottom, 0px);
   --sal: env(safe-area-inset-left, 0px); --sar: env(safe-area-inset-right, 0px);
-  --pad: min(36dvh, 310px);
+  --pad: min(30dvh, 252px);
 }
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 html, body { margin: 0; height: 100%; overflow: hidden; background: #141a30; color: var(--ink);
@@ -80,29 +80,30 @@ input[type=text] { width: 100%; padding: 10px 12px; border-radius: 10px; border:
 
 /* ---------- controller ---------- */
 #pad { position: fixed; z-index: 6; left: 0; right: 0; bottom: 0; height: calc(var(--pad) + var(--sab));
-  background: linear-gradient(to top, rgba(8, 8, 22, .55), rgba(8, 8, 22, .22) 60%, transparent);
+  background: linear-gradient(to top, rgba(8, 8, 22, .38), rgba(8, 8, 22, .1) 55%, transparent);
   padding-bottom: var(--sab); }
 #stickZone { position: absolute; left: 0; top: 0; bottom: 0; width: 50%; touch-action: none; }
-#stickBase { position: absolute; left: calc(80px + var(--sal)); top: 58%; width: 124px; height: 124px; margin: -62px 0 0 -62px; border-radius: 50%;
-  background: radial-gradient(circle, rgba(255,255,255,.1), rgba(255,255,255,.04)); border: 2px solid rgba(255,255,255,.28); transition: opacity .2s; opacity: .8; }
+#stickBase { position: absolute; left: calc(76px + var(--sal)); top: 62%; width: 112px; height: 112px; margin: -56px 0 0 -56px; border-radius: 50%;
+  background: rgba(255,255,255,.05); border: 1.5px solid rgba(255,255,255,.24); transition: opacity .2s; opacity: .75; }
 #stickBase.live { opacity: 1; transition: none; }
-#stickKnob { position: absolute; left: 50%; top: 50%; width: 54px; height: 54px; border-radius: 50%; background: rgba(255,255,255,.5); box-shadow: 0 2px 10px rgba(0,0,0,.3); transform: translate(-50%,-50%); }
+#stickKnob { position: absolute; left: 50%; top: 50%; width: 46px; height: 46px; border-radius: 50%; background: rgba(255,255,255,.42); box-shadow: 0 1px 6px rgba(0,0,0,.2); transform: translate(-50%,-50%); }
 .mid-btns { position: absolute; left: 50%; top: 12px; transform: translateX(-50%); display: flex; gap: 8px; }
 .sbtn { background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.25); border-radius: 999px; padding: 6px 12px; font-size: 12px; font-weight: 900; letter-spacing: .05em; }
-.face { position: absolute; right: calc(14px + var(--sar)); top: 50%; transform: translateY(-46%); width: 200px; height: 200px; }
-.fbtn { position: absolute; width: 70px; height: 70px; border-radius: 50%; border: 2px solid rgba(255,255,255,.4); background: rgba(255,255,255,.12);
+/* action buttons sit on an arc round where the right thumb rests: the main attack biggest and lowest, the rest fanned above it */
+.face { position: absolute; right: var(--sar); bottom: 0; width: 240px; height: 232px; }
+.fbtn { position: absolute; right: var(--r); bottom: var(--b); width: var(--s); height: var(--s); border-radius: 50%; border: 1.5px solid rgba(255,255,255,.32); background: rgba(255,255,255,.08);
   display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1; touch-action: none;
-  backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); box-shadow: 0 3px 12px rgba(0,0,0,.25); }
-.fbtn svg { width: 28px; height: 28px; fill: none; stroke: #fff; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; filter: drop-shadow(0 1px 2px rgba(0,0,0,.4)); }
-.fbtn span { font-size: 9.5px; font-weight: 800; margin-top: 3px; opacity: .9; text-transform: uppercase; letter-spacing: .03em; }
-.fbtn.y { left: 65px; top: 0; } .fbtn.x { left: 0; top: 65px; } .fbtn.b { left: 130px; top: 65px; } .fbtn.a { left: 65px; top: 130px; }
+  backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); box-shadow: none; transition: transform .08s, background .12s; }
+.fbtn svg { width: calc(var(--s) * .36); height: calc(var(--s) * .36); fill: none; stroke: #fff; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; filter: drop-shadow(0 1px 2px rgba(0,0,0,.4)); }
+.fbtn span { font-size: 8.5px; font-weight: 800; margin-top: 2px; opacity: .85; text-transform: uppercase; letter-spacing: .04em; }
+.fbtn.x { --r: 92px; --b: calc(22px + var(--sab)); --s: 74px; } .fbtn.b { --r: 16px; --b: calc(62px + var(--sab)); --s: 62px; } .fbtn.y { --r: 30px; --b: calc(140px + var(--sab)); --s: 54px; } .fbtn.a { --r: 168px; --b: calc(92px + var(--sab)); --s: 60px; }
 .fbtn.idle { opacity: .35; }
 #pad .fbtn.x { border-color: rgba(255,110,90,.8); }
-#pad.driving .fbtn.a { border-color: rgba(76,217,100,.85); background: rgba(76,217,100,.22); width: 84px; height: 84px; margin: -7px; }
-#pad.driving .fbtn.x { border-color: rgba(255,80,90,.85); background: rgba(255,80,90,.18); width: 80px; height: 80px; margin: -5px; }
+#pad.driving .fbtn.a { border-color: rgba(76,217,100,.8); background: rgba(76,217,100,.16); --s: 66px; }
+#pad.driving .fbtn.x { border-color: rgba(255,80,90,.8); background: rgba(255,80,90,.14); --s: 76px; }
 .fbtn.ready { background: rgba(76,217,100,.35); animation: pulse 1s infinite alternate; }
 @keyframes pulse { to { box-shadow: 0 0 0 6px rgba(76,217,100,.25); } }
-.fbtn.down { transform: scale(.9); background: rgba(255,255,255,.32); }
+.fbtn.down { transform: scale(.92); background: rgba(255,255,255,.26); }
 
 /* ---------- overlays ---------- */
 #mapView { background: rgba(10, 12, 26, .92); display: grid; place-items: center; }
@@ -374,16 +375,16 @@ input[type=text] { width: 100%; padding: 10px 12px; border-radius: 10px; border:
 .ph-replies .ph-mini { flex: 1 1 45%; }
 #fxVig { --vc: rgba(255,30,60,.5); position: fixed; inset: 0; pointer-events: none; z-index: 3; opacity: 0; background: radial-gradient(ellipse at center, transparent 45%, var(--vc) 100%); transition: opacity .15s; }
 
-.wanted { display: flex; flex-wrap: wrap; gap: 3px; min-height: 0; width: 112px; }
-.wanted u { display: block; width: 100%; height: 4px; border-radius: 3px; background: rgba(255,255,255,.18); overflow: hidden; text-decoration: none; }
-.wanted u s { display: block; height: 100%; width: 0; background: #4cd964; text-decoration: none; }
-.wanted.seen u { visibility: hidden; }
+.wanted { display: flex; align-items: center; gap: 4px; min-height: 0; width: max-content; padding: 5px 8px; border-radius: 12px; background: rgba(10,14,30,.55); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); box-shadow: inset 0 0 0 1px rgba(255,255,255,.12); }
+.wanted u { display: none; }
 .wanted:empty { display: none; }
-.wanted i { position: relative; width: 19px; height: 22px; display: block; background: linear-gradient(#ffe27a, #d9a520); clip-path: polygon(50% 0, 96% 14%, 92% 58%, 50% 100%, 8% 58%, 4% 14%); filter: drop-shadow(0 1px 1px #000); } /* police badges, not stars */
-.wanted i::after { content: ''; position: absolute; inset: 5px 5px 7px; background: #1d2b52; clip-path: polygon(50% 0, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%); }
-.wanted i.off::after { background: rgba(0,0,0,.25); }
-.wanted i.off { background: rgba(255,255,255,.18); }
-.wanted.flash i:not(.off) { animation: starFlash .5s infinite alternate; }
+/* police shields: gold rim, navy field, white crest. Lit ones glow; when you're slipping away they flash red/blue like a light bar */
+.wanted i { position: relative; width: 15px; height: 18px; display: block; background: linear-gradient(#fff0b0, #d39e1c 60%, #9a6c0c); clip-path: polygon(50% 0, 70% 6%, 100% 8%, 98% 52%, 86% 78%, 50% 100%, 14% 78%, 2% 52%, 0 8%, 30% 6%); }
+.wanted i::after { content: ''; position: absolute; inset: 2.5px 2.5px 3.5px; background: radial-gradient(circle at 50% 44%, #fff 0 17%, #3d7be8 19% 46%, #1b2f66 48%); clip-path: polygon(50% 0, 70% 6%, 100% 8%, 98% 52%, 86% 78%, 50% 100%, 14% 78%, 2% 52%, 0 8%, 30% 6%); }
+.wanted i.off { background: rgba(255,255,255,.22); }
+.wanted i.off::after { background: rgba(10,14,30,.75); }
+.wanted.flash i:not(.off) { animation: sirenFlash .45s infinite alternate; }
+@keyframes sirenFlash { from { filter: drop-shadow(0 0 3px #ff2a3a) brightness(1.15); } to { filter: drop-shadow(0 0 3px #2a7bff) brightness(.85); } }
 @keyframes starFlash { to { opacity: .3; } }
 /* prison fast-forward cutscene */
 #jailCut { position: fixed; inset: 0; z-index: 21; display: grid; place-items: center; pointer-events: none; opacity: 0; transition: opacity .5s; background: repeating-linear-gradient(90deg, #07080c 0 34px, #1b1e26 34px 44px), #07080c; text-align: center; }
@@ -429,7 +430,8 @@ input[type=text] { width: 100%; padding: 10px 12px; border-radius: 10px; border:
 /* stick on the right: mirror the whole control layout */
 #pad.righty #stickZone { left: auto; right: 0; }
 #pad.righty #stickBase { left: auto; right: calc(18px + var(--sar)); }
-#pad.righty .face { right: auto; left: calc(14px + var(--sal)); }
+#pad.righty .face { right: auto; left: var(--sal); }
+#pad.righty .fbtn { right: auto; left: var(--r); }
 
 /* side buttons stretch into a pill (phone: message summary, radio: song) */
 .sidebtn { transition: width .35s cubic-bezier(.2,.9,.3,1.2), background .3s; }
@@ -724,6 +726,7 @@ body.armory .drag-hint { bottom: calc(60dvh + 6px); }
 #payphone .ppbtns { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 #payphone .ppbtns button { background: #3d4049; color: #fff; border-radius: 14px; padding: 12px; font-weight: 900; text-align: left; display: flex; gap: 8px; align-items: center; border-bottom: 4px solid #1b1c22; }
 #payphone .ppbtns button small { display: block; color: #ffd23f; }
-.fbtn span { max-width: 88%; text-align: center; line-height: 1.05; overflow-wrap: anywhere; }
+.fbtn span { max-width: 92%; text-align: center; line-height: 1.05; white-space: nowrap; }
+.fbtn span.xs { white-space: normal; overflow-wrap: anywhere; }
 .fbtn span.sm { font-size: 8.5px; letter-spacing: .01em; }
 .fbtn span.xs { font-size: 7.6px; letter-spacing: 0; }

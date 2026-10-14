@@ -1,29 +1,29 @@
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=154';
-import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun, partEffects, partPerk } from './gun.js?v=154';
-import { buildCar, computeCarStats, carStatBars, carClass, carPartEffects, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=154';
-import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, STAIRS, canyonAt, canyonNear, PEAK, SKYWAYS, SKY_Y, skyAt, skyY, rampSeg, windowShader, makeOceanMaterial, WATER_U, WIND_U, METRO, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=154';
-import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=154';
-import { buildPanel, renderStats } from './ui.js?v=154';
-import { Input } from './input.js?v=154';
-import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime, animalCall } from './audio.js?v=154';
-import { runMinigame } from './minigames.js?v=154';
-import { CUT, initCutGames } from './cutgames.js?v=154';
-import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk, setReservedNames, seededLook } from './peds.js?v=154';
-import { citizens, whereNow } from './citizens.js?v=154';
-import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=154';
-import { findRoute } from './nav.js?v=154';
-import { COURSES, CAREERS, QUIZ } from './careers.js?v=154';
-import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=154';
-import { attachWheel } from './wheel.js?v=154';
-import { GROUND_U } from './groundtex.js?v=154';
-import { Animals, makeAnimalMesh } from './animals.js?v=154';
-import { Talk } from './talk.js?v=154';
-import { incomingText, classify, textOptions, textReply } from './texts.js?v=154';
-import { svg, drawIcon } from './icons.js?v=154';
-import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=154';
-import { FURN, CATALOG } from './furniture.js?v=154';
-import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=154';
+import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=155';
+import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun, partEffects, partPerk } from './gun.js?v=155';
+import { buildCar, computeCarStats, carStatBars, carClass, carPartEffects, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=155';
+import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, STAIRS, unblockPillars, canyonAt, canyonNear, PEAK, SKYWAYS, SKY_Y, skyAt, skyY, rampSeg, windowShader, makeOceanMaterial, WATER_U, WIND_U, METRO, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=155';
+import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=155';
+import { buildPanel, renderStats } from './ui.js?v=155';
+import { Input } from './input.js?v=155';
+import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime, animalCall } from './audio.js?v=155';
+import { runMinigame } from './minigames.js?v=155';
+import { CUT, initCutGames } from './cutgames.js?v=155';
+import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk, setReservedNames, seededLook } from './peds.js?v=155';
+import { citizens, whereNow } from './citizens.js?v=155';
+import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=155';
+import { findRoute } from './nav.js?v=155';
+import { COURSES, CAREERS, QUIZ } from './careers.js?v=155';
+import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=155';
+import { attachWheel } from './wheel.js?v=155';
+import { GROUND_U } from './groundtex.js?v=155';
+import { Animals, makeAnimalMesh } from './animals.js?v=155';
+import { Talk } from './talk.js?v=155';
+import { incomingText, classify, textOptions, textReply } from './texts.js?v=155';
+import { svg, drawIcon } from './icons.js?v=155';
+import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=155';
+import { FURN, CATALOG } from './furniture.js?v=155';
+import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=155';
 
 const $ = id => document.getElementById(id);
 let inside = null, editMode = false, held = null, pendingCar = false, homeMusic = false, phoneBadge = 0;
@@ -1362,7 +1362,17 @@ function meleeHit(step = 0) {
 let time = 0, clockH = 8, dayN = 1, shake = 0, saveT = 0, toastT = 0, hurtFlash = 0, timeScale = 1;
 const gameHours = () => dayN * 24 + clockH;
 // every little message gets a picture that says what it's about
-const TOAST_ICONS = [[/rain (has )?stopp|fog is lifting|clear(s|ed) up|sun('s| is) out|skies clear/i, 'sun', '#ffb020'], [/storm|thunder|lightning/i, 'storm', '#5a4abf'], [/rain|drizzl|pour/i, 'rain', '#2f80ed'], [/fog|mist/i, 'fog', '#7a8a9a'],
+const TOAST_ICONS = [
+  [/flush|toilet|relief|much better|restroom|pee\b|accident/i, 'toilet', '#2f80ed'], [/shower|bath|soak|rinse|water|squeaky|hygiene|stink|soap|hot tub|washed your hands/i, 'shower', '#38a8e8'],
+  [/clean|fresh clothes|meadow|sharp|fresh cut|looking good|leaner|jumpsuit|recognise/i, 'sparkle', '#b26bff'], [/barber|haircut|\bcut\b/i, 'scissors', '#5d636e'],
+  [/tv\b|remote|football on|watch/i, 'tv', '#3a3fbf'], [/read|book|paperback|chopsticks|play now|tune/i, 'book', '#2f80ed'], [/cocktail|drank|drunk|blacked out|bar\b/i, 'drink', '#ff6fb5'],
+  [/carousel|wheel|ride\b|rode|view|dolphins|bay\b|fish/i, 'wave', '#1fb5a8'], [/teddy|plush|prize|winner!|flag\b/i, 'gift', '#ff8a2a'], [/rigged|so close|nope|try again|miss\b/i, 'cards', '#8b1e3f'],
+  [/fare|taxi|downtown, and step|airport\?/i, 'taxi', '#ffd23f'], [/parcel|deliver|bin round|bins\b/i, 'box', '#c9a24a'], [/yard|pickup game|three on three|crossed up|hoops/i, 'ball', '#ff8a2a'],
+  [/silence|chapel|lighter|quietly/i, 'church', '#c9a24a'], [/nap|rested|ward|kick back|energy restored/i, 'bed', '#9b51e0'], [/hands where|on the ground|stop right there|warrant|shoved past|run!/i, 'shield', '#2a5ad8'],
+  [/dance|danc|mood up/i, 'music', '#ff3b8a'], [/woohoo/i, 'heart', '#ff3b8a'], [/telescope|blueprint|place\b/i, 'map', '#2f80ed'], [/walked away|walked out|left the|step outside|get out and walk/i, 'run', '#5d636e'],
+  [/hunger|collapsed/i, 'food', '#ff8a2a'], [/out of time|tired of waiting/i, 'x', '#e23b3b'], [/kick-off|gates open/i, 'people', '#ff6fb5'], [/weapons inside|locker/i, 'gun', '#5d636e'], [/mouth shut|spoon|respects/i, 'lock', '#5d636e'], [/tattoo|laser|work done/i, 'edit', '#8b1e3f'], [/live here/i, 'house', '#9b51e0'],
+  [/go!|3… 2…|arrived|on that job|shift started/i, 'flag', '#e0a010'], [/help|mugging|slapped|zapped|stung/i, 'hand', '#e23b3b'], [/sound|music off|updating/i, 'radio', '#5d636e'],
+[/rain (has )?stopp|fog is lifting|clear(s|ed) up|sun('s| is) out|skies clear/i, 'sun', '#ffb020'], [/storm|thunder|lightning/i, 'storm', '#5a4abf'], [/rain|drizzl|pour/i, 'rain', '#2f80ed'], [/fog|mist/i, 'fog', '#7a8a9a'],
   [/police|cops?\b|arrest|wanted|patrol|spotted|ticket|sentence|cell|prison|guards|busted|search area/i, 'shield', '#2a5ad8'], [/turf|gang|kings|reds|blues|crew/i, 'fist', '#8b1e3f'], [/fire|smoke|burn/i, 'bolt', '#ff6a2a'],
   [/hospital|nurse|health|hurt|patched|doctor/i, 'cross', '#e23b3b'], [/love|engaged|girlfriend|kiss|wedding|baby|date\b|she /i, 'heart', '#ff3b8a'], [/grocer|food|burger|meal|sushi|smoothie|eat|fridge|hungry|dumpling|starving/i, 'food', '#ff8a2a'],
   [/alarm|robb|thief|stole|running off/i, 'cash', '#e23b3b'], [/gun|ammo|grenade|rocket|range|shiv/i, 'gun', '#5d636e'], [/\$|cash|paid|money|income|sold|bought|price|fine\b/i, 'cash', '#2fbf55'], [/car\b|drive|garage|customs|scoot|headlight|parked|race/i, 'car', '#ff8a2a'],
@@ -2558,6 +2568,7 @@ function saleTex(p) { const c = document.createElement('canvas'); c.width = 256;
   x.fillStyle = '#ffffff'; x.fillRect(0, 0, 256, 192); x.fillStyle = '#c9302c'; x.fillRect(0, 0, 256, 70); x.fillStyle = '#ffffff'; x.font = 'bold 46px system-ui, sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText('FOR SALE', 128, 37);
   x.fillStyle = '#16161b'; x.font = 'bold 40px system-ui, sans-serif'; let pr; try { pr = p.biz ? BIZ[p.biz].price : homePrice(p); } catch { pr = p.price; } x.fillText('$' + Math.round(pr).toLocaleString('en-US'), 128, 112); x.font = '24px system-ui, sans-serif'; x.fillStyle = '#5a5d66'; x.fillText('Bay Realty', 128, 160);
   const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t; }
+unblockPillars([...PLACES, ...PROPERTIES].filter(q => q.x != null)); // no skyway/metro pillar in front of any shop or home
 // dealers go by name: "Downtown Dealer (Slim)" everywhere you pick a place, so you know who you heard about
 for (const p of PLACES) if (p.kind === 'dealer' && p.npc && !p.name.includes('(')) p.name = `${p.name} (${p.npc})`;
 for (const p of [...PROPERTIES, ...PLACES.filter(q => q.biz)]) { if (p.starter) continue;
@@ -3346,6 +3357,8 @@ function deliverEvent(ev, data) {
   if (ev.via === 'thought') { const bedF = inside?.prop && (clockH < 6 || clockH >= 21) ? inside.h.furn.find(f => FURN[f.t].act === 'sleep') : null; // at home at night you're lying in your own bed
     return runEventTalk(ev, data, { cfg: charCfg, name: 'You', tag: ev.scene === 'car' || (ride && !ride.b.two) ? 'Behind the wheel' : bedF ? 'In bed' : 'Thinking...', think: true, seat: ev.scene === 'car' || !!(ride && !ride.b.two), bed: bedF ? (bedF.c || FURN[bedF.t].colors?.[0] || '#3a5fa0') + '|' + bedF.t : null, car: ev.scene === 'car' && ride ? { color: ride.cfg?.bodyColor } : null }); }
   if (ev.via === 'call') {
+    // she's in the same house: she doesn't ring you, she comes and tells you
+    { const f = fam(), n = inside?.prop && who.name && (f.partner?.name === who.name ? inside.npcs.find(q => q.role === 'spouse') : inside.npcs.find(q => q.fam?.name === who.name)); if (n) { eventOpen = true; setTimeout(() => { eventOpen = false; if (state !== 'play') { life().queue.push({ id: ev.id, at: gameHours() + 1, data }); return; } runEventTalk(ev, data, { cfg: n.cfg, name: who.name, tag: f.partner?.name === who.name ? 'Your partner' : 'Family' }); }, 500); return; } }
     eventOpen = true; const A = audio(); if (A) for (let i = 0; i < 4; i++) sfx.note(i % 2 ? 1180 : 940, A.currentTime + i * 0.18, 0.15, 'square', 0.03, 3000);
     ringing(who.name || 'Unknown', lifeCfg(who));
     setTimeout(() => { eventOpen = false; if (state !== 'play') { life().queue.push({ id: ev.id, at: gameHours() + 1, data }); return; } runEventTalk(ev, data, { cfg: lifeCfg(who), name: who.name || 'Caller', tag: `${who.tag || 'Calling'} · on the phone`, phone: true, seat: !!(ride && !ride.b.two) }); }, 1500);
@@ -5909,7 +5922,7 @@ function updateCamYaw(dt) {
     else { camBlockT = 0; if (camYawT !== 0 && homeClear) { camClearT += 0.15; if (camClearT > 1.2) { camYawT = 0; camClearT = 0; } } else camClearT = 0; } } }
   camYaw += wrapA(camYawT - camYaw) * Math.min(1, dt * 2.2); if (Math.abs(wrapA(camYawT - camYaw)) < 0.002) camYaw = camYawT;
 }
-function padHeight() { return Math.min(H * 0.36, 310); }
+function padHeight() { return Math.min(H * 0.30, 252); }
 function focusPos() { return ride ? ride.s : P; }
 // pinch (two fingers on the game view) or mouse wheel to zoom in on the action and out for the big picture
 let zoom = 1; const pinch = new Map(); let pinch0 = null;
@@ -5922,10 +5935,12 @@ let zoom = 1; const pinch = new Map(); let pinch0 = null;
   cv.addEventListener('wheel', e => { if (state !== 'play') return; zoom = clamp(zoom * (1 + e.deltaY * 0.0012), 0.28, 1.8); e.preventDefault(); }, { passive: false });
   cv.addEventListener('dblclick', () => { zoom = 1; });
 }
-let camPitch = null;
+let camPitch = null; const camLead = { x: 0, z: 0 };
 function updateCamera(dt, snap) {
   const f = focusPos();
-  const tx = ride ? f.x + f.vx * 0.45 : f.x, tz = ride ? f.z + f.vz * 0.45 : f.z, ty = ride ? (ride.s.y ?? Math.max(groundH(f.x, f.z), 0)) : P.y;
+  { const vx = dt > 0 ? (P.x - (camLead.px ?? P.x)) / dt : 0, vz = dt > 0 ? (P.z - (camLead.pz ?? P.z)) / dt : 0; camLead.px = P.x; camLead.pz = P.z; const on = !ride && !inside && !snap && Math.hypot(vx, vz) < 14; // on foot, the camera leans ahead the way you're walking
+    camLead.x = damp(camLead.x, on ? clamp(vx * 0.55, -3.5, 3.5) : 0, on ? 1.6 : 4, dt); camLead.z = damp(camLead.z, on ? clamp(vz * 0.55, -3.5, 3.5) : 0, on ? 1.6 : 4, dt); if (snap) camLead.x = camLead.z = 0; }
+  const tx = ride ? f.x + f.vx * 0.45 : f.x + camLead.x, tz = ride ? f.z + f.vz * 0.45 : f.z + camLead.z, ty = ride ? (ride.s.y ?? Math.max(groundH(f.x, f.z), 0)) : P.y;
   const climbing = !snap && climbView(); const want = (inside ? 26 + Math.max(inside.h.w, inside.h.d) * 0.35 : ride ? 84 + Math.abs(ride.s.v) * 0.5 : climbing ? 34 : 58) * zoom;
   camDist = snap ? want : damp(camDist, want, 2.5, dt);
   const k = snap ? 1 : 1 - Math.exp(-6 * dt);
@@ -5941,7 +5956,7 @@ function updateCamera(dt, snap) {
   G.cam.lookAt(camLook.x + sx, camLook.y, camLook.z + sz);
   G.scene.fog.near = camDist + 25; G.scene.fog.far = camDist + 130;
   fadeU.uPlayer.value.set(f.x, ride ? ty : P.y, f.z); fadeU.uCam.value.copy(G.cam.position);
-  { const py = ride ? ty : P.y, under = !inside && py < 3 && [[0, 0], [5, 0], [-5, 0], [0, 5], [0, -5]].some(([ox, oz]) => { const k = skyAt(f.x + ox, f.z + oz); return k && !k.ramp; }); fadeU.uBig.value = damp(fadeU.uBig.value, under ? 2.6 : 1, 5, dt); } // under a skyway: a much bigger window through the deck
+  { const py = ride ? ty : P.y, ax = ride ? (f.vx || 0) * 0.7 : 0, az = ride ? (f.vz || 0) * 0.7 : 0, under = !inside && py < 3 && [[0, 0], [5, 0], [-5, 0], [0, 5], [0, -5], [ax, az], [ax * 2, az * 2]].some(([ox, oz]) => { const k = skyAt(f.x + ox, f.z + oz); return k && !k.ramp; }); fadeU.uBig.value = damp(fadeU.uBig.value, under ? (ride ? 3.6 + Math.min(1.6, Math.abs(ride.s.v) * 0.05) : 2.6) : 1, ride ? 8 : 5, dt); } // a car needs a bigger window, and it opens ahead of you at speed // under a skyway: a much bigger window through the deck
   lantern.position.set(f.x, ty + 3, f.z);
   boomLight.intensity = Math.max(0, boomLight.intensity - dt * 160);
 }
@@ -6785,7 +6800,7 @@ function saveGame() {
   store.set('bc_save', save); store.set('bc_arsenal', arsenal); store.set('bc_cars', garage);
 }
 // auto-update: bookmarks and home-screen apps can hold on to an old copy. Check version.json (never cached) and reload once if newer.
-const BUILD = 154;
+const BUILD = 155;
 function checkUpdate() {
   fetch('version.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(j => {
     if (!(j.v > BUILD)) return;
