@@ -1,26 +1,26 @@
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=106';
-import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=106';
-import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=106';
-import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=106';
-import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=106';
-import { buildPanel, renderStats } from './ui.js?v=106';
-import { Input } from './input.js?v=106';
-import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime } from './audio.js?v=106';
-import { runMinigame } from './minigames.js?v=106';
-import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk } from './peds.js?v=106';
-import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=106';
-import { findRoute } from './nav.js?v=106';
-import { COURSES, CAREERS, QUIZ } from './careers.js?v=106';
-import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=106';
-import { attachWheel } from './wheel.js?v=106';
-import { Animals } from './animals.js?v=106';
-import { Talk } from './talk.js?v=106';
-import { incomingText, classify, textOptions, textReply } from './texts.js?v=106';
-import { svg, drawIcon } from './icons.js?v=106';
-import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=106';
-import { FURN, CATALOG } from './furniture.js?v=106';
-import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=106';
+import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=107';
+import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=107';
+import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=107';
+import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=107';
+import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=107';
+import { buildPanel, renderStats } from './ui.js?v=107';
+import { Input } from './input.js?v=107';
+import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime } from './audio.js?v=107';
+import { runMinigame } from './minigames.js?v=107';
+import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk } from './peds.js?v=107';
+import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=107';
+import { findRoute } from './nav.js?v=107';
+import { COURSES, CAREERS, QUIZ } from './careers.js?v=107';
+import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=107';
+import { attachWheel } from './wheel.js?v=107';
+import { Animals } from './animals.js?v=107';
+import { Talk } from './talk.js?v=107';
+import { incomingText, classify, textOptions, textReply } from './texts.js?v=107';
+import { svg, drawIcon } from './icons.js?v=107';
+import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=107';
+import { FURN, CATALOG } from './furniture.js?v=107';
+import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=107';
 
 const $ = id => document.getElementById(id);
 let inside = null, editMode = false, held = null, pendingCar = false, homeMusic = false, phoneBadge = 0;
@@ -5854,12 +5854,13 @@ const STORY = [
   { id: 'home', title: 'A place to crash', text: 'Welcome to Bay City, kid. I sorted you a little studio downtown. Go check it out, get your head down.', goal: () => 'Go to your studio downtown.', wp: () => { const h = PROPERTIES.find(p => p.starter); return { x: h.x, z: h.z, name: 'Your studio' }; }, done: S => S.f.home },
   { id: 'cash', title: 'Pay your way', text: 'Rent\'s free for now, but nothing\'s free forever. Get yourself a grand together. Work, the taco truck... or other ways. Your call.', goal: () => `Have $1,000 on you (${fmt(Math.min(money, 1000))} / $1,000).`, done: () => money >= 1000 },
   { id: 'bag', title: 'Ray\'s bag', text: 'Need a favour. My guy Tommo has a bag for me on the pier. Grab it, bring it to me at The Anchor. Don\'t open it.', reward: 500,
-    goal: S => S.f.bag ? 'Bring the bag to Ray at The Anchor bar.' : 'Pick up the bag from Tommo on the pier.',
+    goal: S => { if (!S.f.bag) return 'Pick up the bag from Tommo on the pier.'; const a = PLACES.find(p => p.id === 'v_anchor'), h = placeHours(a); return `Bring the bag to Ray at The Anchor bar${h ? ` (open ${hh12(h[0])} to ${hh12(h[1])}${isOpen(a) ? '' : ', or he\'ll meet you outside'})` : ''}.`; },
     wp: S => { if (S.f.bag) { const a = PLACES.find(p => p.id === 'v_anchor'); return { x: a.x, z: a.z, name: 'Ray at The Anchor' }; } const sp = tommoSpot(); return { x: sp.x, z: sp.z, name: 'Tommo on the pier' }; },
     tick(S, dt) {
       const sp = tommoSpot(), tx = sp.x, tz = sp.z;
       if (!S.f.bag && !inside) { const d = Math.hypot(P.x - tx, P.z - tz); if (d < 90 && !storyNpc.tommo) storyNpc.tommo = eventPed({ top: 'jacket', topColor: '#55602f', hat: 'beanie', hatColor: '#16161b', fem: false }, tx, tz, { state: 'talk', lookX: tx, lookZ: tz + 5, name: 'Tommo', ev: true });
         if (storyNpc.tommo && d < 2.4 && !ride) { S.f.bag = true; const w = pedWho(storyNpc.tommo); if (w) { w.name = 'Tommo'; subs.say(w, 'You Ray\'s nephew? Here. Don\'t open it. Don\'t lose it.', { expr: 'neutral', now: true }); } setTimeout(() => youSay(pick(['Heavy. What\'s in this thing?', 'Don\'t open it. Got it.']), 'shock'), 3800); const T = storyNpc.tommo; storyNpc.tommo = null; setTimeout(() => cleanupEvPed(T), 6000); storyWaypoint(); saveGame(); } }
+      if (S.f.bag && !S.f.gave && !inside) { const a = PLACES.find(p => p.id === 'v_anchor'); if (!isOpen(a) && Math.hypot(P.x - a.x, P.z - a.z) < 6) { S.f.gave = true; const rp = eventPed(rayWho().cfg, a.x + 1.5, a.z + 1.2, { state: 'talk', lookX: P.x, lookZ: P.z, name: 'Uncle Ray' }); subs.say(rayWho(), 'Bar\'s shut, kid, but I\'m here. Hand it over. Good lad.', { expr: 'happy', now: true }); setTimeout(() => { rp.state = 'march'; rp.mspd = 1.4; rp.tx = rp.x + 20; rp.tz = rp.z; setTimeout(() => cleanupEvPed(rp), 12000); }, 4500); } } // closed? he waits outside
       if (S.f.bag && inside?.place?.id === 'v_anchor' && !S.f.gave) { S.f.gave = true; setTimeout(() => { subs.say(rayWho(), 'Good lad. Didn\'t open it? Good. Here, for your trouble.', { expr: 'happy', now: true }); }, 900); }
     }, done: S => S.f.gave },
   { id: 'soon', title: 'Big things', text: 'You did good, kid. I\'ve got bigger plans for you. Keep your phone on. (More story coming soon.)', goal: () => 'Ray will be in touch.', done: () => false, last: true },
@@ -6091,7 +6092,7 @@ function saveGame() {
   store.set('bc_save', save); store.set('bc_arsenal', arsenal); store.set('bc_cars', garage);
 }
 // auto-update: bookmarks and home-screen apps can hold on to an old copy. Check version.json (never cached) and reload once if newer.
-const BUILD = 106;
+const BUILD = 107;
 function checkUpdate() {
   fetch('version.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(j => {
     if (!(j.v > BUILD)) return;
