@@ -1,6 +1,6 @@
 // Open-world map: layout, deterministic generation, colliders, chunk meshing and minimap.
 import * as THREE from '../lib/three.module.min.js';
-import { groundMaterial, GT } from './groundtex.js?v=134';
+import { groundMaterial, GT } from './groundtex.js?v=135';
 
 export const WORLD = { x0: -560, x1: 800, z0: -800, z1: 520 };
 export const CHUNK = 64;
@@ -109,6 +109,7 @@ export function cityAt(x, z, m = 0) { for (const c of CITIES) if (inR(c, x, z, m
 export function zoneName(x, z) {
   if (z > sandLine(x) - 4) return 'Bay Beach';
   if (x < -300) return 'Hidden Hills';
+  if (x > 530 && x < 710 && z > 288 && z < 328) return 'Eastport Docks';
   if (inR(AIRPORT, x, z)) return 'Bay City Airport';
   const c = cityAt(x, z, 10); if (c) return c.name;
   for (const f of FIELDS) if (inR(f, x, z)) return 'Farmland';
@@ -363,7 +364,7 @@ export function attachDoor(p, accent = '#ff8a2a', sign = null, build = null) {
   const dp = P(f, dl); addObj({ t: 'door', x: dp.x, z: dp.z, nx, nz, col: accent, sign, wall: best.col || '#ece4d6' });
   const m = P(f + 2.1, dl); p.x = m.x; p.z = m.z; p.doorN = [nx, nz];
 }
-function tree(x, z, kind = 'round', s = 1) { addObj({ t: 'tree', x, z, kind, s }); addCollider({ x, z, r: 0.45 * s }); }
+function tree(x, z, kind = 'round', s = 1) { if (x > 528 && x < 712 && z > 286 && z < 328) return; /* not in the docks */ addObj({ t: 'tree', x, z, kind, s }); addCollider({ x, z, r: 0.45 * s }); }
 
 // landmark blocks: the stadium, the mall and Bay Park take over whole downtown blocks
 export const LANDMARK_BLOCKS = { stadium: ['main', 5, -4], mall: ['main', -4, -3], bigpark: ['main', -2, -4] };
@@ -473,6 +474,13 @@ function genWorld() {
   { const U = UNDERPASS; addObj({ t: 'ubridge', x: U.x, z: U.z });
     for (const sx of [-1, 1]) for (const [z0, z1] of [[U.z1 + 6, U.z - 3.6], [U.z + 3.6, U.z0 - 4]]) addCollider({ x0: U.x + sx * (U.half + 0.2) - 0.4, x1: U.x + sx * (U.half + 0.2) + 0.4, z0, z1, h: 1.2 }); } // retaining walls keep cars in the cutting (with a gap where the rail bridge crosses, so you can drive the tracks over it)
   for (const st of RAIL.stations) { addObj({ t: 'platform', x: st.x, z: RAIL.z + 4.4, name: st.name }); addCollider({ x0: st.x - 15, x1: st.x + 15, z0: RAIL.z + 2.4, z1: RAIL.z + 6.4, h: 0.45, top: 0.48 }); }
+  // Eastport Docks: a container yard by the coast road with two gantry cranes, stacks of boxes and a chain-link fence
+  { const R = mkRng(0.4242), cols = ['#c8392b', '#2f6fd8', '#e8a020', '#2f8a4a', '#8a3a8a', '#d8d8d8', '#1f8a9a', '#b35a2a'];
+    for (let x = 532; x < 708; x += 4) if (!roadAt(x + 2, 307) && !nearRoad(x + 2, 307, 0.5)) addObj({ t: 'slab', x: x + 2, z: 307, w: 4.02, d: 36, h: 0.12, col: '#8d8a86' });
+    for (let row = 0; row < 3; row++) for (let i = 0; i < 9; i++) { if (R() < 0.18) continue; const x = 548 + i * 17 + (R() - 0.5), z = 296 + row * 9.5, n = 1 + Math.floor(R() * 3); if (nearRoad(x - 6, z, 1) || nearRoad(x + 6, z, 1) || nearRoad(x, z, 1)) continue;
+      for (let k = 0; k < n; k++) addObj({ t: 'container', x, z, y: k * 2.6, col: cols[Math.floor(R() * cols.length)] }); addCollider({ x0: x - 6.1, x1: x + 6.1, z0: z - 1.25, z1: z + 1.25, h: n * 2.6 }); }
+    for (const cx of [575, 665]) { addObj({ t: 'crane', x: cx, z: 307 }); for (const sz of [-15, 15]) for (const sx of [-5, 5]) addCollider({ x: cx + sx, z: 307 + sz, r: 0.7 }); }
+    addObj({ t: 'fence', x0: 532, x1: 708, z: 290 }); }
   // city blocks + street lamps
   for (const city of CITIES) {
     for (let i = city.kx[0]; i < city.kx[1]; i++) for (let j = city.kz[0]; j < city.kz[1]; j++) {
@@ -939,6 +947,7 @@ class GB {
 }
 
 // ---------------- object drawing
+function shadeHex(h, k) { const c = new THREE.Color(h).multiplyScalar(k); return '#' + c.getHexString(); }
 function drawObj(o, B) {
   const r = mkRng(hash(o.x * 10 | 0, o.z * 10 | 0, 99));
   switch (o.t) {
@@ -1036,6 +1045,13 @@ function drawObj(o, B) {
       if (o.flowers) for (let i = 0; i < 6; i++) B.blob(o.x + (R2() - 0.5) * 0.9 * o.s, yb + (0.6 + R2() * 0.25) * o.s, o.z + (R2() - 0.5) * 0.9 * o.s, 0.1, 0.09, 0.1, ['#ff6fb5', '#ffd23f', '#ffffff', '#e23b3b', '#b26bff'][(sd + i) % 5], sd + i * 3);
       break; }
     case 'hedge': { const yb = groundH(o.x, o.z) + 0.15; B.box(o.x, yb, o.z, o.w, 0.85, 0.7, '#3f7d3a', { key: 'leaf' }); for (let i = 0; i < Math.floor(o.w / 1.2); i++) B.blob(o.x - o.w / 2 + 0.6 + i * 1.2, yb + 0.9, o.z, 0.62, 0.32, 0.4, i % 2 ? '#4a8f42' : '#3f7d3a', (o.seed || 1) + i); break; }
+    case 'container': { const y = 0.27 + (o.y || 0); B.box(o.x, y, o.z, 12, 2.55, 2.4, o.col); for (let i = -5; i <= 5; i++) B.box(o.x + i * 1.08, y + 0.05, o.z, 0.12, 2.45, 2.48, shadeHex(o.col, 0.82)); B.box(o.x + 6.02, y, o.z, 0.06, 2.55, 2.42, '#3a3d45'); break; }
+    case 'crane': { const x = o.x, z = o.z, c = '#e8b020';
+      for (const sx of [-5, 5]) for (const sz of [-15, 15]) B.box(x + sx, 0.15, z + sz, 0.9, 22, 0.9, c);
+      for (const sz of [-15, 15]) B.box(x, 22, z + sz, 11, 1.2, 1.2, c);
+      B.box(x - 5, 22, z, 1.2, 1.2, 31, c); B.box(x + 5, 22, z, 1.2, 1.2, 31, c); B.box(x, 21, z - 4, 4, 2.4, 3, '#3a3d45');
+      B.box(x, 9, z - 4, 0.12, 12, 0.12, '#222'); B.box(x, 8.6, z - 4, 2.4, 0.4, 2.4, '#3a3d45'); B.box(x + 4.6, 23.2, z + 15, 0.4, 0.4, 0.4, '#ff3a3a', { key: 'glow' }); break; }
+    case 'fence': for (let x = o.x0; x < o.x1; x += 4) { B.box(x, 0.15, o.z, 0.1, 2.2, 0.1, '#7a7f88'); if (Math.abs(x - 620) > 8) B.box(x + 2, 0.4, o.z, 4, 1.8, 0.03, '#9aa0aa'); } break;
     case 'lamp':
       B.box(o.x, 0.15, o.z, 0.18, 5, 0.18, '#3a3d45');
       B.box(o.x, 5.1, o.z, 0.7, 0.25, 0.7, '#fff6d8', { key: 'glow' });
