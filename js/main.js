@@ -1,30 +1,30 @@
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=175';
-import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun, partEffects, partPerk } from './gun.js?v=175';
-import { buildCar, computeCarStats, carStatBars, carClass, carPartEffects, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=175';
-import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, STAIRS, unblockPillars, canyonAt, canyonNear, PEAK, SKYWAYS, SKY_Y, skyAt, skyY, rampSeg, windowShader, makeOceanMaterial, WATER_U, WIND_U, METRO, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=175';
-import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=175';
-import { buildPanel, renderStats } from './ui.js?v=175';
-import { Input } from './input.js?v=175';
-import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime, animalCall } from './audio.js?v=175';
-import { runMinigame } from './minigames.js?v=175';
-import { CUT, initCutGames } from './cutgames.js?v=175';
-import { initOnline, updateOnline, goOnline, goOffline, NET, onNet, sendMagicLink, verifyCode, signOut, signedIn, cloudLoad, cloudSave } from './online.js?v=175';
-import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk, setReservedNames, seededLook } from './peds.js?v=175';
-import { citizens, whereNow } from './citizens.js?v=175';
-import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=175';
-import { findRoute } from './nav.js?v=175';
-import { COURSES, CAREERS, QUIZ } from './careers.js?v=175';
-import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=175';
-import { attachWheel } from './wheel.js?v=175';
-import { GROUND_U } from './groundtex.js?v=175';
-import { Animals, makeAnimalMesh } from './animals.js?v=175';
-import { Talk } from './talk.js?v=175';
-import { incomingText, classify, textOptions, textReply } from './texts.js?v=175';
-import { svg, drawIcon, ICONS as ICON_SET } from './icons.js?v=175';
-import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=175';
-import { FURN, CATALOG } from './furniture.js?v=175';
-import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=175';
+import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=176';
+import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun, partEffects, partPerk } from './gun.js?v=176';
+import { buildCar, computeCarStats, carStatBars, carClass, carPartEffects, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=176';
+import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, STAIRS, unblockPillars, canyonAt, canyonNear, PEAK, SKYWAYS, SKY_Y, skyAt, skyY, rampSeg, windowShader, makeOceanMaterial, WATER_U, WIND_U, METRO, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=176';
+import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=176';
+import { buildPanel, renderStats } from './ui.js?v=176';
+import { Input } from './input.js?v=176';
+import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime, animalCall } from './audio.js?v=176';
+import { runMinigame } from './minigames.js?v=176';
+import { CUT, initCutGames } from './cutgames.js?v=176';
+import { initOnline, updateOnline, goOnline, goOffline, NET, onNet, sendMagicLink, verifyCode, signOut, signedIn, cloudLoad, cloudSave } from './online.js?v=176';
+import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk, setReservedNames, seededLook } from './peds.js?v=176';
+import { citizens, whereNow } from './citizens.js?v=176';
+import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=176';
+import { findRoute } from './nav.js?v=176';
+import { COURSES, CAREERS, QUIZ } from './careers.js?v=176';
+import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=176';
+import { attachWheel } from './wheel.js?v=176';
+import { GROUND_U } from './groundtex.js?v=176';
+import { Animals, makeAnimalMesh } from './animals.js?v=176';
+import { Talk } from './talk.js?v=176';
+import { incomingText, classify, textOptions, textReply } from './texts.js?v=176';
+import { svg, drawIcon, ICONS as ICON_SET } from './icons.js?v=176';
+import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=176';
+import { FURN, CATALOG } from './furniture.js?v=176';
+import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=176';
 
 const $ = id => document.getElementById(id);
 let inside = null, editMode = false, held = null, pendingCar = false, homeMusic = false, phoneBadge = 0;
@@ -3470,6 +3470,7 @@ function updateLifeAct(dt) {
   } else if (A2.kind === 'pickup') updatePickup(dt, A2);
   else if (A2.kind === 'meet') updateMeet(dt, A2);
   else if (A2.kind === 'brawl') updateTalkFight(dt, A2);
+  else if (A2.kind === 'escort') updateEscort(dt, A2);
   else if (A2.kind === 'ambush') updateAmbush(dt, A2);
 }
 function endLifePed(A2) { const p = A2.p; if (!p) return; peds.release?.(p); p.state = 'flee'; p.fx = Math.sin(p.face + Math.PI); p.fz = Math.cos(p.face + Math.PI); p.t = 3; setTimeout(() => { const i = peds.list.indexOf(p); if (i >= 0) { peds.list.splice(i, 1); dyn.remove(p.root); } }, 6000); }
@@ -3484,11 +3485,41 @@ async function runEventTalk(ev, data, spk, after) {
   const ch = ev.choices(api, data), k = await talk.choose(ch.map(c => I('chat', c.label)));
   await talk.say(ch[k].label, 'you');
   const res = ch[k].go(api, data);
-  logStory(spk.name || 'You', ch[k].label, typeof res === 'string' ? res : '(it turned into a fight)', ev.id);
+  logStory(spk.name || 'You', ch[k].label, typeof res === 'string' ? res : res?.escort ? '(set off together)' : '(it turned into a fight)', ev.id);
   if (res && typeof res === 'object' && res.fight && spk.p && peds.list.includes(spk.p)) { if (res.say) await talk.say(res.say); endTalk(); eventOpen = false; startTalkFight(spk, res, after); return; } // words weren't enough: it kicks off for real
   if (res && typeof res === 'object' && res.fight) { const R = Math.random() < 0.5 + lvl('strength') * 0.05 ? res.win : res.lose; for (const l of [].concat(R.text)) await talk.say(l); R.go?.(api); } // (no one standing there to fight: settle it quickly)
+  if (res && typeof res === 'object' && res.escort) { const E = res.escort; if (E.say) await talk.say(E.say); endTalk(); eventOpen = false; if (spk.p && peds.list.includes(spk.p)) { startEscort(spk, E, after); return; } const r = E.done(); if (r) toast(r, 3); after?.(); saveGame(); return; } // they walk with you to where they need to be
   if (typeof res === 'string' && res) await talk.say(res);
   endTalk(); eventOpen = false; after?.(); saveGame();
+}
+// ---------------- walking someone somewhere: they follow at your side and the GPS shows where they're going
+function startEscort(spk, E, after) {
+  const p = spk.p; peds.release?.(p); const [d0, d1] = E.near; let to = null;
+  const pl = PLACES.filter(q => { const d = Math.hypot(q.x - P.x, q.z - P.z); return d >= d0 && d <= d1 && walkable(q.x, q.z); });
+  if (pl.length && d1 > 30) { const q = pick(pl); to = { x: q.x, z: q.z }; }
+  for (let i = 0; i < 40 && !to; i++) { const a = rand(0, 6.28), d = rand(d0, d1), x = P.x + Math.sin(a) * d, z = P.z + Math.cos(a) * d; if (walkable(x, z) && !solidPoint(x, z, 1) && !inWater(x, z)) to = { x, z }; }
+  if (!to) to = { x: P.x + 15, z: P.z };
+  Object.assign(p, { follow: true, state: 'chase', tx: p.x, tz: p.z });
+  lifeAct = { kind: 'escort', p, spk, E, after, to, t: 0, lost: 0 };
+  setWaypoint(to.x, to.z, E.label || 'Walk them there'); toast(`${E.label || 'Walk them there'}: she'll follow you`, 2.6);
+}
+function updateEscort(dt, A2) {
+  const p = A2.p, d = Math.hypot(p.x - P.x, p.z - P.z), dd = Math.hypot(p.x - A2.to.x, p.z - A2.to.z);
+  const fail = msg => { lifeAct = null; clearWaypoint(); p.follow = false; toast(msg, 3); A2.after?.(); };
+  if (!peds.list.includes(p) || p.state === 'down' || p.angry) { lifeAct = null; clearWaypoint(); p.follow = false; return; }
+  if (ride || inside || d > 14) A2.lost += dt; else A2.lost = Math.max(0, A2.lost - dt * 2);
+  if (A2.lost > 10 || A2.t > 300) { fail(`${A2.spk.name} gave up waiting and went on alone.`); lifeApi().karma?.(-1); return; }
+  if (ride) { p.state = 'idle'; return; }
+  p.state = 'chase'; // a step behind you and to the side
+  const sx = P.x - Math.sin(P.face) * 1.1 + Math.cos(P.face) * 0.7, sz = P.z - Math.cos(P.face) * 1.1 - Math.sin(P.face) * 0.7;
+  p.tx = sx; p.tz = sz; if (A2.E.slow && d < 3) { const k = 0.6; p.tx = p.x + (sx - p.x) * k; p.tz = p.z + (sz - p.z) * k; }
+  if (d > 7 && (A2.nag || 0) < A2.t - 8) { A2.nag = A2.t; toast(`${A2.spk.name}: "Wait for me!"`, 1.6); }
+  if (dd < 6 && Math.hypot(P.x - A2.to.x, P.z - A2.to.z) < 7) {
+    lifeAct = null; clearWaypoint(); p.follow = false; peds.talk(p, P.x, P.z);
+    (async () => { eventOpen = true; beginTalk(A2.spk.cfg, A2.spk.name, 'Made it', 160 + Math.random() * 100, null);
+      const r = A2.E.done(lifeApi()); if (r) await talk.say(r); logStory(A2.spk.name, A2.E.label, r || '', 'escort');
+      endTalk(); eventOpen = false; A2.after?.(); saveGame(); })();
+  }
 }
 // ---------------- a conversation that turns into a real fight, then picks back up depending on who won
 function startTalkFight(spk, res, after) {
@@ -7063,12 +7094,17 @@ function renderPhone() {
       <button class="ph-row" id="stStick"><span>Stick side</span><b>${settings.stickSide === 'right' ? 'Right' : 'Left'}</b></button>
       <button class="ph-row" id="stSteer"><span>Car steering</span><b>${(settings.steer || 'screen') === 'screen' ? 'Point where you go' : 'Classic (left/right)'}</b></button>
       <button class="ph-row" id="stShadow"><span>Shadows (off = smoother)</span><b>${settings.shadows ? 'On' : 'Off'}</b></button>
+      ${isTouch() && !isStandalone() ? `<div class="ph-sec">App</div>${!isIOS() ? `<button class="ph-row" id="stFull"><span>Full screen</span><b>${document.fullscreenElement ? 'On' : 'Off'}</b></button>` : ''}<button class="ph-row" id="stInstall"><span>${isIOS() ? 'Add to Home Screen' : 'Download the app'}</span><b>${svg('download')}</b></button>` : ''}
+      <div class="ph-sec">Account</div><button class="ph-row" id="stAcct"><span>${signedIn() ? (NET.email || 'Signed in').replace(/</g, '') : 'Not signed in'}</span><b>${signedIn() ? 'Save now' : 'Sign in to save online'}</b></button>
       <div class="ph-sec">Danger zone</div><button class="ph-row danger" id="stReset"><span>Reset all progress</span></button>
-      <p class="ph-hint">Bay City ${VERSION}</p>`;
+      <p class="ph-hint">Bay City v${BUILD}</p>`;
     $('stSound').onclick = () => { settings.sound = !settings.sound; applySettings(); renderPhone(); };
     if ($('stCust')) $('stCust').onclick = () => { cycleCustMode(); renderPhone(); };
     $('stStick').onclick = () => { settings.stickSide = settings.stickSide === 'right' ? 'left' : 'right'; applySettings(); renderPhone(); };
     $('stSteer').onclick = () => { settings.steer = (settings.steer || 'screen') === 'screen' ? 'car' : 'screen'; applySettings(); renderPhone(); };
+    if ($('stFull')) $('stFull').onclick = () => { if (document.fullscreenElement) document.exitFullscreen?.(); else goFullscreen(); setTimeout(renderPhone, 300); };
+    if ($('stInstall')) $('stInstall').onclick = () => { closePhone(); installHelp(); };
+    $('stAcct').onclick = () => { saveGame(); if (signedIn()) { cloudTick(0, true); toast('Saved to your account', 1.6); return; } closePhone(); showTitle(); };
     $('stShadow').onclick = () => { settings.shadows = !settings.shadows; applySettings(); renderPhone(); };
     let armed = false; $('stReset').onclick = () => { if (!armed) { armed = true; $('stReset').querySelector('span').textContent = 'Tap again to wipe everything'; return; } for (const k of ['bc_save', 'bc_arsenal', 'rr_char', 'rr_gun', 'bc_car', 'bc_cars']) localStorage.removeItem(k); location.reload(); };
   }
@@ -7086,7 +7122,7 @@ function saveGame() {
   store.set('bc_save', save); store.set('bc_arsenal', arsenal); store.set('bc_cars', garage); store.set('bc_savedAt', Date.now());
 }
 // auto-update: bookmarks and home-screen apps can hold on to an old copy. Check version.json (never cached) and reload once if newer.
-const BUILD = 175;
+const BUILD = 176;
 function checkUpdate() {
   fetch('version.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(j => {
     if (!(j.v > BUILD)) return;
@@ -7507,7 +7543,7 @@ function frame(now) {
 startGame();
 if (titleUp) showTitle();
 requestAnimationFrame(frame);
-window.__game = { get markersT() { return markers; }, get animals() { return animals; }, crime, WANT, copCars, cops, pitFight, busted, fam, famNewDay, makeOfficial, talkFamily, get dayN() { return dayN; }, set dayN(v) { dayN = v; }, scene: G.scene, cam: G.cam, snap: () => updateCamera(0, true), get state() { return state; }, P, input, get ride() { return ride; }, get myCar() { return myCar; }, get traffic() { return traffic; }, peds, setTime: h => { clockH = h; }, openCustom, enterVehicle, exitCar, get money() { return money; }, set money(v) { money = v; }, openPlace, PLACES, PROPERTIES, runMinigame, get action() { return action; }, arsenal, selectWeapon, openPhone, setWaypoint, get route() { return route; }, talkToPed, talk, doAction, stats, get inside() { return inside; }, enterInterior, exitInterior, get customers() { return customers; }, newCustomer, startEdit, endEdit, get job() { return job; }, gainXP, storage, doSpot, useFurn, phoneGo, talkVenue, talkJob, openPlace, talkCustomer, startJob, openCarShop, damageCar, repairCar, addFire, get fires() { return fires; }, get ems() { return ems; }, get vehicles() { return vehicles; }, makeVehicle, makeCop, prisonFight, life, startDealMeet, get lifeAct() { return lifeAct; }, get train() { return train; }, get trainRide() { return trainRide; }, boardTrain, eventReset: () => { eventOpen = false; }, bodyCheck, attendClass, talkAdmissions, edu, startDance, get dance() { return dance; }, radioSet: i => { radioSet(i); radioOn(true); }, get zoom() { return zoom; }, set zoom(z) { zoom = z; }, DEFAULT_CAR, setState: x => setState(x), get jail() { return stats.jail; }, witness, personOf, dealHeat, trafficStop, carNear, carTop, startDate, playCutT: (k, o) => { setState("mini"); return playCut(k, o || {}).then(r => { setState("play"); window.__cutR = r; return r; }); }, payPhoneT: () => payPhone(), get metro() { return metro; }, METRO, boardMetroT: i => { metro.si = i; metro.stop = 8; metro.s = METRO.stations[i].s; boardMetro(i); }, unblockT: (id, f) => unblockDoors(id, f), get HD() { return HOME_DEFAULTS; }, smashT: () => { const cx = Math.floor(P.x / CHUNK), cz = Math.floor(P.z / CHUNK); let b = null, bd = 1e9; for (let i = -2; i <= 2; i++) for (let j = -2; j <= 2; j++) for (const q of parkedIn(cx + i, cz + j)) { const d = Math.hypot(q.x - P.x, q.z - P.z); if (!q.taken && d < bd) { bd = d; b = q; } } if (!b) return "none"; P.x = b.x + Math.cos(b.rot) * 1.8; P.z = b.z - Math.sin(b.rot) * 1.8; breakIntoParked(b); return "ok"; }, gymT: o => mini("gym", o || {}), openArmoryT: () => openArmory(PLACES.find(q => q.kind === "guns"), null), get rinfo() { return { calls: renderer.info.render.calls, tris: renderer.info.render.triangles, geos: renderer.info.memory.geometries, tex: renderer.info.memory.textures }; }, saveGameT: () => saveGame(), maybePregnantT: (id, t) => maybePregnant(id, t), runEventT: (id, d) => runEventTalk(EVENT_BY_ID[id], d || {}, { name: 'Tester', tag: 'Test', cfg: null }, null), get pet() { return pet; }, CIT: () => CIT(), citizenRecord: c => citizenRecord(c), get town() { return town(); }, get ownedT() { return owned; }, openGunsmithT: (s, p, n) => openGunsmith(s, p, n), ambient, get ambEl() { return ambEl; }, openTradeT: p => openTrade(p), get stashT() { return stash; }, startWooT: (k, b) => startWoo(k, b), get woo() { return woo; }, endDate, dateCall, addDateContact, get phoneThread() { return phoneThread; }, set phoneThread(v) { phoneThread = v; }, talkDate, get date() { return date; }, get carAnim() { return carAnim; }, lifeApi, startShower, bizNewDay, subs, forceWanted, get buddy() { return buddy; }, startBuddy, textMe, toast, levelUp, closePhone, bringCar, useFurn, damageCar, debtorScene, get debtor() { return debtor; }, camBlocked, get camYaw() { return camYaw; }, ev: { evChase, evMug, evRobbery, evGang, evBusk, evCrash, evFire, evMarket, evParade, evProtest, streetEvents } };
+window.__game = { get markersT() { return markers; }, get animals() { return animals; }, crime, WANT, copCars, cops, pitFight, busted, fam, famNewDay, makeOfficial, talkFamily, get dayN() { return dayN; }, set dayN(v) { dayN = v; }, scene: G.scene, cam: G.cam, snap: () => updateCamera(0, true), get state() { return state; }, P, input, get ride() { return ride; }, get myCar() { return myCar; }, get traffic() { return traffic; }, peds, setTime: h => { clockH = h; }, openCustom, enterVehicle, exitCar, get money() { return money; }, set money(v) { money = v; }, openPlace, PLACES, PROPERTIES, runMinigame, get action() { return action; }, arsenal, selectWeapon, openPhone, setWaypoint, get route() { return route; }, talkToPed, talk, doAction, stats, get inside() { return inside; }, enterInterior, exitInterior, get customers() { return customers; }, newCustomer, startEdit, endEdit, get job() { return job; }, gainXP, storage, doSpot, useFurn, phoneGo, talkVenue, talkJob, openPlace, talkCustomer, startJob, openCarShop, damageCar, repairCar, addFire, get fires() { return fires; }, get ems() { return ems; }, get vehicles() { return vehicles; }, makeVehicle, makeCop, prisonFight, life, startDealMeet, get lifeAct() { return lifeAct; }, get train() { return train; }, get trainRide() { return trainRide; }, boardTrain, eventReset: () => { eventOpen = false; }, bodyCheck, attendClass, talkAdmissions, edu, startDance, get dance() { return dance; }, radioSet: i => { radioSet(i); radioOn(true); }, get zoom() { return zoom; }, set zoom(z) { zoom = z; }, DEFAULT_CAR, setState: x => setState(x), get jail() { return stats.jail; }, witness, personOf, dealHeat, trafficStop, carNear, carTop, startDate, playCutT: (k, o) => { setState("mini"); return playCut(k, o || {}).then(r => { setState("play"); window.__cutR = r; return r; }); }, payPhoneT: () => payPhone(), get metro() { return metro; }, METRO, boardMetroT: i => { metro.si = i; metro.stop = 8; metro.s = METRO.stations[i].s; boardMetro(i); }, unblockT: (id, f) => unblockDoors(id, f), get HD() { return HOME_DEFAULTS; }, smashT: () => { const cx = Math.floor(P.x / CHUNK), cz = Math.floor(P.z / CHUNK); let b = null, bd = 1e9; for (let i = -2; i <= 2; i++) for (let j = -2; j <= 2; j++) for (const q of parkedIn(cx + i, cz + j)) { const d = Math.hypot(q.x - P.x, q.z - P.z); if (!q.taken && d < bd) { bd = d; b = q; } } if (!b) return "none"; P.x = b.x + Math.cos(b.rot) * 1.8; P.z = b.z - Math.sin(b.rot) * 1.8; breakIntoParked(b); return "ok"; }, gymT: o => mini("gym", o || {}), openArmoryT: () => openArmory(PLACES.find(q => q.kind === "guns"), null), get rinfo() { return { calls: renderer.info.render.calls, tris: renderer.info.render.triangles, geos: renderer.info.memory.geometries, tex: renderer.info.memory.textures }; }, saveGameT: () => saveGame(), maybePregnantT: (id, t) => maybePregnant(id, t), deliverT: id => deliverEvent(EVENT_BY_ID[id], {}), runEventT: (id, d) => runEventTalk(EVENT_BY_ID[id], d || {}, { name: 'Tester', tag: 'Test', cfg: null }, null), get pet() { return pet; }, CIT: () => CIT(), citizenRecord: c => citizenRecord(c), get town() { return town(); }, get ownedT() { return owned; }, openGunsmithT: (s, p, n) => openGunsmith(s, p, n), ambient, get ambEl() { return ambEl; }, openTradeT: p => openTrade(p), get stashT() { return stash; }, startWooT: (k, b) => startWoo(k, b), get woo() { return woo; }, endDate, dateCall, addDateContact, get phoneThread() { return phoneThread; }, set phoneThread(v) { phoneThread = v; }, talkDate, get date() { return date; }, get carAnim() { return carAnim; }, lifeApi, startShower, bizNewDay, subs, forceWanted, get buddy() { return buddy; }, startBuddy, textMe, toast, levelUp, closePhone, bringCar, useFurn, damageCar, debtorScene, get debtor() { return debtor; }, camBlocked, get camYaw() { return camYaw; }, ev: { evChase, evMug, evRobbery, evGang, evBusk, evCrash, evFire, evMarket, evParade, evProtest, streetEvents } };
 
 // ================================================================ install as an app (Add to Home Screen)
 if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('sw.js').catch(() => {});

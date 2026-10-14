@@ -402,7 +402,7 @@ export const EVENTS = [
   { id: 'rain_shelter', via: 'approach', w: 1, who: () => ({ role: 'guest', seed: 8686, name: 'Stranger', tag: 'Caught in the rain', fem: true }),
     text: () => ['Sorry, can I share your umbrella to the corner?', 'I\'m going to be soaked for my interview.'],
     choices: a => [
-      { label: 'Walk her there', go: () => { a.karma(4); a.mood(6); if (roll(0.3)) { a.lvlUp('charm', 30); return 'She got the job! She texted you a thank you... with her number.'; } return 'Made it dry. She waves you off. Nice.'; } },
+      { label: 'Walk her there', go: () => ({ escort: { label: 'Walk her to her interview', near: [40, 110], say: 'Thank you! It\'s just up this way. Lead on.', done: () => { a.karma(4); a.mood(6); if (roll(0.3)) { a.lvlUp('charm', 30); return 'She got the job! She texted you a thank you... with her number.'; } return 'Made it, and still dry. She waves you off. Nice.'; } } }) },
       { label: 'Sorry, in a rush', go: () => 'Oh... okay.' },
     ] },
   // ---------------------------------------------------------------- more: everyday Bay City
@@ -462,7 +462,7 @@ export const EVENTS = [
   { id: 'nan_road', via: 'approach', w: 1, who: () => ({ role: 'guest', seed: 6363, name: 'Elderly lady', tag: 'Waiting to cross', fem: true }),
     text: () => ['Excuse me, young one. These cars go so fast now.', 'Would you walk me across? My eyes aren\'t what they were.'],
     choices: a => [
-      { label: 'Of course', go: () => { a.karma(5); a.mood(6); if (roll(0.25)) { a.give(20); return 'She presses $20 into your hand. "Buy yourself something nice." You can\'t say no.'; } return 'She pats your cheek. "Your mother raised you right."'; } },
+      { label: 'Of course', go: () => ({ escort: { label: 'Walk her across', near: [14, 24], slow: true, say: 'Thank you, dear. Slowly now.', done: () => { a.karma(5); a.mood(6); if (roll(0.25)) { a.give(20); return 'She presses $20 into your hand. "Buy yourself something nice." You can\'t say no.'; } return 'She pats your cheek. "Your mother raised you right."'; } } }) },
       { label: 'Sorry, in a hurry', go: () => { a.karma(-2); return 'Oh. Alright, dear.'; } },
     ] },
   { id: 'tax_refund', via: 'call', w: 1, when: a => a.career() ? 2 : 0, who: () => ({ role: 'sales', seed: 7171, name: 'Bay Revenue', tag: 'Calling' }),
