@@ -1,6 +1,6 @@
 // Open-world map: layout, deterministic generation, colliders, chunk meshing and minimap.
 import * as THREE from '../lib/three.module.min.js';
-import { groundMaterial, GT } from './groundtex.js?v=153';
+import { groundMaterial, GT } from './groundtex.js?v=154';
 
 export const WORLD = { x0: -560, x1: 800, z0: -800, z1: 520 };
 export const CHUNK = 64;
@@ -50,7 +50,7 @@ function rawBase(x, z) {
   return Math.max(0, h * ramp);
 }
 // Baywood Peak: a mountain west of the canyon crossroad, flat-topped for the lookout
-export const PEAK = { x: -508, z: -250, top: 34, flat: 10, r: 50 };
+export const PEAK = { x: -502, z: -250, top: 34, flat: 10, r: 50 };
 function peakK(x, z) { const d = Math.hypot(x - PEAK.x, z - PEAK.z); if (d >= PEAK.r) return 0; if (d <= PEAK.flat) return 1; const t = 1 - (d - PEAK.flat) / (PEAK.r - PEAK.flat); return t * t * (3 - 2 * t); }
 const PEAK_H0 = rawBase(PEAK.x, PEAK.z) + PEAK.top; PEAK.y = PEAK_H0; // the summit's flat height
 export const PADS = [
@@ -64,9 +64,10 @@ for (const p of PADS) p.h = rawHills(p.x, p.z);
 // hills house and the BAYWOOD sign to Ridge House; Canyon Road links it to downtown. The hillside is levelled under them.
 export const CR_HW = 4.2;
 export const CANYON = [
-  { id: 'drive', name: 'Canyon Drive', pts: [[-340, 336], [-366, 300], [-390, 240], [-386, 184], [-383, 148], [-377, 112], [-378, 70], [-382, 36], [-386, 0], [-404, -48], [-436, -96], [-447, -128], [-439, -172], [-430, -205], [-414, -246], [-410, -290], [-422, -334], [-428, -364], [-402, -372], [-395, -404], [-403, -438], [-396, -472], [-384, -520], [-392, -562]] },
+  { id: 'drive', name: 'Canyon Drive', pts: [[-340, 336], [-366, 300], [-390, 240], [-386, 184], [-383, 148], [-377, 112], [-378, 70], [-382, 36], [-386, 0], [-404, -48], [-436, -96], [-447, -128], [-439, -172], [-430, -205], [-414, -246], [-410, -290], [-422, -334], [-420, -358], [-406, -376], [-397, -404], [-402, -438], [-396, -472], [-384, -520], [-392, -562]] },
   { id: 'road', name: 'Canyon Road', pts: [[-294, -144], [-318, -146], [-350, -158], [-382, -180], [-410, -196], [-430, -205]] },
-  { id: 'peak', name: 'Peak Road', pts: (() => { const P0 = [[-430, -205], [-448, -213]], c = { x: -508, z: -250 }; for (let k = 0; k <= 18; k++) { const a = (30 + k * 25) * Math.PI / 180, r = 41 - k * 1.55; P0.push([Math.round(c.x + Math.cos(a) * r), Math.round(c.z + Math.sin(a) * r)]); } P0.push([-508, -250]); return P0; })() },
+  { id: 'peak', name: 'Peak Road', pts: (() => { const c = { x: -502, z: -250 }, P0 = [[-430, -205], [-452, -207], [-476, -209]]; for (let k = 0; k <= 18; k++) { const a = (90 + k * 25) * Math.PI / 180, r = 39 - k * 1.5; P0.push([+(c.x + Math.cos(a) * r).toFixed(1), +(c.z + Math.sin(a) * r).toFixed(1)]); } return P0; })() }, // heads straight west off the crossroad, then spirals up anticlockwise, finishing at the summit car park
+  { id: 'dw_mansion', name: 'Driveway', pts: [[-432, -367], [-426, -362], [-420, -358]] },
   { id: 'dw_lake', name: 'Driveway', pts: [[-410, 141], [-398, 142], [-385, 144]] },
   { id: 'dw_villa', name: 'Driveway', pts: [[-470, -137], [-458, -133], [-449, -129]] },
 ];
@@ -81,6 +82,7 @@ export const CANYON = [
     out.push({ x: P2[P2.length - 1][0], z: P2[P2.length - 1][1] });
     let hs = out.map(q => prof(q.x, q.z));
     for (let pass = 0; pass < 3; pass++) hs = hs.map((_, i) => { let a = 0, n = 0; for (let k = -12; k <= 12; k++) { const j = i + k; if (j >= 0 && j < hs.length) { a += hs[j]; n++; } } return a / n; });
+    if (R.id === 'peak') hs = hs.map((h, i) => { const d = Math.hypot(out[i].x - PEAK.x, out[i].z - PEAK.z); if (d < PEAK.flat + 5) return PEAK.y; if (d < PEAK.flat + 22) { const k = 1 - (d - PEAK.flat - 5) / 17; return h + (PEAK.y - h) * k * k * (3 - 2 * k); } return h; }); // the top lands level with the summit car park
     out.forEach((q, i) => { q.h = hs[i]; const a = out[Math.max(0, i - 1)], b = out[Math.min(out.length - 1, i + 1)], l = Math.hypot(b.x - a.x, b.z - a.z) || 1; q.nx = (b.z - a.z) / l; q.nz = -(b.x - a.x) / l; q.i = i; q.R = R; });
     R.s = out;
   }
@@ -91,6 +93,8 @@ export const CANYON = [
     for (const q of R.s) { const d = Math.hypot(q.x - end.x, q.z - end.z); if (d < 36) { const w = 1 - d / 36, k = w * w * (3 - 2 * w); q.h = q.h * (1 - k) + jq.h * k; } }
   }
 }
+// where roads meet: flag samples that overlap another road, so the junction is drawn as one clean surface
+for (const R of CANYON) for (const q of R.s) for (const R2 of CANYON) { if (R2 === R) continue; for (const q2 of R2.s) if (Math.abs(q2.x - q.x) < 10 && Math.abs(q2.z - q.z) < 10 && Math.hypot(q2.x - q.x, q2.z - q.z) < CR_HW * 2 + 1.5) { q.jn = true; if (CANYON.indexOf(R) > CANYON.indexOf(R2)) q.under = true; break; } }
 const CGRID = new Map(), CG2 = 12;
 for (const R of CANYON) for (const q of R.s) { const k = Math.floor(q.x / CG2) + ',' + Math.floor(q.z / CG2); let a = CGRID.get(k); if (!a) CGRID.set(k, a = []); a.push(q); }
 // nearest canyon road sample: { d, h, q } (within ~24 m) or null
@@ -1354,11 +1358,12 @@ function buildCanyon(cx, cz, B) {
   for (const R of CANYON) for (let i = 0; i < R.s.length - 1; i++) {
     const a = R.s[i], b = R.s[i + 1], mx = (a.x + b.x) / 2, mz = (a.z + b.z) / 2; if (mx < x0 || mx >= x1 || mz < z0 || mz >= z1) continue;
     const P2 = (q, w, up) => [q.x + q.nx * w, q.h + ends(q) + up, q.z + q.nz * w], c3 = [mx, -100, mz];
-    B.gt = GT.asphalt; B.quad('ground', P2(a, -HW, 0), P2(a, HW, 0), P2(b, HW, 0), P2(b, -HW, 0), '#4b4b53', c3);
-    for (const s2 of [-1, 1]) { B.quad('solid', P2(a, s2 * (HW - 0.45), 0.012), P2(a, s2 * (HW - 0.3), 0.012), P2(b, s2 * (HW - 0.3), 0.012), P2(b, s2 * (HW - 0.45), 0.012), '#e8e8e2', c3); // white edge lines
+    const jn = a.jn || b.jn, low = (a.under || b.under) ? -0.015 : 0;
+    B.gt = GT.asphalt; B.quad('ground', P2(a, -HW, low), P2(a, HW, low), P2(b, HW, low), P2(b, -HW, low), '#4b4b53', c3);
+    if (!jn) for (const s2 of [-1, 1]) { B.quad('solid', P2(a, s2 * (HW - 0.45), 0.012), P2(a, s2 * (HW - 0.3), 0.012), P2(b, s2 * (HW - 0.3), 0.012), P2(b, s2 * (HW - 0.45), 0.012), '#e8e8e2', c3); // white edge lines
       B.quad('solid', P2(a, s2 * HW, 0), P2(a, s2 * (HW + 0.8), -0.32), P2(b, s2 * (HW + 0.8), -0.32), P2(b, s2 * HW, 0), '#8a7a60', c3); } // dirt verge so the edge never floats
-    if (i % 4 < 2) B.quad('solid', P2(a, -0.09, 0.014), P2(a, 0.09, 0.014), P2(b, 0.09, 0.014), P2(b, -0.09, 0.014), '#f2c84a', c3); // dashed yellow centre
-    if (i % 22 === 11 && !R.s.slice(Math.max(0, i - 3), i + 3).some(q => q.i < 4)) { const L = 1, lx = a.x + a.nx * (HW + 1.4), lz = a.z + a.nz * (HW + 1.4), gy = groundH(lx, lz); B.box(lx, gy, lz, 0.16, 4.6, 0.16, '#3a3d45'); B.box(lx - a.nx * 0.5, gy + 4.5, lz - a.nz * 0.5, 0.5, 0.16, 0.5, '#fff1c4', { key: 'glow' }); } // road lamps
+    if (i % 4 < 2 && !jn) B.quad('solid', P2(a, -0.09, 0.014), P2(a, 0.09, 0.014), P2(b, 0.09, 0.014), P2(b, -0.09, 0.014), '#f2c84a', c3); // dashed yellow centre
+    if (i % 22 === 11 && !jn && !R.s.slice(Math.max(0, i - 3), i + 3).some(q => q.i < 4)) { const L = 1, lx = a.x + a.nx * (HW + 1.4), lz = a.z + a.nz * (HW + 1.4), gy = groundH(lx, lz); B.box(lx, gy, lz, 0.16, 4.6, 0.16, '#3a3d45'); B.box(lx - a.nx * 0.5, gy + 4.5, lz - a.nz * 0.5, 0.5, 0.16, 0.5, '#fff1c4', { key: 'glow' }); } // road lamps
   }
 }
 export function buildChunk(cx, cz) {
@@ -1406,7 +1411,7 @@ export function drawMap(size = 512) {
   return { canvas: cv, tx, tz, sx, sz };
 }
 export const LABELS = [
-  ['DOWNTOWN', 0, 0], ['BAY BEACH', 100, 395], ['HIDDEN HILLS', -420, -60], ['BAYWOOD PEAK', -508, -232], ['EASTPORT', 600, 0], ['NORTHFIELD', 0, -520], ['AIRPORT', 20, -690], ['FARMLAND', 370, 160],
+  ['DOWNTOWN', 0, 0], ['BAY BEACH', 100, 395], ['HIDDEN HILLS', -420, -60], ['BAYWOOD PEAK', -502, -232], ['EASTPORT', 600, 0], ['NORTHFIELD', 0, -520], ['AIRPORT', 20, -690], ['FARMLAND', 370, 160],
 ];
 export const SPAWN = { x: 8.2, z: 30, carX: 3, carZ: 40, carH: Math.PI };
 
