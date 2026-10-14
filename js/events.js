@@ -324,7 +324,7 @@ export const EVENTS = [
     text: a => ['Rollover week! The Bay Lotto jackpot is huge.', 'Ticket\'s ten bucks. Feeling lucky?'],
     choices: a => [
       { label: 'One ticket ($10)', go: () => { a.take(10); const r = Math.random(); if (r < 0.004) { a.give(250000); a.mood(60); return 'Wait. WAIT. All six numbers. You just won $250,000!!'; } if (r < 0.06) { a.give(100); return 'Four numbers! $100.'; } return 'Nothing. Next week.'; } },
-      { label: 'Ten tickets ($100)', go: () => { a.take(100); const r = Math.random(); if (r < 0.04) { a.give(250000); a.mood(60); return 'JACKPOT. $250,000. The cashier screams.'; } if (r < 0.4) { a.give(150); return 'A couple of small wins. $150 back.'; } return 'Not a sausage.'; } },
+      { label: 'Ten tickets ($100)', go: () => { a.take(100); const r = Math.random(); if (r < 0.006) { a.give(250000); a.mood(60); return 'JACKPOT. $250,000. The cashier screams.'; } if (r < 0.4) { a.give(150); return 'A couple of small wins. $150 back.'; } return 'Not a sausage.'; } },
       { label: 'Nah, mug\'s game', go: () => 'Smart. The house always wins.' },
     ] },
   { id: 'festival', via: 'call', w: 1, when: a => a.hasDated() ? 2 : 1, who: a => a.partner() ? { role: 'guest', seed: 3131, name: a.partner().name, tag: 'Calling', fem: true } : { role: 'guest', seed: 3132, name: 'Bay Live', tag: 'Promo' },
