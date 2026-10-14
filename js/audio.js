@@ -344,3 +344,36 @@ export function danceStart() {
 export function danceStop() {
   if (!danceSave) return; radio.dance = false; radio.tuned = false; radio.song = null; radio.station = danceSave.station; radio.step = 0; radioOn(danceSave.on); danceSave = null;
 }
+
+// ---------------- animal calls: little synthesised voices (pitch contour through a vocal-ish formant filter)
+// pts: [[time, freq], ...]; vib: vibrato depth (Hz) and rate; form: formant centre; noise: breathy layer
+function voice(pts, { type = 'sawtooth', vol = 0.06, form = 900, q = 3, vib = 0, rate = 6, noise = 0, start = 0 } = {}) {
+  const t0 = A.currentTime + start, dur = pts[pts.length - 1][0];
+  const o = A.createOscillator(), f = A.createBiquadFilter(), f2 = A.createBiquadFilter(), g = A.createGain();
+  o.type = type; f.type = 'bandpass'; f.frequency.value = form; f.Q.value = q; f2.type = 'lowpass'; f2.frequency.value = form * 2.6;
+  o.frequency.setValueAtTime(pts[0][1], t0); for (const [t, fr] of pts.slice(1)) o.frequency.linearRampToValueAtTime(fr, t0 + t);
+  if (vib) { const l = A.createOscillator(), lg = A.createGain(); l.frequency.value = rate; lg.gain.value = vib; l.connect(lg); lg.connect(o.frequency); l.start(t0); l.stop(t0 + dur + 0.05); }
+  g.gain.setValueAtTime(0.0001, t0); g.gain.exponentialRampToValueAtTime(vol, t0 + Math.min(0.06, dur * 0.2)); g.gain.setValueAtTime(vol, t0 + dur * 0.75); g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+  o.connect(f); f.connect(f2); f2.connect(g); g.connect(out()); o.start(t0); o.stop(t0 + dur + 0.05);
+  if (noise) { const s = A.createBufferSource(); s.buffer = NB || (NB = noiseBuf()); const nf = A.createBiquadFilter(); nf.type = 'bandpass'; nf.frequency.value = form * 1.4; nf.Q.value = 1.2; const ng = A.createGain(); ng.gain.setValueAtTime(0.0001, t0); ng.gain.exponentialRampToValueAtTime(noise * vol, t0 + 0.04); ng.gain.exponentialRampToValueAtTime(0.0001, t0 + dur); s.connect(nf); nf.connect(ng); ng.connect(out()); s.start(t0); s.stop(t0 + dur + 0.05); }
+}
+const CALLS = {
+  cow: v => voice([[0, 120], [0.25, 150], [1.0, 128], [1.35, 100]], { vol: 0.09 * v, form: 520, q: 2.2, noise: 0.25 }),
+  sheep: v => voice([[0, 330], [0.12, 360], [0.75, 300]], { vol: 0.06 * v, form: 1100, q: 2.5, vib: 26, rate: 13, noise: 0.2 }),
+  goat: v => voice([[0, 420], [0.1, 470], [0.6, 380]], { vol: 0.06 * v, form: 1300, q: 2.5, vib: 40, rate: 15, noise: 0.3 }),
+  pig: v => { voice([[0, 160], [0.12, 220], [0.22, 150]], { type: 'square', vol: 0.06 * v, form: 700, q: 4, noise: 0.8 }); voice([[0, 170], [0.1, 230], [0.2, 160]], { type: 'square', vol: 0.05 * v, form: 700, q: 4, noise: 0.8, start: 0.3 }); },
+  horse: v => voice([[0, 900], [0.15, 1200], [0.6, 700], [1.1, 420]], { vol: 0.05 * v, form: 1400, q: 2, vib: 60, rate: 22, noise: 0.5 }),
+  chicken: v => { for (let i = 0; i < 3; i++) voice([[0, 700], [0.06, 950], [0.12, 650]], { type: 'square', vol: 0.035 * v, form: 1600, q: 3, start: i * 0.16 }); voice([[0, 800], [0.15, 1300], [0.45, 900]], { type: 'square', vol: 0.04 * v, form: 1700, q: 3, start: 0.5 }); },
+  dog: v => { voice([[0, 320], [0.04, 520], [0.13, 260]], { type: 'square', vol: 0.07 * v, form: 900, q: 2, noise: 0.9 }); voice([[0, 330], [0.04, 540], [0.13, 270]], { type: 'square', vol: 0.07 * v, form: 900, q: 2, noise: 0.9, start: 0.22 }); },
+  cat: v => voice([[0, 520], [0.18, 780], [0.55, 560]], { vol: 0.045 * v, form: 1500, q: 3, vib: 8, rate: 7 }),
+  seagull: v => { for (let i = 0; i < 3; i++) voice([[0, 1500], [0.1, 1900], [0.28, 1300]], { vol: 0.035 * v, form: 2200, q: 2.5, noise: 0.3, start: i * 0.32 }); },
+  pigeon: v => voice([[0, 380], [0.15, 430], [0.5, 340]], { type: 'sine', vol: 0.05 * v, form: 600, q: 1.5, vib: 18, rate: 10 }),
+  crow: v => { for (let i = 0; i < 2; i++) voice([[0, 700], [0.25, 560]], { type: 'square', vol: 0.045 * v, form: 1100, q: 2, noise: 1, start: i * 0.4 }); },
+  owl: v => { voice([[0, 380], [0.35, 360]], { type: 'sine', vol: 0.06 * v, form: 500, q: 1 }); voice([[0, 400], [0.12, 420], [0.7, 340]], { type: 'sine', vol: 0.06 * v, form: 500, q: 1, start: 0.55 }); },
+  duck: v => { for (let i = 0; i < 3; i++) voice([[0, 520], [0.12, 440]], { type: 'square', vol: 0.05 * v, form: 1000, q: 5, noise: 0.6, start: i * 0.2 }); },
+  coyote: v => voice([[0, 600], [0.4, 1100], [1.2, 900], [1.6, 500]], { vol: 0.04 * v, form: 1300, q: 3, vib: 12, rate: 5 }),
+  deer: v => voice([[0, 900], [0.2, 700]], { vol: 0.035 * v, form: 1200, q: 3, noise: 0.5 }),
+  raccoon: v => voice([[0, 1100], [0.08, 1400], [0.16, 1000], [0.24, 1300]], { type: 'square', vol: 0.03 * v, form: 1800, q: 3, noise: 0.6 }),
+  squirrel: v => { for (let i = 0; i < 4; i++) voice([[0, 2200], [0.04, 2600], [0.07, 2000]], { type: 'square', vol: 0.02 * v, form: 2400, q: 3, start: i * 0.09 }); },
+};
+export function animalCall(kind, vol = 1) { if (!audio() || !CALLS[kind]) return false; CALLS[kind](Math.max(0.05, Math.min(1, vol))); return true; }
