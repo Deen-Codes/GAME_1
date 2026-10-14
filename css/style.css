@@ -568,3 +568,7 @@ body.phone-out #mmWrap { opacity: 0; transition: opacity .1s; }
 .toast { position: fixed; top: calc(var(--sat) + 10px); left: 50%; transform: translateX(-50%); width: max-content; max-width: calc(100vw - 40px); z-index: 30; display: block; text-align: center; border-radius: 999px; }
 .toast:not(.on) { display: none; }
 .note { display: none !important; }
+
+/* incoming call: the phone-map buzzes */
+#mmWrap.ring { animation: phoneRing .12s linear 12; }
+@keyframes phoneRing { 0% { transform: rotate(0) translateX(0); } 25% { transform: rotate(-4deg) translateX(-2px); } 75% { transform: rotate(4deg) translateX(2px); } 100% { transform: rotate(0) translateX(0); } }

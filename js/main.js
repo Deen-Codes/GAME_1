@@ -1,26 +1,26 @@
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=100';
-import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=100';
-import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=100';
-import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=100';
-import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=100';
-import { buildPanel, renderStats } from './ui.js?v=100';
-import { Input } from './input.js?v=100';
-import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime } from './audio.js?v=100';
-import { runMinigame } from './minigames.js?v=100';
-import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk } from './peds.js?v=100';
-import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=100';
-import { findRoute } from './nav.js?v=100';
-import { COURSES, CAREERS, QUIZ } from './careers.js?v=100';
-import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=100';
-import { attachWheel } from './wheel.js?v=100';
-import { Animals } from './animals.js?v=100';
-import { Talk } from './talk.js?v=100';
-import { incomingText, classify, textOptions, textReply } from './texts.js?v=100';
-import { svg, drawIcon } from './icons.js?v=100';
-import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=100';
-import { FURN, CATALOG } from './furniture.js?v=100';
-import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=100';
+import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=101';
+import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=101';
+import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=101';
+import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=101';
+import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=101';
+import { buildPanel, renderStats } from './ui.js?v=101';
+import { Input } from './input.js?v=101';
+import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime } from './audio.js?v=101';
+import { runMinigame } from './minigames.js?v=101';
+import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk } from './peds.js?v=101';
+import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=101';
+import { findRoute } from './nav.js?v=101';
+import { COURSES, CAREERS, QUIZ } from './careers.js?v=101';
+import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=101';
+import { attachWheel } from './wheel.js?v=101';
+import { Animals } from './animals.js?v=101';
+import { Talk } from './talk.js?v=101';
+import { incomingText, classify, textOptions, textReply } from './texts.js?v=101';
+import { svg, drawIcon } from './icons.js?v=101';
+import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=101';
+import { FURN, CATALOG } from './furniture.js?v=101';
+import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=101';
 
 const $ = id => document.getElementById(id);
 let inside = null, editMode = false, held = null, pendingCar = false, homeMusic = false, phoneBadge = 0;
@@ -3026,7 +3026,7 @@ function deliverEvent(ev, data) {
     return runEventTalk(ev, data, { cfg: charCfg, name: 'You', tag: ev.scene === 'car' || (ride && !ride.b.two) ? 'Behind the wheel' : bedF ? 'In bed' : 'Thinking...', think: true, seat: ev.scene === 'car' || !!(ride && !ride.b.two), bed: bedF ? (bedF.c || FURN[bedF.t].colors?.[0] || '#3a5fa0') + '|' + bedF.t : null, car: ev.scene === 'car' && ride ? { color: ride.cfg?.bodyColor } : null }); }
   if (ev.via === 'call') {
     eventOpen = true; const A = audio(); if (A) for (let i = 0; i < 4; i++) sfx.note(i % 2 ? 1180 : 940, A.currentTime + i * 0.18, 0.15, 'square', 0.03, 3000);
-    navigator.vibrate?.([200, 100, 200]); toast(`Phone ringing: ${who.name || 'Unknown'}`, 1.8);
+    ringing(who.name || 'Unknown', lifeCfg(who));
     setTimeout(() => { eventOpen = false; if (state !== 'play') { life().queue.push({ id: ev.id, at: gameHours() + 1, data }); return; } runEventTalk(ev, data, { cfg: lifeCfg(who), name: who.name || 'Caller', tag: `${who.tag || 'Calling'} · on the phone`, phone: true, seat: !!(ride && !ride.b.two) }); }, 1500);
     return;
   }
@@ -3129,8 +3129,8 @@ function startPickup(ev, data) {
     { label: 'On my way', go: () => { setWaypoint(sp.x, sp.z, `Pick up ${kid.name}`); lifeAct = { kind: 'pickup', kid, sp, stage: 'go', t: 0, fig: null }; return 'Thank you! Don\'t be late.'; } },
     { label: 'I can\'t today', go: () => { bumpRel(kid.id, -6, false); if (f.partner) bumpRel(f.partner.id, -4, false); return 'Oh. Okay, we\'ll sort something out.'; } }] };
   const A = audio(); if (A) for (let i = 0; i < 4; i++) sfx.note(i % 2 ? 1180 : 940, A.currentTime + i * 0.18, 0.15, 'square', 0.03, 3000);
-  toast(`Phone ringing: ${caller.name}`, 1.8);
-  setTimeout(() => runEventTalk(E2, data, caller), 1400);
+  ringing(caller.name, caller.cfg);
+  setTimeout(() => runEventTalk(E2, data, caller), 1600);
 }
 function updatePickup(dt, A2) {
   const f = focusPos(), d = Math.hypot(f.x - A2.sp.x, f.z - A2.sp.z), kid = A2.kid;
@@ -3940,6 +3940,13 @@ function peek(id, html, dur = 4.5) {
   let pl = b.querySelector('.peek'); if (!pl) { pl = document.createElement('span'); pl.className = 'peek'; b.appendChild(pl); }
   pl.innerHTML = html; b.classList.add('open'); clearTimeout(peekT[id]); peekT[id] = setTimeout(() => b.classList.remove('open'), dur * 1000);
 }
+// the phone rings: their face on an "Incoming call" card and the phone-map in the corner buzzes
+function ringing(name, cfg, id) {
+  const w = faceFor(id, name) || (cfg ? { key: 'call:' + name, name, cfg, pitch: 260 } : null);
+  if (w) subs.say(w, 'Incoming call…', { silent: true, tag: 'calling', pri: 5, now: true, expr: 'happy' }); else subs.note('phone', 'Incoming call', name, { pri: 5, now: true });
+  const mw = $('mmWrap'); mw.classList.remove('ring'); void mw.offsetWidth; mw.classList.add('ring'); setTimeout(() => mw.classList.remove('ring'), 1700);
+  navigator.vibrate?.([200, 100, 200]);
+}
 function notify(from, text, dur = 4.5, id) { if (state === 'phone') return; const w = faceFor(id, from); if (w) subs.say(w, text, { silent: true, tag: 'text', expr: /!|love|miss|😘|❤️|yay|best/i.test(text) ? 'happy' : /\?\?|wow|seriously|forgot|where are you|done/i.test(text) ? 'angry' : 'neutral', pri: 2 }); else slotNote('phone', from, text, dur); }
 // a face for anyone we know: your partner, dates, kids, Ray, the people in town
 function faceFor(id, name) { try { return faceFor2(id, name); } catch { return null; } }
@@ -4538,8 +4545,11 @@ function dateCalls(dt) {
   const id = pick(ids), d = stats.dates[id]; if (!d?.cfg) return;
   stats.lastCall[id] = dayN; dateCall(id, d);
 }
-async function dateCall(id, d) {
-  notify(d.name, 'Incoming call…', 3); sfx.coin();
+function dateCall(id, d) { // ring first, then you're on the call
+  ringing(d.name, d.cfg, id); const A = audio(); if (A) for (let i = 0; i < 4; i++) sfx.note(i % 2 ? 1180 : 940, A.currentTime + i * 0.18, 0.15, 'square', 0.03, 3000);
+  setTimeout(() => { if (state === 'play' && !date) dateCall2(id, d); }, 1700);
+}
+async function dateCall2(id, d) {
   beginTalk(d.cfg, d.name, 'Calling you', 330, id, null, null, false, false, true);
   await talk.say(pick([`Hey you. I'm bored. Come pick me up?`, `I was just thinking about you... you free tonight?`, `Hiii. Wanna hang out? I'm already dressed.`]));
   const k = await talk.choose([I('car', 'On my way'), I('case', 'I\'m busy today, sorry'), I('x', 'Not tonight')]);
@@ -6047,7 +6057,7 @@ function saveGame() {
   store.set('bc_save', save); store.set('bc_arsenal', arsenal); store.set('bc_cars', garage);
 }
 // auto-update: bookmarks and home-screen apps can hold on to an old copy. Check version.json (never cached) and reload once if newer.
-const BUILD = 100;
+const BUILD = 101;
 function checkUpdate() {
   fetch('version.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(j => {
     if (!(j.v > BUILD)) return;
