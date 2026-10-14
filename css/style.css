@@ -581,3 +581,8 @@ body.phone-out #mmWrap { opacity: 0; transition: opacity .1s; }
 #mmWrap.navving #mmNav { padding-left: 48px; }
 #mmWrap:not(:has(#mmSpeed.hidden)) #mmNav { padding-left: 48px; }
 #mmWrap:has(#mmSpeed.hidden) #mmNav { align-items: center; text-align: center; padding-left: 6px; }
+/* sat-nav: just the distance, one line, fixed in place */
+#mmNav small { display: none; }
+#mmNav { flex-direction: row; justify-content: flex-end; align-items: center; height: 30px; padding: 0 8px 6px 48px; }
+#mmWrap:has(#mmSpeed.hidden) #mmNav { justify-content: center; padding-left: 8px; align-items: center; }
+#mmNav b { white-space: nowrap; font-size: 15px; font-variant-numeric: tabular-nums; line-height: 1; }
