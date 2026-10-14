@@ -1,26 +1,27 @@
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=130';
-import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun, partEffects, partPerk } from './gun.js?v=130';
-import { buildCar, computeCarStats, carStatBars, carClass, carPartEffects, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=130';
-import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, WIND_U, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=130';
-import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=130';
-import { buildPanel, renderStats } from './ui.js?v=130';
-import { Input } from './input.js?v=130';
-import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime, animalCall } from './audio.js?v=130';
-import { runMinigame } from './minigames.js?v=130';
-import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk, setReservedNames } from './peds.js?v=130';
-import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=130';
-import { findRoute } from './nav.js?v=130';
-import { COURSES, CAREERS, QUIZ } from './careers.js?v=130';
-import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=130';
-import { attachWheel } from './wheel.js?v=130';
-import { Animals } from './animals.js?v=130';
-import { Talk } from './talk.js?v=130';
-import { incomingText, classify, textOptions, textReply } from './texts.js?v=130';
-import { svg, drawIcon } from './icons.js?v=130';
-import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=130';
-import { FURN, CATALOG } from './furniture.js?v=130';
-import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=130';
+import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=131';
+import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun, partEffects, partPerk } from './gun.js?v=131';
+import { buildCar, computeCarStats, carStatBars, carClass, carPartEffects, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=131';
+import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, WIND_U, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=131';
+import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=131';
+import { buildPanel, renderStats } from './ui.js?v=131';
+import { Input } from './input.js?v=131';
+import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime, animalCall } from './audio.js?v=131';
+import { runMinigame } from './minigames.js?v=131';
+import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk, setReservedNames, seededLook } from './peds.js?v=131';
+import { citizens, whereNow } from './citizens.js?v=131';
+import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=131';
+import { findRoute } from './nav.js?v=131';
+import { COURSES, CAREERS, QUIZ } from './careers.js?v=131';
+import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=131';
+import { attachWheel } from './wheel.js?v=131';
+import { Animals } from './animals.js?v=131';
+import { Talk } from './talk.js?v=131';
+import { incomingText, classify, textOptions, textReply } from './texts.js?v=131';
+import { svg, drawIcon } from './icons.js?v=131';
+import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=131';
+import { FURN, CATALOG } from './furniture.js?v=131';
+import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=131';
 
 const $ = id => document.getElementById(id);
 let inside = null, editMode = false, held = null, pendingCar = false, homeMusic = false, phoneBadge = 0;
@@ -4428,7 +4429,7 @@ async function socialMove(p, mood, k, bg) {
 // A person is remembered once you talk to them or they see you do something. Opinion runs -100 (hates you) to 100 (close).
 // Each has an attitude: straight-laced people hate crime, edgy ones think dealing is cool, most are somewhere in between.
 // Known people keep turning up around town, and how they feel changes what they do: friends won't snitch, enemies will.
-const TOWN_MAX = 160, townLooks = {};
+const TOWN_MAX = 420, townLooks = {};
 const town = () => stats.town ||= {};
 const ATTITUDE = { straight: 'Straight-laced', normal: 'Easy-going', edgy: 'Street' };
 const WITNESS = {
@@ -4467,7 +4468,40 @@ function reservedNames() {
 }
 setReservedNames(reservedNames);
 // people you know keep crossing your path
+// ---------------- the 1,000 citizens (js/citizens.js): the person walking past is someone who lives here, where their routine puts them right now
+const CIT = () => citizens(PLACES, CITIES);
+const JOB_CLOTHES = { officer: c => Object.assign(c, { top: 'long', topColor: '#1f2a4a', pants: 'jeans', pantsColor: '#1f2a4a', hat: 'cap', hatColor: '#1f2a4a', shoes: 'boots', shoeColor: '#16161b' }),
+  nurse: c => Object.assign(c, { top: 'tshirt', topColor: '#3fb0a8', pants: 'jeans', pantsColor: '#3fb0a8', hat: 'none' }), doctor: c => Object.assign(c, { top: 'long', topColor: '#f4f6f8', hat: 'none' }),
+  priest: c => Object.assign(c, { top: 'suit', topColor: '#16161b', pants: 'jeans', pantsColor: '#16161b', hat: 'none' }), lawyer: c => Object.assign(c, { top: 'suit', neck: 'tie' }), analyst: c => Object.assign(c, { top: 'suit' }),
+  builder: c => Object.assign(c, { top: 'tshirt', topColor: '#ff8a2a', hat: 'helmet', hatColor: '#ffd23f', pants: 'cargo', shoes: 'boots' }), dockhand: c => Object.assign(c, { top: 'puffer', hat: 'beanie', pants: 'cargo', shoes: 'boots' }),
+  courier: c => Object.assign(c, { top: 'tracksuit', back: 'backpack', hat: 'none' }), trainer: c => Object.assign(c, { top: 'tank', pants: 'joggers', shoes: 'sneakers', muscle: 0.7 }), bouncer: c => Object.assign(c, { top: 'leather', topColor: '#16161b', muscle: 0.9, hat: 'none' }),
+  farmer: c => Object.assign(c, { top: 'long', topColor: '#7a2a2a', pants: 'jeans', hat: 'cowboy', shoes: 'boots' }), retired: c => Object.assign(c, { hairColor: '#d8d8d8', top: Math.random() < 0.5 ? 'long' : 'trench' }), influencer: c => Object.assign(c, { neck: 'chain', eyewear: 'shades' }) };
+function citizenRecord(c) {
+  const T = town(), id = 'c' + c.cid; if (T[id]) return T[id];
+  const keys = Object.keys(TOPICS), h = c.seed;
+  return T[id] = { id, cid: c.cid, name: c.name, fem: c.fem, beach: false, cfg: null, rap: 0, int: null, att: c.att, love: [keys[h % keys.length], keys[(h >> 3) % keys.length]], hate: keys[(h >> 6) % keys.length], known: [], taken: c.rel.some(q => q.k === 'partner'), saidTaken: false, respected: false, job: c.says, met: false, seen: dayN, wit: null, story: !!c.story };
+}
+function citizenLook(c, beach) {
+  const r = citizenRecord(c); if (townLooks[r.id] && !!townLooks[r.id].beach === !!beach) return townLooks[r.id];
+  const look = seededLook(c.seed, c.fem, beach, cityAt(c.home.x, c.home.z, 20)?.style === 'downtown' ? 'downtown' : 'mid', beach ? null : cfg => { JOB_CLOTHES[c.job]?.(cfg); if (c.age === 'older' && Math.random() < 0.7) cfg.hairColor = pick(['#9a9a9a', '#d8d8d8', '#ffffff']); });
+  r.cfg = look.cfg; look.person = r;
+  const keys = Object.keys(townLooks); if (keys.length > 140) for (const k of keys.slice(0, 20)) if (!peds.list.some(p => p.person?.id === k)) delete townLooks[k];
+  return townLooks[r.id] = look;
+}
+function citizenNear(beach) {
+  const R = reservedNames(), list = CIT(), out = [], hr = clockH, day = dayN;
+  for (const c of list) {
+    if (R.has(c.name)) continue;
+    const a = whereNow(c, hr, day); if (!a) continue;
+    if (beach !== (a.z > sandLine(a.x) - 30)) continue;
+    const d = Math.hypot(a.x - P.x, a.z - P.z); if (d > 170) continue;
+    out.push(c);
+  }
+  for (let k = 0; k < 6 && out.length; k++) { const c = out[Math.floor(Math.random() * out.length)]; if (!peds.list.some(p => p.person?.cid === c.cid)) return c; }
+  return null;
+}
 setTownSource(beach => {
+  if (Math.random() < 0.78) { const c = citizenNear(beach); if (c) return citizenLook(c, beach); }
   if (Math.random() > 0.2) return null;
   const R = reservedNames(), pool = Object.values(town()).filter(r => r.beach === beach && (r.met || Math.abs(r.rap) >= 8) && !R.has(r.name) && !peds.list.some(p => p.person === r));
   if (!pool.length) return null;
@@ -4484,10 +4518,27 @@ function react(p, good) {
 function updateReacts(dt) { for (let i = reacts.length - 1; i >= 0; i--) { const r = reacts[i]; r.t -= dt; r.sp.position.set(r.p.x, (r.p.h || 1.8) + 0.9 + (1.6 - r.t) * 0.5, r.p.z); r.sp.material.opacity = Math.min(1, r.t * 2); if (r.t <= 0) { dyn.remove(r.sp); r.sp.material.dispose(); reacts.splice(i, 1); } } }
 function bumpPerson(r, d) { r.rap = clamp(r.rap + d, -100, 100); r.seen = dayN; }
 // everyone nearby with a clear view of what you just did forms an opinion
+const FAVOUR_WHERE = [[/anchor bar|\bbar\b|pub/i, 'bar'], [/diner|coffee/i, 'diner'], [/casino/i, 'casino'], [/police|station/i, 'police'], [/chapel|church/i, 'church'], [/mall|clothes shop|market/i, 'mall'], [/laundrette/i, 'laundry'], [/\bgym\b/i, 'gym'], [/hospital/i, 'hospital'], [/college|library/i, 'college'], [/\bclub\b/i, 'club'], [/quickmart|groceries|ice\b|spices/i, 'mart'], [/bay motors|car for|fast car|part from/i, 'motors'], [/office tower|bay corp/i, 'office'], [/burger/i, 'burgershop'], [/barber|cut\b/i, 'barber'], [/tattoo|ink/i, 'tattoo'], [/\bpit\b/i, 'pit'], [/bay customs|garage|serviced/i, 'mods']];
+function favourPlace(ask) {
+  if (/\bpier\b|bait shop/i.test(ask)) return 'pier';
+  for (const [re, int] of FAVOUR_WHERE) if (re.test(ask)) { const ps = PLACES.filter(p => p.interior === int); if (ps.length) { let b = ps[0], bd = 1e9; for (const p of ps) { const d = Math.hypot(p.x - P.x, p.z - P.z); if (d < bd) { bd = d; b = p; } } return b.id; } }
+  return 'random';
+}
+ARRIVE.favour = (a, d) => {
+  const c = CIT()[d.cid], r = citizenRecord(c), F = stats.favours ||= {}; F[c.cid] = d.step + 1; (stats.favourDay ||= {})[c.cid] = dayN;
+  const pay = Math.round(c.story.reward * (d.step + 1) / 3 / 10) * 10; a.give(pay); bumpPerson(r, 15 + d.step * 10); r.met = true; a.karma(2);
+  stats.rel['cit:' + c.cid] = Math.max(stats.rel['cit:' + c.cid] || 0, 20 + d.step * 25); relNames['cit:' + c.cid] = c.name;
+  return d.step >= 2 ? `Done. ${c.first} texts: "I\'ll never forget this. You\'re family now." (${a.fmt(pay)}) ${c.first} is in your contacts.` : `Done. ${c.first} texts you ${a.fmt(pay)}: "Thank you!! Come find me, there\'s more if you\'re up for it."`;
+};
+// word gets round: the people a citizen knows hear what you did (half as strongly) and bring it up when you meet them
+function gossip(r, dv, kind) {
+  if (r?.cid == null || Math.abs(dv) < 4) return; const c = CIT()[r.cid]; if (!c) return;
+  for (const q of c.rel) { const o = citizenRecord(CIT()[q.cid]); bumpPerson(o, Math.round(dv / 2)); o.gossip = { from: c.first, k: kind, good: dv > 0, rel: q.k, d: dayN }; }
+}
 function witness(kind, x = P.x, z = P.z, victim = null) {
   if (inside) return;
   const W = WITNESS[kind], now = time;
-  if (victim && canKnow(victim) && now - (victim.vicT || -99) > 10) { victim.vicT = now; const r = personOf(victim); bumpPerson(r, kind === 'kind' ? 12 : -35); r.wit = { k: kind, victim: true, d: dayN }; react(victim, kind === 'kind'); }
+  if (victim && canKnow(victim) && now - (victim.vicT || -99) > 10) { victim.vicT = now; const r = personOf(victim); bumpPerson(r, kind === 'kind' ? 12 : -35); r.wit = { k: kind, victim: true, d: dayN }; gossip(r, kind === 'kind' ? 12 : -35, kind); react(victim, kind === 'kind'); }
   let shown = 0;
   for (const p of peds.list) {
     if (p === victim || !canKnow(p) || p.state === 'down') continue;
@@ -4495,7 +4546,7 @@ function witness(kind, x = P.x, z = P.z, victim = null) {
     p.witT ||= {}; if (now - (p.witT[kind] || -99) < 10) continue; p.witT[kind] = now;
     if (d > 6 && !losClear(p.x, p.z, x, z)) continue;
     const r = personOf(p), dv = W[r.att];
-    bumpPerson(r, dv); if (W.say[dv > 0 ? 'good' : 'bad'].length) r.wit = { k: kind, d: dayN };
+    bumpPerson(r, dv); if (W.say[dv > 0 ? 'good' : 'bad'].length) r.wit = { k: kind, d: dayN }; gossip(r, dv, kind);
     if (shown++ < 5 && Math.abs(dv) >= 3) react(p, dv > 0);
   }
 }
@@ -5111,6 +5162,7 @@ async function talkToPed(p) {
   const per = personOf(p);
   if (per) {
     $('talkTag').textContent = per.met || per.rap ? vibe(p) : zoneName(p.x, p.z);
+    const gs = per.gossip; if (gs && gs.d >= dayN - 5 && !per.met) { per.gossip = null; const who = { partner: 'My partner', friend: 'My friend', sibling: 'My ' + (per.fem ? 'brother' : 'sister') }[gs.rel] || 'Someone'; await talk.say(gs.good ? `${who} ${gs.from} told me about you. Says you\'re alright.` : `${who} ${gs.from} told me what you did. I know who you are.`); }
     const w = per.wit; per.wit = null;
     if (w && w.d >= dayN - 2) {
       const W = WITNESS[w.k];
@@ -5131,10 +5183,21 @@ async function talkToPed(p) {
     const have = GOODS.filter(g => stash[g.id] > 0);
     const opts = [{ label: I('chat', lookIsFem(p.look) && p.interest >= 35 ? 'Chat <small>(she\'s into you)</small>' : 'Chat'), id: 'chat' }];
     if (per && per.met && per.rap >= 30 && !buddy && !(date && lookIsFem(p.look))) opts.push({ label: I('people', 'Wanna hang out?'), id: 'hang' });
+    const sc = per?.cid != null ? CIT()[per.cid] : null, fstep = sc?.story ? ((stats.favours ||= {})[sc.cid] || 0) : 3;
+    if (sc?.story && fstep < 3 && per.rap >= -10 && !(life().errands || []).some(e => e.key === 'favour' && e.data.cid === sc.cid) && (stats.favourDay?.[sc.cid] ?? -1) < dayN) opts.push({ label: I('star', fstep ? 'Anything else I can do?' : 'You look like you need a hand'), id: 'favour' });
+    if (sc && !sc.story && per.met) opts.push({ label: I('people', 'Who do you hang out with?'), id: 'circle' });
     if (have.length) opts.push({ label: I('deal', 'Offer something'), id: 'sell' });
     opts.push({ label: I('cash', 'Rob them'), id: 'rob' }, { label: I('x', 'Bye'), id: 'bye' });
     const c = opts[await talk.choose(opts)].id;
     if (c === 'chat') { const r = await socialTalk(p, bg); $('talkTag').textContent = vibe(p); if (r === 'date') { endTalk(); return; } if (r === 'left') { endTalk(); peds.release(p); peds.flee(p, P.x, P.z); return; } if (r === 'done') break; continue; }
+    if (c === 'favour') { // story people: a chain of three favours, each sends you somewhere in the city
+      const ask = sc.story.asks[fstep]; if (fstep === 0) await talk.say(sc.story.bio.replace(/\.$/, '...') + ' Long story.');
+      await talk.say(ask);
+      const k = await talk.choose([I('check', 'Leave it with me'), I('x', 'Not today')]);
+      if (k === 0) { const where = favourPlace(ask); lifeApi().errand(where, 'favour', { cid: sc.cid, step: fstep }, `${sc.first}'s favour`); bumpPerson(per, 4); await talk.say(pick(['You\'re a lifesaver.', 'Seriously? Thank you.', 'I owe you one.'])); }
+      else await talk.say(pick(['No worries. Another time.', 'Yeah... okay.']));
+      continue; }
+    if (c === 'circle') { const rels = sc.rel.map(q => ({ ...q, c: CIT()[q.cid] })); await talk.say(rels.length ? rels.map(q => q.k === 'partner' ? `My ${q.c.fem ? 'girlfriend' : 'boyfriend'}, ${q.c.first}. ${q.c.says.replace(/^I('m| am) /, q.c.fem ? 'She\'s ' : 'He\'s ').replace(/^I /, q.c.fem ? 'She ' : 'He ')}` : q.k === 'sibling' ? `My ${q.c.fem ? 'sister' : 'brother'} ${q.c.first}.` : `My mate ${q.c.first}. ${q.c.eve === 'home' ? 'Homebody.' : `Usually at the ${q.c.eve} in the evenings.`}`).join(' ') : 'Honestly? Mostly my cat.'); continue; }
     if (c === 'hang') { await talk.say(lookIsFem(p.look) ? 'Wanna hang out? Just as mates.' : 'You free? Wanna hang out?', 'you');
       if (per.rap >= 30 && Math.random() < 0.55 + per.rap / 200) { await talk.say(pick(['Yeah, go on then!', 'Sure, I\'ve got nothing on.', 'Thought you\'d never ask!'])); endTalk(); startBuddy(p, per); return; }
       await talk.say(pick(['Can\'t right now, rain check?', 'Ah, I\'m busy today. Another time!'])); continue; }
@@ -6396,7 +6459,7 @@ function saveGame() {
   store.set('bc_save', save); store.set('bc_arsenal', arsenal); store.set('bc_cars', garage);
 }
 // auto-update: bookmarks and home-screen apps can hold on to an old copy. Check version.json (never cached) and reload once if newer.
-const BUILD = 130;
+const BUILD = 131;
 function checkUpdate() {
   fetch('version.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(j => {
     if (!(j.v > BUILD)) return;
@@ -6725,4 +6788,4 @@ function frame(now) {
 }
 startGame();
 requestAnimationFrame(frame);
-window.__game = { get animals() { return animals; }, crime, WANT, copCars, cops, pitFight, busted, fam, famNewDay, makeOfficial, talkFamily, get dayN() { return dayN; }, set dayN(v) { dayN = v; }, scene: G.scene, cam: G.cam, snap: () => updateCamera(0, true), get state() { return state; }, P, input, get ride() { return ride; }, get myCar() { return myCar; }, get traffic() { return traffic; }, peds, setTime: h => { clockH = h; }, openCustom, enterVehicle, exitCar, get money() { return money; }, set money(v) { money = v; }, openPlace, PLACES, PROPERTIES, runMinigame, get action() { return action; }, arsenal, selectWeapon, openPhone, setWaypoint, get route() { return route; }, talkToPed, talk, doAction, stats, get inside() { return inside; }, enterInterior, exitInterior, get customers() { return customers; }, newCustomer, startEdit, endEdit, get job() { return job; }, gainXP, storage, doSpot, useFurn, phoneGo, talkVenue, talkJob, openPlace, talkCustomer, startJob, openCarShop, damageCar, repairCar, addFire, get fires() { return fires; }, get ems() { return ems; }, get vehicles() { return vehicles; }, makeVehicle, makeCop, prisonFight, life, startDealMeet, get lifeAct() { return lifeAct; }, get train() { return train; }, get trainRide() { return trainRide; }, boardTrain, eventReset: () => { eventOpen = false; }, bodyCheck, attendClass, talkAdmissions, edu, startDance, get dance() { return dance; }, radioSet: i => { radioSet(i); radioOn(true); }, get zoom() { return zoom; }, set zoom(z) { zoom = z; }, DEFAULT_CAR, setState: x => setState(x), get jail() { return stats.jail; }, witness, personOf, dealHeat, trafficStop, carNear, carTop, startDate, get ownedT() { return owned; }, openGunsmithT: (s, p, n) => openGunsmith(s, p, n), ambient, get ambEl() { return ambEl; }, openTradeT: p => openTrade(p), get stashT() { return stash; }, startWooT: (k, b) => startWoo(k, b), get woo() { return woo; }, endDate, dateCall, addDateContact, get phoneThread() { return phoneThread; }, set phoneThread(v) { phoneThread = v; }, talkDate, get date() { return date; }, get carAnim() { return carAnim; }, lifeApi, startShower, bizNewDay, subs, forceWanted, get buddy() { return buddy; }, startBuddy, textMe, toast, levelUp, closePhone, bringCar, useFurn, damageCar, debtorScene, get debtor() { return debtor; }, camBlocked, get camYaw() { return camYaw; }, ev: { evChase, evMug, evRobbery, evGang, evBusk, evCrash, evFire, evMarket, evParade, evProtest, streetEvents } };
+window.__game = { get animals() { return animals; }, crime, WANT, copCars, cops, pitFight, busted, fam, famNewDay, makeOfficial, talkFamily, get dayN() { return dayN; }, set dayN(v) { dayN = v; }, scene: G.scene, cam: G.cam, snap: () => updateCamera(0, true), get state() { return state; }, P, input, get ride() { return ride; }, get myCar() { return myCar; }, get traffic() { return traffic; }, peds, setTime: h => { clockH = h; }, openCustom, enterVehicle, exitCar, get money() { return money; }, set money(v) { money = v; }, openPlace, PLACES, PROPERTIES, runMinigame, get action() { return action; }, arsenal, selectWeapon, openPhone, setWaypoint, get route() { return route; }, talkToPed, talk, doAction, stats, get inside() { return inside; }, enterInterior, exitInterior, get customers() { return customers; }, newCustomer, startEdit, endEdit, get job() { return job; }, gainXP, storage, doSpot, useFurn, phoneGo, talkVenue, talkJob, openPlace, talkCustomer, startJob, openCarShop, damageCar, repairCar, addFire, get fires() { return fires; }, get ems() { return ems; }, get vehicles() { return vehicles; }, makeVehicle, makeCop, prisonFight, life, startDealMeet, get lifeAct() { return lifeAct; }, get train() { return train; }, get trainRide() { return trainRide; }, boardTrain, eventReset: () => { eventOpen = false; }, bodyCheck, attendClass, talkAdmissions, edu, startDance, get dance() { return dance; }, radioSet: i => { radioSet(i); radioOn(true); }, get zoom() { return zoom; }, set zoom(z) { zoom = z; }, DEFAULT_CAR, setState: x => setState(x), get jail() { return stats.jail; }, witness, personOf, dealHeat, trafficStop, carNear, carTop, startDate, CIT: () => CIT(), citizenRecord: c => citizenRecord(c), get town() { return town(); }, get ownedT() { return owned; }, openGunsmithT: (s, p, n) => openGunsmith(s, p, n), ambient, get ambEl() { return ambEl; }, openTradeT: p => openTrade(p), get stashT() { return stash; }, startWooT: (k, b) => startWoo(k, b), get woo() { return woo; }, endDate, dateCall, addDateContact, get phoneThread() { return phoneThread; }, set phoneThread(v) { phoneThread = v; }, talkDate, get date() { return date; }, get carAnim() { return carAnim; }, lifeApi, startShower, bizNewDay, subs, forceWanted, get buddy() { return buddy; }, startBuddy, textMe, toast, levelUp, closePhone, bringCar, useFurn, damageCar, debtorScene, get debtor() { return debtor; }, camBlocked, get camYaw() { return camYaw; }, ev: { evChase, evMug, evRobbery, evGang, evBusk, evCrash, evFire, evMarket, evParade, evProtest, streetEvents } };

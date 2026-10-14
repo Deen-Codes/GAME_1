@@ -1,7 +1,7 @@
 // Pedestrians: baked low-poly people who stroll sidewalks, wander the beach, flee from trouble.
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, randomChar, disposeObject } from './character.js?v=130';
-import { CITIES, sandLine, shoreLine, groundH, walkable as worldWalkable, resolve } from './world.js?v=130';
+import { buildCharacter, randomChar, disposeObject } from './character.js?v=131';
+import { CITIES, sandLine, shoreLine, groundH, walkable as worldWalkable, resolve } from './world.js?v=131';
 // interiors swap in their own floor test so brawlers can move around inside
 let walkable = worldWalkable; export function setWalk(fn) { walkable = fn || worldWalkable; }
 
@@ -38,7 +38,7 @@ let reservedFn = null; export function setReservedNames(fn) { reservedFn = fn; }
 export function personName(fem) { const R = reservedFn?.(); for (let k = 0; k < 12; k++) { const n = rawName(fem); if (!R || !R.has(n) && !R.has(n.split(' ')[0])) return n; } return rawName(fem); }
 function rawName(fem) { nameSeq = (nameSeq * 1103515245 + 12345) % 2147483647; const r = nameSeq; return (fem ? FIRST_F : FIRST_M)[r % 40] + ' ' + LAST[Math.floor(r / 40) % LAST.length]; }
 const FEM_HAIR = ['long', 'bob', 'ponytail', 'bun', 'long', 'afro'], MASC_HAIR = ['short', 'buzz', 'quiff', 'spiky', 'afro', 'none', 'short'];
-function makeLook(beach, fem = Math.random() < 0.5, style = 'mid') {
+function makeLook(beach, fem = Math.random() < 0.5, style = 'mid', tweak = null) {
   const cfg = { ...randomChar(), mask: 'none', skin: pick(SKINS), hairColor: pick(HAIRS), eyewear: Math.random() < 0.25 ? 'shades' : 'none', back: Math.random() < 0.15 ? 'backpack' : 'none', eyes: 'normal', headSize: rand(0.95, 1.1), height: rand(0.88, 1.12) };
   cfg.hat = Math.random() < 0.3 ? pick(['cap', 'beanie', 'cowboy', 'headband']) : 'none';
   cfg.hair = pick(fem ? FEM_HAIR : MASC_HAIR);
@@ -55,7 +55,7 @@ function makeLook(beach, fem = Math.random() < 0.5, style = 'mid') {
   else if (cfg.facialHair === undefined) cfg.facialHair = 'none';
   if (beach) Object.assign(cfg, { top: fem ? pick(['swimtop', 'swimtop', 'tank']) : pick(['shirtless', 'shirtless', 'tank', 'tshirt']), pants: fem ? pick(['swim', 'swim', 'shorts']) : pick(['swim', 'shorts']), shoes: 'bare', eyewear: Math.random() < 0.5 ? 'shades' : 'none', hat: Math.random() < 0.3 ? (fem ? 'none' : 'cap') : 'none' });
   else { if (['armor', 'shirtless', 'swimtop'].includes(cfg.top)) cfg.top = 'tshirt'; if (cfg.pants === 'swim') cfg.pants = 'jeans'; }
-  if (!fem) { if (cfg.top === 'crop') cfg.top = 'tshirt'; if (cfg.pants === 'skirt') cfg.pants = 'jeans'; }
+  if (!fem) { if (cfg.top === 'crop' || cfg.top === 'dress') cfg.top = 'tshirt'; if (['skirt', 'longskirt', 'leggings'].includes(cfg.pants)) cfg.pants = 'jeans'; if (cfg.shoes === 'heels') cfg.shoes = 'sneakers'; if (cfg.neck === 'pearls') cfg.neck = 'none'; }
   if (!fem && Math.random() < 0.22) cfg.muscle = rand(0.3, 0.95); // gym rats, dad bods, all sorts
   if (Math.random() < 0.22) cfg.fat = rand(0.2, 0.8);
   cfg.height = (cfg.height || 1) * rand(0.94, 1.08);
@@ -66,8 +66,11 @@ function makeLook(beach, fem = Math.random() < 0.5, style = 'mid') {
     const pool = TAT_POOL.filter(d => !playerInk.includes(d)), spots = fem ? ['foreL', 'foreR', 'armL', 'neck', 'handR'] : ['armR', 'armL', 'foreR', 'foreL', 'neck', 'handR', 'handL', 'chest', 'back'];
     cfg.tattoos = Array.from({ length: 1 + Math.floor(Math.random() * 3) }, () => ({ spot: pick(spots), design: pick(pool), ink: Math.random() < 0.8 ? '#1c2333' : pick(['#8b1e3f', '#1f4a8a', '#2f6b3a']) }));
   }
+  if (tweak) tweak(cfg);
   return { ...bakeCfg(cfg), beach, fem };
 }
+// the same person every time: a look generated from their seed (plus work clothes for their job)
+export function seededLook(seed, fem, beach, style, tweak) { const save = Math.random; let s = seed % 2147483646 + 1; Math.random = () => (s = (s * 16807) % 2147483647) / 2147483647; try { return makeLook(beach, fem, style, tweak); } finally { Math.random = save; } }
 // Bake any character config into 5 meshes (body + 4 limbs) so lots of people are cheap to draw.
 export function bakeCfg(cfg) {
   const ch = buildCharacter(cfg); ch.root.updateMatrixWorld(true);
