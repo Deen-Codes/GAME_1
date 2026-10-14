@@ -27,7 +27,12 @@ function tone(freq, dur, type = 'sine', gain = 0.1, when = 0, slideTo = null) {
 }
 export const sfx = {
   shot(quiet, energy) { if (!audio()) return; if (energy) tone(900, 0.15, 'sawtooth', 0.05, 0, 120); else burst(0.13, quiet ? 900 : 2600, 'lowpass', quiet ? 0.07 : 0.2); },
-  horn() { if (!audio()) return; tone(392, 0.36, 'square', 0.05); tone(494, 0.36, 'square', 0.05); },
+  horn(type = 'classic') { if (!audio()) return;
+    if (type === 'truck') { tone(150, 0.7, 'sawtooth', 0.06); tone(185, 0.7, 'sawtooth', 0.05); return; }
+    if (type === 'clown') { tone(700, 0.25, 'square', 0.04, 0, 1100); tone(1100, 0.25, 'square', 0.04, 0.25, 600); return; }
+    if (type === 'tune') { [392, 392, 392, 523, 659].forEach((f, i) => tone(f, i > 2 ? 0.3 : 0.12, 'square', 0.045, i * 0.14)); return; } // la cucaracha
+    if (type === 'dixie') { [784, 659, 523, 523, 523, 587, 659, 698, 784].forEach((f, i) => tone(f, 0.16, 'square', 0.04, i * 0.17)); return; }
+    tone(392, 0.36, 'square', 0.05); tone(494, 0.36, 'square', 0.05); },
   coin() { if (!audio()) return; tone(988, 0.08, 'square', 0.05); tone(1319, 0.18, 'square', 0.05, 0.07); },
   cash() { if (!audio()) return; [784, 988, 1175, 1568].forEach((f, i) => tone(f, 0.12, 'triangle', 0.07, i * 0.06)); },
   fail() { if (!audio()) return; tone(300, 0.25, 'sawtooth', 0.06, 0, 120); },

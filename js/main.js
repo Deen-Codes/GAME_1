@@ -1,28 +1,28 @@
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=135';
-import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun, partEffects, partPerk } from './gun.js?v=135';
-import { buildCar, computeCarStats, carStatBars, carClass, carPartEffects, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=135';
-import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, WIND_U, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=135';
-import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=135';
-import { buildPanel, renderStats } from './ui.js?v=135';
-import { Input } from './input.js?v=135';
-import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime, animalCall } from './audio.js?v=135';
-import { runMinigame } from './minigames.js?v=135';
-import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk, setReservedNames, seededLook } from './peds.js?v=135';
-import { citizens, whereNow } from './citizens.js?v=135';
-import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=135';
-import { findRoute } from './nav.js?v=135';
-import { COURSES, CAREERS, QUIZ } from './careers.js?v=135';
-import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=135';
-import { attachWheel } from './wheel.js?v=135';
-import { GROUND_U } from './groundtex.js?v=135';
-import { Animals, makeAnimalMesh } from './animals.js?v=135';
-import { Talk } from './talk.js?v=135';
-import { incomingText, classify, textOptions, textReply } from './texts.js?v=135';
-import { svg, drawIcon } from './icons.js?v=135';
-import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=135';
-import { FURN, CATALOG } from './furniture.js?v=135';
-import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=135';
+import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=136';
+import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun, partEffects, partPerk } from './gun.js?v=136';
+import { buildCar, computeCarStats, carStatBars, carClass, carPartEffects, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=136';
+import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, WIND_U, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=136';
+import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=136';
+import { buildPanel, renderStats } from './ui.js?v=136';
+import { Input } from './input.js?v=136';
+import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime, animalCall } from './audio.js?v=136';
+import { runMinigame } from './minigames.js?v=136';
+import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk, setReservedNames, seededLook } from './peds.js?v=136';
+import { citizens, whereNow } from './citizens.js?v=136';
+import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=136';
+import { findRoute } from './nav.js?v=136';
+import { COURSES, CAREERS, QUIZ } from './careers.js?v=136';
+import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=136';
+import { attachWheel } from './wheel.js?v=136';
+import { GROUND_U } from './groundtex.js?v=136';
+import { Animals, makeAnimalMesh } from './animals.js?v=136';
+import { Talk } from './talk.js?v=136';
+import { incomingText, classify, textOptions, textReply } from './texts.js?v=136';
+import { svg, drawIcon } from './icons.js?v=136';
+import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=136';
+import { FURN, CATALOG } from './furniture.js?v=136';
+import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=136';
 
 const $ = id => document.getElementById(id);
 let inside = null, editMode = false, held = null, pendingCar = false, homeMusic = false, phoneBadge = 0;
@@ -1957,7 +1957,7 @@ function updateVehicles(dt) {
       let gas = !dead && ((!stickMode && input.held('a')) || input.keys.has('KeyW') || input.keys.has('ArrowUp'));
       let brk = !dead && ((!stickMode && input.held('x')) || input.keys.has('KeyS') || input.keys.has('ArrowDown'));
       if (stickMode) {
-        if (input.consume('a') || input.keys.has('KeyH') && !v.hornK) { sfx.horn(); peds.scare(c.x, c.z, 9); for (const t of traffic) if (Math.hypot(t.rx - c.x, t.rz - c.z) < 25) t.honk = 0; }
+        if (input.consume('a') || input.keys.has('KeyH') && !v.hornK) { sfx.horn(v.cfg?.horn); peds.scare(c.x, c.z, 9); for (const t of traffic) if (Math.hypot(t.rx - c.x, t.rz - c.z) < 25) t.honk = 0; }
         v.hornK = input.keys.has('KeyH');
         if (input.consume('x') || input.keys.has('KeyL') && !v.lightK) toggleLights();
         v.lightK = input.keys.has('KeyL');
@@ -1988,14 +1988,14 @@ function updateVehicles(dt) {
         // brake + drive = wheelspin (and launch control when you let go of the brake); steer at the same time for donuts
         v.launch = Math.min(1, (v.launch || 0) + dt * 0.9);
         const dn = stickMode ? (st.m > 0.35 ? clamp(wrapA(Math.atan2(st.x, -st.y) - c.h) * 1.5, -1, 1) : 0) : clamp(-st.x, -1, 1);
-        if (Math.abs(dn) > 0.25) { c.h = wrapA(c.h + dn * 3.2 * dt); c.v = 2.6; c.steer = dn; v.donut = true; for (let q = 0; q < 2; q++) spawnParticles(c.x - Math.sin(c.h) * b.length * 0.4 + rand(-0.6, 0.6), 0.25, c.z - Math.cos(c.h) * b.length * 0.4 + rand(-0.6, 0.6), ['#f0f0f0', '#c8c8c8'], 1, 1.2, 1.4, 0.55, -1); if (Math.random() < dt * 2) sfx.click?.(); }
+        if (Math.abs(dn) > 0.25) { c.h = wrapA(c.h + dn * 3.2 * dt); c.v = 2.6; c.steer = dn; v.donut = true; for (let q = 0; q < 2; q++) spawnParticles(c.x - Math.sin(c.h) * b.length * 0.4 + rand(-0.6, 0.6), 0.25, c.z - Math.cos(c.h) * b.length * 0.4 + rand(-0.6, 0.6), [v.cfg?.smokeColor || '#f0f0f0', '#c8c8c8'], 1, 1.2, 1.4, 0.55, -1); if (Math.random() < dt * 2) sfx.click?.(); }
         else { c.v = 0; v.donut = false; }
         for (const w of b.wheels) if (!w.front) w.spin.rotation.x += 40 * dt;
-        if (Math.random() < dt * (10 + v.launch * 30)) spawnParticles(c.x - Math.sin(c.h) * b.length * 0.45, 0.25, c.z - Math.cos(c.h) * b.length * 0.45, ['#e8e8e8', '#bdbdbd'], 1, 1.5, 0.9, 0.4, -1);
+        if (Math.random() < dt * (10 + v.launch * 30)) spawnParticles(c.x - Math.sin(c.h) * b.length * 0.45, 0.25, c.z - Math.cos(c.h) * b.length * 0.45, [v.cfg?.smokeColor || '#e8e8e8', '#bdbdbd'], 1, 1.5, 0.9, 0.4, -1);
         if (v.launch >= 1 && !v.launchReady && !v.donut) { v.launchReady = true; navigator.vibrate?.(15); }
       } else if (!burn && (burnBtn || (gas && !brk)) && v.launch > 0.25 && !v.donut) {
         c.v = Math.max(c.v, s.top * 0.42 * v.launch); shake = Math.max(shake, 0.25 * v.launch);
-        spawnParticles(c.x - Math.sin(c.h) * b.length * 0.45, 0.25, c.z - Math.cos(c.h) * b.length * 0.45, ['#e8e8e8', '#bdbdbd'], 14, 3, 1.2, 0.5, -1);
+        spawnParticles(c.x - Math.sin(c.h) * b.length * 0.45, 0.25, c.z - Math.cos(c.h) * b.length * 0.45, [v.cfg?.smokeColor || '#e8e8e8', '#bdbdbd'], 14, 3, 1.2, 0.5, -1);
         v.launch = 0; v.launchReady = false;
       } else { v.launch = 0; v.launchReady = false; v.donut = false; }
       if (v.launch > 0) { /* revving on the spot */ }
@@ -6477,7 +6477,7 @@ function saveGame() {
   store.set('bc_save', save); store.set('bc_arsenal', arsenal); store.set('bc_cars', garage);
 }
 // auto-update: bookmarks and home-screen apps can hold on to an old copy. Check version.json (never cached) and reload once if newer.
-const BUILD = 135;
+const BUILD = 136;
 function checkUpdate() {
   fetch('version.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(j => {
     if (!(j.v > BUILD)) return;
@@ -6655,7 +6655,7 @@ const HAIR_SCHEMA = [{ tab: 'Cut', items: CHAR_SCHEMA.flatMap(t => t.items).filt
 const CLOTHES_EXTRA = [{ tab: 'Colours', items: CHAR_SCHEMA.flatMap(t => t.items).filter(i => ['topColor', 'pantsColor', 'shoeColor', 'hatColor', 'accent', 'gloveColor', 'backColor'].includes(i.key)) },
   { tab: 'Extras', items: CHAR_SCHEMA.flatMap(t => t.items).filter(i => ['eyewear', 'gloves', 'back', 'hat'].includes(i.key)) }];
 const MOD_PRICES = { engine: { eco: 0, stock: 200, sport: 3000, race: 8000, rocket: 20000 }, tyres: { slick: 1500, runflat: 1800 }, turbo: { none: 0, street: 2500, big: 6000, twin: 12000 }, gearbox: { stock: 0, sport: 1800, race: 5000 }, brakes: { stock: 0, sport: 1200, race: 4000 }, weight: { stock: 0, stripped: 900, carbon: 6500 }, nitro: { none: 0, small: 3500, big: 8000 }, armour: { none: 0, light: 5000, heavy: 14000 }, glass: { stock: 0, bulletproof: 9000 }, ram: { none: 0, bars: 2200 }, spoiler: { gt: 1500, wing: 900 }, finish: { carbon: 2000, chrome: 2500 } };
-const MOD_BASE = { tyres: 600, wheels: 900, wheelSize: 500, suspension: 700, front: 400, rear: 400, skirts: 400, spoiler: 600, hood: 500, roof: 300, exhaust: 400, finish: 800, bodyColor: 500, accentColor: 200, decal: 300, tint: 200, rimColor: 150, headlights: 100, underglow: 600, glowColor: 100 };
+const MOD_BASE = { smokeColor: 300, horn: 250, tyres: 600, wheels: 900, wheelSize: 500, suspension: 700, front: 400, rear: 400, skirts: 400, spoiler: 600, hood: 500, roof: 300, exhaust: 400, finish: 800, bodyColor: 500, accentColor: 200, decal: 300, tint: 200, rimColor: 150, headlights: 100, underglow: 600, glowColor: 100 };
 function modPrice(k, v) { return MOD_PRICES[k]?.[v] ?? MOD_BASE[k] ?? 0; }
 function shopPrice() {
   if (!shop) return 0;

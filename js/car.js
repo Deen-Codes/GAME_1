@@ -1,7 +1,7 @@
 // Modular car builder. Car faces +Z, sits on y=0, origin at the centre of the wheelbase.
 import * as THREE from '../lib/three.module.min.js';
-import { BASIC } from './character.js?v=135';
-import { patternTexture } from './gun.js?v=135';
+import { BASIC } from './character.js?v=136';
+import { patternTexture } from './gun.js?v=136';
 
 export const BODIES = {
   hatch:  { label: 'Hatchback', L: 3.8, W: 1.75, bh: 0.55, cl: 2.0, ch: 0.62, co: -0.4,  wr: 0.34, mass: 1.0 },
@@ -46,7 +46,8 @@ export const CAR_PARTS = {
   roof: { none: o('None'), rack: o('Roof rack'), box: o('Roof box'), lightbar: o('Light bar'), taxi: o('Taxi sign'), police: o('Siren') },
   exhaust: { single: o('Single'), dual: o('Dual'), quad: o('Quad'), side: o('Side pipes') },
   skirts: { none: o('None'), skirts: o('Side skirts') },
-  decal: { none: o('None'), stripes: o('Racing stripes'), side: o('Side stripe'), twotone: o('Two-tone') },
+  decal: { none: o('None'), stripes: o('Racing stripes'), side: o('Side stripe'), twotone: o('Two-tone'), flames: o('Flames'), race: o('Race number'), checker: o('Checker strip') },
+  horn: { classic: o('Classic'), truck: o('Air horn'), tune: o('La Cucaracha'), clown: o('Clown'), dixie: o('Dixie') },
   finish: { gloss: o('Gloss'), matte: o('Matte'), metallic: o('Metallic'), chrome: o('Chrome'), camo: o('Camo'), carbon: o('Carbon') },
   tint: { clear: o('Clear'), smoke: o('Smoke'), black: o('Limo black'), gold: o('Gold') },
   // performance and protection (Bay Customs)
@@ -105,6 +106,8 @@ export const CAR_SCHEMA = [
     { key: 'accentColor', type: 'color', label: 'Accent / decals', palette: BASIC },
     { key: 'decal', type: 'choice', label: 'Decals', options: opts(CAR_PARTS.decal) },
     { key: 'tint', type: 'choice', label: 'Window tint', options: opts(CAR_PARTS.tint) },
+    { key: 'smokeColor', type: 'color', label: 'Tyre smoke', palette: ['#e8e8e8', '#16161b', '#ff3b4a', '#ff6fb5', '#b26bff', '#38e8ff', '#4cd964', '#ffd23f'] },
+    { key: 'horn', type: 'choice', label: 'Horn', options: opts(CAR_PARTS.horn) },
   ] },
   { tab: 'Lights', items: [
     { key: 'headlights', type: 'color', label: 'Headlights', palette: LIGHT_COLS },
@@ -300,6 +303,7 @@ export function buildCar(cfg) {
   const bodyM = new THREE.MeshStandardMaterial({ color: c.bodyColor, roughness: look[0], metalness: look[1], flatShading: true });
   if (fin === 'camo' || fin === 'carbon') { bodyM.map = patternTexture(fin, c.bodyColor, c.accentColor); bodyM.map.repeat.set(2, 2); bodyM.color.set('#ffffff'); }
   const accM = new THREE.MeshStandardMaterial({ color: c.accentColor, roughness: 0.45, metalness: 0.2, flatShading: true });
+  const m2c = {}, M2 = col => m2c[col] ||= new THREE.MeshStandardMaterial({ color: col, roughness: 0.45, metalness: 0.15, flatShading: true });
   const dark = new THREE.MeshStandardMaterial({ color: '#16161a', roughness: 0.8, flatShading: true });
   const chrome = new THREE.MeshStandardMaterial({ color: '#d0d4da', roughness: 0.15, metalness: 1 });
   const tintCol = { clear: '#a9d6ef', smoke: '#3c4b5c', black: '#0c0e12', gold: '#c89b3c' }[c.tint] || '#3c4b5c';
@@ -346,6 +350,9 @@ export function buildCar(cfg) {
     }
     if (c.decal === 'twotone') bx(W + 0.02, bh * 0.45, L + 0.02, accM, 0, clr + bh * 0.22, 0);
     if (c.decal === 'side') for (const sx of [-1, 1]) bx(0.02, 0.1, L * 0.86, accM, sx * (W / 2 + 0.005), by + 0.05, 0);
+    if (c.decal === 'flames') for (const sx of [-1, 1]) for (let i = 0; i < 5; i++) { const len = L * (0.22 + (i % 2) * 0.12 + (i === 2 ? 0.12 : 0)); bx(0.02, 0.07, len, i % 2 ? M2('#ffd23f') : accM, sx * (W / 2 + 0.045), by - 0.1 + i * 0.07, L / 2 - len / 2 - 0.05); }
+    if (c.decal === 'race') for (const sx of [-1, 1]) { bx(0.02, 0.42, 0.42, M2('#ffffff'), sx * (W / 2 + 0.045), by + 0.02, 0); bx(0.025, 0.3, 0.06, accM, sx * (W / 2 + 0.05), by + 0.02, 0); bx(0.025, 0.04, 0.18, accM, sx * (W / 2 + 0.05), by + 0.02 - 0.13, 0); } // a big number 1 on the doors
+    if (c.decal === 'checker') for (const sx of [-1, 1]) for (let i = 0; i < 14; i++) bx(0.02, 0.06, L * 0.86 / 14, (i % 2) ? M2('#ffffff') : M2('#16161b'), sx * (W / 2 + 0.045), by + ((i % 2) ? 0.03 : 0.09) - 0.03, -L * 0.43 + (i + 0.5) * L * 0.86 / 14);
     // cabin
     const ch = B.ch, cl = B.cl;
     if (B.topless) {
