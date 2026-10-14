@@ -44,6 +44,7 @@ export const ICONS = {
   radio: ['M3 9h18v11H3z', 'M7 9l10-5', C(8, 14.5, 2.5), 'M14 13h4M14 16h4'],
   phone: ['M7 2h10a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z', 'M10 19h4'],
   mail: ['M3 6h18v12H3z', 'M3 7l9 6 9-6'],
+  download: ['M12 3v12', 'M7 10l5 5 5-5', 'M5 20h14'],
   bag: ['M5 8h14l-1 13H6z', 'M9 8V6a3 3 0 0 1 6 0v2'],
   star: ['M12 3l2 6 6 2-6 2-2 6-2-6-6-2 6-2z', 'M19 3v4M17 5h4'], // drawn as a sparkle: no star icons in this game
   lock: ['M5 11h14v10H5z', 'M8 11V7a4 4 0 0 1 8 0v4', 'M12 15v2'],

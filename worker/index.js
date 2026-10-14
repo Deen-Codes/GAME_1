@@ -32,7 +32,8 @@ export class Hub extends DurableObject {
     this.sql.exec(`CREATE TABLE IF NOT EXISTS codes (email TEXT PRIMARY KEY, code TEXT, token TEXT, exp INTEGER, sent INTEGER, tries INTEGER DEFAULT 0);
       CREATE TABLE IF NOT EXISTS sessions (sid TEXT PRIMARY KEY, email TEXT, exp INTEGER);
       CREATE TABLE IF NOT EXISTS users (email TEXT PRIMARY KEY, created INTEGER, seen INTEGER);
-      CREATE TABLE IF NOT EXISTS sends (ip TEXT, t INTEGER);`);
+      CREATE TABLE IF NOT EXISTS sends (ip TEXT, t INTEGER);
+      CREATE TABLE IF NOT EXISTS saves (email TEXT PRIMARY KEY, data TEXT, t INTEGER, summary TEXT);`);
   }
   one(q, ...a) { return this.sql.exec(q, ...a).toArray()[0] || null; }
   session(sid) { if (!sid || !/^[0-9a-f]{64}$/.test(sid)) return null; const s = this.one('SELECT * FROM sessions WHERE sid = ?', sid); return s && s.exp > Date.now() ? s : null; }
@@ -45,9 +46,20 @@ export class Hub extends DurableObject {
       if (p === '/api/verify' && req.method === 'POST') return await this.verify(req, now);
       if (p === '/api/me') { const s = this.session((req.headers.get('authorization') || '').replace(/^Bearer /, '')); return s ? json({ email: s.email }) : json({ error: 'Not signed in' }, 401); }
       if (p === '/api/logout' && req.method === 'POST') { const sid = (req.headers.get('authorization') || '').replace(/^Bearer /, ''); this.sql.exec('DELETE FROM sessions WHERE sid = ?', sid); return json({ ok: true }); }
+      if (p === '/api/save') return await this.saveApi(req, now);
       if (p === '/api/status') return json({ ok: true, online: this.ctx.getWebSockets().length });
       return json({ error: 'Not found' }, 404);
     } catch (e) { return json({ error: 'Server error' }, 500); }
+  }
+
+  // ---- cloud saves: one save per account, so you carry on from any phone or computer
+  async saveApi(req, now) {
+    const s = this.session((req.headers.get('authorization') || '').replace(/^Bearer /, '')); if (!s) return json({ error: 'Not signed in' }, 401);
+    if (req.method === 'GET') { const r = this.one('SELECT data, t, summary FROM saves WHERE email = ?', s.email); return json(r ? { data: JSON.parse(r.data), t: r.t, summary: JSON.parse(r.summary || '{}') } : { data: null }); }
+    if (req.method === 'POST') { const body = await req.text(); if (body.length > 1800000) return json({ error: 'Save too big' }, 413); let j; try { j = JSON.parse(body); } catch (e) { return json({ error: 'Bad save' }, 400); }
+      if (!j || typeof j.data !== 'object') return json({ error: 'Bad save' }, 400);
+      this.sql.exec('INSERT OR REPLACE INTO saves (email, data, t, summary) VALUES (?, ?, ?, ?)', s.email, JSON.stringify(j.data), now, JSON.stringify(j.summary || {})); return json({ ok: true, t: now }); }
+    return json({ error: 'Not found' }, 404);
   }
 
   // ---- step 1: email in, a code + link out (rate limited per email and per IP)

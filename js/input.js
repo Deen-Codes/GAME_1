@@ -4,13 +4,16 @@ export class Input {
     this.sx = 0; this.sy = 0;           // stick, y up = +
     this.keys = new Set();
     this.btn = { a: false, b: false, x: false, y: false };
-    this.pressed = { a: false, b: false, x: false, y: false, map: false, pause: false };
+    this.pressed = { a: false, b: false, x: false, y: false, map: false, pause: false, phone: false, wheel: false, slot: 0 };
+    this.mode = 'foot'; // the game sets 'car' while you drive, so keys mean the right thing
     this.touch = false;
     addEventListener('keydown', e => {
       if (e.target.tagName === 'INPUT') return;
       if (!this.keys.has(e.code)) {
-        const m = { KeyE: 'a', Enter: 'a', Space: 'b', KeyJ: 'x', KeyR: 'y', KeyM: 'map', Escape: 'pause', KeyP: 'pause', KeyL: 'y' };
+        // keyboard: E use · F get in/out · Space jump (drift in a car) · click/J attack · R gun/reload · T phone · Q next weapon · 1-9 weapons · M map · Esc pause
+        const car = this.mode === 'car', m = { KeyE: 'a', Enter: 'a', KeyF: car ? 'b' : 'a', Space: car ? null : 'b', KeyJ: 'x', KeyR: 'y', KeyM: 'map', Escape: 'pause', KeyP: 'pause', KeyT: 'phone', KeyQ: 'wheel' };
         if (m[e.code]) this.pressed[m[e.code]] = true;
+        if (/^Digit[1-9]$/.test(e.code)) this.pressed.slot = +e.code.slice(5);
       }
       this.keys.add(e.code);
       if (['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.code)) e.preventDefault();
@@ -24,12 +27,14 @@ export class Input {
     if (this.keys.has('KeyD') || this.keys.has('ArrowRight')) x += 1;
     if (this.keys.has('KeyW') || this.keys.has('ArrowUp')) y += 1;
     if (this.keys.has('KeyS') || this.keys.has('ArrowDown')) y -= 1;
-    const m = Math.hypot(x, y); if (m > 1) { x /= m; y /= m; }
+    const m0 = Math.hypot(x, y); if (m0 > 1) { x /= m0; y /= m0; }
+    if (this.mode !== 'car' && (this.keys.has('ShiftLeft') || this.keys.has('ShiftRight'))) { x *= 0.55; y *= 0.55; } // hold Shift to walk
+    const m = Math.hypot(x, y);
     return { x, y, m: Math.min(1, m) };
   }
   held(b) {
-    if (b === 'x' && (this.keys.has('KeyJ') || this.mouseDown)) return true;
-    if (b === 'b' && this.keys.has('Space')) return true;
+    if (b === 'x' && (this.keys.has('KeyJ') || this.mouseDown || (this.mode === 'car' && this.keys.has('Space')))) return true;
+    if (b === 'b' && this.keys.has('Space') && this.mode !== 'car') return true;
     return this.btn[b];
   }
   consume(n) { const v = this.pressed[n]; this.pressed[n] = false; return v; }

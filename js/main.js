@@ -1,30 +1,30 @@
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=174';
-import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun, partEffects, partPerk } from './gun.js?v=174';
-import { buildCar, computeCarStats, carStatBars, carClass, carPartEffects, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=174';
-import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, STAIRS, unblockPillars, canyonAt, canyonNear, PEAK, SKYWAYS, SKY_Y, skyAt, skyY, rampSeg, windowShader, makeOceanMaterial, WATER_U, WIND_U, METRO, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=174';
-import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=174';
-import { buildPanel, renderStats } from './ui.js?v=174';
-import { Input } from './input.js?v=174';
-import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime, animalCall } from './audio.js?v=174';
-import { runMinigame } from './minigames.js?v=174';
-import { CUT, initCutGames } from './cutgames.js?v=174';
-import { initOnline, updateOnline, goOnline, goOffline, NET, onNet, sendMagicLink, verifyCode, signOut, signedIn } from './online.js?v=174';
-import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk, setReservedNames, seededLook } from './peds.js?v=174';
-import { citizens, whereNow } from './citizens.js?v=174';
-import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=174';
-import { findRoute } from './nav.js?v=174';
-import { COURSES, CAREERS, QUIZ } from './careers.js?v=174';
-import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=174';
-import { attachWheel } from './wheel.js?v=174';
-import { GROUND_U } from './groundtex.js?v=174';
-import { Animals, makeAnimalMesh } from './animals.js?v=174';
-import { Talk } from './talk.js?v=174';
-import { incomingText, classify, textOptions, textReply } from './texts.js?v=174';
-import { svg, drawIcon, ICONS as ICON_SET } from './icons.js?v=174';
-import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=174';
-import { FURN, CATALOG } from './furniture.js?v=174';
-import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=174';
+import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=175';
+import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun, partEffects, partPerk } from './gun.js?v=175';
+import { buildCar, computeCarStats, carStatBars, carClass, carPartEffects, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=175';
+import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, STAIRS, unblockPillars, canyonAt, canyonNear, PEAK, SKYWAYS, SKY_Y, skyAt, skyY, rampSeg, windowShader, makeOceanMaterial, WATER_U, WIND_U, METRO, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=175';
+import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=175';
+import { buildPanel, renderStats } from './ui.js?v=175';
+import { Input } from './input.js?v=175';
+import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime, animalCall } from './audio.js?v=175';
+import { runMinigame } from './minigames.js?v=175';
+import { CUT, initCutGames } from './cutgames.js?v=175';
+import { initOnline, updateOnline, goOnline, goOffline, NET, onNet, sendMagicLink, verifyCode, signOut, signedIn, cloudLoad, cloudSave } from './online.js?v=175';
+import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk, setReservedNames, seededLook } from './peds.js?v=175';
+import { citizens, whereNow } from './citizens.js?v=175';
+import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=175';
+import { findRoute } from './nav.js?v=175';
+import { COURSES, CAREERS, QUIZ } from './careers.js?v=175';
+import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=175';
+import { attachWheel } from './wheel.js?v=175';
+import { GROUND_U } from './groundtex.js?v=175';
+import { Animals, makeAnimalMesh } from './animals.js?v=175';
+import { Talk } from './talk.js?v=175';
+import { incomingText, classify, textOptions, textReply } from './texts.js?v=175';
+import { svg, drawIcon, ICONS as ICON_SET } from './icons.js?v=175';
+import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=175';
+import { FURN, CATALOG } from './furniture.js?v=175';
+import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=175';
 
 const $ = id => document.getElementById(id);
 let inside = null, editMode = false, held = null, pendingCar = false, homeMusic = false, phoneBadge = 0;
@@ -2090,6 +2090,7 @@ function updateVehicles(dt) {
     if (driving && !P.dead) {
       const st = camStick();
       const dead = v.wrecked || (v.hp ?? 100) <= 0;
+      const kb = !input.sx && !input.sy && ['KeyW', 'KeyA', 'KeyS', 'KeyD', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].some(k => input.keys.has(k)); // keyboard driving: W/S throttle and brake, A/D steer (not screen-direction steering)
       const stickMode = (settings.steer || 'screen') === 'screen';
       // stick driving frees up the buttons: horn and headlights instead of drive and brake
       let gas = !dead && ((!stickMode && input.held('a')) || input.keys.has('KeyW') || input.keys.has('ArrowUp'));
@@ -2108,7 +2109,7 @@ function updateVehicles(dt) {
       }
       // full stick driving: push where you want to go and the car drives there; pull back against it to brake, then reverse
       let thr = 1, stickDrive = false;
-      if ((settings.steer || 'screen') === 'screen' && !gas && !brk && !dead && st.m > 0.3) {
+      if ((settings.steer || 'screen') === 'screen' && !kb && !gas && !brk && !dead && st.m > 0.3) {
         const fwd = Math.cos(wrapA(Math.atan2(st.x, -st.y) - c.h)); thr = clamp((st.m - 0.3) / 0.62, 0, 1);
         // moving forward: pull back (more than ~110° from where you're going) to brake; once slow, the same pull reverses.
         // reversing: you keep reversing until you push clearly forward again
@@ -2162,7 +2163,8 @@ function updateVehicles(dt) {
       else c.v = damp(c.v, 0, (settings.steer || 'screen') === 'screen' ? 1.6 : 0.8, dt); // let go of the stick and the car slows down properly
       if (c.v > top + 0.5) c.v = damp(c.v, top, 1.5, dt);
       let want = -st.x;
-      if ((settings.steer || 'screen') === 'screen') {
+      if (kb) want = ((input.keys.has('KeyA') || input.keys.has('ArrowLeft')) ? 1 : 0) - ((input.keys.has('KeyD') || input.keys.has('ArrowRight')) ? 1 : 0);
+      else if ((settings.steer || 'screen') === 'screen') {
         // point the stick where you want the car to go on screen; the car turns to face it (reversing: the back of the car follows the stick)
         if (st.m > 0.3) { const rev = c.v < -0.3 || (brk && !gas && c.v < 0.5), face = rev ? c.h + Math.PI : c.h, err = wrapA(Math.atan2(st.x, -st.y) - face); want = clamp(err * 1.5, -1, 1) * (rev ? -1 : 1) * Math.min(1, st.m * 1.3); }
         else want = 0;
@@ -6014,7 +6016,7 @@ function updateCamYaw(dt) {
     else { camBlockT = 0; if (camYawT !== 0 && homeClear) { camClearT += 0.15; if (camClearT > 1.2) { camYawT = 0; camClearT = 0; } } else camClearT = 0; } } }
   camYaw += wrapA(camYawT - camYaw) * Math.min(1, dt * 2.2); if (Math.abs(wrapA(camYawT - camYaw)) < 0.002) camYaw = camYawT;
 }
-function padHeight() { return Math.min(H * 0.30, 252); }
+function padHeight() { return document.body.classList.contains('desktop') ? 0 : W > H ? Math.min(H * 0.12, 60) : Math.min(H * 0.30, 252); } // landscape/computer: the controls sit at the sides, not under the action
 function focusPos() { return ride ? ride.s : P; }
 // pinch (two fingers on the game view) or mouse wheel to zoom in on the action and out for the big picture
 let zoom = 1; const pinch = new Map(); let pinch0 = null;
@@ -6474,8 +6476,20 @@ const BTN_SVG = {
   horn: '<path d="M4 10v4h4l5 4V6L8 10z"/><path d="M16 9a4 4 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11"/>', exit: '<path d="M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4"/><path d="M10 16l-4-4 4-4M6 12h10"/>',
   fire: '<circle cx="12" cy="12" r="7"/><path d="M12 2v5M12 17v5M2 12h5M17 12h5"/>', smash: '<path d="M14 3l-2 6 5 1-7 11 2-7-5-1z"/>', throw: '<circle cx="8" cy="15" r="4"/><path d="M12 11c3-4 6-5 9-5M18 3l3 3-3 3"/>',
 };
-const btnCache = {};
+const btnCache = {}, keyLbl = {};
+// on a computer the touch buttons hide and a little legend shows which key does what right now
+const KEYCAP = id => id === 'btnA' ? 'E' : id === 'btnB' ? (ride ? 'F' : 'Space') : id === 'btnX' ? (ride && !/Shoot/.test(keyLbl.btnX || '') ? 'Space' : 'Click') : 'R';
+let keyHintK = '';
+function renderKeyHints() { if (!document.body.classList.contains('desktop')) return; let el = $('keyHints'); if (!el) { el = document.createElement('div'); el.id = 'keyHints'; document.body.appendChild(el); }
+  const rows = ['btnA', 'btnB', 'btnX', 'btnY'].filter(id => keyLbl[id] && (id === 'btnY' || !$(id).classList.contains('hidden'))).map(id => [KEYCAP(id), keyLbl[id]]).concat(keyLbl.btnA === 'Phone' ? [] : [['T', 'Phone']], [['Q', 'Next weapon'], ['M', 'Map']]);
+  const k = JSON.stringify(rows); if (k === keyHintK) return; keyHintK = k; el.innerHTML = rows.map(([c, l]) => `<div><kbd>${c}</kbd><span>${l}</span></div>`).join(''); }
+function setDesktop(on) { document.body.classList.toggle('desktop', on); keyHintK = ''; if (on) renderKeyHints(); else $('keyHints')?.remove(); }
+setDesktop(!isTouchDevice());
+addEventListener('touchstart', () => { if (document.body.classList.contains('desktop')) setDesktop(false); }, { passive: true }); // picked up a touch screen: back to touch controls
+addEventListener('keydown', e => { if (!document.body.classList.contains('desktop') && /^(Key[WASD]|Arrow)/.test(e.code) && !input.touch) setDesktop(true); });
+function isTouchDevice() { return matchMedia('(pointer: coarse)').matches || navigator.maxTouchPoints > 0; }
 function setBtn(id, icon, label) {
+  if (keyLbl[id] !== label) { keyLbl[id] = label; renderKeyHints(); }
   const k = icon + '|' + label; if (btnCache[id] === k) return; btnCache[id] = k;
   const inner = BTN_SVG[icon] ? `<svg viewBox="0 0 24 24">${BTN_SVG[icon]}</svg>` : icon && icon !== 'none' ? svg(ICON_SET[ICONS[icon] || icon] ? (ICONS[icon] || icon) : 'hand', 'btn') : '<svg viewBox="0 0 24 24"></svg>';
   const plain = String(label).replace(/<[^>]+>/g, ''), longest = Math.max(0, ...plain.split(/\s+/).map(w => w.length));
@@ -6657,11 +6671,11 @@ function phoneUI() { const U = (stats.phoneUI ||= { dock: ['msgs', 'maps', 'cont
 let homePage = 0, jiggle = false, hs = null;
 function renderHome(el) {
   const U = phoneUI(), byId = Object.fromEntries(APPS.map(a => [a[0], a])); el.classList.add('home');
-  const H = el.clientHeight || 560, cell = 92, avail = H - 104 - 24 - 6, rows0 = Math.max(1, Math.floor((avail - 128) / cell)), rowsN = Math.max(1, Math.floor(avail / cell));
+  const H = el.clientHeight || 560, cell = 92, avail = H - 104 - 24 - 6, short = H < 440, rows0 = Math.max(1, Math.floor((avail - (short ? 0 : 128)) / cell)), /* short (landscape): no big clock, apps from the top */ rowsN = Math.max(1, Math.floor(avail / cell));
   const apps = U.apps.filter(id => byId[id]), pages = [apps.slice(0, rows0 * 4)]; for (let k = rows0 * 4; k < apps.length; k += rowsN * 4) pages.push(apps.slice(k, k + rowsN * 4));
   homePage = clamp(homePage, 0, pages.length - 1);
   const icon = id => { const [, name, ico, bg] = byId[id], badge = id === 'msgs' && (phoneBadge || customers.length) ? `<em>${phoneBadge || customers.length}</em>` : ''; return `<button class="ph-icon" data-app="${id}"><i style="background:${bg}">${svg(ico, 'app')}</i><span>${name}</span>${badge}${jiggle && !CORE_APPS.includes(id) ? '<b class="ph-del" data-del="' + id + '">−</b>' : ''}</button>`; };
-  el.innerHTML = `<div class="ph-home2 ${jiggle ? 'jiggle' : ''}">${jiggle ? '<button class="ph-done">Done</button>' : ''}<div class="ph-pages"><div class="ph-track" style="transform:translateX(${-homePage * 100}%)">${pages.map((pg, k) => `<div class="ph-page">${k === 0 ? `<div class="ph-clock">${$('phTime').textContent}</div><div class="ph-date">Bay City · Day ${dayN}</div>` : ''}<div class="ph-grid">${pg.map(icon).join('')}</div></div>`).join('')}</div></div>
+  el.innerHTML = `<div class="ph-home2 ${jiggle ? 'jiggle' : ''} ${short ? 'short' : ''}">${jiggle ? '<button class="ph-done">Done</button>' : ''}<div class="ph-pages"><div class="ph-track" style="transform:translateX(${-homePage * 100}%)">${pages.map((pg, k) => `<div class="ph-page">${k === 0 ? `<div class="ph-clock">${$('phTime').textContent}</div><div class="ph-date">Bay City · Day ${dayN}</div>` : ''}<div class="ph-grid">${pg.map(icon).join('')}</div></div>`).join('')}</div></div>
     <div class="ph-dots">${pages.length > 1 ? pages.map((_, k) => `<i class="${k === homePage ? 'on' : ''}"></i>`).join('') : ''}</div><div class="ph-dock">${U.dock.filter(id => byId[id]).map(icon).join('')}</div></div>`;
   const root = el.querySelector('.ph-home2'), track = el.querySelector('.ph-track'), pagesEl = el.querySelector('.ph-pages');
   el.querySelector('.ph-done')?.addEventListener('click', () => { jiggle = false; saveGame(); renderPhone(); });
@@ -7069,10 +7083,10 @@ mm.addEventListener('pointerdown', e => { e.stopPropagation(); if (state === 'pl
 function saveGame() {
   stats.dateNow = date ? { name: date.name, cfg: date.cfg, interest: date.interest, since: date.since, holding: !!date.holding } : null; // a date survives an app update / reload
   save = { hp: P.hp, x: inside ? inside.back.x : P.x, z: inside ? inside.back.z + 1.2 : P.z, face: P.face, inCar: ride === myCar, cx: myCar?.s.x, cz: myCar?.s.z, ch: myCar?.s.h, h: clockH, day: dayN, money, stash, owned: [...owned], waypoint, stats, homes, storage, customers: customers.map(({ npc, marker, ...c }) => c) };
-  store.set('bc_save', save); store.set('bc_arsenal', arsenal); store.set('bc_cars', garage);
+  store.set('bc_save', save); store.set('bc_arsenal', arsenal); store.set('bc_cars', garage); store.set('bc_savedAt', Date.now());
 }
 // auto-update: bookmarks and home-screen apps can hold on to an old copy. Check version.json (never cached) and reload once if newer.
-const BUILD = 174;
+const BUILD = 175;
 function checkUpdate() {
   fetch('version.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(j => {
     if (!(j.v > BUILD)) return;
@@ -7109,6 +7123,64 @@ function storyPicker() {
   modal(`<h3>Choose your story</h3><p>How does this life begin?</p><div class="story-list"><button class="story" data-story="random">${svg('star', 'sm')}<span><b>Random life</b><small>Let fate decide.</small></span></button>${STORIES.map(st => `<button class="story" data-story="${st.id}">${svg(st.icon, 'sm')}<span><b>${st.title}</b><small>${st.blurb}</small></span></button>`).join('')}</div>`, []);
   document.querySelectorAll('[data-story]').forEach(b => b.onclick = () => { closeModal(); applyStory(b.dataset.story === 'random' ? pick(STORIES).id : b.dataset.story); });
 }
+// ================================================================ TITLE: sign in, pick up your save from any device, play (full screen)
+const SAVE_SKIP = ['bc_sid', 'bc_email', 'bc_online', 'bc_net_id', 'bc_autoplay'];
+const titleUp = !/[?&](test|local)\b/.test(location.search) && sessionStorage.getItem('bc_autoplay') !== '1';
+sessionStorage.removeItem('bc_autoplay');
+let titleNewLife = false, titleStep = null, titleEmail = '', titleDev = null, cloudState = null;
+function saveBundle() { const out = {}; for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (/^(bc_|rr_)/.test(k) && !SAVE_SKIP.includes(k)) out[k] = localStorage.getItem(k); } return out; }
+function bundleSummary(B) { try { const s2 = JSON.parse(B?.bc_save || 'null'); if (!s2) return null; return { day: s2.day || 1, money: s2.money || 0, at: +(B.bc_savedAt || 0) }; } catch (e) { return null; } }
+function applyBundle(B) { for (const k of Object.keys(saveBundle())) localStorage.removeItem(k); for (const [k, v] of Object.entries(B)) if (!SAVE_SKIP.includes(k)) localStorage.setItem(k, v); sessionStorage.setItem('bc_autoplay', '1'); location.reload(); }
+let cloudT = 0, cloudLast = '';
+function cloudTick(dt, force) { // while you play, your save goes up to your account every minute (and when you leave)
+  if (!signedIn() || titleUp && $('title')) return; cloudT -= dt; if (cloudT > 0 && !force) return; cloudT = 60;
+  saveGame(); const B = saveBundle(), j = JSON.stringify(B); if (j === cloudLast) return; cloudLast = j; cloudSave(B, bundleSummary(B), force);
+}
+document.addEventListener('visibilitychange', () => { if (document.hidden) cloudTick(0, true); });
+const isTouch = () => matchMedia('(pointer: coarse)').matches || navigator.maxTouchPoints > 0;
+const isIOS = () => /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+const isStandalone = () => matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+function goFullscreen() { if (isStandalone() || isIOS()) return; const el = document.documentElement; try { (el.requestFullscreen || el.webkitRequestFullscreen)?.call(el, { navigationUI: 'hide' })?.catch?.(() => {}); } catch (e) {} }
+function showTitle() {
+  let el = $('title'); if (!el) { el = document.createElement('div'); el.id = 'title'; document.body.appendChild(el); }
+  setState('title');
+  const S = signedIn(), loc = bundleSummary(saveBundle()), sumTxt = s2 => s2 ? `Day ${s2.day} · ${fmt(s2.money)}` : 'New life';
+  let body = '';
+  if (!S && titleStep !== 'code') body = `<p class="tt-sub">Sign in to save your life to your account and play online with everyone else.</p>
+    <input id="ttEmail" type="email" autocomplete="email" placeholder="you@email.com" value="${titleEmail.replace(/"/g, '')}"><button class="tt-btn" id="ttSend">Send me a code</button>
+    <button class="tt-link" id="ttOffline">Play offline on this ${isTouch() ? 'phone' : 'computer'}</button>`;
+  else if (!S) body = `<p class="tt-sub">We sent a 6-digit code to <b>${titleEmail}</b>.${titleDev ? ` <small>(test code ${titleDev.code})</small>` : ''}</p>
+    <input id="ttCode" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="123456" class="tt-code"><button class="tt-btn" id="ttVerify">Sign in</button>
+    <div class="tt-apps">${mailApps(titleEmail).map(m => `<a class="tt-app" href="${m.href}" ${m.web ? 'target="_blank" rel="noopener"' : ''}>${svg('mail', 'sm')} ${m.label}</a>`).join('')}</div>
+    <button class="tt-link" id="ttBack">Use a different email</button>`;
+  else if (!cloudState) body = `<p class="tt-sub">Signed in as <b>${NET.email}</b></p><p class="tt-sub">Finding your save...</p>`;
+  else { const C = cloudState.sum, differ = cloudState.data && loc && JSON.stringify(cloudState.data.bc_save) !== JSON.stringify(saveBundle().bc_save);
+    body = `<p class="tt-sub">Signed in as <b>${NET.email}</b></p>` + (differ
+      ? `<p class="tt-sub">You've got two lives. Which one do you want to carry on?</p><button class="tt-save" id="ttCloud"><b>${svg('cloud', 'sm')} Your account</b><span>${sumTxt(C)}</span></button><button class="tt-save alt" id="ttLocal"><b>${svg('phone', 'sm')} This ${isTouch() ? 'phone' : 'computer'}</b><span>${sumTxt(loc)}</span></button>`
+      : `<button class="tt-btn big" id="ttPlay">${cloudState.data && !loc ? 'Carry on' : loc ? 'Carry on' : 'Start your life'}<small>${sumTxt(cloudState.data ? C : loc)}</small></button>`)
+      + `<button class="tt-link" id="ttOut">Sign out</button>`; }
+  const inst = isTouch() && !isStandalone() ? `<button class="tt-link" id="ttInstall">${svg('download', 'sm')} ${isIOS() ? 'Play full screen: add to your Home Screen' : 'Install the app'}</button>` : '';
+  el.innerHTML = `<div class="tt-card"><div class="tt-logo">BAY<span>CITY</span></div>${body}${inst}${!isTouch() ? '<p class="tt-keys">WASD move · Mouse attack · E use · F car · Space jump · T phone · M map</p>' : ''}</div>`;
+  const play = () => { el.remove(); setState('play'); goFullscreen(); if (titleNewLife && !save) setTimeout(() => applyStory(pick(STORIES).id), 300); titleNewLife = false; if (signedIn()) { goOnline(); cloudT = 5; } };
+  el.querySelector('#ttSend')?.addEventListener('click', async e => { titleEmail = el.querySelector('#ttEmail').value.trim().toLowerCase(); if (!/^\S+@\S+\.\S+$/.test(titleEmail)) { toast('Type your email first'); return; } e.target.disabled = true; e.target.textContent = 'Sending...'; const r = await sendMagicLink(titleEmail); if (r.ok) { titleStep = 'code'; titleDev = r.dev; } else toast(r.error, 4); showTitle(); });
+  el.querySelector('#ttOffline')?.addEventListener('click', play);
+  el.querySelector('#ttBack')?.addEventListener('click', () => { titleStep = null; showTitle(); });
+  const code = el.querySelector('#ttCode'), tryCode = async () => { const c = code.value.replace(/\D/g, ''); if (c.length !== 6) return; const r = await verifyCode(titleEmail, c); if (r.ok) { titleStep = null; titleSignedIn(); } else { toast(r.error, 3); code.value = ''; } };
+  if (code) { code.oninput = () => code.value.replace(/\D/g, '').length === 6 && tryCode(); el.querySelector('#ttVerify').onclick = tryCode; setTimeout(() => code.focus(), 50); }
+  el.querySelector('#ttPlay')?.addEventListener('click', () => { if (cloudState.data && !loc) return applyBundle(cloudState.data); if (!cloudState.data && loc) { const B = saveBundle(); cloudSave(B, bundleSummary(B)); } play(); });
+  el.querySelector('#ttCloud')?.addEventListener('click', () => applyBundle(cloudState.data));
+  el.querySelector('#ttLocal')?.addEventListener('click', () => { const B = saveBundle(); cloudSave(B, bundleSummary(B)); play(); });
+  el.querySelector('#ttOut')?.addEventListener('click', async () => { await signOut(); cloudState = null; showTitle(); });
+  el.querySelector('#ttInstall')?.addEventListener('click', () => installHelp());
+  if (S && !cloudState) titleSignedIn();
+}
+async function titleSignedIn() { cloudState = null; showTitle(); try { const r = await cloudLoad(); cloudState = { data: r.data, sum: r.data ? bundleSummary(r.data) : null }; } catch (e) { cloudState = { data: null, sum: null }; if (/signed in/i.test(e.message)) { await signOut(); cloudState = null; } else toast('Couldn\'t reach your saves. Playing on this device.', 3); } if ($('title')) showTitle(); }
+let installEvt = null; addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
+function installHelp() { // Android: the real install prompt. iPhone: how to do it by hand
+  if (installEvt) { installEvt.prompt(); installEvt = null; return; }
+  modal(isIOS() ? `<div class="big-ico">${svg('download', 'big')}</div><h3>Play full screen</h3><p>iPhone can't make websites full screen, but you can add Bay City to your Home Screen and it opens like an app, no address bar:</p><ol class="inst"><li>Tap the <b>Share</b> button at the bottom of Safari (the square with an arrow).</li><li>Scroll down and tap <b>Add to Home Screen</b>.</li><li>Tap <b>Add</b>, then open Bay City from your Home Screen.</li></ol><p class="ph-hint">Your save is on your account, so you'll carry on where you left off.</p>`
+    : `<div class="big-ico">${svg('download', 'big')}</div><h3>Install Bay City</h3><ol class="inst"><li>Tap the <b>⋮</b> menu in Chrome.</li><li>Tap <b>Install app</b> or <b>Add to Home screen</b>.</li></ol>`, [{ label: 'Got it', cls: 'big', fn: closeModal }]);
+}
 function startGame() {
   if (save) { Object.assign(P, { x: save.x, z: save.z, face: save.face || 0 }); clockH = save.h ?? 8; dayN = save.day ?? 1; }
   P.hp = save?.hp > 0 ? Math.min(save.hp, maxHP()) : maxHP();
@@ -7130,7 +7202,7 @@ function startGame() {
   if (stats.jail) { wearJumpsuit(true); enterPrison(false); }
   else if (stats.dateNow && gameHours() - stats.dateNow.since < 7) { const D0 = stats.dateNow; setTimeout(() => { if (date) return; startDate({ name: D0.name, look: { ...bakeCfg(D0.cfg), fem: true }, x: P.x + 1, z: P.z + 1, face: 0, interest: D0.interest, root: new THREE.Group() }); if (date) { date.since = D0.since; date.holding = D0.holding; } }, 600); }
   storyGate = !!save;
-  if (!save) setTimeout(() => applyStory(pick(STORIES).id), 300); // every new life starts in one of the stories, no menu
+  if (!save) { if (titleUp) titleNewLife = true; else setTimeout(() => applyStory(pick(STORIES).id), 300); } // every new life starts in one of the stories, no menu (after the title screen if it's up)
   else if (!save.stats) { phoneBadge = 1; toast('New: needs, skills, homes and interiors. Check your phone!', 4); }
   else if (!store.get('bc_seen7')) { store.set('bc_seen7', 1); phoneBadge = 1; toast('New: the Work app on your phone lists every job. Upgrade cars at Bay Customs.', 4.5); }
 }
@@ -7227,10 +7299,13 @@ function step(dt) { lastDt = dt;
     updateNpcList(npcs, dt); updateFlyer(dt);
   } else { updateHomeLife(dt); updateNpcList(inside.npcs, dt); inside.h.seeThrough?.(P.x, P.z, P.y); if (inside.id === 'prison') { peds.update(dt, P.x, P.z, null, false); updateAngry(dt); updateBrawl(dt); if (inside.h.upper?.length) { const o = P.y < 2 ? 0.16 : 1; if (inside.fadeO !== o) { inside.fadeO = o; inside.h.fadeUpper(o); } } } }
   updateChatter(dt); subs.update(dt); updateStory(dt); updatePromises(); updateDelivery(dt);
-  updateAmbientBoats(dt); lifeTick(dt); updateDate(dt); updateBuddy(dt); famTexts(dt); updateFx(dt); updatePolice(dt); updatePrison(dt); updateFarm(dt); updateTrain(dt); updateMetro(dt); if (!inside) updateEmergency(dt);
+  updateAmbientBoats(dt); cloudTick(dt); lifeTick(dt); updateDate(dt); updateBuddy(dt); famTexts(dt); updateFx(dt); updatePolice(dt); updatePrison(dt); updateFarm(dt); updateTrain(dt); updateMetro(dt); if (!inside) updateEmergency(dt);
   updateBullets(dt); updateProjectiles(dt); updateParticles(dt); updateCash(dt); updateMarkers(); updateRace(dt); updateRoute(dt); updateCustomers(dt); updateReacts(dt); updateDoors(dt); updateJob(dt);
   if (input.consume('map') || input.consume('pause')) openPhone('maps');
-  for (let i = 1; i <= 9; i++) if (input.keys.has('Digit' + i)) { input.keys.delete('Digit' + i); selectWeapon(SLOTS[i - 1].id); }
+  input.mode = ride ? 'car' : 'foot'; input.consume('slot');
+  for (let i = 1; i <= 9; i++) if (input.keys.has('Digit' + i)) { input.keys.delete('Digit' + i); if (SLOTS[i - 1] && arsenal.owned.includes(SLOTS[i - 1].id)) selectWeapon(SLOTS[i - 1].id); }
+  if (input.consume('phone')) openPhone();
+  if (input.consume('wheel')) { const own = SLOTS.filter(q => arsenal.owned.includes(q.id)), i = own.findIndex(q => q.id === arsenal.cur); if (own.length) { selectWeapon(own[(i + 1) % own.length].id); sfx.equip?.(); } } // Q: next weapon
   if (input.keys.has('KeyH')) { input.keys.delete('KeyH'); holsterToggle(); }
   if (input.keys.has('KeyP')) { input.keys.delete('KeyP'); openPhone(); }
   saveT -= dt; if (saveT <= 0) { saveT = 4; saveGame(); }
@@ -7430,6 +7505,7 @@ function frame(now) {
   else { ptime += rdt; updatePreview(rdt, ptime); renderer.render(pv.scene, pv.cam); }
 }
 startGame();
+if (titleUp) showTitle();
 requestAnimationFrame(frame);
 window.__game = { get markersT() { return markers; }, get animals() { return animals; }, crime, WANT, copCars, cops, pitFight, busted, fam, famNewDay, makeOfficial, talkFamily, get dayN() { return dayN; }, set dayN(v) { dayN = v; }, scene: G.scene, cam: G.cam, snap: () => updateCamera(0, true), get state() { return state; }, P, input, get ride() { return ride; }, get myCar() { return myCar; }, get traffic() { return traffic; }, peds, setTime: h => { clockH = h; }, openCustom, enterVehicle, exitCar, get money() { return money; }, set money(v) { money = v; }, openPlace, PLACES, PROPERTIES, runMinigame, get action() { return action; }, arsenal, selectWeapon, openPhone, setWaypoint, get route() { return route; }, talkToPed, talk, doAction, stats, get inside() { return inside; }, enterInterior, exitInterior, get customers() { return customers; }, newCustomer, startEdit, endEdit, get job() { return job; }, gainXP, storage, doSpot, useFurn, phoneGo, talkVenue, talkJob, openPlace, talkCustomer, startJob, openCarShop, damageCar, repairCar, addFire, get fires() { return fires; }, get ems() { return ems; }, get vehicles() { return vehicles; }, makeVehicle, makeCop, prisonFight, life, startDealMeet, get lifeAct() { return lifeAct; }, get train() { return train; }, get trainRide() { return trainRide; }, boardTrain, eventReset: () => { eventOpen = false; }, bodyCheck, attendClass, talkAdmissions, edu, startDance, get dance() { return dance; }, radioSet: i => { radioSet(i); radioOn(true); }, get zoom() { return zoom; }, set zoom(z) { zoom = z; }, DEFAULT_CAR, setState: x => setState(x), get jail() { return stats.jail; }, witness, personOf, dealHeat, trafficStop, carNear, carTop, startDate, playCutT: (k, o) => { setState("mini"); return playCut(k, o || {}).then(r => { setState("play"); window.__cutR = r; return r; }); }, payPhoneT: () => payPhone(), get metro() { return metro; }, METRO, boardMetroT: i => { metro.si = i; metro.stop = 8; metro.s = METRO.stations[i].s; boardMetro(i); }, unblockT: (id, f) => unblockDoors(id, f), get HD() { return HOME_DEFAULTS; }, smashT: () => { const cx = Math.floor(P.x / CHUNK), cz = Math.floor(P.z / CHUNK); let b = null, bd = 1e9; for (let i = -2; i <= 2; i++) for (let j = -2; j <= 2; j++) for (const q of parkedIn(cx + i, cz + j)) { const d = Math.hypot(q.x - P.x, q.z - P.z); if (!q.taken && d < bd) { bd = d; b = q; } } if (!b) return "none"; P.x = b.x + Math.cos(b.rot) * 1.8; P.z = b.z - Math.sin(b.rot) * 1.8; breakIntoParked(b); return "ok"; }, gymT: o => mini("gym", o || {}), openArmoryT: () => openArmory(PLACES.find(q => q.kind === "guns"), null), get rinfo() { return { calls: renderer.info.render.calls, tris: renderer.info.render.triangles, geos: renderer.info.memory.geometries, tex: renderer.info.memory.textures }; }, saveGameT: () => saveGame(), maybePregnantT: (id, t) => maybePregnant(id, t), runEventT: (id, d) => runEventTalk(EVENT_BY_ID[id], d || {}, { name: 'Tester', tag: 'Test', cfg: null }, null), get pet() { return pet; }, CIT: () => CIT(), citizenRecord: c => citizenRecord(c), get town() { return town(); }, get ownedT() { return owned; }, openGunsmithT: (s, p, n) => openGunsmith(s, p, n), ambient, get ambEl() { return ambEl; }, openTradeT: p => openTrade(p), get stashT() { return stash; }, startWooT: (k, b) => startWoo(k, b), get woo() { return woo; }, endDate, dateCall, addDateContact, get phoneThread() { return phoneThread; }, set phoneThread(v) { phoneThread = v; }, talkDate, get date() { return date; }, get carAnim() { return carAnim; }, lifeApi, startShower, bizNewDay, subs, forceWanted, get buddy() { return buddy; }, startBuddy, textMe, toast, levelUp, closePhone, bringCar, useFurn, damageCar, debtorScene, get debtor() { return debtor; }, camBlocked, get camYaw() { return camYaw; }, ev: { evChase, evMug, evRobbery, evGang, evBusk, evCrash, evFire, evMarket, evParade, evProtest, streetEvents } };
 
