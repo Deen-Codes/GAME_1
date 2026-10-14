@@ -1,26 +1,26 @@
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=123';
-import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun, partEffects, partPerk } from './gun.js?v=123';
-import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=123';
-import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=123';
-import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=123';
-import { buildPanel, renderStats } from './ui.js?v=123';
-import { Input } from './input.js?v=123';
-import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime, animalCall } from './audio.js?v=123';
-import { runMinigame } from './minigames.js?v=123';
-import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk, setReservedNames } from './peds.js?v=123';
-import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=123';
-import { findRoute } from './nav.js?v=123';
-import { COURSES, CAREERS, QUIZ } from './careers.js?v=123';
-import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=123';
-import { attachWheel } from './wheel.js?v=123';
-import { Animals } from './animals.js?v=123';
-import { Talk } from './talk.js?v=123';
-import { incomingText, classify, textOptions, textReply } from './texts.js?v=123';
-import { svg, drawIcon } from './icons.js?v=123';
-import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=123';
-import { FURN, CATALOG } from './furniture.js?v=123';
-import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=123';
+import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=124';
+import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun, partEffects, partPerk } from './gun.js?v=124';
+import { buildCar, computeCarStats, carStatBars, carClass, carPartEffects, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=124';
+import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=124';
+import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=124';
+import { buildPanel, renderStats } from './ui.js?v=124';
+import { Input } from './input.js?v=124';
+import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime, animalCall } from './audio.js?v=124';
+import { runMinigame } from './minigames.js?v=124';
+import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk, setReservedNames } from './peds.js?v=124';
+import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=124';
+import { findRoute } from './nav.js?v=124';
+import { COURSES, CAREERS, QUIZ } from './careers.js?v=124';
+import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=124';
+import { attachWheel } from './wheel.js?v=124';
+import { Animals } from './animals.js?v=124';
+import { Talk } from './talk.js?v=124';
+import { incomingText, classify, textOptions, textReply } from './texts.js?v=124';
+import { svg, drawIcon } from './icons.js?v=124';
+import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=124';
+import { FURN, CATALOG } from './furniture.js?v=124';
+import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=124';
 
 const $ = id => document.getElementById(id);
 let inside = null, editMode = false, held = null, pendingCar = false, homeMusic = false, phoneBadge = 0;
@@ -1213,7 +1213,7 @@ function updateBullets(dt) {
       b.x += b.vx * dt / steps; b.z += b.vz * dt / steps;
       if (solidPoint(b.x, b.z, b.y)) dead = true;
       for (const t of traffic) if (Math.hypot(t.rx - b.x, t.rz - b.z) < 1.6 && b.y < 2) { dead = true; t.stun = 3; }
-      if (!dead) for (const v of vehicles) if ((b.cop ? v === ride : v !== ride) && Math.hypot(v.s.x - b.x, v.s.z - b.z) < Math.max(1.2, v.b.length * 0.45) && b.y < 2) { dead = true; damageCar(v, 4 * clamp((b.dmg || 24) / 24, 0.5, 4) * (b.ammo === 'ap' ? 2.2 : 1), b.x, b.z); if (b.ammo === 'incendiary' && Math.random() < 0.08) addFire(v.s.x, v.s.z); break; } /* armour piercing chews through cars; incendiary can set them alight */
+      if (!dead) for (const v of vehicles) if ((b.cop ? v === ride : v !== ride) && Math.hypot(v.s.x - b.x, v.s.z - b.z) < Math.max(1.2, v.b.length * 0.45) && b.y < 2) { dead = true; damageCar(v, 4 * clamp((b.dmg || 24) / 24, 0.5, 4) * (b.ammo === 'ap' ? 2.2 : 1) * (v.st?.bp ? 0.3 : 1) * (v.st?.runflat ? 0.8 : 1), b.x, b.z); if (b.ammo === 'incendiary' && Math.random() < 0.08) addFire(v.s.x, v.s.z); break; } /* armour piercing chews through cars; incendiary can set them alight */
       for (const p of peds.list) if (p.state !== 'down' && Math.hypot(p.x - b.x, p.z - b.z) < 0.6) {
         if (b.cop) continue; dead = true; const d = Math.hypot(b.vx, b.vz); if (peds.knock(p, b.vx / d, b.vz / d, 4)) { p.injured = true; p.t = 40; } if (b.ammo === 'frost') p.frostT = 4; if (b.ammo === 'incendiary') spawnParticles(p.x, 1.2, p.z, ['#ffb02e', '#ff5a1f', '#ffe08a'], 10, 1.5, 0.8, 0.12, 2); crime(p.kind === 'cop' ? 2 : 1); witness('gun', P.x, P.z, p); peds.scare(p.x, p.z, 20); gainXP('gun_' + b.slot, 3);
         spawnParticles(b.x, b.y, b.z, ['#ffffff', '#ffd23f'], 4, 2, 0.3, 0.08); if (Math.random() < 0.5) dropCash(p.x, p.z, 5 + Math.floor(Math.random() * 30)); break;
@@ -1835,7 +1835,7 @@ const BROKEN_LAMP = new THREE.MeshStandardMaterial({ color: '#2a2a30', roughness
 function damageCar(v, amt, ix, iz) {
   if (!v || v.wrecked || amt <= 0) return;
   if (v === ride && amt > 10 && chatCd('crash', 8)) { if (date?.inCar) subs.say(dateWho(), pick(['Oh my god! Watch the road!', 'Are you CRAZY?!', 'I nearly hit my head!', 'Seriously?!']), { expr: 'shock', pri: 3, now: true }); else if (Math.random() < 0.5) youSay(pick(['Whoops.', 'My bad, my bad.', 'That\'s gonna leave a mark.', 'Who put that there?']), 'shock', { pri: 2 }); }
-  v.hp ??= 100; v.hp -= amt * (v.b.two ? 1.4 : 1);
+  v.hp ??= 100; v.hp -= amt * (v.b.two ? 1.4 : 1) / (v.st?.tough || 1);
   // crumple the panels nearest the impact
   if (ix !== undefined) {
     const g = v.b.group, inv = new THREE.Matrix4().copy(g.matrixWorld).invert(), hitL = new THREE.Vector3(ix, 0.6, iz).applyMatrix4(inv);
@@ -1975,8 +1975,13 @@ function updateVehicles(dt) {
       const top = s.top * dk * (onRoad ? 1 : Math.min(1, (sand ? 0.45 : hill ? 0.55 : 0.65) * s.off));
       // launch control: hold brake + drive while stopped to build revs, let go of brake to launch
       // Burnout button (stick mode, no gun out): hold to rev and smoke the tyres, steer for donuts, let go to launch
-      const burnBtn = stickMode && ws.kind !== 'gun' && !dead, burn = burnBtn ? input.held('b') : gas && brk;
+      const burnBtn = stickMode && ws.kind !== 'gun' && !dead; let burn = burnBtn ? input.held('b') : gas && brk;
       if (burn) { gas = false; brk = false; }
+      v.nos ??= 1; if (!burn || !s.nitro) v.nos = Math.min(1, v.nos + dt / 25);
+      if (burn && s.nitro && c.v > 6 && v.nos > 0 && !b.two) { // nitrous: a shove forward and flames from the exhaust until the bottle runs dry
+        v.nos = Math.max(0, v.nos - dt / (2.6 * s.nitro)); c.v = Math.min(s.top * 1.35, c.v + s.acc * 1.6 * dt); shake = Math.max(shake, 0.12); burn = false; gas = true;
+        if (Math.random() < dt * 40) spawnParticles(c.x - Math.sin(c.h) * b.length * 0.52, 0.45, c.z - Math.cos(c.h) * b.length * 0.52, ['#7fd8ff', '#3d8bff', '#ffffff'], 2, 2, 0.3, 0.18, 0);
+        if (!v.nosOn) { v.nosOn = true; sfx.whoosh?.(); navigator.vibrate?.(25); } } else v.nosOn = false;
       if (burn && Math.abs(c.v) < (v.launch > 0 ? 4 : 1.2) && !b.two) {
         // brake + drive = wheelspin (and launch control when you let go of the brake); steer at the same time for donuts
         v.launch = Math.min(1, (v.launch || 0) + dt * 0.9);
@@ -1997,7 +2002,7 @@ function updateVehicles(dt) {
         // speed limit (easy to cruise at); only the last quarter goes faster than that.
         let topT = top;
         if (stickDrive) { const lim = speedLimit(c.x, c.z) / 2.237; topT = lim ? (thr < 0.78 ? 3 + (Math.min(lim, top) - 3) * (thr / 0.78) : Math.min(lim, top) + (top - Math.min(lim, top)) * ((thr - 0.78) / 0.22)) : Math.max(3, top * thr); } if (c.v < -0.3) c.v = Math.min(0, c.v + 16 * dt); else if (c.v < topT) c.v = Math.min(topT, c.v + s.acc * dt * (1 - Math.max(0, c.v) / (s.top * 1.15))); else c.v = damp(c.v, topT, stickDrive ? 2.5 : 1.2, dt); }
-      else if (brk) { if (c.v > 0.3) { c.v = Math.max(0, c.v - 18 * dt); c.braking = true; } else c.v = Math.max(-s.top * 0.32, c.v - s.acc * 0.6 * dt); }
+      else if (brk) { if (c.v > 0.3) { c.v = Math.max(0, c.v - 18 * (s.brake || 1) * dt); c.braking = true; } else c.v = Math.max(-s.top * 0.32, c.v - s.acc * 0.6 * dt); }
       else c.v = damp(c.v, 0, (settings.steer || 'screen') === 'screen' ? 1.6 : 0.8, dt); // let go of the stick and the car slows down properly
       if (c.v > top + 0.5) c.v = damp(c.v, top, 1.5, dt);
       let want = -st.x;
@@ -5969,7 +5974,7 @@ function updateHUD(dt) {
   const jt = race ? `Race ${race.i}/${RACE.points.length} · ${Math.ceil(race.t)}s` : job ? (job.type === 'bins' ? (job.stage === 'return' ? 'Bins · return the lorry' : `Bins · ${8 - job.bins.length}/8 · ${fmt(job.earned)}`) : job.type === 'taxi' ? (job.stage === 'pickup' ? `Cab · pick up fare · ${fmt(job.earned)}` : `Cab · drop off · ${Math.ceil(job.t)}s · ${fmt(job.pay)}`) : `Courier · ${Math.ceil(job.t)}s · ${fmt(job.pay)}`) : '';
   setText('raceTxt', jt); $('raceTxt').classList.toggle('hidden', !jt);
   if (editMode) { setBtn('btnA', held ? 'check' : 'hand', held ? 'Place' : 'Pick up'); setBtn('btnB', 'check', 'Done'); setBtn('btnX', held ? 'rotate' : 'none', held ? 'Rotate' : ''); setBtn('btnY', held ? 'box' : 'none', held ? 'Store' : ''); } // rotate/store only while you're holding something
-  else if (ride && (settings.steer || 'screen') === 'screen') { setBtn('btnA', 'horn', ride.b.two === 'bike' ? 'Bell' : 'Horn'); setBtn('btnX', 'lights', stats.lights === 'off' ? 'Lights off' : 'Lights auto'); setBtn('btnB', ws.kind === 'gun' ? 'fire' : 'burnout', ws.kind === 'gun' ? 'Shoot' : ride.launchReady ? 'Let go!' : 'Burnout'); setBtn('btnY', action ? action.icon : 'exit', action ? action.label : 'Get out'); }
+  else if (ride && (settings.steer || 'screen') === 'screen') { setBtn('btnA', 'horn', ride.b.two === 'bike' ? 'Bell' : 'Horn'); setBtn('btnX', 'lights', stats.lights === 'off' ? 'Lights off' : 'Lights auto'); setBtn('btnB', ws.kind === 'gun' ? 'fire' : 'burnout', ws.kind === 'gun' ? 'Shoot' : ride.launchReady ? 'Let go!' : ride.st?.nitro && ride.s.v > 6 ? `Nitro ${Math.round((ride.nos ?? 1) * 100)}%` : 'Burnout'); setBtn('btnY', action ? action.icon : 'exit', action ? action.label : 'Get out'); }
   else if (ride) { setBtn('btnA', 'gas', 'Drive'); setBtn('btnX', 'brake', ride.s.v > 0.5 ? 'Brake' : 'Reverse'); setBtn('btnB', ws.kind === 'gun' ? 'fire' : 'none', ws.kind === 'gun' ? 'Shoot' : ''); setBtn('btnY', action ? action.icon : 'exit', action ? action.label : 'Get out'); }
   else {
     setBtn('btnA', action ? action.icon : 'none', action ? action.label : '');
@@ -6350,7 +6355,7 @@ function saveGame() {
   store.set('bc_save', save); store.set('bc_arsenal', arsenal); store.set('bc_cars', garage);
 }
 // auto-update: bookmarks and home-screen apps can hold on to an old copy. Check version.json (never cached) and reload once if newer.
-const BUILD = 123;
+const BUILD = 124;
 function checkUpdate() {
   fetch('version.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(j => {
     if (!(j.v > BUILD)) return;
@@ -6526,7 +6531,7 @@ const BODY_SCHEMA = CHAR_SCHEMA.filter(t => t.tab === 'Body' || t.tab === 'Face'
 const HAIR_SCHEMA = [{ tab: 'Cut', items: CHAR_SCHEMA.flatMap(t => t.items).filter(i => ['hair', 'hairColor', 'facialHair'].includes(i.key)) }];
 const CLOTHES_EXTRA = [{ tab: 'Colours', items: CHAR_SCHEMA.flatMap(t => t.items).filter(i => ['topColor', 'pantsColor', 'shoeColor', 'hatColor', 'accent', 'gloveColor', 'backColor'].includes(i.key)) },
   { tab: 'Extras', items: CHAR_SCHEMA.flatMap(t => t.items).filter(i => ['eyewear', 'gloves', 'back', 'hat'].includes(i.key)) }];
-const MOD_PRICES = { engine: { eco: 0, stock: 200, sport: 3000, race: 8000, rocket: 20000 }, tyres: { slick: 1500 }, spoiler: { gt: 1500, wing: 900 }, finish: { carbon: 2000, chrome: 2500 } };
+const MOD_PRICES = { engine: { eco: 0, stock: 200, sport: 3000, race: 8000, rocket: 20000 }, tyres: { slick: 1500, runflat: 1800 }, turbo: { none: 0, street: 2500, big: 6000, twin: 12000 }, gearbox: { stock: 0, sport: 1800, race: 5000 }, brakes: { stock: 0, sport: 1200, race: 4000 }, weight: { stock: 0, stripped: 900, carbon: 6500 }, nitro: { none: 0, small: 3500, big: 8000 }, armour: { none: 0, light: 5000, heavy: 14000 }, glass: { stock: 0, bulletproof: 9000 }, ram: { none: 0, bars: 2200 }, spoiler: { gt: 1500, wing: 900 }, finish: { carbon: 2000, chrome: 2500 } };
 const MOD_BASE = { tyres: 600, wheels: 900, wheelSize: 500, suspension: 700, front: 400, rear: 400, skirts: 400, spoiler: 600, hood: 500, roof: 300, exhaust: 400, finish: 800, bodyColor: 500, accentColor: 200, decal: 300, tint: 200, rimColor: 150, headlights: 100, underglow: 600, glowColor: 100 };
 function modPrice(k, v) { return MOD_PRICES[k]?.[v] ?? MOD_BASE[k] ?? 0; }
 function shopPrice() {
@@ -6551,7 +6556,7 @@ function openCustom(kind) {
   const pres = $('presets'); pres.innerHTML = '';
   if (kind === 'car') { shop = { kind: 'mods', orig: { ...carCfg } }; $('customTitle').textContent = 'Bay Customs'; $('randBtn').classList.add('buy'); }
   const get = () => kind === 'car' ? carCfg : charCfg;
-  const schema = kind === 'car' ? S.map(t => ({ ...t, items: t.items.filter(i => i.key !== 'body').map(i => i.key === 'roof' ? { ...i, options: i.options.filter(o => !['taxi', 'police'].includes(o[0])) } : i) })) : S;
+  const schema = kind === 'car' ? S.map(t => ({ ...t, items: t.items.filter(i => i.key !== 'body').map(i => i.key === 'roof' ? { ...i, options: i.options.filter(o => !['taxi', 'police'].includes(o[0])) } : i).map(i => i.type !== 'choice' || !CAR_PARTS[i.key] ? i : { ...i, decorate: val => { const e = carPartEffects(i.key, val); return { fx: e.fx, note: !e.fx.length ? (e.perk || (['engine', 'turbo', 'gearbox', 'brakes', 'weight', 'nitro', 'armour', 'glass', 'ram', 'tyres', 'suspension'].includes(i.key) ? 'Standard' : 'Looks only')) : null, price: shop?.orig?.[i.key] === val ? 'Fitted' : fmt(Math.round(modPrice(i.key, val) * (hasDegree('mechanics') ? 0.8 : 1))) }; } }) })) : S;
   panel = buildPanel({ tabsEl: $('tabs'), contentEl: $('content'), schema, getCfg: get, onChange: (k, v) => { get()[k] = v; changed(); } });
   pv.dirty = true; changed();
 }
@@ -6618,7 +6623,7 @@ function updateShopPrice() { const p = shopPrice(); $('randBtn').textContent = p
 function changed() {
   store.set('rr_char', stats.jail?.outfit || stats.escaped || charCfg); store.set('bc_cars', garage);
   pv.dirty = true;
-  if (state === 'car') { stackTabs(); renderStats($('stats'), carStatBars(computeCarStats(carCfg)), `Engine <b>${CAR_PARTS.engine[carCfg.engine].label}</b> · Tyres <b>${CAR_PARTS.tyres[carCfg.tyres].label}</b> · Back cancels unpaid changes`); updateShopPrice(); }
+  if (state === 'car') { stackTabs(); const cs = computeCarStats(carCfg), c0 = shop?.orig ? computeCarStats(shop.orig) : cs, k1 = carClass(cs), k0 = carClass(c0); renderStats($('stats'), carStatBars(cs), `Class <b class="cls cls${k1}">${k1}</b>${k1 !== k0 ? ` <small>was ${k0}</small>` : ''}${cs.nitro ? ' · Nitro' : ''}${cs.bp ? ' · Bulletproof' : ''}${cs.runflat ? ' · Run-flats' : ''} · Back cancels unpaid changes`, carStatBars(c0)); updateShopPrice(); }
   else if (state === 'char') { stackTabs(); } if (state === 'char') $('stats').innerHTML = `<div class="statx">Body and face are free. Visit barbers for hair and clothing stores for outfits.</div>`;
 }
 $('backBtn').onclick = () => {

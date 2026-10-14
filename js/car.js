@@ -1,7 +1,7 @@
 // Modular car builder. Car faces +Z, sits on y=0, origin at the centre of the wheelbase.
 import * as THREE from '../lib/three.module.min.js';
-import { BASIC } from './character.js?v=123';
-import { patternTexture } from './gun.js?v=123';
+import { BASIC } from './character.js?v=124';
+import { patternTexture } from './gun.js?v=124';
 
 export const BODIES = {
   hatch:  { label: 'Hatchback', L: 3.8, W: 1.75, bh: 0.55, cl: 2.0, ch: 0.62, co: -0.4,  wr: 0.34, mass: 1.0 },
@@ -33,7 +33,7 @@ export const BODIES = {
 const o = (label, m = {}) => ({ label, m });
 export const CAR_PARTS = {
   engine: { eco: o('Eco', { top: 24, acc: 7 }), stock: o('Stock', { top: 32, acc: 10 }), sport: o('Sport', { top: 40, acc: 13 }), race: o('Race', { top: 48, acc: 17 }), rocket: o('Rocket', { top: 60, acc: 22 }) },
-  tyres: { street: o('Street', { grip: 1 }), sport: o('Low profile', { grip: 1.2 }), offroad: o('Mud terrain', { grip: 0.95, off: 1.5 }), drift: o('Drift (stretched)', { grip: 0.65 }), whitewall: o('Whitewall', { grip: 0.95 }), slick: o('Racing slick', { grip: 1.3, off: 0.7 }) },
+  tyres: { street: o('Street', { grip: 1 }), runflat: o('Run-flat', { grip: 0.97, runflat: 1 }), sport: o('Low profile', { grip: 1.2 }), offroad: o('Mud terrain', { grip: 0.95, off: 1.5 }), drift: o('Drift (stretched)', { grip: 0.65 }), whitewall: o('Whitewall', { grip: 0.95 }), slick: o('Racing slick', { grip: 1.3, off: 0.7 }) },
   suspension: { lowered: o('Lowered', { grip: 1.08, off: 0.8 }), stock: o('Stock'), lifted: o('Lifted', { grip: 0.92, off: 1.25 }) },
   wheels: { steel: o('Steel'), fivespoke: o('Five-spoke'), mesh: o('Mesh'), deepdish: o('Deep dish'), offroad: o('Beadlock'), turbine: o('Turbine'), wire: o('Wire spoke'), aero: o('Aero disc'), split: o('Split spoke') },
   wheelSize: { s: o('Small'), m: o('Medium'), l: o('Large', { off: 1.1 }) },
@@ -49,6 +49,15 @@ export const CAR_PARTS = {
   decal: { none: o('None'), stripes: o('Racing stripes'), side: o('Side stripe'), twotone: o('Two-tone') },
   finish: { gloss: o('Gloss'), matte: o('Matte'), metallic: o('Metallic'), chrome: o('Chrome'), camo: o('Camo'), carbon: o('Carbon') },
   tint: { clear: o('Clear'), smoke: o('Smoke'), black: o('Limo black'), gold: o('Gold') },
+  // performance and protection (Bay Customs)
+  turbo: { none: o('None'), street: o('Street turbo', { acc: 1.12, top: 1.04 }), big: o('Big single', { acc: 1.24, top: 1.08 }), twin: o('Twin turbo', { acc: 1.34, top: 1.11 }) },
+  gearbox: { stock: o('Stock'), sport: o('Close-ratio', { acc: 1.08 }), race: o('Sequential', { acc: 1.15, top: 1.03 }) },
+  brakes: { stock: o('Stock'), sport: o('Sport', { brake: 1.25 }), race: o('Carbon ceramic', { brake: 1.55 }) },
+  weight: { stock: o('Stock'), stripped: o('Stripped interior', { acc: 1.06, tough: 0.9 }), carbon: o('Carbon panels', { acc: 1.1, top: 1.02, tough: 0.95 }) },
+  nitro: { none: o('None'), small: o('Single bottle', { nitro: 1 }), big: o('Twin bottles', { nitro: 2 }) },
+  armour: { none: o('None'), light: o('Light plating', { tough: 1.45, acc: 0.96 }), heavy: o('Heavy armour', { tough: 2.1, acc: 0.9, top: 0.97 }) },
+  glass: { stock: o('Stock'), bulletproof: o('Bulletproof', { bp: 1, acc: 0.98 }) },
+  ram: { none: o('None'), bars: o('Ram bars', { ram: 1, tough: 1.1 }) },
 };
 const opts = obj => Object.entries(obj).map(([k, v]) => [k, v.label]);
 const LIGHT_COLS = ['#ffffff', '#fff2b0', '#9fd8ff', '#c9a0ff', '#ff6fb5', '#4cff7a'];
@@ -79,6 +88,16 @@ export const CAR_SCHEMA = [
   ] },
   { tab: 'Engine', items: [
     { key: 'engine', type: 'choice', label: 'Engine', options: opts(CAR_PARTS.engine) },
+    { key: 'turbo', type: 'choice', label: 'Turbo', options: opts(CAR_PARTS.turbo) },
+    { key: 'gearbox', type: 'choice', label: 'Gearbox', options: opts(CAR_PARTS.gearbox) },
+    { key: 'nitro', type: 'choice', label: 'Nitrous', options: opts(CAR_PARTS.nitro) },
+    { key: 'brakes', type: 'choice', label: 'Brakes', options: opts(CAR_PARTS.brakes) },
+    { key: 'weight', type: 'choice', label: 'Weight', options: opts(CAR_PARTS.weight) },
+  ] },
+  { tab: 'Armour', items: [
+    { key: 'armour', type: 'choice', label: 'Armour', options: opts(CAR_PARTS.armour) },
+    { key: 'glass', type: 'choice', label: 'Windows', options: opts(CAR_PARTS.glass) },
+    { key: 'ram', type: 'choice', label: 'Front', options: opts(CAR_PARTS.ram) },
   ] },
   { tab: 'Paint', items: [
     { key: 'finish', type: 'choice', label: 'Finish', options: opts(CAR_PARTS.finish) },
@@ -97,6 +116,7 @@ export const CAR_SCHEMA = [
 export const DEFAULT_CAR = {
   name: 'Sunset Cruiser', body: 'coupe', front: 'lip', rear: 'diffuser', skirts: 'skirts', spoiler: 'ducktail', hood: 'vents', roof: 'none', exhaust: 'dual',
   wheels: 'fivespoke', wheelSize: 'm', rimColor: '#c9ccd2', suspension: 'lowered', tyres: 'sport', engine: 'sport',
+  turbo: 'none', gearbox: 'stock', brakes: 'stock', weight: 'stock', nitro: 'none', armour: 'none', glass: 'stock', ram: 'none',
   finish: 'metallic', bodyColor: '#e23b3b', accentColor: '#16161b', decal: 'stripes', tint: 'smoke', headlights: '#ffffff', underglow: 'off', glowColor: '#38e8ff',
 };
 export const CAR_PRESETS = {
@@ -137,16 +157,16 @@ export function computeCarStats(cfg) {
   const c = { ...DEFAULT_CAR, ...cfg };
   const b = BODIES[c.body] || BODIES.coupe;
   const e = CAR_PARTS.engine[c.engine]?.m || CAR_PARTS.engine.stock.m;
-  const s = { top: e.top, acc: e.acc / b.mass, grip: 1, off: c.body === 'buggy' ? 1.4 : 1 };
-  if (b.tractor) return { top: 13, acc: 5, grip: 1.4, off: 1.6, turn: 2.2 };
-  if (b.two === 'bike') return { top: 11, acc: 6, grip: 1.3, off: 1.1, turn: 3.2, two: 'bike' };
-  if (b.two === 'scooter') return { top: 8.5, acc: 5, grip: 1.2, off: 0.6, turn: 3.4, two: 'scooter' };
+  const s = { top: e.top, acc: e.acc / b.mass, grip: 1, off: c.body === 'buggy' ? 1.4 : 1, brake: 1, tough: ['van', 'pickup', 'boxtruck', 'jeep', 'limo'].includes(c.body) ? 1.25 : 1, nitro: 0, bp: 0, runflat: 0, ram: 0 };
+  if (b.tractor) return { top: 13, acc: 5, grip: 1.4, off: 1.6, turn: 2.2, brake: 1, tough: 1.5, nitro: 0 };
+  if (b.two === 'bike') return { top: 11, acc: 6, grip: 1.3, off: 1.1, turn: 3.2, two: 'bike', brake: 1, tough: 0.6, nitro: 0 };
+  if (b.two === 'scooter') return { top: 8.5, acc: 5, grip: 1.2, off: 0.6, turn: 3.4, two: 'scooter', brake: 1, tough: 0.6, nitro: 0 };
   if (b.two === 'moto') { s.top *= 1.12; s.acc = e.acc * 1.25; s.grip = 1.05; }
   if (c.body === 'sports') { s.top *= 1.08; s.acc *= 1.1; s.grip *= 1.05; }
   if (['van', 'limo', 'pickup'].includes(c.body)) s.grip *= 0.93;
-  for (const slot of ['tyres', 'suspension', 'wheelSize', 'front', 'rear', 'spoiler', 'hood']) {
+  for (const slot of ['tyres', 'suspension', 'wheelSize', 'front', 'rear', 'spoiler', 'hood', 'turbo', 'gearbox', 'brakes', 'weight', 'nitro', 'armour', 'glass', 'ram']) {
     const part = CAR_PARTS[slot][c[slot]]; if (!part) continue;
-    for (const [k, v] of Object.entries(part.m)) s[k] *= v;
+    for (const [k, v] of Object.entries(part.m)) { if (['nitro', 'bp', 'runflat', 'ram'].includes(k)) s[k] = v; else s[k] *= v; }
   }
   s.turn = 2.3 * s.grip;
   return s;
@@ -154,11 +174,25 @@ export function computeCarStats(cfg) {
 export function carStatBars(s) {
   const c = v => Math.max(0.03, Math.min(1, v));
   return [
-    ['Top speed', c(s.top / 66), Math.round(s.top * 3.6) + ' km/h'],
+    ['Top speed', c(s.top / 66), Math.round(s.top * 2.237) + 'mph'],
     ['Accel', c(s.acc / 24), (s.top / s.acc).toFixed(1) + 's'],
     ['Grip', c((s.grip - 0.5) / 0.9), Math.round(s.grip * 100)],
     ['Off-road', c(s.off / 2.2), Math.round(s.off * 100)],
+    ['Braking', c((s.brake || 1) / 1.7), Math.round((s.brake || 1) * 100)],
+    ['Toughness', c((s.tough || 1) / 2.6), Math.round((s.tough || 1) * 100)],
   ];
+}
+// performance class from speed, acceleration and grip: D, C, B, A, S
+export function carClass(s) { const pi = (s.top / 60) * 40 + (s.acc / 22) * 35 + ((s.grip || 1) / 1.4) * 25; return pi > 78 ? 'S' : pi > 64 ? 'A' : pi > 52 ? 'B' : pi > 40 ? 'C' : 'D'; }
+// what a car part does, for the chips: [label, '+12%', good]
+const CFX = { top: ['top speed', 1], acc: ['accel', 1], grip: ['grip', 1], off: ['off-road', 1], brake: ['braking', 1], tough: ['toughness', 1] };
+const CPERK = { nitro: 'Nitro boost: hold Burnout while moving', bp: 'Bullets can\'t hurt you inside', runflat: 'Keeps going when shot', ram: 'Smash cars out of the way' };
+export function carPartEffects(slot, val) {
+  const p = CAR_PARTS[slot]?.[val]; if (!p) return { fx: [], perk: null };
+  if (slot === 'engine') { const st = CAR_PARTS.engine.stock.m; return { fx: [['top speed', `${p.m.top >= st.top ? '+' : ''}${Math.round((p.m.top / st.top - 1) * 100)}%`, p.m.top >= st.top], ['accel', `${p.m.acc >= st.acc ? '+' : ''}${Math.round((p.m.acc / st.acc - 1) * 100)}%`, p.m.acc >= st.acc]].filter(f => f[1] !== '+0%' && f[1] !== '0%'), perk: null }; }
+  let perk = null; const fx = [];
+  for (const [k, v] of Object.entries(p.m)) { if (CPERK[k]) { perk = k === 'nitro' && v > 1 ? 'Nitro x2: longer boosts' : CPERK[k]; continue; } const f = CFX[k]; if (!f) continue; const pct = Math.round((v - 1) * 100); if (pct) fx.push([f[0], (pct > 0 ? '+' : '') + pct + '%', pct > 0]); }
+  return { fx: fx.sort((a, b) => b[2] - a[2]), perk };
 }
 
 // ---------------- geometry
