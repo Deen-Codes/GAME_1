@@ -2,7 +2,7 @@
 // stray cats, dogs out on walks with their owners, squirrels, deer in the hills by day, and raccoons,
 // possums, coyotes and owls at night. All low-poly, baked into a few meshes each so they're cheap to draw.
 import * as THREE from '../lib/three.module.min.js';
-import { CITIES, LAMPS, FIELDS, sandLine, shoreLine, walkable, groundH, cityAt, roadAt, wallTop } from './world.js?v=131';
+import { CITIES, LAMPS, FIELDS, sandLine, shoreLine, walkable, groundH, cityAt, roadAt, wallTop } from './world.js?v=132';
 // a spot on a nearby rooftop (roof edge-ish), or null
 function roofSpot(x, z, rMin = 8, rMax = 45) { for (let i = 0; i < 10; i++) { const a = Math.random() * 6.28, d = rMin + Math.random() * (rMax - rMin), px = x + Math.sin(a) * d, pz = z + Math.cos(a) * d, t = wallTop(px, pz); if (t != null && t > 3 && t < 40) return { x: px, z: pz, y: t + 0.02 }; } return null; }
 
@@ -63,6 +63,7 @@ function template(kind) { // a few colour variants per species
   if (list.length < (kind === 'dog' || kind === 'cat' ? 4 : 1)) list.push(SPECIES[kind]());
   return pick(list);
 }
+export function makeAnimalMesh(kind) { return makeMesh(kind); }
 function makeMesh(kind) {
   const t = template(kind), root = new THREE.Group(), inner = new THREE.Group(); root.add(inner);
   const body = new THREE.Mesh(t.body, MAT); body.castShadow = true; inner.add(body);
