@@ -1,7 +1,7 @@
 // Pedestrians: baked low-poly people who stroll sidewalks, wander the beach, flee from trouble.
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, randomChar, disposeObject } from './character.js?v=184';
-import { CITIES, sandLine, shoreLine, groundH, walkable as worldWalkable, resolve } from './world.js?v=184';
+import { buildCharacter, randomChar, disposeObject } from './character.js?v=186';
+import { CITIES, sandLine, shoreLine, groundH, walkable as worldWalkable, resolve } from './world.js?v=186';
 // interiors swap in their own floor test so brawlers can move around inside
 let walkable = worldWalkable; export function setWalk(fn) { walkable = fn || worldWalkable; }
 
@@ -244,7 +244,15 @@ export class Peds {
         if (p.state === 'wander') { const dx = p.tx - p.x, dz = p.tz - p.z, d = Math.hypot(dx, dz); if (d < 0.3 || !walkable(p.tx, p.tz)) { p.state = 'idle'; p.t = rand(2, 7); } else { const s = Math.min(d, 1.1 * dt); p.x += dx / d * s; p.z += dz / d * s; p.face = Math.atan2(dx, dz); mv = 1.1; } }
       }
       if (p.state === 'return') { const dx = p.hx - p.x, dz = p.hz - p.z, d = Math.hypot(dx, dz); if (d < 0.3) { p.x = p.hx; p.z = p.hz; p.face = p.hface; p.state = p.rest; } else { const s = Math.min(d, 1.2 * dt); p.x += dx / d * s; p.z += dz / d * s; p.face = Math.atan2(dx, dz); mv = 1.2; } }
-      if (p.state === 'chase') { const dx = p.tx - p.x, dz = p.tz - p.z, d = Math.hypot(dx, dz); const sp = p.follow ? Math.min(5.4, Math.max(1.5, d * 1.6)) : (p.spd || 5.4); if (d > 0.4) { const s = Math.min(d, sp * dt), ox = p.x, oz = p.z; p.x += dx / d * s; p.z += dz / d * s; resolve(p, 0.35, 0); if (!walkable(p.x, p.z)) { p.x = ox; p.z = oz; } mv = sp; } p.face = Math.atan2(dx, dz); }
+      if (p.state === 'chase') { const dx = p.tx - p.x, dz = p.tz - p.z, d = Math.hypot(dx, dz); const sp = p.follow ? Math.min(5.4, Math.max(1.5, d * 1.6)) : (p.spd || 5.4); if (d > 0.4) { const s = Math.min(d, sp * dt), want = Math.atan2(dx, dz);
+          // walk round things in the way: try straight at you, and if a wall, car or bin stops us, slide off to whichever side opens up and keep going that way a moment
+          const step = a => { const ox = p.x, oz = p.z; p.x += Math.sin(a) * s; p.z += Math.cos(a) * s; resolve(p, 0.35, 0); if (!walkable(p.x, p.z)) { p.x = ox; p.z = oz; return 0; } const m = Math.hypot(p.x - ox, p.z - oz); if (m < s * 0.45) { p.x = ox; p.z = oz; return 0; } return m; };
+          p.detT = (p.detT || 0) - dt; let moved = 0, ang = want;
+          if (p.detT > 0) { ang = p.detA; moved = step(ang); if (!moved) p.detT = 0; }
+          if (!moved) { ang = want; moved = step(ang); }
+          if (!moved) { const sd = p.detS || (Math.random() < 0.5 ? 1 : -1); for (const k of [0.6, 1.1, 1.6, 2.2]) for (const sg of [sd, -sd]) { if (moved) break; ang = want + sg * k; moved = step(ang); if (moved) { p.detA = ang; p.detT = 0.5 + k * 0.4; p.detS = sg; } } }
+          if (!moved) { const ox = p.x, oz = p.z; p.x += Math.sin(want) * s; p.z += Math.cos(want) * s; resolve(p, 0.35, 0); if (!walkable(p.x, p.z)) { p.x = ox; p.z = oz; } }
+          mv = sp; p.face = moved ? ang : want; } else p.face = Math.atan2(dx, dz); }
       if (p.state === 'punch') { p.face = Math.atan2(p.tx - p.x, p.tz - p.z); }
       if (p.state === 'march') { const dx = p.tx - p.x, dz = p.tz - p.z, d = Math.hypot(dx, dz), sp = p.mspd || 1.2; if (d > 0.3) { const s = Math.min(d, sp * dt); p.x += dx / d * s; p.z += dz / d * s; p.face = Math.atan2(dx, dz); mv = sp; } else if (p.lookX != null) p.face = Math.atan2(p.lookX - p.x, p.lookZ - p.z); }
       if (p.state === 'flee') {

@@ -1,30 +1,30 @@
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=184';
-import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun, partEffects, partPerk } from './gun.js?v=184';
-import { buildCar, computeCarStats, carStatBars, carClass, carPartEffects, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=184';
-import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, STAIRS, unblockPillars, canyonAt, canyonNear, PEAK, SKYWAYS, SKY_Y, skyAt, skyY, rampSeg, windowShader, makeOceanMaterial, WATER_U, WIND_U, METRO, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, collidersNear, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=184';
-import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=184';
-import { buildPanel, renderStats } from './ui.js?v=184';
-import { Input } from './input.js?v=184';
-import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime, animalCall } from './audio.js?v=184';
-import { runMinigame } from './minigames.js?v=184';
-import { CUT, initCutGames } from './cutgames.js?v=184';
-import { initOnline, updateOnline, goOnline, goOffline, NET, onNet, sendMagicLink, verifyCode, signOut, signedIn, cloudLoad, cloudSave, cloudList, cloudDelete, isAdmin, checkAdmin, reviewLoad, reviewSet } from './online.js?v=184';
-import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk, setReservedNames, seededLook } from './peds.js?v=184';
-import { citizens, whereNow } from './citizens.js?v=184';
-import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=184';
-import { findRoute } from './nav.js?v=184';
-import { COURSES, CAREERS, QUIZ } from './careers.js?v=184';
-import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=184';
-import { attachWheel } from './wheel.js?v=184';
-import { GROUND_U } from './groundtex.js?v=184';
-import { Animals, makeAnimalMesh } from './animals.js?v=184';
-import { Talk } from './talk.js?v=184';
-import { incomingText, classify, textOptions, textReply } from './texts.js?v=184';
-import { svg, drawIcon, ICONS as ICON_SET } from './icons.js?v=184';
-import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=184';
-import { FURN, CATALOG } from './furniture.js?v=184';
-import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=184';
+import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=186';
+import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun, partEffects, partPerk } from './gun.js?v=186';
+import { buildCar, computeCarStats, carStatBars, carClass, carPartEffects, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=186';
+import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, STAIRS, unblockPillars, canyonAt, canyonNear, PEAK, SKYWAYS, SKY_Y, skyAt, skyY, rampSeg, windowShader, makeOceanMaterial, WATER_U, WIND_U, METRO, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, collidersNear, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=186';
+import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=186';
+import { buildPanel, renderStats } from './ui.js?v=186';
+import { Input } from './input.js?v=186';
+import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime, animalCall } from './audio.js?v=186';
+import { runMinigame } from './minigames.js?v=186';
+import { CUT, initCutGames } from './cutgames.js?v=186';
+import { initOnline, updateOnline, goOnline, goOffline, NET, onNet, sendMagicLink, verifyCode, signOut, signedIn, cloudLoad, cloudSave, cloudList, cloudDelete, isAdmin, checkAdmin, reviewLoad, reviewSet } from './online.js?v=186';
+import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk, setReservedNames, seededLook } from './peds.js?v=186';
+import { citizens, whereNow } from './citizens.js?v=186';
+import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=186';
+import { findRoute } from './nav.js?v=186';
+import { COURSES, CAREERS, QUIZ } from './careers.js?v=186';
+import { EVENTS, EVENT_BY_ID, ARRIVE, PHONE_TEXT, PERSON_TEXT } from './events.js?v=186';
+import { attachWheel } from './wheel.js?v=186';
+import { GROUND_U } from './groundtex.js?v=186';
+import { Animals, makeAnimalMesh } from './animals.js?v=186';
+import { Talk } from './talk.js?v=186';
+import { incomingText, classify, textOptions, textReply } from './texts.js?v=186';
+import { svg, drawIcon, ICONS as ICON_SET } from './icons.js?v=186';
+import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=186';
+import { FURN, CATALOG } from './furniture.js?v=186';
+import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=186';
 
 const $ = id => document.getElementById(id);
 let inside = null, editMode = false, held = null, pendingCar = false, homeMusic = false, phoneBadge = 0;
@@ -3446,6 +3446,8 @@ function deliverEvent(ev, data) {
   }
   if (ev.via === 'approach') {
     const cfg = lifeCfg(who); let sp = null;
+    const clear = (x, z) => { for (let k = 1; k < 8; k++) { const t = k / 8, qx = x + (P.x - x) * t, qz = z + (P.z - z) * t; if (!walkable(qx, qz) || solidPoint(qx, qz, 1)) return false; } return true; }; // somewhere they can actually walk straight to you from
+    for (let i = 0; i < 30 && !sp; i++) { const a = rand(0, 6.28), d = rand(11, 16), x = P.x + Math.sin(a) * d, z = P.z + Math.cos(a) * d; if (walkable(x, z) && !solidPoint(x, z, 1) && clear(x, z)) sp = { x, z }; }
     for (let i = 0; i < 20 && !sp; i++) { const a = rand(0, 6.28), d = rand(11, 16), x = P.x + Math.sin(a) * d, z = P.z + Math.cos(a) * d; if (walkable(x, z) && !solidPoint(x, z, 1)) sp = { x, z }; }
     if (!sp) { life().queue.push({ id: ev.id, at: gameHours() + 1, data }); return; }
     const p = peds.makePed(bakeCfg(cfg)); Object.assign(p, { kind: 'life', x: sp.x, z: sp.z, hx: sp.x, hz: sp.z, state: 'chase', tx: P.x, tz: P.z, name: who.name });
@@ -3492,7 +3494,8 @@ function logStory(who, choice, result, tag) { const L = stats.storyLog ||= []; L
 async function runEventTalk(ev, data, spk, after) {
   const api = lifeApi(); eventOpen = true;
   beginTalk(spk.cfg, spk.name, spk.tag, spk.think ? 200 : 160 + Math.random() * 120, null, null, null, spk.think, !!spk.seat, !!spk.phone, false, spk.bed || null);
-  const lines = [].concat(ev.text(api, data));
+  const alt = spk.phone && ev.via !== 'call' ? PHONE_TEXT[ev.id] : !spk.phone && !spk.think && ev.via === 'call' ? PERSON_TEXT[ev.id] : null; // said differently down the phone than face to face
+  const lines = [].concat((alt || ev.text)(api, data));
   for (const l of lines) await talk.say(l);
   const ch = ev.choices(api, data), k = await talk.choose(ch.map(c => I('chat', c.label)));
   await talk.say(ch[k].label, 'you');
@@ -3708,7 +3711,7 @@ function setTalkRel(id) { const el = $('talkRel'); if (!id) { el.classList.add('
 
 // ================================================================ CONVERSATIONS
 function zoneBg(x, z) { if (inside) return 'interior'; if (onPier(x, z)) return 'pier'; const n = zoneName(x, z); return n === 'Bay Beach' ? 'beach' : n === 'Hidden Hills' || n === 'Countryside' || n === 'Farmland' ? 'hills' : n.includes('Airport') ? 'airport' : n === 'Eastport' || n === 'Northfield' ? 'suburb' : 'city'; }
-function beginTalk(cfg, name, tag, pitch, relId, pet = null, pose = null, think = false, seat = false, phone = false, car = false, bed = null) { talk.layout(W, H); talk.begin({ npcCfg: cfg, youCfg: charCfg, name, tag, pitch, bg: zoneBg(P.x, P.z), night, pet, pose, think, seat, phone, car, bed, wall: inside ? INTERIORS[inside.id].wall : null, floor: inside ? INTERIORS[inside.id].floor : null, room: inside ? inside.id : null }); if (relId) relNames[relId] = name; setTalkRel(relId); setState('talk'); }
+function beginTalk(cfg, name, tag, pitch, relId, pet = null, pose = null, think = false, seat = false, phone = false, car = false, bed = null) { if (seat && ride && !ride.b.two) { try { talk.nextCar = buildCar(ride.cfg); } catch (e) { talk.nextCar = null; } } talk.layout(W, H); talk.begin({ npcCfg: cfg, youCfg: charCfg, name, tag, pitch, bg: zoneBg(P.x, P.z), night, pet, pose, think, seat, phone, car, bed, wall: inside ? INTERIORS[inside.id].wall : null, floor: inside ? INTERIORS[inside.id].floor : null, room: inside ? inside.id : null }); if (relId) relNames[relId] = name; setTalkRel(relId); setState('talk'); }
 function endTalk() { talkNeeds(false); talk.end(); setState('play'); }
 const I = (n, t) => `${svg(n, 'sm')} ${t}`;
 const DEALER_HI = { Stranger: ["Do I know you? ...What you need.", "Keep it quick, cops roll through here.", "New face. Prices are prices."], Known: ["You again. What you need?", "Ayy, back for more?"], Friendly: ["My guy! What we doing today?", "Good to see you. Fresh stock in."], Trusted: ["There's my best customer. I got you.", "For you? Always open."], Family: ["Family! Sit down, sit down.", "Anything you need, it's yours."] };
@@ -7203,7 +7206,7 @@ function saveGame() {
   store.set('bc_save', save); store.set('bc_arsenal', arsenal); store.set('bc_cars', garage); store.set('bc_savedAt', Date.now());
 }
 // auto-update: bookmarks and home-screen apps can hold on to an old copy. Check version.json (never cached) and reload once if newer.
-const BUILD = 184;
+const BUILD = 186;
 function updatingCover() { const d = document.createElement('div'); d.id = 'updCover'; d.innerHTML = '<div class="bt-logo">BAY<span>CITY</span></div><p><i></i>Updating Bay City...</p>'; document.body.appendChild(d); requestAnimationFrame(() => d.classList.add('on')); }
 function checkUpdate() {
   fetch('version.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(j => {
@@ -7348,11 +7351,11 @@ function sbDraw() {
   const nice = id => id.replace(/_/g, ' ').replace(/^./, c => c.toUpperCase()), q = SB.q.toLowerCase();
   let body = '';
   if (SB.tab === 'events') {
-    const list = evs.filter(e => (!q || e.id.includes(q.replace(/ /g, '_')) || labVia(e).toLowerCase().includes(q)) && (SB.filter !== 'todo' || !T[e.id]) && (SB.filter !== 'done' || T[e.id]));
-    body = `<div class="sb-prog"><b>${done} / ${evs.length} checked</b><div class="lab-bar"><i style="width:${done / evs.length * 100}%"></i></div></div>
+    const list = evs.filter(e => (!q || e.id.includes(q.replace(/ /g, '_')) || labVia(e).toLowerCase().includes(q)) && (SB.filter !== 'todo' || !T[e.id]) && (SB.filter !== 'done' || T[e.id]) && (SB.filter !== 'wip' || T['wip:' + e.id]));
+    body = `<div class="sb-prog"><b>${done} / ${evs.length} checked${evs.filter(e => T['wip:' + e.id]).length ? ` · <span class="sb-wipn">${evs.filter(e => T['wip:' + e.id]).length} being looked into</span>` : ''}</b><div class="lab-bar"><i style="width:${done / evs.length * 100}%"></i></div></div>
       <input class="sb-search" id="sbQ" placeholder="Search events" value="${SB.q.replace(/"/g, '')}">
-      <div class="lab-tabs">${['all', 'todo', 'done'].map(k => `<button data-sf="${k}" class="${(SB.filter || 'all') === k ? 'on' : ''}">${{ all: 'All', todo: 'To check', done: 'Checked' }[k]}</button>`).join('')}</div>
-      <div class="lab-list">${list.map(e => { const k = labKinds(e); return `<div class="lab-ev${T[e.id] ? ' done' : ''}"><button class="lab-tick" data-tick="${e.id}">${T[e.id] ? svg('check', 'sm') : ''}</button><div class="lab-txt"><b>${nice(e.id)}${e.follow ? ' <small>follow-up</small>' : ''}</b><span>${labVia(e)}${k.length ? ' · ' + k.join(' · ') : ''}</span>${N[e.id] ? `<em>${N[e.id].replace(/</g, '&lt;')}</em>` : ''}</div><button class="sb-mini ghost" data-note="${e.id}">Note</button>${sbModes(e).map(([m, l]) => `<button class="sb-mini" data-run="${e.id}" data-mode="${m}">${l}</button>`).join('')}</div>`; }).join('')}</div>`;
+      <div class="lab-tabs">${['all', 'todo', 'wip', 'done'].map(k => `<button data-sf="${k}" class="${(SB.filter || 'all') === k ? 'on' : ''}">${{ all: 'All', todo: 'To check', wip: 'Looking into', done: 'Checked' }[k]}</button>`).join('')}</div>
+      <div class="lab-list">${list.map(e => { const k = labKinds(e); return `<div class="lab-ev${T[e.id] ? ' done' : ''}${T['wip:' + e.id] ? ' wip' : ''}"><button class="lab-tick" data-tick="${e.id}" aria-label="Checked">${T[e.id] ? svg('check', 'sm') : ''}</button><button class="lab-wipb" data-wip="${e.id}" aria-label="Being looked into">${T['wip:' + e.id] ? '!' : ''}</button><div class="lab-txt"><b>${nice(e.id)}${e.follow ? ' <small>follow-up</small>' : ''}</b><span>${labVia(e)}${k.length ? ' · ' + k.join(' · ') : ''}</span>${N[e.id] ? `<em>${N[e.id].replace(/</g, '&lt;')}</em>` : ''}</div><button class="sb-mini ghost" data-note="${e.id}">Note</button>${sbModes(e).map(([m, l]) => `<button class="sb-mini" data-run="${e.id}" data-mode="${m}">${l}</button>`).join('')}</div>`; }).join('')}</div>`;
   } else if (SB.tab === 'people') {
     body = `<p class="sb-hint">Summon someone in front of you. Walk up to them to talk, or remove them.</p><div class="sb-grid">${SB_PEOPLE.map((p, i) => `<button class="sb-chip" data-sum="${i}">${p[0]}</button>`).join('')}</div>
       <div class="sb-sec">In the room (${peds.list.length})</div><div class="lab-list">${peds.list.map((p, i) => `<div class="lab-ev"><div class="lab-txt"><b>${(p.name || 'Person').replace(/</g, '')}</b><span>${p.angry ? 'Wants a fight' : p.state}${p.buddy ? ' · with you' : ''}</span></div><button class="sb-mini ghost" data-rm="${i}">Remove</button></div>`).join('') || '<p class="sb-hint">Nobody here yet.</p>'}</div>
@@ -7370,6 +7373,7 @@ function sbDraw() {
   el.querySelectorAll('[data-sf]').forEach(b => b.onclick = () => { SB.filter = b.dataset.sf; sbDraw(); });
   const qi = $('sbQ'); if (qi) qi.oninput = () => { SB.q = qi.value; const pos = qi.selectionStart; sbDraw(); const n = $('sbQ'); n.focus(); n.setSelectionRange(pos, pos); };
   el.querySelectorAll('[data-tick]').forEach(b => b.onclick = () => { const id = b.dataset.tick; sbTick(id, !(SB.rev.ticks || {})[id]); sfx.click(); sbDraw(); });
+  el.querySelectorAll('[data-wip]').forEach(b => b.onclick = () => { const id = 'wip:' + b.dataset.wip; sbTick(id, !(SB.rev.ticks || {})[id]); sfx.click(); sbDraw(); }); // yellow: being looked into
   el.querySelectorAll('[data-note]').forEach(b => b.onclick = () => { const id = b.dataset.note, cur = (SB.rev.notes || {})[id] || ''; const row = b.closest('.lab-ev'); row.insertAdjacentHTML('afterend', `<div class="sb-noteed"><textarea id="sbNoteT" placeholder="What's wrong with it, or what should change?">${cur.replace(/</g, '&lt;')}</textarea><div class="sb-grid"><button class="sb-chip on" id="sbNoteS">Save note</button>${cur ? '<button class="sb-chip" id="sbNoteD">Delete</button>' : ''}</div></div>`); const t = $('sbNoteT'); t.focus(); $('sbNoteS').onclick = () => { sbNote(id, t.value.trim()); sbDraw(); }; if ($('sbNoteD')) $('sbNoteD').onclick = () => { sbNote(id, ''); sbDraw(); }; });
   el.querySelectorAll('[data-run]').forEach(b => b.onclick = () => { sbClose(); if (lifeAct) { if (lifeAct.dog) dyn.remove(lifeAct.dog.m.root); lifeAct = null; } eventOpen = false; clearWaypoint(); sbRunEvent(EVENT_BY_ID[b.dataset.run], b.dataset.mode); });
   el.querySelectorAll('[data-sum]').forEach(b => b.onclick = () => { sbSummon(+b.dataset.sum); sbDraw(); });
@@ -7386,8 +7390,8 @@ function sbDraw() {
 // how an event can be played: as it normally arrives, in person (they stand in front of you), or as a phone call
 function sbModes(e) {
   if (e.via === 'thought' || e.via === 'object' || e.via === 'pickup') return [['auto', 'Play']];
-  if (e.via === 'call') return [['call', 'Call'], ['person', 'In person']];
-  if (e.via === 'approach') return [['auto', 'Walk up'], ['call', 'Call']];
+  if (e.via === 'call') return PERSON_TEXT[e.id] ? [['call', 'Call'], ['person', 'In person']] : [['call', 'Call']];
+  if (e.via === 'approach') return PHONE_TEXT[e.id] ? [['auto', 'Walk up'], ['call', 'Call']] : [['auto', 'Walk up']];
   return [['person', 'Play'], ['call', 'Call']]; // home / work / place
 }
 function sbRunEvent(ev, mode = 'auto') {

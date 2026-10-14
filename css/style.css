@@ -952,3 +952,8 @@ body:has(#title) #sbBtn, body:has(#mg:not(.hidden)) #sbBtn { display: none; }
 .sb-hint { font-size: 13px; color: #6a6080; margin: 6px 0; }
 .sb-wide { width: 100%; border: 0; border-radius: 14px; padding: 13px; font-weight: 900; font-size: 15px; background: #2a1640; color: #fff; margin-top: 8px; } .sb-wide.danger { background: #e0384f; }
 .sb-noteed { background: #fff5f9; border-radius: 14px; padding: 10px; margin: -2px 0 6px; } .sb-noteed textarea { width: 100%; min-height: 70px; border-radius: 10px; border: 1.5px solid #e2dcea; padding: 8px; font: inherit; font-size: 14px; }
+.lab-wipb { width: 26px; height: 26px; flex: none; border-radius: 8px; border: 2px solid #e8c34a; background: none; color: #2a1640; font-weight: 900; font-size: 15px; display: grid; place-items: center; padding: 0; }
+.lab-ev.wip .lab-wipb { background: #ffd23f; border-color: #ffd23f; }
+.sb-body .lab-ev.wip { background: #fff8db; }
+.sb-wipn { color: #b8860b; }
+.sb-body .lab-tabs button { font-size: 11px; padding: 7px 4px; }

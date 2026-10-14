@@ -589,4 +589,44 @@ export const ARRIVE = {
     lose: { text: ['*He legs it with the TV under his arm.*', 'He had friends. You didn\'t. Lesson learned.'], go: () => a.mood(-8) } }),
   hot_car_drop: a => { a.give(2000); a.karma(-5); a.dropHotCar(); return 'Lucky looks it over and peels off $2,000. "Vinnie\'s friend? Pleasure."'; },
 };
+// the same moment over the phone (for people who'd normally walk up to you): nobody says "there you are" down a phone line
+export const PHONE_TEXT = {
+  loan: (a, d) => [`Hello? Is this... it IS you! It's ${d.name}, from school. Got your number off your cousin.`, `Listen... I'm in a bit of a hole. Rent's due and my landlord is not playing. Could you lend me ${a.fmt(d.amt)}? I'll pay you back, swear down.`],
+  loan_back: (a, d) => [`Hey, it's ${d.name}! Picked up first ring, love that.`, `Told you I'd pay you back. I'm sending you ${a.fmt(d.amt * 2)}. Double, for trusting me when nobody else did.`],
+  wallet_caught: (a, d) => ['You don\'t know me. But my mum\'s doorbell camera knows you. You nicked her wallet.', `${a.fmt(d.cash * 2)} by tonight. Or I come and find you.`],
+  crypto: () => ['Bro! Got your number from a guy who knows a guy. Have you heard of BayCoin?', 'Ground floor, bro. Put five hundred in today, Lambo by Friday. Trust me.'],
+  old_boss: () => ['It\'s me. Your old manager. Don\'t hang up.', 'You cost me everything. My job, my house, my wife. You know what I\'ve got left? Time. And your number.'],
+  gym_bro: () => ['Yo! Bro! It\'s Brody, from Brody Fuel. Saw your gym pics. You are HUGE.', 'Want to be our next model? $800 up front.'],
+  prison_mate: () => ['Guess who. Cell block B. Got your number off your old cellie.', 'I got a car that needs to disappear. Drive it to Lucky\'s chop shop: two grand, no questions.'],
+  neighbour_feud: () => ['This is your neighbour. Yeah. The one whose wall you bang on at midnight.', 'Somebody keyed my car last night. Was that you?'],
+  old_teacher: a => ['Hello, is that my old maths student? It\'s Mr Okafor! Your mum gave me your number.', a.lvl('smarts') >= 4 ? 'I always knew you were bright. I hear you\'re doing well.' : 'You never did hand in that homework, did you? Ha!'],
+  debt_collector: () => ['Good afternoon. Bay Credit Recovery calling.', 'Your phone contract defaulted three months ago. $300, plus fees. Today.'],
+  debt_collector_back: () => ['Enforcement agent. I\'ve been trying to reach you.', 'The debt\'s now $900 with fees. Pay, or I come and take something worth that much.'],
+  charity_run: () => ['Hi! It\'s Jess from the children\'s hospital run. Your friend said you might be up for it?', 'We\'re doing a 10k on Sunday. Would you run with us? Or sponsor someone?'],
+  phone_thanks: (a, d) => ['Hello? Is this the person who found my son\'s phone? Thank you SO much.', 'It has every photo of my late husband on it. I run the bakery on Main. You never pay for bread again. I mean it.'],
+  pet_offer: () => ['Hi! It\'s Bay Animal Rescue. You filled in a form a while back?', 'We\'ve got an old boy who\'s been with us eight months. Nobody wants an old dog. Would you?'],
+  ex_friend: a => ['No WAY. Is that really you? It\'s me, from school! Found you online.', a.money() > 5000 ? 'Looks like you\'re doing well! I\'m starting a business, want in? Five grand gets you a third.' : 'We should catch up properly. Drink sometime?'],
+  college_open_day: () => ['Hi! Calling from Bay City College. It\'s our open week!', 'Ever thought about going back to study? First class is free if you sign up today.'],
+};
+// the same moment face to face (for things that normally come as a phone call), when they're standing right there
+export const PERSON_TEXT = {
+  loyal_friend: () => ['Yo! Good to see you. Guess who got a job down at the docks?', 'Remember when you lent me that money? If you ever need anything, and I mean anything, I got you. Cops, whatever. No questions.'],
+  docks_shift: () => ['Glad I caught you. Shift\'s on tonight. Container ship came in.', 'Normal pay is three hundred for lugging boxes. But... there\'s a crate nobody\'s meant to check. Fifteen hundred to drive it out the gate.'],
+  wallet_reward: (a, d) => ['Excuse me, are you the one who returned my wallet? Thank you, honestly.', 'I\'m a defence lawyer. If you EVER get into trouble, come to me. Free of charge. You\'re a good person.'],
+  audit: () => ['A word. I\'m from head office. We\'re auditing last month\'s reports.', 'Your name is all over the numbers that don\'t add up. Care to explain?'],
+  whistle: () => ['I\'m from head office. Your old manager was caught cooking the books.', 'We heard you refused to take part. That kind of integrity is rare.'],
+  headhunter: () => ['Hi! Jen from Recruit Bay. I\'ve been hoping to bump into you, people say you\'re sharp.', 'Bay Corp needs an Office Assistant. No degree needed. Interested?'],
+  kid_trouble: (a, d) => ['Officer Diaz, Bay City PD. Have you got a minute?', `We picked up ${d.kid?.name || 'your kid'} spraying graffiti on the Bay Bridge. There's a $400 fine.`],
+  ex_text: a => ['...Hey. Didn\'t think I\'d see you tonight.', `I can't stop thinking about you. Can we go somewhere and talk?${a.partner() ? ' I know you\'re with someone. I don\'t care.' : ''}`],
+  deal_gone_bad: () => ['Yo. You\'re the plug, right? I need a big order.', 'Cash on delivery. Round the back of the car wash, tonight.'],
+  tax: a => ['Bay Revenue. We\'ve noticed some... unreported income.', `You owe ${a.fmt(Math.round(a.money() * 0.12))}.`],
+  aunt: (a, d) => ['Good afternoon. Mr Whitfield, I handle the estate of your great-aunt, Ruth.', `I'm sorry for your loss. She left you ${a.fmt(d.amt)}.`],
+  jury_duty: () => ['Bay County Court. This summons is for you: you\'ve been selected for jury duty.', 'Report to the courthouse this week. Failure to attend is contempt of court.'],
+  jury_fine: () => ['Officer Diaz. There\'s a bench warrant out for you.', 'You skipped jury duty. Pay the $800 fine today or I take you in.'],
+  festival: a => a.partner() ? ['Babe! Bay Live festival this weekend. EVERYONE is going.', 'Tickets are $180 each. Pleeeease?'] : ['Bay Live festival! Three stages, two days, one beach.', 'Early bird tickets $180. Selling fast!'],
+  job_offer_rival: a => ['Got a minute? We\'ve been watching your work. Very impressive.', `We'll beat whatever you're paid at your ${a.careerName()} job. Come over to us.`],
+  tax_refund: () => ['Bay Revenue. Good news for once: you\'ve overpaid tax this year.', 'We can refund you now, or put it towards next year\'s bill with interest.'],
+  tax_interest: () => ['Bay Revenue again. Your held refund has matured.'],
+  ex_friend_biz: () => ['There you are! Business update!'],
+};
 export const EVENT_BY_ID = Object.fromEntries(EVENTS.map(e => [e.id, e]));
