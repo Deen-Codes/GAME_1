@@ -1,12 +1,12 @@
 // GPS: A* over a road mask so waypoints draw a route along the streets, like GTA.
-import { WORLD, roadAt } from './world.js?v=150';
+import { WORLD, roadAt, skyAt, ROADS } from './world.js?v=151';
 
 const C = 6, X0 = WORLD.x0, Z0 = WORLD.z0;
 const NX = Math.ceil((WORLD.x1 - X0) / C), NZ = Math.ceil((WORLD.z1 - Z0) / C), N = NX * NZ;
 let mask = null;
 function build() {
   mask = new Uint8Array(N);
-  for (let j = 0; j < NZ; j++) for (let i = 0; i < NX; i++) if (roadAt(X0 + (i + 0.5) * C, Z0 + (j + 0.5) * C)) mask[j * NX + i] = 1;
+  for (let j = 0; j < NZ; j++) for (let i = 0; i < NX; i++) { const x = X0 + (i + 0.5) * C, z = Z0 + (j + 0.5) * C; if (roadAt(x, z) && !skyAt(x, z)?.ramp) mask[j * NX + i] = 1; } // skyway ramps aren't street routes (you can't turn off them)
 }
 const cell = (x, z) => [Math.max(0, Math.min(NX - 1, Math.floor((x - X0) / C))), Math.max(0, Math.min(NZ - 1, Math.floor((z - Z0) / C)))];
 function nearest(i, j) {
@@ -58,5 +58,16 @@ export function findRoute(ax, az, bx, bz) {
     pd = d;
   }
   pts.push([bx, bz]);
-  return pts;
+  return snap(pts);
+}
+// pull turn points onto road centrelines / junction centres so drivers follow the street, not the kerb
+function snap(pts) {
+  const out = [pts[0]];
+  for (let i = 1; i < pts.length - 1; i++) {
+    let [x, z] = pts[i]; let cx = null, cz = null;
+    for (const r of ROADS) if (x >= r.x0 - 3 && x <= r.x1 + 3 && z >= r.z0 - 3 && z <= r.z1 + 3) { if (r.axis === 'x') cz = (r.z0 + r.z1) / 2; else cx = (r.x0 + r.x1) / 2; }
+    if (cx != null) x = cx; if (cz != null) z = cz;
+    const l = out[out.length - 1]; if (Math.hypot(l[0] - x, l[1] - z) > 2) out.push([x, z]);
+  }
+  out.push(pts[pts.length - 1]); return out;
 }

@@ -1,28 +1,28 @@
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=150';
-import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun, partEffects, partPerk } from './gun.js?v=150';
-import { buildCar, computeCarStats, carStatBars, carClass, carPartEffects, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=150';
-import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, SKYWAYS, SKY_Y, skyAt, skyY, rampSeg, windowShader, makeOceanMaterial, WATER_U, WIND_U, METRO, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=150';
-import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=150';
-import { buildPanel, renderStats } from './ui.js?v=150';
-import { Input } from './input.js?v=150';
-import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime, animalCall } from './audio.js?v=150';
-import { runMinigame } from './minigames.js?v=150';
-import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk, setReservedNames, seededLook } from './peds.js?v=150';
-import { citizens, whereNow } from './citizens.js?v=150';
-import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=150';
-import { findRoute } from './nav.js?v=150';
-import { COURSES, CAREERS, QUIZ } from './careers.js?v=150';
-import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=150';
-import { attachWheel } from './wheel.js?v=150';
-import { GROUND_U } from './groundtex.js?v=150';
-import { Animals, makeAnimalMesh } from './animals.js?v=150';
-import { Talk } from './talk.js?v=150';
-import { incomingText, classify, textOptions, textReply } from './texts.js?v=150';
-import { svg, drawIcon } from './icons.js?v=150';
-import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=150';
-import { FURN, CATALOG } from './furniture.js?v=150';
-import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=150';
+import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=151';
+import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun, partEffects, partPerk } from './gun.js?v=151';
+import { buildCar, computeCarStats, carStatBars, carClass, carPartEffects, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=151';
+import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, SKYWAYS, SKY_Y, skyAt, skyY, rampSeg, windowShader, makeOceanMaterial, WATER_U, WIND_U, METRO, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=151';
+import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=151';
+import { buildPanel, renderStats } from './ui.js?v=151';
+import { Input } from './input.js?v=151';
+import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime, animalCall } from './audio.js?v=151';
+import { runMinigame } from './minigames.js?v=151';
+import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk, setReservedNames, seededLook } from './peds.js?v=151';
+import { citizens, whereNow } from './citizens.js?v=151';
+import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=151';
+import { findRoute } from './nav.js?v=151';
+import { COURSES, CAREERS, QUIZ } from './careers.js?v=151';
+import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=151';
+import { attachWheel } from './wheel.js?v=151';
+import { GROUND_U } from './groundtex.js?v=151';
+import { Animals, makeAnimalMesh } from './animals.js?v=151';
+import { Talk } from './talk.js?v=151';
+import { incomingText, classify, textOptions, textReply } from './texts.js?v=151';
+import { svg, drawIcon } from './icons.js?v=151';
+import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=151';
+import { FURN, CATALOG } from './furniture.js?v=151';
+import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=151';
 
 const $ = id => document.getElementById(id);
 let inside = null, editMode = false, held = null, pendingCar = false, homeMusic = false, phoneBadge = 0;
@@ -111,16 +111,16 @@ function ensureCarLib() {
 }
 
 // ================================================================ see-through fade
-const fadeU = { uPlayer: { value: new THREE.Vector3() }, uCam: { value: new THREE.Vector3() }, uFade: { value: 1 } };
+const fadeU = { uPlayer: { value: new THREE.Vector3() }, uCam: { value: new THREE.Vector3() }, uFade: { value: 1 }, uBig: { value: 1 } };
 function addFade(mat, extra) {
   mat.onBeforeCompile = sh => {
     Object.assign(sh.uniforms, fadeU);
     sh.vertexShader = 'varying vec3 vWP;\n' + sh.vertexShader.replace('#include <project_vertex>', '#include <project_vertex>\nvWP = (modelMatrix * vec4(transformed, 1.0)).xyz;');
-    sh.fragmentShader = 'varying vec3 vWP;\nuniform vec3 uPlayer;\nuniform vec3 uCam;\nuniform float uFade;\n' + sh.fragmentShader.replace('#include <clipping_planes_fragment>', `#include <clipping_planes_fragment>
+    sh.fragmentShader = 'varying vec3 vWP;\nuniform vec3 uPlayer;\nuniform vec3 uCam;\nuniform float uFade;\nuniform float uBig;\n' + sh.fragmentShader.replace('#include <clipping_planes_fragment>', `#include <clipping_planes_fragment>
       if (uFade > 0.5 && vWP.y > uPlayer.y + 1.8) {
         vec3 ab = uCam - uPlayer; float t = clamp(dot(vWP - uPlayer, ab) / dot(ab, ab), 0.0, 1.0);
         float d = length(vWP - (uPlayer + ab * t));
-        float rad = 2.5 + t * 9.0;
+        float rad = (2.5 + t * 9.0) * uBig;
         if (t > 0.01 && d < rad) { vec2 g = floor(gl_FragCoord.xy * 0.5); if (d < rad - 1.5 || mod(g.x + g.y, 2.0) < 1.0) discard; }
       }`);
     if (extra) extra(sh);
@@ -1123,7 +1123,7 @@ function spawnSkyTraffic(px, pz) {
     const S = pick(near), u = rand(S.a0 + S.ramp + 8, S.a1 - S.ramp - 8), dir = Math.random() < 0.5 ? 1 : -1, [x, z] = skyXZ(S, u, dir * 3), d = Math.hypot(x - px, z - pz);
     if (d < 55 || d > 140 || traffic.some(o => o.sky && o.S === S && Math.abs(o.u - u) < 14)) continue;
     ensureCarLib(); const lib = districtCar(CITIES[0]), mesh = new THREE.Mesh(lib.geo, bakedMat); mesh.castShadow = true; mesh.rotation.order = 'YXZ'; dyn.add(mesh);
-    const t = { sky: true, S, u, dir, c: CITIES[0], lib, speed: 0, cruise: rand(13, 19), mesh, stun: 0, honk: 0, y: SKY_Y };
+    const t = { sky: true, S, u, dir, c: CITIES[0], lib, speed: 0, cruise: rand(21, 26), mesh, stun: 0, honk: 0, y: SKY_Y }; // skyway: 60 mph limit, so they move
     skyPose(t); t.rx = t.x; t.rz = t.z; t.rh = t.h; traffic.push(t); return;
   }
 }
@@ -1943,7 +1943,7 @@ function gymCut(o = {}) {
 // ---------------- car damage: dents where you hit, smoke, fire, then it blows
 const BROKEN_LAMP = new THREE.MeshStandardMaterial({ color: '#2a2a30', roughness: 0.9 });
 function damageCar(v, amt, ix, iz, byYou = false) {
-  if (!v || v.wrecked || amt <= 0) return;
+  if (!v || v.wrecked || amt <= 0 || v.delivery) return;
   if (byYou && v !== ride) v.youHitT = time; // so if it blows up soon after, that's on you
   if (v === ride && amt > 10 && chatCd('crash', 8)) { if (date?.inCar) subs.say(dateWho(), pick(['Oh my god! Watch the road!', 'Are you CRAZY?!', 'I nearly hit my head!', 'Seriously?!']), { expr: 'shock', pri: 3, now: true }); else if (Math.random() < 0.5) youSay(pick(['Whoops.', 'My bad, my bad.', 'That\'s gonna leave a mark.', 'Who put that there?']), 'shock', { pri: 2 }); }
   v.hp ??= 100; v.hp -= amt * (v.b.two ? 1.4 : 1) / (v.st?.tough || 1);
@@ -2050,7 +2050,7 @@ function collideCars(v, o, spd) {
   placeVehicle(o);
   const you = v === ride || o === ride;
   if (hit > 5) { const mx = (v.s.x + o.s.x) / 2, mz = (v.s.z + o.s.z) / 2; damageCar(v, hit * 1.1, mx, mz, you); damageCar(o, hit * 1.1, mx, mz, you); }
-  if (hit > 6 && (v.hitCd || 0) < time) { v.hitCd = time + 0.5; sfx.thud(); if (you) shake = Math.max(shake, Math.min(0.5, hit / 30)); spawnParticles((v.s.x + o.s.x) / 2, 0.7, (v.s.z + o.s.z) / 2, ['#ffd23f', '#ffffff', '#888'], 8, 4, 0.35, 0.1); if (v === ride && hit > 16) hurt((hit - 16) * 1.2); }
+  if (hit > 6 && (v.hitCd || 0) < time) { v.hitCd = time + 0.5; { const f = focusPos(); if (you || Math.hypot(f.x - v.s.x, f.z - v.s.z) < 35) sfx.thud(); } if (you) shake = Math.max(shake, Math.min(0.5, hit / 30)); spawnParticles((v.s.x + o.s.x) / 2, 0.7, (v.s.z + o.s.z) / 2, ['#ffd23f', '#ffffff', '#888'], 8, 4, 0.35, 0.1); if (v === ride && hit > 16) hurt((hit - 16) * 1.2); }
 }
 let driveDist = 0;
 function updateVehicles(dt) {
@@ -2145,7 +2145,7 @@ function updateVehicles(dt) {
     if (!walkable(c.x, c.z, false)) { c.x = ox; c.z = oz; hit = true; }
     for (const o of vehicles) if (o !== v && (o.s.x - c.x) ** 2 + (o.s.z - c.z) ** 2 < 81 && Math.abs((o.s.y || 0) - (c.y || 0)) < 2.5) collideCars(v, o, spd);
     if (hit && spd > 7) damageCar(v, (spd - 6) * 1.6, c.x + fx * b.length * 0.5 * Math.sign(c.v || 1), c.z + fz * b.length * 0.5 * Math.sign(c.v || 1));
-    if (hit) { if (spd > 9) { spawnParticles(c.x + fx * 2, 0.7, c.z + fz * 2, ['#ffd23f', '#ffffff', '#888'], 10, 5, 0.4, 0.1); shake = Math.max(shake, Math.min(0.6, spd / 40)); sfx.thud(); } if (driving && spd > 15) hurt((spd - 15) * 1.6); c.v *= -0.25; c.vx *= 0.2; c.vz *= 0.2; }
+    if (hit) { if (spd > 9) { spawnParticles(c.x + fx * 2, 0.7, c.z + fz * 2, ['#ffd23f', '#ffffff', '#888'], 10, 5, 0.4, 0.1); if (driving) shake = Math.max(shake, Math.min(0.6, spd / 40)); { const f = focusPos(); if (driving || Math.hypot(f.x - c.x, f.z - c.z) < 35) sfx.thud(); } } if (driving && spd > 15) hurt((spd - 15) * 1.6); c.v *= -0.25; c.vx *= 0.2; c.vz *= 0.2; }
     if ((driving || v.coast > 0) && spd > 4) for (const p of peds.list) if (Math.hypot(p.x - c.x, p.z - c.z) < r + 0.9 && peds.knock(p, c.vx / spd, c.vz / spd, spd * 0.8)) { sfx.thud(); c.v *= 0.85; if (spd > 9) { p.injured = true; p.t = 40; } if (driving) { crime(p.kind === 'cop' ? 2 : 0.6); witness('runover', p.x, p.z, p); } if (Math.random() < 0.4) dropCash(p.x, p.z, 5 + Math.floor(Math.random() * 25)); peds.scare(p.x, p.z, 20); }
     if (c.braking && spd > 12) spawnParticles(c.x - fx * 1.8, 0.2, c.z - fz * 1.8, '#d8d8d8', 1, 1, 0.6, 0.35, -1);
     placeVehicle(v);
@@ -3844,7 +3844,7 @@ function ditchJumpsuit() { if (!stats.escaped || stats.jail) return; charCfg = {
 // Lights are Auto (on after dark) or Off. Off is sneakier at night (cops spot you from less far away),
 // but a cop who sees you driving in the dark with no lights pulls you over. So does serious speeding in town.
 // US-style limits: 25 in the suburbs, 30 downtown, 35 elsewhere in town, 55 on the open road; none off-road
-function speedLimit(x, z) { const r = roadAt(x, z); if (!r) return 0; const c = cityAt(x, z, 2); if (!c) return 55; return c.style === 'suburb' ? 25 : c.style === 'downtown' ? 30 : 35; }
+function speedLimit(x, z, y = ride ? ride.s.y || 0 : P.y) { { const k = skyAt(x, z); if (k && (k.ramp || y > k.y - 1.6)) return 60; } const r = roadAt(x, z); if (!r) return 0; const c = cityAt(x, z, 2); if (!c) return 55; return c.style === 'suburb' ? 25 : c.style === 'downtown' ? 30 : 35; }
 const lightsOn = () => stats.lights !== 'off';
 function toggleLights() { stats.lights = lightsOn() ? 'off' : 'auto'; sfx.click(); toast(lightsOn() ? 'Headlights: auto' : 'Headlights off', 1.4); }
 let stopCheckT = 0;
@@ -3942,7 +3942,11 @@ function aiDrive(v, c, s, dt) {
       const P2 = v.path;
       if (P2 && P2.length > 1) {
         while (v.pi < P2.length - 1 && Math.hypot(P2[v.pi][0] - c.x, P2[v.pi][1] - c.z) < 7) v.pi++;
-        const q = P2[Math.min(v.pi, P2.length - 1)]; tg = { x: q[0], z: q[1] };
+        const q = P2[Math.min(v.pi, P2.length - 1)], qp = P2[Math.max(0, v.pi - 1)], sl = Math.hypot(q[0] - qp[0], q[1] - qp[1]) || 1, lane = v.pi < P2.length - 1 ? 3 : 0;
+        tg = { x: q[0] - (q[1] - qp[1]) / sl * lane, z: q[1] + (q[0] - qp[0]) / sl * lane }; // right-hand lane, clear of the median
+        // a corner coming up? ease off so we don't overshoot into the kerb and lampposts
+        const pv = P2[Math.max(0, v.pi - 1)], nx2 = P2[v.pi + 1]; v.turnD = 1e9;
+        if (nx2) { const a1 = Math.atan2(q[0] - pv[0], q[1] - pv[1]), a2 = Math.atan2(nx2[0] - q[0], nx2[1] - q[1]); if (Math.abs(wrapA(a2 - a1)) > 0.5) v.turnD = Math.hypot(q[0] - c.x, q[1] - c.z); }
       }
     } else v.path = null;
   }
@@ -3951,7 +3955,11 @@ function aiDrive(v, c, s, dt) {
   const fp = focusPos(), pd = Math.hypot(fp.x - c.x, fp.z - c.z), td = v.target ? Math.hypot(v.target.x - c.x, v.target.z - c.z) : 1e9;
   const onFootClose = (!ride && pd < 11 && v.ai === 'chase' && (WANT.seen || !v.police)) || (v.ai === 'respond' && td < 10);
   const top = onFootClose ? 0 : v.ai === 'flee' ? s.top * 0.8 : v.ai === 'hunt' ? (d < 9 ? Math.max(4, Math.abs(v.quarry.s.v)) : s.top * 0.9) : v.ai === 'plough' ? 4.5 : v.ai === 'patrol' ? 10 : (v.police && !WANT.seen && v.ai === 'chase') ? 13 : d > 40 ? s.top * 0.92 : d > 14 ? 20 : 9;
-  c.v = damp(c.v, Math.abs(err) > 1.7 && d > 10 ? 7 : top, onFootClose ? 4 : 1.4, dt);
+  let cap = top;
+  if (v.path && (v.turnD ?? 1e9) < 26) cap = Math.min(cap, (v.ai === 'respond' ? 8 : 12) + (v.turnD / 26) * 6); // slow into corners
+  if (v.ai === 'respond' && Math.abs(err) > 0.5 && !onFootClose) cap = Math.min(cap, 7); // still lining up: crawl
+  if (v.delivery) cap = Math.min(cap, speedLimit(c.x, c.z, c.y || 0) / 2.237 || 13); // the valet keeps to the limit
+  c.v = damp(c.v, Math.abs(err) > 1.7 && d > 10 ? 7 : cap, onFootClose || cap < c.v ? 4 : 1.4, dt);
   c.steer = damp(c.steer, clamp(err * 1.8, -1, 1), 7, dt);
   if (Math.abs(c.v) < 1.2 && !onFootClose) { v.stuckT = (v.stuckT || 0) + dt; if (v.stuckT > 1.4) { v.stuckT = 0; v.unstuck = 1.1; } } else v.stuckT = 0;
   // officers jump out when you're on foot nearby (or you've stopped the car)
@@ -5902,6 +5910,7 @@ function updateCamera(dt, snap) {
   G.cam.lookAt(camLook.x + sx, camLook.y, camLook.z + sz);
   G.scene.fog.near = camDist + 25; G.scene.fog.far = camDist + 130;
   fadeU.uPlayer.value.set(f.x, ride ? ty : P.y, f.z); fadeU.uCam.value.copy(G.cam.position);
+  { const py = ride ? ty : P.y, under = !inside && py < 3 && [[0, 0], [5, 0], [-5, 0], [0, 5], [0, -5]].some(([ox, oz]) => { const k = skyAt(f.x + ox, f.z + oz); return k && !k.ramp; }); fadeU.uBig.value = damp(fadeU.uBig.value, under ? 2.6 : 1, 5, dt); } // under a skyway: a much bigger window through the deck
   lantern.position.set(f.x, ty + 3, f.z);
   boomLight.intensity = Math.max(0, boomLight.intensity - dt * 160);
 }
@@ -6745,7 +6754,7 @@ function saveGame() {
   store.set('bc_save', save); store.set('bc_arsenal', arsenal); store.set('bc_cars', garage);
 }
 // auto-update: bookmarks and home-screen apps can hold on to an old copy. Check version.json (never cached) and reload once if newer.
-const BUILD = 150;
+const BUILD = 151;
 function checkUpdate() {
   fetch('version.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(j => {
     if (!(j.v > BUILD)) return;

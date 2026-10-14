@@ -1,6 +1,6 @@
 // Open-world map: layout, deterministic generation, colliders, chunk meshing and minimap.
 import * as THREE from '../lib/three.module.min.js';
-import { groundMaterial, GT } from './groundtex.js?v=150';
+import { groundMaterial, GT } from './groundtex.js?v=151';
 
 export const WORLD = { x0: -560, x1: 800, z0: -800, z1: 520 };
 export const CHUNK = 64;
@@ -519,7 +519,7 @@ function genWorld() {
     addObj({ t: 'fence', x0: 532, x1: 708, z: 290 }); }
   // Bay Metro viaduct: deck segments every 4 m, pillars every 16 m (but never in a junction), stations with stair towers
   { const M = METRO; for (let s = 0; s < M.len; s += 4) { const a = M.at(s + 2); addObj({ t: 'via', x: a.x, z: a.z, h: a.h }); }
-    for (let s = 0; s < M.len; s += 16) { const a = M.at(s); const jx = Math.round(a.x / 48) * 48, jz = Math.round(a.z / 48) * 48; if (Math.abs(a.x - jx) < 9 && Math.abs(a.z - jz) < 9) continue; addObj({ t: 'vpillar', x: a.x, z: a.z, h: a.h }); addCollider({ x: a.x, z: a.z, r: 0.75 }); }
+    for (let s = 0; s < M.len; s += 16) { const a = M.at(s); const jx = Math.round(a.x / 48) * 48, jz = Math.round(a.z / 48) * 48; if (Math.abs(a.x - jx) < 9 && Math.abs(a.z - jz) < 9) continue; const onRd = !!roadAt(a.x, a.z); addObj({ t: 'vpillar', x: a.x, z: a.z, h: a.h, portal: onRd }); if (onRd) { const cs = Math.cos(a.h), sn = Math.sin(a.h); for (const sw of [-7.3, 7.3]) addCollider({ x: a.x + cs * sw, z: a.z - sn * sw, r: 0.6 }); } else addCollider({ x: a.x, z: a.z, r: 0.75 }); } // over a street: legs on the pavements, the road stays clear
     for (const st of M.stations) { addObj({ t: 'vstation', x: st.x, z: st.z, ox: st.ox, oz: st.oz, tx: st.tower.x, tz: st.tower.z, name: st.name }); addCollider({ x0: st.tower.x - 1.4, x1: st.tower.x + 1.4, z0: st.tower.z - 1.4, z1: st.tower.z + 1.4, h: 9 }); } }
   // Bay Skyways: deck segments, pillars clear of junctions, ramp strips, parapets and lamps
   for (const S of SKYWAYS) {
@@ -527,7 +527,7 @@ function genWorld() {
     const nearCross = u => cross != null && Math.abs(u - cross) < SKY_HW + 0.4;
     const d0 = S.a0 + S.ramp, d1 = S.a1 - S.ramp;
     for (let u = d0; u < d1 - 1e-6; u += 4) { const um = Math.min(u + 2, d1 - 0.01), [x, z] = skyXZ(S, um, 0); if (S.id === 'B' && nearCross(um)) { addObj({ t: 'skydeck', x, z, S: S.id, u: um, len: 4, skip: true }); continue; } addObj({ t: 'skydeck', x, z, S: S.id, u: um, len: Math.min(4, d1 - u), cross: nearCross(um) }); }
-    for (let u = d0 + 6; u < d1 - 4; u += 12) { const jn = Math.round(u / 48) * 48; if (Math.abs(u - jn) < 9) continue; const [x, z] = skyXZ(S, u, 0); addObj({ t: 'skypillar', x, z, S: S.id }); addCollider({ x, z, r: 0.85, under: true }); }
+    for (let u = d0 + 6; u < d1 - 4; u += 12) { const jn = Math.round(u / 48) * 48; if (Math.abs(u - jn) < 9) continue; const [x, z] = skyXZ(S, u, 0); addObj({ t: 'skypillar', x, z, S: S.id }); for (const sw of [-1, 1]) { const [lx, lz] = skyXZ(S, u, sw * 7.3); addCollider({ x: lx, z: lz, r: 0.6, under: true }); } }
     for (const [ua, ub] of [[S.a0, d0], [d1, S.a1]]) for (let u = ua; u < ub - 1e-6; u += 2) { const [x, z] = skyXZ(S, u + 1, 0); addObj({ t: 'skyramp', x, z, S: S.id, u0: u, u1: Math.min(ub, u + 2) }); }
     // colliders: solid ramp side walls, an abutment under each ramp top, parapets along the deck (gap at the sky junction)
     const box = (u0, u1, w0, w1, extra) => { const [xa, za] = skyXZ(S, u0, w0), [xb, zb] = skyXZ(S, u1, w1); addCollider({ x0: Math.min(xa, xb), x1: Math.max(xa, xb), z0: Math.min(za, zb), z1: Math.max(za, zb), ...extra }); };
@@ -1117,7 +1117,9 @@ function drawObj(o, B) {
           const ex = ax ? o.x : o.x + sw * 5.3, ez = ax ? o.z + sw * 5.3 : o.z; B.box(ex, Y, ez, ax ? L : 0.14, 0.012, ax ? 0.14 : L, '#f2d14a'); } // yellow edge lines
         if (Math.round(o.u / 4) % 2 === 0) B.box(o.x, Y, o.z, ax ? 2.2 : 0.16, 0.012, ax ? 0.16 : 2.2, '#f2f2ee'); } // dashed centre line
       break; }
-    case 'skypillar': { const S = SKYWAYS.find(q => q.id === o.S), Y = SKY_Y, ax = S.axis === 'x'; B.box(o.x, 0.04, o.z, 1.5, Y - 1.05, 1.5, '#aaa59d'); B.box(o.x, Y - 1.75, o.z, ax ? 1.8 : 10.5, 0.7, ax ? 10.5 : 1.8, '#9e9a92'); B.box(o.x, 0.04, o.z, 2.0, 0.35, 2.0, '#8f8b84'); break; }
+    case 'skypillar': { const S = SKYWAYS.find(q => q.id === o.S), Y = SKY_Y, ax = S.axis === 'x';
+      for (const sw of [-1, 1]) { const lx = ax ? o.x : o.x + sw * 7.3, lz = ax ? o.z + sw * 7.3 : o.z; B.box(lx, 0.15, lz, 1.0, Y - 0.6, 1.0, '#aaa59d'); B.box(lx, 0.15, lz, 1.4, 0.3, 1.4, '#8f8b84'); B.box(lx, 0.6, lz, 1.04, 0.22, 1.04, '#f2d14a'); } // legs on the pavement, with a yellow band
+      B.box(o.x, Y - 1.45, o.z, ax ? 1.2 : 15.6, 0.9, ax ? 15.6 : 1.2, '#9e9a92'); break; } // crossbeam over the whole road
     case 'skylamp': { const S = SKYWAYS.find(q => q.id === o.S), Y = SKY_Y, ax = S.axis === 'x', ox = ax ? 0 : -o.sw * 0.9, oz = ax ? -o.sw * 0.9 : 0;
       B.box(o.x, Y + 1.0, o.z, 0.14, 3.6, 0.14, '#3a3d45'); B.box(o.x + ox / 2, Y + 4.5, o.z + oz / 2, ax ? 0.14 : 1.1, 0.1, ax ? 1.1 : 0.14, '#3a3d45'); B.box(o.x + ox, Y + 4.3, o.z + oz, 0.5, 0.18, 0.5, '#fff1c4', { key: 'glow' }); break; }
     case 'skyramp': { const S = SKYWAYS.find(q => q.id === o.S), y0 = skyProfile(S, o.u0), y1 = skyProfile(S, o.u1), P2 = (u, w, y) => { const [x, z] = skyXZ(S, u, w); return [x, y, z]; };
@@ -1131,7 +1133,7 @@ function drawObj(o, B) {
         const ew = sw * 5.3; B.quad('solid', P2(o.u0, ew - 0.07, y0 + 0.012), P2(o.u0, ew + 0.07, y0 + 0.012), P2(o.u1, ew + 0.07, y1 + 0.012), P2(o.u1, ew - 0.07, y1 + 0.012), '#f2d14a', c3); }
       { const d0 = S.a0 + S.ramp, d1 = S.a1 - S.ramp, ue = Math.abs(o.u1 - d0) < 0.01 ? o.u1 : Math.abs(o.u0 - d1) < 0.01 ? o.u0 : null; if (ue != null) { const cu = ue === o.u1 ? ue - 3 : ue + 3, [cx2, cz2] = skyXZ(S, cu, 0); B.quad('solid', P2(ue, -6.4, 0), P2(ue, 6.4, 0), P2(ue, 6.4, SKY_Y - 0.55), P2(ue, -6.4, SKY_Y - 0.55), '#bdb8ae', [cx2, 2, cz2]); } } // abutment face under the deck end
       break; }
-    case 'vpillar': { const Y = METRO.Y; B.box(o.x, 0, o.z, 1.3, Y - 0.85, 1.3, '#a8a49c', { rot: o.h }); B.box(o.x, Y - 1.6, o.z, 4.6, 0.8, 1.6, '#9e9a92', { rot: o.h }); break; }
+    case 'vpillar': { const Y = METRO.Y; if (o.portal) { const cs = Math.cos(o.h), sn = Math.sin(o.h); for (const sw of [-7.3, 7.3]) { const lx = o.x + cs * sw, lz = o.z - sn * sw; B.box(lx, 0.15, lz, 1.0, Y - 1.0, 1.0, '#a8a49c'); B.box(lx, 0.6, lz, 1.04, 0.22, 1.04, '#f2d14a'); } B.box(o.x, Y - 1.6, o.z, 15.6, 0.8, 1.6, '#9e9a92', { rot: o.h }); break; } B.box(o.x, 0, o.z, 1.3, Y - 0.85, 1.3, '#a8a49c', { rot: o.h }); B.box(o.x, Y - 1.6, o.z, 4.6, 0.8, 1.6, '#9e9a92', { rot: o.h }); break; }
     case 'vstation': { const Y = METRO.Y, px = o.x + o.ox * 5.2, pz = o.z + o.oz * 5.2, along = o.ox ? 'z' : 'x', w = along === 'x' ? 30 : 3.8, d = along === 'x' ? 3.8 : 30;
       B.box(px, Y - 0.5, pz, w, 0.7, d, '#c9c4ba'); B.box(px + o.ox * 1.7, Y + 0.2, pz + o.oz * 1.7, along === 'x' ? 30 : 0.2, 1.1, along === 'x' ? 0.2 : 30, '#e8e4dc'); // platform + back wall
       for (let i = -12; i <= 12; i += 6) { const qx = along === 'x' ? px + i : px + o.ox * 1.5, qz = along === 'x' ? pz + o.oz * 1.5 : pz + i; B.box(qx, Y + 0.2, qz, 0.2, 2.8, 0.2, '#3a3d45'); }
