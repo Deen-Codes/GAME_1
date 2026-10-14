@@ -1,30 +1,30 @@
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=202';
-import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun, partEffects, partPerk } from './gun.js?v=202';
-import { buildCar, computeCarStats, carStatBars, carClass, carPartEffects, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=202';
-import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, STAIRS, unblockPillars, canyonAt, canyonNear, PEAK, SKYWAYS, SKY_Y, skyAt, skyY, rampSeg, windowShader, makeOceanMaterial, WATER_U, WIND_U, METRO, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, collidersNear, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=202';
-import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=202';
-import { buildPanel, renderStats } from './ui.js?v=202';
-import { Input } from './input.js?v=202';
-import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime, animalCall } from './audio.js?v=202';
-import { runMinigame } from './minigames.js?v=202';
-import { CUT, initCutGames } from './cutgames.js?v=202';
-import { initOnline, updateOnline, goOnline, goOffline, NET, onNet, sendMagicLink, verifyCode, signOut, signedIn, cloudLoad, cloudSave, cloudList, cloudDelete, isAdmin, checkAdmin, reviewLoad, reviewSet } from './online.js?v=202';
-import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk, setReservedNames, seededLook } from './peds.js?v=202';
-import { citizens, whereNow } from './citizens.js?v=202';
-import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=202';
-import { findRoute } from './nav.js?v=202';
-import { COURSES, CAREERS, QUIZ } from './careers.js?v=202';
-import { EVENTS, EVENT_BY_ID, ARRIVE, PHONE_TEXT, PERSON_TEXT } from './events.js?v=202';
-import { attachWheel } from './wheel.js?v=202';
-import { GROUND_U } from './groundtex.js?v=202';
-import { Animals, makeAnimalMesh } from './animals.js?v=202';
-import { Talk } from './talk.js?v=202';
-import { incomingText, classify, textOptions, textReply } from './texts.js?v=202';
-import { svg, drawIcon, ICONS as ICON_SET } from './icons.js?v=202';
-import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=202';
-import { FURN, CATALOG } from './furniture.js?v=202';
-import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=202';
+import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=203';
+import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun, partEffects, partPerk } from './gun.js?v=203';
+import { buildCar, computeCarStats, carStatBars, carClass, carPartEffects, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=203';
+import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, STAIRS, unblockPillars, canyonAt, canyonNear, PEAK, SKYWAYS, SKY_Y, skyAt, skyY, rampSeg, windowShader, makeOceanMaterial, WATER_U, WIND_U, METRO, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, collidersNear, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=203';
+import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=203';
+import { buildPanel, renderStats } from './ui.js?v=203';
+import { Input } from './input.js?v=203';
+import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime, animalCall } from './audio.js?v=203';
+import { runMinigame } from './minigames.js?v=203';
+import { CUT, initCutGames } from './cutgames.js?v=203';
+import { initOnline, updateOnline, goOnline, goOffline, NET, onNet, sendMagicLink, verifyCode, signOut, signedIn, cloudLoad, cloudSave, cloudList, cloudDelete, isAdmin, checkAdmin, reviewLoad, reviewSet } from './online.js?v=203';
+import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk, setReservedNames, seededLook } from './peds.js?v=203';
+import { citizens, whereNow } from './citizens.js?v=203';
+import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=203';
+import { findRoute } from './nav.js?v=203';
+import { COURSES, CAREERS, QUIZ } from './careers.js?v=203';
+import { EVENTS, EVENT_BY_ID, ARRIVE, PHONE_TEXT, PERSON_TEXT } from './events.js?v=203';
+import { attachWheel } from './wheel.js?v=203';
+import { GROUND_U } from './groundtex.js?v=203';
+import { Animals, makeAnimalMesh } from './animals.js?v=203';
+import { Talk } from './talk.js?v=203';
+import { incomingText, classify, textOptions, textReply } from './texts.js?v=203';
+import { svg, drawIcon, ICONS as ICON_SET } from './icons.js?v=203';
+import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=203';
+import { FURN, CATALOG } from './furniture.js?v=203';
+import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=203';
 
 const $ = id => document.getElementById(id);
 let inside = null, editMode = false, held = null, pendingCar = false, homeMusic = false, phoneBadge = 0;
@@ -2224,6 +2224,9 @@ function armTo(f, arm, T) {
     arm.pivot.rotation.set(-Math.atan2(_ad.z, -_ad.y), 0, Math.asin(clamp(_ad.x / l, -1, 1))); f.root.updateWorldMatrix(true, true); arm.hand.getWorldPosition(_a2); aim.add(_ad.copy(T).sub(_a2)); }
 }
 // rider on a bicycle / scooter / motorbike: sitting (or standing on the scooter), leaning into turns, pedalling
+// two-bone leg: pivot pitch and knee bend that put the foot at (fz forward, fy up) from the hip
+function legIK(L, fz, fy) { const L1 = L / 2, L2 = L / 2, d = Math.max(0.05, Math.min(L - 0.005, Math.hypot(fz, fy))), base = Math.atan2(fz, -fy), inner = Math.acos(clamp((L1 * L1 + d * d - L2 * L2) / (2 * L1 * d), -1, 1)), knee = Math.PI - Math.acos(clamp((L1 * L1 + L2 * L2 - d * d) / (2 * L1 * L2), -1, 1)); return [-(base + inner), knee]; }
+const lerp = (a, b, k) => a + (b - a) * k;
 function riderPose(v, dt) {
   const b = v.b, c = v.s, hl = 0.86 * (charCfg.height || 1) * (charCfg.legs || 1), kind = b.two;
   const back = kind === 'moto' ? -0.28 : kind === 'bike' ? -0.18 : -0.05, gy = b.group.position.y;
@@ -2238,17 +2241,24 @@ function riderPose(v, dt) {
   hero.armR.pivot.rotation.set(reach, 0, 0.1); hero.armL.pivot.rotation.set(reach, 0, -0.1);
   if (kind === 'bike') { // sat on the saddle, leaning to the bars, each foot on a pedal going round the crank (two-bone leg IK)
     hero.root.rotation.x = 0; hero.torso.rotation.x = 0.42; hero.head.rotation.x = -0.3;
-    const L1 = hl * 0.5, L2 = hl * 0.5, hipY = b.seatY + 0.04, ph = P.phase;
-    b.group.localToWorld(_seatV.set(0, hipY, -0.22)); heroRoot.position.copy(_seatV).addScaledVector(up, -hl);
+    const fk0 = v.footK || 0, L1 = hl * 0.5, L2 = hl * 0.5, hipY = b.seatY + 0.04 - 0.15 * fk0, hz0 = -0.22 + 0.1 * fk0, ph = P.phase; /* stopped: slide forward off the saddle so a foot reaches the floor */
+    b.group.localToWorld(_seatV.set(0, hipY, hz0)); heroRoot.position.copy(_seatV).addScaledVector(up, -hl);
     if (b.crank) b.crank.rotation.x = ph;
     for (const [leg, sg] of [[hero.legR, -1], [hero.legL, 1]]) { /* each foot sits on its own pedal, exactly where the crank has put it */
-      const fz = (b.crankZ ?? 0) + 0.22 + sg * 0.16 * Math.cos(ph), fy = ((b.crankY ?? b.wr) - hipY) - sg * 0.16 * Math.sin(ph);
+      const fz = (b.crankZ ?? 0) - hz0 + sg * 0.16 * Math.cos(ph), fy = ((b.crankY ?? b.wr) - hipY) - sg * 0.16 * Math.sin(ph);
       const d = Math.min(L1 + L2 - 0.01, Math.hypot(fz, fy)), base = Math.atan2(fz, -fy), inner = Math.acos(Math.min(1, (L1 * L1 + d * d - L2 * L2) / (2 * L1 * d))), knee = Math.PI - Math.acos(Math.max(-1, Math.min(1, (L1 * L1 + L2 * L2 - d * d) / (2 * L1 * L2))));
       leg.pivot.rotation.set(-(base + inner), 0, 0); leg.knee.rotation.x = knee;
     }
   }
   else if (kind === 'moto') { hero.legL.pivot.rotation.x = hero.legR.pivot.rotation.x = -1.2; hero.legL.knee.rotation.x = hero.legR.knee.rotation.x = 1.5; }
   else { hero.legL.pivot.rotation.x = 0.15; hero.legR.pivot.rotation.x = -0.25; }
+  { const fk = v.footK || 0, rev = c.v < -0.2; /* stopped: a foot down on the floor; going backwards: paddle yourself along with it */
+    if (fk > 0.003) { if (rev) v.paddle = (v.paddle || 0) + dt * Math.abs(c.v) * 5;
+      heroRoot.updateMatrixWorld(true); hero.root.updateWorldMatrix(true, true); hero.legL.pivot.getWorldPosition(_a2); let H = _a2.y - b.group.position.y;
+      const drop = Math.min(0.32, Math.max(0, H - hl * 0.93)) * fk; if (drop > 0) { heroRoot.position.addScaledVector(up, -drop); H -= drop; }
+      const side = 0.2, lift = rev ? Math.max(0, Math.cos(v.paddle || 0)) * 0.09 : 0, fz = rev ? -0.02 + Math.sin(v.paddle || 0) * 0.24 : 0.1, [p2, k2] = legIK(hl, fz, -(H / Math.cos(side)) + lift), Lg = hero.legL;
+      Lg.pivot.rotation.x = lerp(Lg.pivot.rotation.x, p2, fk); Lg.knee.rotation.x = lerp(Lg.knee.rotation.x, k2, fk); Lg.pivot.rotation.z = lerp(Lg.pivot.rotation.z, side, fk);
+      if (kind === 'scooter' && drop > 0) { const Rg = hero.legR, [p3, k3] = legIK(hl, 0.03, -(hl - drop / fk)); Rg.pivot.rotation.x = lerp(Rg.pivot.rotation.x, p3, fk); Rg.knee.rotation.x = lerp(Rg.knee.rotation.x, k3, fk); } } }
   if (b.fork) { /* hands on the grips, turning with the bars */ b.fork.updateMatrixWorld(true); const fz = b.barZ - (b.fork.position.z || 0), gx = b.barW * 0.4;
     armTo(hero, hero.armR, b.fork.localToWorld(_wR.set(-gx, b.barY, fz)).clone()); armTo(hero, hero.armL, b.fork.localToWorld(_wR.set(gx, b.barY, fz)).clone()); }
 }
@@ -2399,7 +2409,8 @@ function updateVehicles(dt) {
     if ((driving || v.coast > 0) && spd > 4) for (const p of peds.list) if (Math.hypot(p.x - c.x, p.z - c.z) < r + 0.9 && peds.knock(p, c.vx / spd, c.vz / spd, spd * 0.8)) { sfx.thud(); c.v *= 0.85; if (spd > 9) { p.injured = true; p.t = 40; } if (driving) { crime(p.kind === 'cop' ? 2 : 0.6); witness('runover', p.x, p.z, p); } if (Math.random() < 0.4) dropCash(p.x, p.z, 5 + Math.floor(Math.random() * 25)); peds.scare(p.x, p.z, 20); }
     if (c.braking && spd > 12) spawnParticles(c.x - fx * 1.8, 0.2, c.z - fz * 1.8, '#d8d8d8', 1, 1, 0.6, 0.35, -1);
     placeVehicle(v, dt);
-    b.group.rotation.z = b.two ? -c.steer * clamp(spd / 8, 0, 1) * 0.38 : b.boat ? -c.steer * clamp(spd / 10, 0, 1) * 0.16 : clamp((-c.vx * fz + c.vz * fx) * 0.012, -0.08, 0.08);
+    if (b.two) v.footK = damp(v.footK || 0, spd < 0.6 || c.v < -0.2 ? 1 : 0, 5, dt); /* smoothly put a foot down / pick it up */
+    b.group.rotation.z = b.two ? -c.steer * clamp(spd / 8, 0, 1) * 0.38 - (v === ride ? (v.footK || 0) * (c.v < -0.2 ? 0.04 : 0.1) : 0) : b.boat ? -c.steer * clamp(spd / 10, 0, 1) * 0.16 : clamp((-c.vx * fz + c.vz * fx) * 0.012, -0.08, 0.08);
     carPartsTick(v, spd);
     if (b.steerW) b.steerW.rotation.z = damp(b.steerW.rotation.z, -(c.steer || 0) * 2.2, 14, dt); /* the wheel turns with the steering, hands and all */
     if (v.rockT > 0) { v.rockT -= dt; const k = Math.max(0, v.rockT) / 0.45; b.group.rotation.z += Math.sin(k * 22) * 0.022 * k * (v.rockS || 1); } /* the car shudders when a door's slammed */
@@ -7489,7 +7500,7 @@ function saveGame() {
   store.set('bc_save', save); store.set('bc_arsenal', arsenal); store.set('bc_cars', garage); store.set('bc_savedAt', Date.now());
 }
 // auto-update: bookmarks and home-screen apps can hold on to an old copy. Check version.json (never cached) and reload once if newer.
-const BUILD = 202;
+const BUILD = 203;
 function updatingCover() { const d = document.createElement('div'); d.id = 'updCover'; d.innerHTML = '<div class="bt-logo">BAY<span>CITY</span></div><p><i></i>Updating Bay City...</p>'; document.body.appendChild(d); requestAnimationFrame(() => d.classList.add('on')); }
 function checkUpdate() {
   fetch('version.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(j => {
