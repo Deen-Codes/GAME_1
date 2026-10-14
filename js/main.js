@@ -1,26 +1,26 @@
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=105';
-import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=105';
-import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=105';
-import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=105';
-import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=105';
-import { buildPanel, renderStats } from './ui.js?v=105';
-import { Input } from './input.js?v=105';
-import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime } from './audio.js?v=105';
-import { runMinigame } from './minigames.js?v=105';
-import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk } from './peds.js?v=105';
-import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=105';
-import { findRoute } from './nav.js?v=105';
-import { COURSES, CAREERS, QUIZ } from './careers.js?v=105';
-import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=105';
-import { attachWheel } from './wheel.js?v=105';
-import { Animals } from './animals.js?v=105';
-import { Talk } from './talk.js?v=105';
-import { incomingText, classify, textOptions, textReply } from './texts.js?v=105';
-import { svg, drawIcon } from './icons.js?v=105';
-import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=105';
-import { FURN, CATALOG } from './furniture.js?v=105';
-import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=105';
+import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=106';
+import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=106';
+import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=106';
+import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=106';
+import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=106';
+import { buildPanel, renderStats } from './ui.js?v=106';
+import { Input } from './input.js?v=106';
+import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime } from './audio.js?v=106';
+import { runMinigame } from './minigames.js?v=106';
+import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk } from './peds.js?v=106';
+import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=106';
+import { findRoute } from './nav.js?v=106';
+import { COURSES, CAREERS, QUIZ } from './careers.js?v=106';
+import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=106';
+import { attachWheel } from './wheel.js?v=106';
+import { Animals } from './animals.js?v=106';
+import { Talk } from './talk.js?v=106';
+import { incomingText, classify, textOptions, textReply } from './texts.js?v=106';
+import { svg, drawIcon } from './icons.js?v=106';
+import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=106';
+import { FURN, CATALOG } from './furniture.js?v=106';
+import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=106';
 
 const $ = id => document.getElementById(id);
 let inside = null, editMode = false, held = null, pendingCar = false, homeMusic = false, phoneBadge = 0;
@@ -5855,9 +5855,9 @@ const STORY = [
   { id: 'cash', title: 'Pay your way', text: 'Rent\'s free for now, but nothing\'s free forever. Get yourself a grand together. Work, the taco truck... or other ways. Your call.', goal: () => `Have $1,000 on you (${fmt(Math.min(money, 1000))} / $1,000).`, done: () => money >= 1000 },
   { id: 'bag', title: 'Ray\'s bag', text: 'Need a favour. My guy Tommo has a bag for me on the pier. Grab it, bring it to me at The Anchor. Don\'t open it.', reward: 500,
     goal: S => S.f.bag ? 'Bring the bag to Ray at The Anchor bar.' : 'Pick up the bag from Tommo on the pier.',
-    wp: S => { if (S.f.bag) { const a = PLACES.find(p => p.id === 'v_anchor'); return { x: a.x, z: a.z, name: 'Ray at The Anchor' }; } const g = PLACES.find(p => p.id === 'g_gallery'); return { x: g.x - 8, z: g.z - 6, name: 'Tommo on the pier' }; },
+    wp: S => { if (S.f.bag) { const a = PLACES.find(p => p.id === 'v_anchor'); return { x: a.x, z: a.z, name: 'Ray at The Anchor' }; } const sp = tommoSpot(); return { x: sp.x, z: sp.z, name: 'Tommo on the pier' }; },
     tick(S, dt) {
-      const g = PLACES.find(p => p.id === 'g_gallery'), tx = g.x - 8, tz = g.z - 6;
+      const sp = tommoSpot(), tx = sp.x, tz = sp.z;
       if (!S.f.bag && !inside) { const d = Math.hypot(P.x - tx, P.z - tz); if (d < 90 && !storyNpc.tommo) storyNpc.tommo = eventPed({ top: 'jacket', topColor: '#55602f', hat: 'beanie', hatColor: '#16161b', fem: false }, tx, tz, { state: 'talk', lookX: tx, lookZ: tz + 5, name: 'Tommo', ev: true });
         if (storyNpc.tommo && d < 2.4 && !ride) { S.f.bag = true; const w = pedWho(storyNpc.tommo); if (w) { w.name = 'Tommo'; subs.say(w, 'You Ray\'s nephew? Here. Don\'t open it. Don\'t lose it.', { expr: 'neutral', now: true }); } setTimeout(() => youSay(pick(['Heavy. What\'s in this thing?', 'Don\'t open it. Got it.']), 'shock'), 3800); const T = storyNpc.tommo; storyNpc.tommo = null; setTimeout(() => cleanupEvPed(T), 6000); storyWaypoint(); saveGame(); } }
       if (S.f.bag && inside?.place?.id === 'v_anchor' && !S.f.gave) { S.f.gave = true; setTimeout(() => { subs.say(rayWho(), 'Good lad. Didn\'t open it? Good. Here, for your trouble.', { expr: 'happy', now: true }); }, 900); }
@@ -5865,6 +5865,11 @@ const STORY = [
   { id: 'soon', title: 'Big things', text: 'You did good, kid. I\'ve got bigger plans for you. Keep your phone on. (More story coming soon.)', goal: () => 'Ray will be in touch.', done: () => false, last: true },
 ];
 const storyNpc = {};
+function tommoSpot() { // somewhere dry on the pier boards near the shooting gallery
+  if (tommoSpot.s) return tommoSpot.s; const g = PLACES.find(p => p.id === 'g_gallery');
+  for (let r = 4; r < 30; r += 1.5) for (let a = 0; a < 6.28; a += 0.4) { const x = g.x + Math.sin(a) * r, z = g.z + Math.cos(a) * r; if (onPier(x, z) && onPier(x + 1, z) && onPier(x - 1, z) && !inWater(x, z) && !solidPoint(x, z, 1)) return (tommoSpot.s = { x, z }); }
+  return (tommoSpot.s = { x: g.x, z: g.z - 4 });
+}
 function story() { return (stats.main ||= { i: 0, f: {}, seen: -1 }); }
 function storyStep() { return STORY[story().i] || null; }
 function storyWaypoint() { const S = story(), st = storyStep(); if (st?.wp && !st.last) { const w = st.wp(S); setWaypoint(w.x, w.z, w.name); } }
@@ -5872,6 +5877,7 @@ let storyT = 2;
 function updateStory(dt) {
   const S = story(), st = storyStep(); if (!st) return;
   if (S.seen !== S.i && state === 'play' && !talk.active) { S.seen = S.i; textMe('ray', 'Uncle Ray', st.text); if (!st.last) subs.say(rayWho(), st.text.split(/(?<=[.!?])\s/)[0], { expr: 'neutral', radio: false, tag: 'phone' }); }
+  if (st.id === 'bag' && !S.f.bag && waypoint?.label === 'Tommo on the pier') { const sp = tommoSpot(); if (Math.hypot(waypoint.x - sp.x, waypoint.z - sp.z) > 2) setWaypoint(sp.x, sp.z, 'Tommo on the pier'); } // old saves pointed into the sea
   st.tick?.(S, dt);
   storyT -= dt; if (storyT > 0) return; storyT = 1;
   if (!st.last && st.done(S)) { if (st.reward) addMoney(st.reward); toast(`Mission complete: ${st.title}${st.reward ? ` · +${fmt(st.reward)}` : ''}`, 3.2); sfx.cash(); S.i++; S.f = { home: S.f.home }; if (waypoint?.name && st.wp) clearWaypoint(); saveGame(); }
@@ -6085,7 +6091,7 @@ function saveGame() {
   store.set('bc_save', save); store.set('bc_arsenal', arsenal); store.set('bc_cars', garage);
 }
 // auto-update: bookmarks and home-screen apps can hold on to an old copy. Check version.json (never cached) and reload once if newer.
-const BUILD = 105;
+const BUILD = 106;
 function checkUpdate() {
   fetch('version.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(j => {
     if (!(j.v > BUILD)) return;
