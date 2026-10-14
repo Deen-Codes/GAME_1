@@ -90,12 +90,13 @@ export function groundTextures(renderer) {
 
 // gtype codes painted per vertex: 1 grass, 2 forest, 3 sand, 4 crops, 5 dirt, 6 asphalt, 7 pavement, 8 work it out from the colour
 export const GT = { grass: 1, forest: 2, sand: 3, crops: 4, dirt: 5, asphalt: 6, pave: 7, auto: 8 };
+export const GROUND_U = { gWet: { value: 0 } };
 export function groundMaterial(base, renderer) {
   const T = groundTextures(renderer), m = base.clone();
   m.onBeforeCompile = sh => {
-    Object.assign(sh.uniforms, { gGrass: { value: T.grass }, gSand: { value: T.sand }, gPave: { value: T.pave }, gAsph: { value: T.asph }, gDirt: { value: T.dirt }, gCrops: { value: T.crops }, gFA: { value: new THREE.Color('#c9b35a') }, gFB: { value: new THREE.Color('#93b65a') } });
+    Object.assign(sh.uniforms, { gGrass: { value: T.grass }, gSand: { value: T.sand }, gPave: { value: T.pave }, gAsph: { value: T.asph }, gDirt: { value: T.dirt }, gCrops: { value: T.crops }, gFA: { value: new THREE.Color('#c9b35a') }, gFB: { value: new THREE.Color('#93b65a') }, gWet: GROUND_U.gWet });
     sh.vertexShader = 'attribute float gtype;\nvarying float vGT;\nvarying vec3 vGW;\n' + sh.vertexShader.replace('#include <worldpos_vertex>', '#include <worldpos_vertex>\n vGT = gtype; vGW = (modelMatrix * vec4(transformed, 1.0)).xyz;');
-    sh.fragmentShader = 'uniform sampler2D gGrass, gSand, gPave, gAsph, gDirt, gCrops;\nuniform vec3 gFA, gFB;\nvarying float vGT;\nvarying vec3 vGW;\n' + sh.fragmentShader.replace('#include <color_fragment>', `#include <color_fragment>
+    sh.fragmentShader = ('uniform sampler2D gGrass, gSand, gPave, gAsph, gDirt, gCrops;\nuniform vec3 gFA, gFB;\nuniform float gWet;\nfloat gWetMask = 0.0;\nvarying float vGT;\nvarying vec3 vGW;\n' + sh.fragmentShader.replace('#include <color_fragment>', `#include <color_fragment>
       {
         float t = floor(vGT + 0.5);
         vec3 vc = diffuseColor.rgb;
@@ -120,8 +121,10 @@ export function groundMaterial(base, renderer) {
           float fade = 1.0 - smoothstep(60.0, 220.0, length(vGW - cameraPosition));
           vec3 mul = mix(vec3(1.0), d * 2.0, 0.85 * fade) * mix(1.0, 0.86 + macro * 0.28, 0.9);
           diffuseColor.rgb *= mul;
+          // rain: hard surfaces go dark and glossy, with puddles in the dips that catch the lights
+          if (gWet > 0.01 && (t > 5.5 || t < 0.5)) { float pud = smoothstep(0.55, 0.7, texture2D(gDirt, w / 23.0 + 0.31).g * 0.6 + texture2D(gAsph, w / 61.0).g * 0.4); gWetMask = gWet * (0.55 + 0.45 * pud); diffuseColor.rgb *= 1.0 - gWet * (0.28 + 0.2 * pud); }
         }
-      }`);
+      }`)).replace('#include <roughnessmap_fragment>', '#include <roughnessmap_fragment>\n roughnessFactor = mix(roughnessFactor, 0.12, gWetMask);');
   };
   m.customProgramCacheKey = () => 'ground1';
   return m;
