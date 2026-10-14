@@ -1,30 +1,30 @@
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=160';
-import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun, partEffects, partPerk } from './gun.js?v=160';
-import { buildCar, computeCarStats, carStatBars, carClass, carPartEffects, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=160';
-import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, STAIRS, unblockPillars, canyonAt, canyonNear, PEAK, SKYWAYS, SKY_Y, skyAt, skyY, rampSeg, windowShader, makeOceanMaterial, WATER_U, WIND_U, METRO, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=160';
-import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=160';
-import { buildPanel, renderStats } from './ui.js?v=160';
-import { Input } from './input.js?v=160';
-import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime, animalCall } from './audio.js?v=160';
-import { runMinigame } from './minigames.js?v=160';
-import { CUT, initCutGames } from './cutgames.js?v=160';
-import { initOnline, updateOnline, goOnline, goOffline, NET, onNet, sendMagicLink, signOut, signedIn } from './online.js?v=160';
-import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk, setReservedNames, seededLook } from './peds.js?v=160';
-import { citizens, whereNow } from './citizens.js?v=160';
-import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=160';
-import { findRoute } from './nav.js?v=160';
-import { COURSES, CAREERS, QUIZ } from './careers.js?v=160';
-import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=160';
-import { attachWheel } from './wheel.js?v=160';
-import { GROUND_U } from './groundtex.js?v=160';
-import { Animals, makeAnimalMesh } from './animals.js?v=160';
-import { Talk } from './talk.js?v=160';
-import { incomingText, classify, textOptions, textReply } from './texts.js?v=160';
-import { svg, drawIcon, ICONS as ICON_SET } from './icons.js?v=160';
-import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=160';
-import { FURN, CATALOG } from './furniture.js?v=160';
-import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=160';
+import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=161';
+import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun, partEffects, partPerk } from './gun.js?v=161';
+import { buildCar, computeCarStats, carStatBars, carClass, carPartEffects, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=161';
+import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, STAIRS, unblockPillars, canyonAt, canyonNear, PEAK, SKYWAYS, SKY_Y, skyAt, skyY, rampSeg, windowShader, makeOceanMaterial, WATER_U, WIND_U, METRO, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=161';
+import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=161';
+import { buildPanel, renderStats } from './ui.js?v=161';
+import { Input } from './input.js?v=161';
+import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime, animalCall } from './audio.js?v=161';
+import { runMinigame } from './minigames.js?v=161';
+import { CUT, initCutGames } from './cutgames.js?v=161';
+import { initOnline, updateOnline, goOnline, goOffline, NET, onNet, sendMagicLink, signOut, signedIn } from './online.js?v=161';
+import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk, setReservedNames, seededLook } from './peds.js?v=161';
+import { citizens, whereNow } from './citizens.js?v=161';
+import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=161';
+import { findRoute } from './nav.js?v=161';
+import { COURSES, CAREERS, QUIZ } from './careers.js?v=161';
+import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=161';
+import { attachWheel } from './wheel.js?v=161';
+import { GROUND_U } from './groundtex.js?v=161';
+import { Animals, makeAnimalMesh } from './animals.js?v=161';
+import { Talk } from './talk.js?v=161';
+import { incomingText, classify, textOptions, textReply } from './texts.js?v=161';
+import { svg, drawIcon, ICONS as ICON_SET } from './icons.js?v=161';
+import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=161';
+import { FURN, CATALOG } from './furniture.js?v=161';
+import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=161';
 
 const $ = id => document.getElementById(id);
 let inside = null, editMode = false, held = null, pendingCar = false, homeMusic = false, phoneBadge = 0;
@@ -917,7 +917,7 @@ function gainXP(id, amt) {
 }
 function feed(f) { // apply a food/drink/activity effect object
   if (f.fat) { const B = body(); B.fat = clamp(B.fat + f.fat * (stats.hunger > 85 ? 1.8 : 1), 0, 1); bodyCheck(); }
-  if (f.hunger) { stats.hunger = clamp(stats.hunger + f.hunger, 0, 100); if (f.hunger > 0) stats.bladder = clamp((stats.bladder ?? 85) - f.hunger * 0.12, 0, 100); } // what goes in...
+  if (f.hunger) { stats.hunger = clamp(stats.hunger + f.hunger, 0, 100); if (f.hunger > 0) stats.bladder = clamp((stats.bladder ?? 85) - f.hunger * 0.06, 0, 100); } // what goes in...
   if (f.energy) stats.energy = clamp(stats.energy + f.energy, 0, 100);
   if (f.mood) stats.mood = clamp(stats.mood + f.mood, 0, 100);
   if (f.health) P.hp = Math.min(maxHP(), P.hp + f.health);
@@ -926,12 +926,12 @@ function feed(f) { // apply a food/drink/activity effect object
 }
 let needWarnT = 0;
 function updateNeeds(dtHours, dt) {
-  stats.hunger = Math.max(0, stats.hunger - dtHours * 4);
+  stats.hunger = Math.max(0, stats.hunger - dtHours * 3); // needs tick slower so the day isn't just toilet, shower, repeat
   const running = !ride && input.stick.m > 0.85;
-  stats.bladder = clamp((stats.bladder ?? 85) - dtHours * 5.5, 0, 100);
+  stats.bladder = clamp((stats.bladder ?? 85) - dtHours * 2.6, 0, 100);
   if (stats.bladder <= 0 && !P.dead) bladderAccident();
-  stats.hygiene = clamp((stats.hygiene ?? 80) - dtHours * (2.2 + (running ? 2 : 0)) - (inWater(P.x, P.z) ? -dtHours * 30 : 0), 0, 100); // a swim in the sea rinses you off a bit
-  stats.energy = Math.max(0, stats.energy - dtHours * (2.6 + (running ? 2 / (1 + lvl('stamina') * 0.15) : 0)));
+  stats.hygiene = clamp((stats.hygiene ?? 80) - dtHours * (1.1 + (running ? 1 : 0)) - (inWater(P.x, P.z) ? -dtHours * 30 : 0), 0, 100); // a swim in the sea rinses you off a bit
+  stats.energy = Math.max(0, stats.energy - dtHours * (2.1 + (running ? 1.5 / (1 + lvl('stamina') * 0.15) : 0)));
   const moodGoal = 50 + (stats.hunger > 60 ? 10 : 0) + (stats.energy > 60 ? 10 : 0) + (stats.hunger > 85 && stats.energy > 85 ? 6 : 0) + (P.hp >= maxHP() * 0.9 ? 4 : 0) - (stats.hygiene < 25 ? 8 : 0) + (stats.hygiene > 85 ? 3 : 0); // fed + rested + healthy + clean = happier
   stats.mood = clamp(stats.mood + (moodGoal - stats.mood) * dtHours * (stats.mood < moodGoal ? 0.12 : 0.05) - (stats.hunger < 20 ? dtHours * 3 : 0) - (stats.energy < 15 ? dtHours * 2 : 0), 0, 100);
   needWarnT -= dt;
@@ -6416,7 +6416,7 @@ function updateHUD(dt) {
   const f = focusPos();
   setText('zoneTxt', inside ? (inside.prop ? inside.prop.name : inside.place.name) : zoneName(f.x, f.z));
   { const show = !!waypoint && !inside; $('mmNav').classList.toggle('hidden', !show); $('wpTxt').classList.add('hidden'); if (show) { const d = Math.hypot(f.x - waypoint.x, f.z - waypoint.z); setText('mmNavD', navDist(d)); setText('mmNavT', waypoint.label || 'Waypoint'); } $('mmWrap').classList.toggle('navving', show); } // sat-nav strip along the bottom of the phone-map
-  { const wh = $('wantedHud'), key = WANT.stars; if (hudCache.want !== key) { hudCache.want = key; wh.innerHTML = WANT.stars ? Array.from({ length: 5 }, (_, i) => `<i class="${i < WANT.stars ? '' : 'off'}"></i>`).join('') + '<u><s></s></u>' : ''; } wh.classList.toggle('flash', WANT.stars > 0 && !WANT.seen); wh.classList.toggle('seen', WANT.stars > 0 && WANT.seen); const bar = wh.querySelector('s'); if (bar) bar.style.width = (WANT.seen ? 0 : Math.min(100, WANT.loseT / evadeNeed() * 100)) + '%'; }
+  { const wh = $('wantedHud'), key = WANT.stars; if (hudCache.want !== key) { hudCache.want = key; if (WANT.stars) { clearTimeout(peekT.radioBtn); $('radioBtn').classList.remove('open'); } wh.innerHTML = WANT.stars ? Array.from({ length: 5 }, (_, i) => `<i class="${i < WANT.stars ? '' : 'off'}"></i>`).join('') + '<u><s></s></u>' : ''; } wh.classList.toggle('flash', WANT.stars > 0 && !WANT.seen); wh.classList.toggle('seen', WANT.stars > 0 && WANT.seen); const bar = wh.querySelector('s'); if (bar) bar.style.width = (WANT.seen ? 0 : Math.min(100, WANT.loseT / evadeNeed() * 100)) + '%'; }
   if (!$('nHealth')) $('nHunger').insertAdjacentHTML('beforebegin', `<div class="need" id="nHealth">${svg('heart', 'sm')}<i></i></div>`);
   needBar('nHealth', Math.round(P.hp / maxHP() * 100));
   needBar('nHunger', stats.hunger); needBar('nEnergy', stats.energy); needBar('nMood', stats.mood); needBar('nHygiene', stats.hygiene ?? 80); needBar('nBladder', stats.bladder ?? 85);
@@ -6472,11 +6472,11 @@ attachWheel($('wpnBtn'), {
   anchor: () => document.querySelector('#pad .face'),
 });
 const ST_ICON = ['sun', 'music', 'moon', 'bolt', 'book', 'fist', 'heart', 'wave', 'mic', 'star', 'x'];
-let lastSong = ''; onSong((song, st) => { if (!song || song.title === lastSong) return; lastSong = song.title; if (ride || homeMusic) peek('radioBtn', `<b>${song.title}</b><small>${song.artist}${st?.name ? ' · ' + st.name.split(' — ')[0] : ''}</small>`, 4); });
-document.querySelector('.hud-l .needs').after($('radioBtn')); $('radioBtn').classList.add('inpill'); // the radio lives under the needs rings now
+let lastSong = ''; onSong((song, st) => { if (!song || song.title === lastSong) return; lastSong = song.title; if ((ride || homeMusic) && !WANT.stars) peek('radioBtn', `<b>${song.title}</b><small>${song.artist}${st?.name ? ' · ' + st.name.split(' — ')[0] : ''}</small>`, 4); });
+{ const row = document.createElement('div'); row.className = 'radio-row'; document.querySelector('.hud-l .needs').after(row); row.append($('radioBtn'), $('wantedHud')); } $('radioBtn').classList.add('inpill'); // the police badges sit right beside the radio // the radio lives under the needs rings now
 attachWheel($('radioBtn'), {
   items: () => STATIONS.map((s, i) => ({ icon: svg(ST_ICON[i] || 'radio', 'wheel'), label: s.name.split(' — ')[0], sub: s.name.split(' — ')[1] || '', current: radioIndex() === i })),
-  onSelect: (it, i) => { radioSet(i); radioOn(!!ride); const n = nowPlaying(); peek('radioBtn', `<b>${STATIONS[i].name.split(' — ')[0]}</b><small>${n ? n.title + ' · ' + n.artist : (STATIONS[i].name.split(' — ')[1] || '')}</small>`, 3); },
+  onSelect: (it, i) => { radioSet(i); radioOn(!!ride); const n = nowPlaying(); if (!WANT.stars) peek('radioBtn', `<b>${STATIONS[i].name.split(' — ')[0]}</b><small>${n ? n.title + ' · ' + n.artist : (STATIONS[i].name.split(' — ')[1] || '')}</small>`, 3); },
   centre: () => 'Close',
   onOpen: () => { timeScale = 0.2; }, onClose: () => { timeScale = 1; },
 });
@@ -6956,7 +6956,7 @@ function saveGame() {
   store.set('bc_save', save); store.set('bc_arsenal', arsenal); store.set('bc_cars', garage);
 }
 // auto-update: bookmarks and home-screen apps can hold on to an old copy. Check version.json (never cached) and reload once if newer.
-const BUILD = 160;
+const BUILD = 161;
 function checkUpdate() {
   fetch('version.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(j => {
     if (!(j.v > BUILD)) return;
@@ -7071,7 +7071,7 @@ const GYM_DAILY = 3;
 function workout(score, kind = 'lift') {
   const B = body(), k = 'gym:' + dayN; stats.relDay[k] ||= 0;
   if (stats.relDay[k] >= GYM_DAILY) { toast(`Your muscles are fried. ${GYM_DAILY} workouts a day max. Rest and come back tomorrow.`, 3); return false; }
-  stats.relDay[k]++; B.lastGym = dayN; stats.hygiene = Math.max(0, (stats.hygiene ?? 80) - 14); // sweaty
+  stats.relDay[k]++; B.lastGym = dayN; stats.hygiene = Math.max(0, (stats.hygiene ?? 80) - 8); // sweaty
   if (kind === 'cardio') B.fat = clamp(B.fat - 0.012 - score * 0.0008, 0, 1);
   else { B.muscle = clamp(B.muscle + Math.min(0.035, 0.008 + score * 0.0012) * (1 - B.muscle * 0.5), 0, 1); B.fat = clamp(B.fat - 0.004, 0, 1); }
   bodyCheck(); return true;

@@ -790,3 +790,9 @@ body.righty #zoneTxt { right: calc(8px + var(--sar)); }
 #wheel.compact .wheel-center b { font-size: 16px; }
 #wheel.compact .wheel-center span { font-size: 13px; }
 body.wheel-compact #pad .face, body.wheel-compact #wpnBtn { opacity: 0; transition: opacity .12s; }
+
+/* police badges ride alongside the radio; while you're wanted the song name stays tucked away */
+.radio-row { display: flex; align-items: center; gap: 6px; max-width: 100%; transition: transform .32s cubic-bezier(.2,.9,.3,1.05); }
+.radio-row .wanted { margin: 2px 0 0; }
+#hud.slot .hud-l .radio-row { transform: translateY(calc(var(--slotH, 64px) - 32px)); }
+#hud.slot .hud-l .radio-row #radioBtn, #hud.slot .hud-l .radio-row .wanted { transform: none; }
