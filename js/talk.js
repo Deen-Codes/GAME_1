@@ -1,8 +1,8 @@
 // Conversations staged like a Pokémon battle: they stand on a platform facing you,
 // you see the back of your own head in the foreground, subtitles type out, you pick replies.
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, setFace } from './character.js?v=190';
-import { sfx, audio } from './audio.js?v=190';
+import { buildCharacter, poseCharacter, disposeObject, setFace } from './character.js?v=191';
+import { sfx, audio } from './audio.js?v=191';
 
 const $ = id => document.getElementById(id);
 const BG = {
@@ -149,7 +149,7 @@ export class Talk {
       g.traverse(o => { if (o.isMesh && o.material?.transparent && o !== R.glow) { tmp.setFromObject(o); gb.union(tmp); any = true; } });
       const y0 = any ? gb.min.y : (R.top ?? 0.9), y1 = any ? gb.max.y : (R.height || 1.6), z0 = any ? gb.min.z : -0.8, z1 = any ? gb.max.z : 0.8;
       // the game's cars are built small next to people: scale this one so the window is tall enough for your head and shoulders
-      const open = R.topless || !any || y1 - y0 < 0.25, K = open ? 1.5 : Math.min(3.6, Math.max(1.3, 1.32 / (y1 - y0))); g.scale.setScalar(K);
+      const open = R.topless || !any || y1 - y0 < 0.25, dc = think ? npcCfg : youCfg, tall = ({ afro: 0.24, mohawk: 0.18, bun: 0.12, quiff: 0.08, spiky: 0.08 }[dc?.hair] || 0) + (/top|cowboy|chef/.test(dc?.hat || '') ? 0.16 : 0), K = open ? 1.5 : Math.min(3.8, Math.max(1.3, (1.32 + tall) / (y1 - y0))); /* big hair or a tall hat: a roomier cabin so it clears the roof */ g.scale.setScalar(K);
       const side = 1, sx = side * R.width * 0.21 * K, top = (open ? (R.top ?? y0) : y0) * K, sz = (z0 + (z1 - z0) * (R.body === 'van' ? 0.86 : 0.58)) * K; /* vans: the cab's right at the front */ this.rc = { sx, top: top + 0.02, sz, side, K, W: R.width * K, win: (y1 - y0) * K };
       const I = new THREE.Group(); // the cabin: seat, dash, console and a proper wheel, at people scale
       const seatB = new THREE.Mesh(new THREE.BoxGeometry(0.52, 0.14, 0.52), m('#2a2b30')); seatB.position.set(sx, top + 0.07, sz); I.add(seatB);
