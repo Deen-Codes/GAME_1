@@ -1,26 +1,26 @@
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=116';
-import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=116';
-import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=116';
-import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=116';
-import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=116';
-import { buildPanel, renderStats } from './ui.js?v=116';
-import { Input } from './input.js?v=116';
-import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime } from './audio.js?v=116';
-import { runMinigame } from './minigames.js?v=116';
-import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk } from './peds.js?v=116';
-import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=116';
-import { findRoute } from './nav.js?v=116';
-import { COURSES, CAREERS, QUIZ } from './careers.js?v=116';
-import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=116';
-import { attachWheel } from './wheel.js?v=116';
-import { Animals } from './animals.js?v=116';
-import { Talk } from './talk.js?v=116';
-import { incomingText, classify, textOptions, textReply } from './texts.js?v=116';
-import { svg, drawIcon } from './icons.js?v=116';
-import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=116';
-import { FURN, CATALOG } from './furniture.js?v=116';
-import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=116';
+import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=117';
+import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=117';
+import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=117';
+import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=117';
+import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=117';
+import { buildPanel, renderStats } from './ui.js?v=117';
+import { Input } from './input.js?v=117';
+import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime } from './audio.js?v=117';
+import { runMinigame } from './minigames.js?v=117';
+import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk } from './peds.js?v=117';
+import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=117';
+import { findRoute } from './nav.js?v=117';
+import { COURSES, CAREERS, QUIZ } from './careers.js?v=117';
+import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=117';
+import { attachWheel } from './wheel.js?v=117';
+import { Animals } from './animals.js?v=117';
+import { Talk } from './talk.js?v=117';
+import { incomingText, classify, textOptions, textReply } from './texts.js?v=117';
+import { svg, drawIcon } from './icons.js?v=117';
+import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=117';
+import { FURN, CATALOG } from './furniture.js?v=117';
+import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=117';
 
 const $ = id => document.getElementById(id);
 let inside = null, editMode = false, held = null, pendingCar = false, homeMusic = false, phoneBadge = 0;
@@ -4806,25 +4806,44 @@ function dateOutfit(id) {
   return d.cfg;
 }
 
+/* distance in one line, 3 digits max: 40 m, 850 m, 1.2 km, 12 km, 120 km */
+function navDist(d) { if (d < 995) return Math.max(10, Math.round(d / 10) * 10) + ' m'; const k = d / 1000; return (k < 9.95 ? k.toFixed(1) : Math.min(999, Math.round(k))) + ' km'; }
 function nearestHome() { const fh = famHome(); if (fh && propMode(fh.id) !== 'rent') return fh; let best = null, bd = 1e9; for (const p of PROPERTIES) if (owned.has(p.id) && propMode(p.id) !== 'rent') { const d = Math.hypot(p.x - P.x, p.z - P.z); if (d < bd) { bd = d; best = p; } } return best; }
 function hearts(x, z, n = 6, y = 1.8) { spawnParticles(x, y, z, ['#ff6fb5', '#ff3b8a', '#ffd1e8'], n, 1.6, 1.4, 0.22, -1.5); }
 // WooHoo: under the duvet with the bed bouncing, or in a parked car with steamy windows
 function startWoo(kind, bed) {
   woo = { kind, t: 0, dur: 5.5, bed };
   if (kind === 'bed') {
-    const w = inside.h.toWorld(bed.x, bed.z), F = FURN[bed.t];
-    const g = new THREE.Group(); g.position.set(w.x, 0, w.z); g.rotation.y = bed.r || 0; dyn.add(g);
-    const duvet = new THREE.Mesh(new THREE.BoxGeometry(F.w * 0.96, 0.38, F.d * 0.68), new THREE.MeshStandardMaterial({ color: bed.c || '#3a5fa0', roughness: 0.9 })); duvet.position.set(0, 0.72, F.d * 0.14); duvet.castShadow = true; g.add(duvet);
-    const lump = new THREE.Mesh(new THREE.SphereGeometry(0.42, 10, 8), duvet.material); lump.scale.set(1.3, 0.55, 1.1); lump.position.set(0, 0.9, 0.1); g.add(lump);
-    const head = (c, x) => { const h = new THREE.Mesh(new THREE.BoxGeometry(0.26, 0.24, 0.24), new THREE.MeshStandardMaterial({ color: c })); h.position.set(x, 0.86, -F.d * 0.36); g.add(h); return h; };
-    woo.heads = [head(charCfg.skin, -0.18), head(date.cfg.skin, 0.18)];
-    woo.g = g; woo.duvet = duvet; woo.lump = lump; woo.bedMesh = bed.mesh; P.x = w.x; P.z = w.z + 1.2; // the camera follows you to the bed
-    heroRoot.visible = false; date.fig.root.visible = false;
+    const F = FURN[bed.t], r = bed.r || 0, c = Math.cos(r), sn = Math.sin(r), dbl = F.w > 1.6;
+    // bed-local (x across, z from pillow -z to foot +z) to world
+    const L = (dx, dz) => inside.h.toWorld(bed.x + dx * c + dz * sn, bed.z - dx * sn + dz * c);
+    const g = new THREE.Group(); const w0 = L(0, 0); g.position.set(w0.x, 0, w0.z); g.rotation.y = r; dyn.add(g);
+    const dz0 = -0.55, dz1 = F.d / 2 - 0.04, col = new THREE.Color(bed.c || '#3a5fa0'); { const hsl = {}; col.getHSL(hsl); if (hsl.l > 0.7) col.set('#d98fa6'); else col.offsetHSL(0, 0, 0.08); } /* light sheets get a blush duvet so you can see it */
+    const duvet = new THREE.Mesh(new THREE.BoxGeometry(F.w * 0.98, 0.3, dz1 - dz0), new THREE.MeshStandardMaterial({ color: col, roughness: 0.95 }));
+    duvet.geometry.translate(0, 0, (dz1 - dz0) / 2); duvet.position.set(0, 0.86, dz0); duvet.castShadow = true; duvet.visible = false; g.add(duvet);
+    const lump = new THREE.Mesh(new THREE.SphereGeometry(0.5, 12, 8), duvet.material); lump.scale.set(dbl ? 1.5 : 1.0, 0.5, 1.2); lump.position.set(0, 0.95, 0.15); lump.visible = false; g.add(lump);
+    // where they meet at the foot of the bed (falls back to the side if the foot is against a wall)
+    let foot = L(0, F.d / 2 + 0.75); { const q = { x: foot.x, z: foot.z }; resolve(q, 0.4, 0); if (Math.hypot(q.x - foot.x, q.z - foot.z) > 0.25) foot = bedSide(bed); }
+    const across = { x: c, z: -sn }; // bed's local +x in world
+    const her = date.fig.root; her.rotation.order = 'YXZ'; hero.root.rotation.order = 'YXZ';
+    const mk = () => { const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: showerTexture(), depthTest: false })); sp.scale.set(0.8, 0.95, 1); sp.visible = false; dyn.add(sp); return sp; };
+    const hx = dbl ? 0.42 : 0.26, ht = (date.look?.h || 1.8);
+    Object.assign(woo, { L, g, duvet, lump, F, r, dbl, bedMesh: bed.mesh, dur: 1e9, stage: 'walk', st: 0,
+      me: { x: P.x, z: P.z, face: P.face, ph: 0, tx: foot.x - across.x * 0.42, tz: foot.z - across.z * 0.42, blur: mk(), lx: -hx },
+      her: { x: date.x, z: date.z, face: date.face || 0, ph: 0, tx: foot.x + across.x * 0.42, tz: foot.z + across.z * 0.42, blur: mk(), lx: hx },
+      mid: foot, headZ: -0.92, ht });
+    date.fig.root.visible = true; heroRoot.visible = true;
+    toast('WooHoo time...', 1.5);
   } else {
     woo.car = ride; woo.glass = [];
     ride.b.group.traverse(m => { if (m.isMesh && m.material.transparent && m.material.opacity > 0.5) { woo.glass.push([m.material, m.material.color.getHex()]); m.material.color.set('#eef3f6'); } });
+    toast('WooHoo!', 1.5);
   }
-  sfx.whoosh?.(); toast('WooHoo!', 1.5);
+  sfx.whoosh?.();
+}
+function showerTexture() {
+  if (!showerTex) { const c = document.createElement('canvas'); c.width = c.height = 8; const g = c.getContext('2d'); for (let i = 0; i < 8; i++) for (let j = 0; j < 8; j++) { g.fillStyle = ['#e8b088', '#d39a6a', '#f6c9a4', '#b77a4b', '#c98f62'][(i * 3 + j * 5) % 5]; g.fillRect(i, j, 1, 1); } showerTex = new THREE.CanvasTexture(c); showerTex.magFilter = THREE.NearestFilter; showerTex.minFilter = THREE.NearestFilter; }
+  return showerTex;
 }
 // a free spot to stand next to the bed (inside the room, not in a wall or other furniture)
 function bedSide(bed, avoid) {
@@ -4836,25 +4855,104 @@ function bedSide(bed, avoid) {
   }
   return inside.h.toWorld(0, inside.h.d / 2 - 1.5);
 }
+// Sims-style, kept PG: walk to the foot of the bed, kiss, spin out of your clothes (pixelated), she climbs in, then you,
+// the duvet comes up and the bed does its thing; now and then two heads pop up at the pillows, then back under
+function wooBed(W, dt) {
+  const me = W.me, her = W.her, F = W.F, ease = q => q * q * (3 - 2 * q), cl = q => Math.max(0, Math.min(1, q));
+  const heroLimbs = (sw, ph) => { hero.legL.pivot.rotation.x = -Math.sin(ph) * sw; hero.legR.pivot.rotation.x = Math.sin(ph) * sw; hero.legL.knee.rotation.x = 0.02; hero.legR.knee.rotation.x = 0.02; hero.armL.pivot.rotation.set(Math.sin(ph) * sw * 0.8, 0, -0.08); hero.armR.pivot.rotation.set(-Math.sin(ph) * sw * 0.8, 0, 0.08); hero.head.rotation.set(0, 0, 0); hero.torso.rotation.set(0, 0, 0); };
+  const herLimbs = (sw, ph) => { const l = date.fig.limbs; l[0].rotation.set(-Math.sin(ph) * sw, 0, 0); l[1].rotation.set(Math.sin(ph) * sw, 0, 0); l[2].rotation.set(Math.sin(ph) * sw * 0.8, 0, 0); l[3].rotation.set(-Math.sin(ph) * sw * 0.8, 0, 0); };
+  const place = (q, y, yaw, tilt) => { const R = q === me ? hero.root : date.fig.root; if (q === me) { heroRoot.position.set(q.x, y, q.z); hero.root.rotation.set(tilt, yaw, 0); P.x = q.x; P.z = q.z; P.face = yaw; } else { date.x = q.x; date.z = q.z; date.face = yaw; R.position.set(q.x, y, q.z); R.rotation.set(tilt, yaw, 0); } };
+  const blurAt = (q, y, show) => { q.blur.visible = show && Math.floor(W.t * 10) % 7 !== 0; q.blur.position.set(q.x, y, q.z); };
+  W.st += dt; const t = W.st;
+  if (W.stage === 'walk') {
+    let done = true;
+    for (const q of [me, her]) { const dx = q.tx - q.x, dz = q.tz - q.z, d = Math.hypot(dx, dz); if (d > 0.08) { done = false; const v = Math.min(2.4, d * 3); q.x += dx / d * v * dt; q.z += dz / d * v * dt; q.face += wrapA(Math.atan2(dx, dz) - q.face) * Math.min(1, dt * 10); q.ph += dt * v * 3.2; } q.sw = d > 0.08 ? 0.6 : 0; }
+    heroLimbs(me.sw, me.ph); herLimbs(her.sw, her.ph); poseHips();
+    place(me, 0, me.face, 0); place(her, 0, her.face, 0);
+    if (done || t > 5) { W.stage = 'kiss'; W.st = 0; me.x = me.tx; me.z = me.tz; her.x = her.tx; her.z = her.tz; }
+    return false;
+  }
+  const faceMe = Math.atan2(her.x - me.x, her.z - me.z), faceHer = faceMe + Math.PI;
+  if (W.stage === 'kiss') { // turn to each other, lean in, kiss
+    me.face += wrapA(faceMe - me.face) * Math.min(1, dt * 8); her.face += wrapA(faceHer - her.face) * Math.min(1, dt * 8);
+    heroLimbs(0, 0); herLimbs(0, 0); poseHips();
+    const lean = ease(cl((t - 0.3) / 0.5)) * 0.22;
+    hero.torso.rotation.x = lean * 0.6; hero.armR.pivot.rotation.set(-0.9 * lean / 0.22, 0, -0.5 * lean / 0.22); date.fig.limbs[2].rotation.set(-1.0 * lean / 0.22, 0, 0.6 * lean / 0.22); date.fig.limbs[3].rotation.set(-1.0 * lean / 0.22, 0, -0.6 * lean / 0.22);
+    place(me, 0, me.face, lean * 0.4); place(her, 0, her.face, lean * 0.4);
+    if (t > 0.7 && !W.kissed) { W.kissed = true; hearts((me.x + her.x) / 2, (me.z + her.z) / 2, 10, 1.9); }
+    if (t > 1.6) { W.stage = 'undress'; W.st = 0; sfx.whoosh?.(); }
+    return false;
+  }
+  if (W.stage === 'undress') { // Sims spin: a twirl, a puff of sparkles, and the pixel blur goes on
+    const sp = ease(cl(t / 0.9)) * Math.PI * 4;
+    heroLimbs(0, 0); herLimbs(0, 0); poseHips(); hero.armL.pivot.rotation.z = -0.5; hero.armR.pivot.rotation.z = 0.5; date.fig.limbs[2].rotation.z = -0.5; date.fig.limbs[3].rotation.z = 0.5;
+    place(me, Math.sin(cl(t / 0.9) * Math.PI) * 0.15, faceMe + sp, 0); place(her, Math.sin(cl(t / 0.9) * Math.PI) * 0.15, faceHer - sp, 0);
+    if (t > 0.45 && !W.puff) { W.puff = true; for (const q of [me, her]) spawnParticles(q.x, 1.1, q.z, ['#ffffff', '#ffd1e8', '#ff6fb5', '#ffd23f'], 18, 2.2, 1.2, 0.14, -1); }
+    blurAt(me, 0.95, t > 0.45); blurAt(her, 0.95, t > 0.45);
+    if (t > 1.5) { W.stage = 'hand'; W.st = 0; }
+    return false;
+  }
+  if (W.stage === 'hand') { // he takes her hand and helps her up
+    heroLimbs(0, 0); herLimbs(0, 0); poseHips();
+    const rch = ease(cl(t / 0.5)); hero.armR.pivot.rotation.set(-1.1 * rch, 0, 0.35 * rch); date.fig.limbs[2].rotation.set(-1.1 * rch, 0, -0.35 * rch);
+    place(me, 0, faceMe, 0); place(her, 0, faceHer, 0); blurAt(me, 0.95, true); blurAt(her, 0.95, true);
+    if (t > 0.9) { W.stage = 'climb'; W.st = 0; for (const q of [me, her]) { q.sx = q.x; q.sz = q.z; q.sface = q.face; } }
+    return false;
+  }
+  // into bed: sit on the end facing out, lie back, slide up to the pillow. Her first (you steady her), then you
+  const lie = (q, k) => { // k 0..1
+    const yaw = W.r; const a = ease(cl(k / 0.3)), b = ease(cl((k - 0.3) / 0.35)), c2 = ease(cl((k - 0.6) / 0.4));
+    const footZ = W.headZ + W.ht * 0.86, edge = W.L(q.lx, F.d / 2 - 0.25), bed2 = W.L(q.lx, footZ);
+    const x0 = q.sx + (edge.x - q.sx) * a, z0 = q.sz + (edge.z - q.sz) * a;
+    q.x = x0 + (bed2.x - x0) * c2; q.z = z0 + (bed2.z - z0) * c2;
+    const y = 0.42 * a + 0.36 * b, tilt = -Math.PI / 2 * b, yy = q.sface + wrapA(yaw - q.sface) * a;
+    const legs = 1.4 * a * (1 - c2);
+    if (q === me) { hero.hips.position.y = hero.legLen; hero.legL.pivot.rotation.x = -legs; hero.legR.pivot.rotation.x = -legs; hero.legL.knee.rotation.x = legs; hero.legR.knee.rotation.x = legs; hero.armL.pivot.rotation.set(-0.2, 0, -0.15); hero.armR.pivot.rotation.set(-0.2, 0, 0.15); }
+    else { const l = date.fig.limbs; l[0].rotation.set(-legs, 0, 0); l[1].rotation.set(-legs, 0, 0); l[2].rotation.set(-0.2, 0, 0.15); l[3].rotation.set(-0.2, 0, -0.15); }
+    place(q, y, yy, tilt); blurAt(q, y > 0.5 ? y + 0.35 : 0.95, !W.duvet.visible || W.duvet.scale.z < 0.6);
+  };
+  if (W.stage === 'climb') {
+    lie(her, cl(t / 1.4));
+    if (t < 1.4) { heroLimbs(0, 0); poseHips(); const tow = Math.atan2(her.x - me.x, her.z - me.z); me.face += wrapA(tow - me.face) * Math.min(1, dt * 6); hero.armR.pivot.rotation.set(-1.0 * (1 - cl(t / 1.2)), 0, 0.3); place(me, 0, me.face, 0); blurAt(me, 0.95, true); }
+    else { if (!W.meStart) { W.meStart = true; me.sface = me.face; me.sx = me.x; me.sz = me.z; } lie(me, cl((t - 1.4) / 1.4)); }
+    if (t > 2.9) { W.stage = 'covers'; W.st = 0; W.duvet.visible = true; W.duvet.scale.set(1, 1, 0.05); }
+    return false;
+  }
+  if (W.stage === 'covers') { // the duvet pulls up over them
+    W.duvet.scale.z = 0.05 + 0.95 * ease(cl(t / 0.8)); for (const q of [me, her]) q.blur.visible = W.duvet.scale.z < 0.7 && Math.floor(W.t * 10) % 7 !== 0;
+    if (t > 1.0) { W.stage = 'bed'; W.st = 0; for (const q of [me, her]) q.blur.visible = false; }
+    return false;
+  }
+  // under the duvet: mostly hidden with the bed bouncing, every so often both heads pop up at the pillows giggling
+  const beats = [[0, 1.2, 'peek'], [1.2, 4.2, 'under'], [4.2, 5.4, 'peek'], [5.4, 8.6, 'under'], [8.6, 9.8, 'peek']], cur = beats.find(b2 => t >= b2[0] && t < b2[1]);
+  const peek = !cur || cur[2] === 'peek'; W.under = !peek;
+  hero.root.visible = peek; date.fig.root.visible = peek;
+  const bounce = Math.abs(Math.sin(W.t * 7.5));
+  W.lump.visible = !peek; W.duvet.position.y = 0.86 + (peek ? 0 : bounce * 0.06); W.duvet.scale.y = peek ? 1 : 1 + Math.sin(W.t * 15) * 0.12;
+  W.lump.position.y = 0.98 + bounce * 0.14; W.lump.rotation.z = Math.sin(W.t * 5) * 0.18; W.lump.position.x = Math.sin(W.t * 2.3) * 0.12;
+  W.g.position.y = peek ? 0 : bounce * 0.04; if (W.bedMesh) W.bedMesh.position.y = peek ? 0 : bounce * 0.05;
+  if (peek) { hero.head.rotation.y = Math.sin(W.t * 3) * 0.3 + 0.35; hero.head.rotation.x = 0; } // look at each other
+  if (!peek && Math.random() < dt * 6) hearts(W.g.position.x, W.g.position.z, 2, 1.6);
+  if (peek && !W['pk' + Math.floor(t)] && Math.random() < dt * 2) { W['pk' + Math.floor(t)] = true; hearts(W.g.position.x, W.g.position.z, 4, 1.4); }
+  if (t > 9.8) { hero.root.visible = true; date.fig.root.visible = true; W.dur = 0; }
+  return false;
+}
+function poseHips() { hero.hips.position.y = hero.legLen; date.fig.inner.position.y = 0; }
 function updateWoo(dt) {
   const W = woo; W.t += dt; const k = W.t;
   for (const key of ['a', 'b', 'x', 'y']) input.consume(key);
   const bounce = Math.abs(Math.sin(k * 7.5));
-  if (W.kind === 'bed') {
-    W.g.position.y = bounce * 0.08; W.duvet.scale.y = 1 + Math.sin(k * 15) * 0.1; W.lump.position.y = 0.9 + bounce * 0.12; W.lump.rotation.z = Math.sin(k * 5) * 0.15;
-    W.heads.forEach((h, i) => { h.position.y = 0.86 + Math.sin(k * 7.5 + i) * 0.04; h.visible = k < 1.2 || k > 4.6; });
-    if (W.bedMesh) W.bedMesh.position.y = bounce * 0.06;
-    if (Math.random() < dt * 6) hearts(W.g.position.x, W.g.position.z, 2, 1.6);
-  } else {
+  if (W.kind === 'bed') { if (wooBed(W, dt)) return; }
+  else {
     W.car.b.group.position.y += bounce * 0.14; W.car.b.group.rotation.z = Math.sin(k * 7.5) * 0.04;
     if (Math.random() < dt * 6) hearts(W.car.s.x, W.car.s.z, 2, 2.4);
   }
-  if (Math.random() < dt * 4) { const A = audio(); if (A) sfx.note(rand(160, 230), A.currentTime, 0.12, 'square', 0.015, 900); } // bed springs
+  if (W.kind === 'car' || W.under) if (Math.random() < dt * 4) { const A = audio(); if (A) sfx.note(rand(160, 230), A.currentTime, 0.12, 'square', 0.015, 900); } // bed springs
   if (k >= W.dur) {
     woo = null;
     fade(() => {
       advanceTime(1); feed({ mood: 40, energy: -12 }); P.hp = maxHP(); gainXP('charm', 25); gainXP('stamina', 15);
-      if (W.kind === 'bed') { dyn.remove(W.g); if (W.bedMesh) W.bedMesh.position.y = 0; const w = bedSide(W.bed); P.x = w.x; P.z = w.z; heroRoot.visible = true; const w2 = bedSide(W.bed, w); date.x = w2.x; date.z = w2.z; date.fig.root.visible = true; }
+      if (W.kind === 'bed') { dyn.remove(W.g); for (const q of [W.me, W.her]) { dyn.remove(q.blur); q.blur.material.dispose(); } hero.root.rotation.set(0, P.face, 0); hero.hips.position.y = hero.legLen; date.fig.root.rotation.set(0, 0, 0); date.fig.inner.position.y = 0; if (W.bedMesh) W.bedMesh.position.y = 0; const w = bedSide(W.bed); P.x = w.x; P.z = w.z; heroRoot.visible = true; const w2 = bedSide(W.bed, w); date.x = w2.x; date.z = w2.z; date.fig.root.visible = true; }
       else { W.car.b.group.rotation.z = 0; for (const [m, c] of W.glass) m.color.setHex(c); }
       bumpRel(date.id, 25, false); date.interest += 20; stats.woohoo = (stats.woohoo || 0) + 1; maybePregnant(date.id, date.tryBaby); cheatCheck(date.id);
       const n = date.name; saveGame();
@@ -5731,7 +5829,7 @@ function updateHUD(dt) {
   setText('moneyTxt', fmt(money));
   const f = focusPos();
   setText('zoneTxt', inside ? (inside.prop ? inside.prop.name : inside.place.name) : zoneName(f.x, f.z));
-  { const show = !!waypoint && !inside; $('mmNav').classList.toggle('hidden', !show); $('wpTxt').classList.add('hidden'); if (show) { const d = Math.hypot(f.x - waypoint.x, f.z - waypoint.z); setText('mmNavD', d > 1000 ? (d / 1000).toFixed(1) + ' km' : Math.round(d / 10) * 10 + ' m'); setText('mmNavT', waypoint.label || 'Waypoint'); } $('mmWrap').classList.toggle('navving', show); } // sat-nav strip along the bottom of the phone-map
+  { const show = !!waypoint && !inside; $('mmNav').classList.toggle('hidden', !show); $('wpTxt').classList.add('hidden'); if (show) { const d = Math.hypot(f.x - waypoint.x, f.z - waypoint.z); setText('mmNavD', navDist(d)); setText('mmNavT', waypoint.label || 'Waypoint'); } $('mmWrap').classList.toggle('navving', show); } // sat-nav strip along the bottom of the phone-map
   { const wh = $('wantedHud'), key = WANT.stars; if (hudCache.want !== key) { hudCache.want = key; wh.innerHTML = WANT.stars ? Array.from({ length: 5 }, (_, i) => `<i class="${i < WANT.stars ? '' : 'off'}"></i>`).join('') + '<u><s></s></u>' : ''; } wh.classList.toggle('flash', WANT.stars > 0 && !WANT.seen); wh.classList.toggle('seen', WANT.stars > 0 && WANT.seen); const bar = wh.querySelector('s'); if (bar) bar.style.width = (WANT.seen ? 0 : Math.min(100, WANT.loseT / evadeNeed() * 100)) + '%'; }
   if (!$('nHealth')) $('nHunger').insertAdjacentHTML('beforebegin', `<div class="need" id="nHealth">${svg('heart', 'sm')}<i></i></div>`);
   needBar('nHealth', Math.round(P.hp / maxHP() * 100));
@@ -6129,7 +6227,7 @@ function saveGame() {
   store.set('bc_save', save); store.set('bc_arsenal', arsenal); store.set('bc_cars', garage);
 }
 // auto-update: bookmarks and home-screen apps can hold on to an old copy. Check version.json (never cached) and reload once if newer.
-const BUILD = 116;
+const BUILD = 117;
 function checkUpdate() {
   fetch('version.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(j => {
     if (!(j.v > BUILD)) return;
@@ -6441,4 +6539,4 @@ function frame(now) {
 }
 startGame();
 requestAnimationFrame(frame);
-window.__game = { get animals() { return animals; }, crime, WANT, copCars, cops, pitFight, busted, fam, famNewDay, makeOfficial, talkFamily, get dayN() { return dayN; }, set dayN(v) { dayN = v; }, scene: G.scene, cam: G.cam, snap: () => updateCamera(0, true), get state() { return state; }, P, input, get ride() { return ride; }, get myCar() { return myCar; }, get traffic() { return traffic; }, peds, setTime: h => { clockH = h; }, openCustom, enterVehicle, exitCar, get money() { return money; }, set money(v) { money = v; }, openPlace, PLACES, PROPERTIES, runMinigame, get action() { return action; }, arsenal, selectWeapon, openPhone, setWaypoint, get route() { return route; }, talkToPed, talk, doAction, stats, get inside() { return inside; }, enterInterior, exitInterior, get customers() { return customers; }, newCustomer, startEdit, endEdit, get job() { return job; }, gainXP, storage, doSpot, useFurn, phoneGo, talkVenue, talkJob, openPlace, talkCustomer, startJob, openCarShop, damageCar, repairCar, addFire, get fires() { return fires; }, get ems() { return ems; }, get vehicles() { return vehicles; }, makeVehicle, makeCop, prisonFight, life, startDealMeet, get lifeAct() { return lifeAct; }, get train() { return train; }, get trainRide() { return trainRide; }, boardTrain, eventReset: () => { eventOpen = false; }, bodyCheck, attendClass, talkAdmissions, edu, startDance, get dance() { return dance; }, radioSet: i => { radioSet(i); radioOn(true); }, get zoom() { return zoom; }, set zoom(z) { zoom = z; }, DEFAULT_CAR, setState: x => setState(x), get jail() { return stats.jail; }, witness, personOf, dealHeat, trafficStop, carNear, carTop, startDate, endDate, dateCall, addDateContact, get phoneThread() { return phoneThread; }, set phoneThread(v) { phoneThread = v; }, talkDate, get date() { return date; }, get carAnim() { return carAnim; }, lifeApi, startShower, bizNewDay, subs, forceWanted, get buddy() { return buddy; }, startBuddy, textMe, toast, levelUp, closePhone, bringCar, useFurn, damageCar, debtorScene, get debtor() { return debtor; }, camBlocked, get camYaw() { return camYaw; }, ev: { evChase, evMug, evRobbery, evGang, evBusk, evCrash, evFire, evMarket, evParade, evProtest, streetEvents } };
+window.__game = { get animals() { return animals; }, crime, WANT, copCars, cops, pitFight, busted, fam, famNewDay, makeOfficial, talkFamily, get dayN() { return dayN; }, set dayN(v) { dayN = v; }, scene: G.scene, cam: G.cam, snap: () => updateCamera(0, true), get state() { return state; }, P, input, get ride() { return ride; }, get myCar() { return myCar; }, get traffic() { return traffic; }, peds, setTime: h => { clockH = h; }, openCustom, enterVehicle, exitCar, get money() { return money; }, set money(v) { money = v; }, openPlace, PLACES, PROPERTIES, runMinigame, get action() { return action; }, arsenal, selectWeapon, openPhone, setWaypoint, get route() { return route; }, talkToPed, talk, doAction, stats, get inside() { return inside; }, enterInterior, exitInterior, get customers() { return customers; }, newCustomer, startEdit, endEdit, get job() { return job; }, gainXP, storage, doSpot, useFurn, phoneGo, talkVenue, talkJob, openPlace, talkCustomer, startJob, openCarShop, damageCar, repairCar, addFire, get fires() { return fires; }, get ems() { return ems; }, get vehicles() { return vehicles; }, makeVehicle, makeCop, prisonFight, life, startDealMeet, get lifeAct() { return lifeAct; }, get train() { return train; }, get trainRide() { return trainRide; }, boardTrain, eventReset: () => { eventOpen = false; }, bodyCheck, attendClass, talkAdmissions, edu, startDance, get dance() { return dance; }, radioSet: i => { radioSet(i); radioOn(true); }, get zoom() { return zoom; }, set zoom(z) { zoom = z; }, DEFAULT_CAR, setState: x => setState(x), get jail() { return stats.jail; }, witness, personOf, dealHeat, trafficStop, carNear, carTop, startDate, startWooT: (k, b) => startWoo(k, b), get woo() { return woo; }, endDate, dateCall, addDateContact, get phoneThread() { return phoneThread; }, set phoneThread(v) { phoneThread = v; }, talkDate, get date() { return date; }, get carAnim() { return carAnim; }, lifeApi, startShower, bizNewDay, subs, forceWanted, get buddy() { return buddy; }, startBuddy, textMe, toast, levelUp, closePhone, bringCar, useFurn, damageCar, debtorScene, get debtor() { return debtor; }, camBlocked, get camYaw() { return camYaw; }, ev: { evChase, evMug, evRobbery, evGang, evBusk, evCrash, evFire, evMarket, evParade, evProtest, streetEvents } };

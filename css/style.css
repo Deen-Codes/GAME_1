@@ -591,8 +591,12 @@ body.phone-out #mmWrap { opacity: 0; transition: opacity .1s; }
 #pad.righty #wpnBtn { right: auto; left: calc(12px + var(--sal)); }
 
 /* speed sits above the distance strip so they never overlap */
-#mmSpeed { bottom: 28px; left: 5px; width: 36px; height: 36px; }
-#mmNav, #mmWrap:has(#mmSpeed.hidden) #mmNav, #mmWrap:not(:has(#mmSpeed.hidden)) #mmNav, #mmWrap.navving #mmNav { justify-content: center; padding: 0 6px 5px 6px; height: 26px; }
+/* speed dial sits in the bottom-left corner; distance is a small one-line readout beside it */
+#mmSpeed { bottom: 5px; left: 5px; width: 34px; height: 34px; border-width: 2.5px; }
+#mmSpeed b { font-size: 13px; } #mmSpeed small { font-size: 6.5px; }
+#mmNav, #mmWrap:has(#mmSpeed.hidden) #mmNav, #mmWrap:not(:has(#mmSpeed.hidden)) #mmNav, #mmWrap.navving #mmNav { justify-content: center; padding: 0 6px 7px 6px; height: 24px; }
+#mmWrap:not(:has(#mmSpeed.hidden)) #mmNav { padding-left: 42px; }
+#mmNav b { font-size: 12px; white-space: nowrap; }
 
 /* level up: gold, bouncy, a bit of shine */
 #subs.plain.levelup { background: linear-gradient(135deg, rgba(255,210,63,.95), rgba(255,138,42,.95)); border-color: #fff3a0; box-shadow: 0 0 24px rgba(255,210,63,.6); }
