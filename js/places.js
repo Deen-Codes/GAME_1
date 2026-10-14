@@ -1,5 +1,5 @@
 // Everything you can walk or drive up to: shops, barbers, property, dealers, minigames, chop shop, race.
-import { blockSide, attachDoor, addStructure } from './world.js?v=166';
+import { blockSide, attachDoor, addStructure } from './world.js?v=167';
 
 const S = (city, i, j, side) => blockSide(city, i, j, side);
 
@@ -67,6 +67,9 @@ export const PLACES = [
   { id: 'h_east', kind: 'boats', name: 'East Shore Boat Hire', icon: 'wave', desc: 'Hire a speedboat. $60.', x: 776, z: 120 },
   { id: 'h_isle', kind: 'boats', name: 'Long Beach Boat Hire', icon: 'wave', desc: 'Hire a speedboat. $60.', x: 916, z: -150 },
   { id: 'h_river', kind: 'boats', name: 'Riverside Boat Hire', icon: 'wave', desc: 'Hire a speedboat. $60.', x: 534, z: -380 },
+  { id: 'h_west', kind: 'boats', name: 'West Beach Boat Hire', icon: 'wave', desc: 'Hire a speedboat. $60.', x: -1348, z: 40 },
+  { id: 'r_buggy', kind: 'rides', ride: 'buggy', name: 'Wildwood Buggy Hire', icon: 'car', desc: 'Dune buggies for the dirt trails. $40.', x: -560, z: 14 },
+  { id: 'r_moto', kind: 'rides', ride: 'moto', name: 'Desert Dirt Bikes', icon: 'run', desc: 'Dirt bikes for the desert trails. $40.', x: -975, z: -136 },
   // ---- outdoor activities & jobs
   { id: 'g_taco', kind: 'game', game: 'taco', name: 'Taco Truck (job)', icon: 'taco', desc: 'Work a shift on the taco truck. Fill orders fast for cash.', x: 70, z: 364 },
   { id: 'g_gallery', kind: 'game', game: 'gallery', name: 'Pier Shooting Gallery', icon: 'target', desc: 'Hit the targets, miss the civilians.', x: 94, z: 486 },

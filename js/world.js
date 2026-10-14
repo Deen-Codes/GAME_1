@@ -1,8 +1,8 @@
 // Open-world map: layout, deterministic generation, colliders, chunk meshing and minimap.
 import * as THREE from '../lib/three.module.min.js';
-import { groundMaterial, GT } from './groundtex.js?v=166';
+import { groundMaterial, GT } from './groundtex.js?v=167';
 
-export const WORLD = { x0: -560, x1: 1290, z0: -800, z1: 520 };
+export const WORLD = { x0: -1560, x1: 1420, z0: -800, z1: 760 };
 export const CHUNK = 64;
 const P = 48, HR = 6; // grid period, half road width
 
@@ -25,7 +25,7 @@ export const METRO = (() => {
   // the loop: round downtown, north to meet the Bay Line at Farmland, east over the river to Northport, down into Eastport,
   // across the bay and right round Long Beach, then back across the bay into downtown. Every corner is a 16 m curve.
   const R = 16, Y = 9, pts = [];
-  const C = [[-96, -144], [240, -144], [240, -288], [744, -288], [744, -96], [960, -96], [960, -432], [1152, -432], [1152, 288], [960, 288], [960, -48], [96, -48], [96, 144], [-96, 144]];
+  const C = [[-96, -144], [240, -144], [240, -288], [744, -288], [744, -96], [960, -96], [960, -384], [1152, -384], [1152, 288], [960, 288], [960, -48], [96, -48], [96, 144], [-96, 144]];
   const n = C.length, dir = (a, b) => { const l = Math.hypot(b[0] - a[0], b[1] - a[1]); return [(b[0] - a[0]) / l, (b[1] - a[1]) / l]; };
   for (let i = 0; i < n; i++) {
     const c = C[i], nx = C[(i + 1) % n], pv = C[(i - 1 + n) % n], din = dir(pv, c), dout = dir(c, nx);
@@ -40,7 +40,7 @@ export const METRO = (() => {
   const at = s => { s = ((s % len) + len) % len; let lo = 0, hi = cum.length - 1; while (lo < hi) { const m = (lo + hi + 1) >> 1; if (cum[m] <= s) lo = m; else hi = m - 1; } const a = pts[lo], b = pts[(lo + 1) % pts.length], seg = (lo + 1 < cum.length ? cum[lo + 1] : len) - cum[lo], t = seg ? (s - cum[lo]) / seg : 0; return { x: a[0] + (b[0] - a[0]) * t, z: a[1] + (b[1] - a[1]) * t, h: Math.atan2(b[0] - a[0], b[1] - a[1]) }; };
   const sOf = (x, z) => { let best = 0, bd = 1e9; for (let i = 0; i < pts.length; i++) { const d = Math.hypot(pts[i][0] - x, pts[i][1] - z); if (d < bd) { bd = d; best = cum[i]; } } return best; };
   // stations: the platform on one side of the line, a stair tower down to the ground beside it
-  const stations = [['Midtown', 0, -144, 0, -1], ['Farmland (Bay Line)', 412, -288, 0, -1], ['Northport', 648, -288, 0, -1], ['Eastport', 744, -122, 1, 0], ['Long Beach North', 1056, -432, 0, -1], ['Long Beach South', 1056, 288, 0, 1], ['East Side', 96, 0, 1, 0], ['Bayside', 0, 144, 0, 1], ['West End', -96, 0, -1, 0]]
+  const stations = [['Midtown', 0, -144, 0, -1], ['Farmland (Bay Line)', 412, -288, 0, -1], ['Northport', 648, -288, 0, -1], ['Eastport', 744, -122, 1, 0], ['Long Beach North', 1056, -384, 0, -1], ['Long Beach South', 1056, 288, 0, 1], ['East Side', 96, 0, 1, 0], ['Bayside', 0, 144, 0, 1], ['West End', -96, 0, -1, 0]]
     .map(([name, x, z, ox, oz]) => ({ name, x, z, s: sOf(x, z), ox, oz, tower: { x: x + ox * 8.6 + (ox ? 0 : 14), z: z + oz * 8.6 + (oz ? 0 : 14) } })).sort((a, b) => a.s - b.s);
   return { Y, len, at, stations, pts };
 })();
@@ -69,12 +69,38 @@ function eastCap(x, z) {
   if (x > 460 && z < -150) { const d = riverD(x, z); if (d < RIVER.hw + 8) cap = Math.min(cap, Math.max(-4, -(RIVER.hw + 8 - d) * 0.35)); }
   return cap;
 }
+// ---- the far west, over the ridge behind the Hidden Hills: Wildwood (a wild valley), then the Red Rock Desert with the
+// Red River running through a canyon, then West Beach and the ocean. The north of it is a coast too.
+function ss(t) { return t <= 0 ? 0 : t >= 1 ? 1 : t * t * (3 - 2 * t); }
+export function redRiverX(z) { return -1100 + 26 * Math.sin(z / 110) + 10 * Math.sin(z / 37); }
+export function coastW(z) { return -1380 + 8 * Math.sin(z / 47) + 4 * Math.sin(z / 17); }
+export function northZ(x) { return -770 + 6 * Math.sin(x / 40) + 3 * Math.sin(x / 13); }
+export const FORDS = [-100, -450, 250]; // where the dirt trails splash across the Red River
+export const MESAS = [{ x: -960, z: -560, r: 34, h: 16 }, { x: -1230, z: -620, r: 26, h: 20 }, { x: -1000, z: 120, r: 22, h: 14 }, { x: -1290, z: 300, r: 30, h: 13 }, { x: -1180, z: -260, r: 18, h: 18 }, { x: -940, z: 360, r: 20, h: 11 }];
+export const ISLETS = [{ x: -640, z: 650, r: 30 }, { x: 330, z: 700, r: 24 }, { x: 660, z: 640, r: 20 }, { x: 1345, z: -200, r: 28, light: true }, { x: 1360, z: 320, r: 22 }, { x: -1480, z: -330, r: 30, light: true }, { x: -1470, z: 280, r: 24 }, { x: -1110, z: 660, r: 26 }, { x: 1300, z: 660, r: 20 }, { x: -1490, z: -650, r: 22 }];
+function westBase(x, z, h) { // x < -560: valley noise h comes in; shape it into ridge, valley, desert plateau, canyon and coasts
+  const ridge = 16 * Math.exp(-(((x + 600) / 55) ** 2)) * (1 - 0.75 * Math.exp(-((z / 70) ** 2))); // the ridge behind the Hidden Hills, with a low pass where the trail crosses
+  const desert = ss((-860 - x) / 60); // 0 in Wildwood, 1 out in the desert
+  let y = (h * 0.55 + 2) * (1 - desert) + (7 + 1.4 * Math.sin(x / 31) * Math.cos(z / 43) + 0.8 * Math.sin(z / 17 + x / 23)) * desert + ridge;
+  for (const M of MESAS) { const d = Math.hypot(x - M.x, z - M.z); if (d < M.r + 8) y += M.h * ss((M.r + 8 - d) / 8); } // flat-topped mesas with steep sides
+  { const d = Math.abs(x - redRiverX(z)); if (d < 44) { const ford = FORDS.some(f => Math.abs(z - f) < 16), bed = ford ? -1.05 : -2.8; y = d < 13 ? bed : bed + (y - bed) * ss((d - 13) / 31); } } // the river gorge (shallow at the fords)
+  y *= ss((x - coastW(z) - 20) / 90); // the desert slopes down to West Beach
+  y *= ss((z - northZ(x) - 26) / 70); // and to the north shore
+  return y;
+}
+function westCap(x, z) { // sea levels in the west: the beach then the ocean, west and north
+  let cap = Infinity; const sw = coastW(z) + 22; if (x < sw) cap = Math.max(-5, -(sw - x) * 0.08);
+  const sn = northZ(x) + 22; if (z < sn) cap = Math.min(cap, Math.max(-5, -(sn - z) * 0.08));
+  return cap;
+}
+export function isletAt(x, z) { for (const I of ISLETS) { const d = Math.hypot(x - I.x, z - I.z) - I.r; if (d < 6) return { I, d }; } return null; }
 // Hidden Hills: rolling terrain west of downtown, flattened along the trail and on house pads.
 function rawHills(x, z) { const b = rawBase(x, z), k = peakK(x, z); return k ? b + (PEAK_H0 - b) * k : b; }
 function rawBase(x, z) {
   if (x >= -300) return 0;
   const ramp = Math.min(1, (-300 - x) / 60);
   let h = 6 + 4 * Math.sin(x / 37 + 1) * Math.cos(z / 41) + 3 * Math.sin(z / 23 + x / 57) + 1.2 * Math.sin(z / 9 + x / 13);
+  if (x < -560) { const edge = rawBase(-559.99, z), k = ss((-560 - x) / 80), wb = westBase(x, z, h) * Math.min(1, Math.max(0, (sandLine(x) - 40 - z) / 50)); return edge * (1 - k) + wb * k; } // over the ridge into the far west (can dip below sea level: the river gorge)
   if (x < -500) h += (-500 - x) * 0.3;
   h *= Math.min(1, Math.max(0, (Math.abs(z) - 7) / 26));
   h *= Math.min(1, Math.max(0, (sandLine(x) - 40 - z) / 50));
@@ -98,6 +124,10 @@ export const CANYON = [
   { id: 'drive', name: 'Canyon Drive', pts: [[-340, 336], [-366, 300], [-390, 240], [-386, 184], [-383, 148], [-377, 112], [-378, 70], [-382, 36], [-386, 0], [-404, -48], [-436, -96], [-447, -128], [-439, -172], [-430, -205], [-414, -246], [-410, -290], [-422, -334], [-420, -358], [-406, -376], [-397, -404], [-402, -438], [-396, -472], [-384, -520], [-392, -562]] },
   { id: 'road', name: 'Canyon Road', pts: [[-294, -144], [-318, -146], [-350, -158], [-382, -180], [-410, -196], [-430, -205]] },
   { id: 'peak', name: 'Peak Road', pts: (() => { const c = { x: -502, z: -250 }, P0 = [[-430, -205], [-452, -207], [-476, -209]]; for (let k = 0; k <= 18; k++) { const a = (90 + k * 25) * Math.PI / 180, r = 39 - k * 1.5; P0.push([+(c.x + Math.cos(a) * r).toFixed(1), +(c.z + Math.sin(a) * r).toFixed(1)]); } return P0; })() }, // heads straight west off the crossroad, then spirals up anticlockwise, finishing at the summit car park
+  // dirt trails through Wildwood and the desert, splashing across the Red River at the fords
+  { id: 'wtrail', name: 'Wildwood Trail', dirt: true, pts: [[-540, 0], [-580, 4], [-630, 18], [-690, 28], [-750, 6], [-800, -50], [-850, -110], [-900, -150], [-970, -150], [-1040, -118], [-1085, -102], [+redRiverX(-100).toFixed(1), -100], [-1160, -96], [-1220, -80], [-1290, -40], [-1335, -12]] },
+  { id: 'dloop', name: 'Desert Loop', dirt: true, pts: [[-970, -150], [-985, -260], [-1010, -360], [-1045, -440], [+redRiverX(-452).toFixed(1), -452], [-1130, -460], [-1190, -470], [-1255, -400], [-1262, -300], [-1240, -180], [-1220, -80]] },
+  { id: 'strail', name: 'Canyon Run', dirt: true, pts: [[-690, 28], [-730, 120], [-780, 210], [-860, 250], [-950, 252], [-1030, 250], [+redRiverX(250).toFixed(1), 250], [-1130, 240], [-1180, 180], [-1210, 80], [-1220, -80]] },
   { id: 'dw_mansion', name: 'Driveway', pts: [[-432, -367], [-426, -362], [-420, -358]] },
   { id: 'dw_lake', name: 'Driveway', pts: [[-410, 141], [-398, 142], [-385, 144]] },
   { id: 'dw_villa', name: 'Driveway', pts: [[-470, -137], [-458, -133], [-449, -129]] },
@@ -113,6 +143,7 @@ export const CANYON = [
     out.push({ x: P2[P2.length - 1][0], z: P2[P2.length - 1][1] });
     let hs = out.map(q => prof(q.x, q.z));
     for (let pass = 0; pass < 3; pass++) hs = hs.map((_, i) => { let a = 0, n = 0; for (let k = -12; k <= 12; k++) { const j = i + k; if (j >= 0 && j < hs.length) { a += hs[j]; n++; } } return a / n; });
+    if (R.dirt) hs = hs.map((h, i) => { const d = Math.abs(out[i].x - redRiverX(out[i].z)); return d < 16 ? -1.0 : d < 40 ? h + (-1.0 - h) * ss((40 - d) / 24) : h; }); // the trail runs down into the river: a wet ford you splash through
     if (R.id === 'peak') hs = hs.map((h, i) => { const d = Math.hypot(out[i].x - PEAK.x, out[i].z - PEAK.z); if (d < PEAK.flat + 5) return PEAK.y; if (d < PEAK.flat + 22) { const k = 1 - (d - PEAK.flat - 5) / 17; return h + (PEAK.y - h) * k * k * (3 - 2 * k); } return h; }); // the top lands level with the summit car park
     out.forEach((q, i) => { q.h = hs[i]; const a = out[Math.max(0, i - 1)], b = out[Math.min(out.length - 1, i + 1)], l = Math.hypot(b.x - a.x, b.z - a.z) || 1; q.nx = (b.z - a.z) / l; q.nz = -(b.x - a.x) / l; q.i = i; q.R = R; });
     R.s = out;
@@ -190,6 +221,10 @@ export function skyY(x, z, py = 0) { const k = skyAt(x, z); if (!k) return null;
 // does a ground street segment (between two junctions) lie under a ramp?
 export function rampSeg(axis, line, n1, n2) { const m = (n1 + n2) / 2; for (const S of SKYWAYS) if (S.axis === axis && Math.abs(S.line - line) < 1 && ((m > S.a0 - 6 && m < S.a0 + S.ramp + 6) || (m < S.a1 + 6 && m > S.a1 - S.ramp - 6))) return true; return false; }
 export function groundH(x, z) {
+  const h = groundH0(x, z); if (h > 0.5) return h;
+  const il = isletAt(x, z); return il ? Math.max(h, Math.min(0.5, Math.max(-5, -(il.d + 2) * 0.13))) : h; // little islands dotted round the sea
+}
+function groundH0(x, z) {
   const s = shoreLine(x) - 22;
   if (z >= s) { const h = Math.max(-5, -(z - s) * 0.08); return x > 700 ? Math.min(h, eastCap(x, z)) : h; } // (the beach stops at Eastport's corner)
   if (x >= -300) { const h = rolling(x, z) + dip(x, z); return x > 440 ? Math.min(h, eastCap(x, z)) : h; }
@@ -199,7 +234,7 @@ export function groundH(x, z) {
     if (d < p.r + 18) { const w = Math.min(1, Math.max(0, (d - p.r) / 18)); h = p.h * (1 - w) + h * w; }
   }
   { const c = canyonNear(x, z); if (c && c.d < CR_HW + 12) { const w = sm((c.d - CR_HW - 1) / 11); h = c.h * (1 - w) + h * w; } } // the road is cut level into the hillside
-  return h;
+  return x < -560 ? Math.min(h, westCap(x, z)) : h;
 }
 export const FIELDS = [
   { x0: 312, x1: 432, z0: 30, z1: 300 }, { x0: 312, x1: 432, z0: -262, z1: -30 },
@@ -236,8 +271,10 @@ export function cityAt(x, z, m = 0) { for (const c of CITIES) if (inR(c, x, z, m
 
 export function zoneName(x, z) {
   if (inR(PORT, x, z, 2)) return 'Bay Port';
+  { const il = isletAt(x, z); if (il && il.d < 2) return il.I.light ? 'Lighthouse Isle' : 'Little Isle'; }
   if (x > 760) { const di = isleD(x, z); if (di < 0) return cityAt(x, z, 6) ? 'Long Beach' : 'Long Beach Sands'; if (x > coastX(z) - 8) return 'East Bay'; if (x > coastX(z) - 44 && z < 330) return 'East Shore'; }
   if (riverD(x, z) < RIVER.hw + 6) return 'Bay River';
+  if (x < -560) { const wet = groundH0(x, z) < WATER_Y; if (Math.abs(x - redRiverX(z)) < 20 && (wet || x < -880)) return 'Red River'; if (wet) return 'Open Sea'; if (x < coastW(z) + 48) return 'West Beach'; if (z < northZ(x) + 40) return 'North Shore'; if (x < -880) return Math.abs(x - redRiverX(z)) < 46 ? 'Red River Canyon' : 'Red Rock Desert'; return 'Wildwood'; }
   if (z > sandLine(x) - 4) return 'Bay Beach';
   if (x < -300) return 'Hidden Hills';
   if (x > 530 && x < 710 && z > 288 && z < 328) return 'Eastport Docks';
@@ -259,6 +296,13 @@ export function groundColor(x, z, out = tmpC) {
   const sl = sandLine(x);
   if (z > sl) { const sh = shoreLine(x); return out.copy(col(C.sand)).lerp(col(C.wetsand), Math.min(1, Math.max(0, (z - (sh - 30)) / 20))); }
   const n = noise(x, z) * 0.06;
+  { const il = isletAt(x, z); if (il) return out.copy(col(il.d > -14 ? C.sand : C.lawn)); }
+  if (x < -560) { // the far west
+    const rr = Math.abs(x - redRiverX(z)), dsr = ss((-860 - x) / 40), cw = coastW(z), nz = northZ(x);
+    if (x < cw + 44 || z < nz + 36) return out.copy(col(C.sand)).lerp(col(C.wetsand), Math.min(1, Math.max(0, Math.max((cw + 26 - x) / 14, (nz + 20 - z) / 14))));
+    if (rr < 44 && dsr > 0) return out.copy(col(rr < 15 ? '#8a6a4a' : '#b0603a')).lerp(col('#c9774a'), Math.abs(Math.sin(groundH0(x, z) * 0.9)) * 0.5); // canyon walls in red rock bands
+    for (const M of MESAS) if (Math.hypot(x - M.x, z - M.z) < M.r + 8) return out.copy(col('#a85a36')).lerp(col('#c46e42'), Math.abs(Math.sin(groundH0(x, z) * 0.7)) * 0.5);
+    out.copy(col(C.forest)).lerp(col('#d8a46a'), dsr); out.r *= 1 + n; out.g *= 1 + n; out.b *= 1 + n; return out; }
   if (inR(PORT, x, z)) return out.copy(col('#9a968f')).multiplyScalar(1 + n); // concrete
   if (x > 740) { const di = isleD(x, z), ce = coastX(z); if ((di > -54 && di < 30) || (x > ce - 40 && x < ce + 40)) { const wet = di > -54 && di < 30 ? (di + 28) / 18 : (x - (ce - 14)) / 14; return out.copy(col(C.sand)).lerp(col(C.wetsand), Math.min(1, Math.max(0, wet))); } }
   if (riverD(x, z) < RIVER.hw + 9) return out.copy(col(C.dirt)).lerp(col(C.grass), 0.35);
@@ -278,6 +322,8 @@ export function groundColor(x, z, out = tmpC) {
 // which detail texture the ground uses here (matches groundColor)
 export function groundType(x, z) {
   if (z > sandLine(x) - 6 && x < coastX(z) - 10) return GT.sand;
+  if (isletAt(x, z)) return GT.sand;
+  if (x < -560) { if (x < coastW(z) + 44 || z < northZ(x) + 36) return GT.sand; if (Math.abs(x - redRiverX(z)) < 44 && x < -860) return GT.dirt; return x < -880 ? GT.sand : GT.forest; }
   if (inR(PORT, x, z)) return GT.pave;
   if (x > 740) { const di = isleD(x, z), ce = coastX(z); if ((di > -54 && di < 30) || (x > ce - 40 && x < ce + 40)) return GT.sand; }
   if (x < -312) return GT.forest;
@@ -712,7 +758,24 @@ function genWorld() {
     if (Math.abs(tx - SIGN.x) < 34 && tz > SIGN.z - 8 && tz < SIGN.z + 40) continue;
     if (hash(x | 0, z | 0, 3) < 0.42) tree(tx, tz, hash(x | 0, z | 0, 4) < 0.6 ? 'pine' : 'round', 0.9 + hash(x | 0, z | 0, 5) * 0.8);
   }
-  for (let z = -800; z < 470; z += 9) { const h = 10 + R() * 16; addObj({ t: 'rock', x: -552 + R() * 4, z, w: 14 + R() * 6, d: 10 + R() * 4, h, col: R() < 0.5 ? '#6f6a63' : '#7d776d' }); }
+  for (let z = -800; z < 470; z += 9) { R(); R(); R(); R(); R(); } // (the old western cliff wall is gone: the map carries on over the ridge) — keep the random sequence the same
+  // Wildwood: a wild valley of pines and oaks over the ridge
+  for (let x = -872; x < -560; x += 8) for (let z = -740; z < 330; z += 8) {
+    const tx = x + (hash(x | 0, z | 0, 51) - 0.5) * 6, tz = z + (hash(x | 0, z | 0, 52) - 0.5) * 6;
+    if (hash(x | 0, z | 0, 53) > 0.34 || tz > sandLine(tx) - 10 || tz < northZ(tx) + 44 || nearRoad(tx, tz, 3)) continue;
+    tree(tx, tz, hash(x | 0, z | 0, 54) < 0.65 ? 'pine' : 'round', 0.9 + hash(x | 0, z | 0, 55) * 0.9);
+  }
+  // Red Rock Desert: saguaro cacti and boulders, nothing growing in the gorge or on the trails
+  for (let x = -1350; x < -880; x += 11) for (let z = -730; z < 330; z += 11) {
+    const tx = x + (hash(x | 0, z | 0, 61) - 0.5) * 8, tz = z + (hash(x | 0, z | 0, 62) - 0.5) * 8, hh = hash(x | 0, z | 0, 63);
+    if (hh > 0.2 || tx < coastW(tz) + 50 || tz < northZ(tx) + 44 || tz > sandLine(tx) - 12 || Math.abs(tx - redRiverX(tz)) < 48 || nearRoad(tx, tz, 3) || MESAS.some(M => Math.hypot(tx - M.x, tz - M.z) < M.r + 10)) continue;
+    if (hh < 0.12) { addObj({ t: 'cactus', x: tx, z: tz, s: 0.8 + hash(x | 0, z | 0, 64) * 0.7, arms: Math.floor(hash(x | 0, z | 0, 65) * 3) }); addCollider({ x: tx, z: tz, r: 0.45 }); }
+    else { const w = 1.6 + hash(x | 0, z | 0, 66) * 3; addObj({ t: 'boulder', x: tx, z: tz, w, h: w * 0.7 }); addCollider({ x: tx, z: tz, r: w * 0.5, h: w * 0.7 }); }
+  }
+  // West Beach palms, and the little islands: palms, rocks, and a lighthouse on a couple of them
+  for (let z = -700; z < 330; z += 13) if (hash(3, z | 0, 71) < 0.55) tree(coastW(z) + 36 + hash(4, z | 0, 72) * 6, z, 'palm', 1 + hash(5, z | 0, 73) * 0.4);
+  for (const I of ISLETS) { for (let k = 0; k < 6; k++) { const a = k / 6 * Math.PI * 2 + I.x, rr = I.r - 14 + (k % 2) * 4; tree(I.x + Math.cos(a) * rr, I.z + Math.sin(a) * rr, 'palm', 1 + (k % 3) * 0.15); }
+    if (I.light) { addObj({ t: 'lighthouse', x: I.x, z: I.z }); addCollider({ x: I.x, z: I.z, r: 3.2, h: 24 }); } else { addObj({ t: 'boulder', x: I.x + 3, z: I.z - 2, w: 3.4, h: 2.4 }); addCollider({ x: I.x + 3, z: I.z - 2, r: 1.7, h: 2.4 }); } }
   for (let x = -560; x < 800; x += 10) { const rx = R(), rw = R(), rh = R(); if (groundH(x, -794) < 0.2 || riverD(x, -794) < RIVER.hw + 16 || x > coastX(-794) - 30) continue; addObj({ t: 'rock', x, z: -794 + rx * 4, w: 12 + rw * 6, d: 12, h: 8 + rh * 14, col: '#77726a' }); } // the river runs out through a gap
   // countryside trees
   for (let x = -312; x < 790; x += 14) for (let z = -780; z < 360; z += 14) {
@@ -811,7 +874,10 @@ for (const ch of chunks.values()) for (let i = ch.objs.length - 1; i >= 0; i--) 
   addCollider({ x: PEAK.x - 6, z: PEAK.z - 6, r: 0.45 }); }
 // nothing growing through the metro viaduct or its stair towers
 { const M = METRO; for (let q = 0; q < M.len; q += 6) { const a = M.at(q); for (const o of objsNear(a.x - 6, a.z - 6, a.x + 6, a.z + 6)) if ((o.t === 'tree' && Math.hypot(o.x - a.x, o.z - a.z) < 5.5) || (o.t === 'bld' && Math.abs(o.x - a.x) < o.w / 2 + 3.2 && Math.abs(o.z - a.z) < o.d / 2 + 3.2 && o.h + (o.y || 0) > M.Y - 2.5)) { removeObj(o); if (o.cc) removeCollider(o.cc); else for (const cc of collidersNear(o.x, o.z).slice()) if (cc.r && Math.abs(cc.x - o.x) < 0.01 && Math.abs(cc.z - o.z) < 0.01) removeCollider(cc); } }
-  for (const st of M.stations) clearRect(st.tower.x - 3, st.tower.z - 3, st.tower.x + 3, st.tower.z + 3); }
+  for (const st of M.stations) { clearRect(st.tower.x - 3, st.tower.z - 3, st.tower.x + 3, st.tower.z + 3);
+    const px = st.x + st.ox * 5.2, pz = st.z + st.oz * 5.2, hw = st.ox ? 2.4 : 16, hd = st.ox ? 16 : 2.4; // no building through a platform or a stair tower
+    for (const o of objsNear(st.x - 40, st.z - 40, st.x + 40, st.z + 40)) if (o.t === 'bld' && ((Math.abs(o.x - px) < o.w / 2 + hw && Math.abs(o.z - pz) < o.d / 2 + hd && o.h > M.Y - 3) || (Math.abs(o.x - st.tower.x) < o.w / 2 + 2 && Math.abs(o.z - st.tower.z) < o.d / 2 + 2))) { removeObj(o); if (o.cc) removeCollider(o.cc); } }
+}
 // nothing parked or growing on the skyway ramps
 for (const S of SKYWAYS) for (const [ua, ub] of [[S.a0, S.a0 + S.ramp], [S.a1 - S.ramp, S.a1]]) { const [xa, za] = skyXZ(S, ua, -SKY_HW - 0.5), [xb, zb] = skyXZ(S, ub, SKY_HW + 0.5); clearRect(Math.min(xa, xb), Math.min(za, zb), Math.max(xa, xb), Math.max(za, zb)); }
 // tidy-up: no trees growing through buildings or on the railway
@@ -1301,6 +1367,11 @@ function drawObj(o, B) {
     case 'skypillar': { const S = SKYWAYS.find(q => q.id === o.S), Y = S.y, ax = S.axis === 'x';
       for (const sw of [-1, 1]) { const lx = ax ? o.x : o.x + sw * 7.3, lz = ax ? o.z + sw * 7.3 : o.z; B.box(lx, 0.15, lz, 1.0, Y - 0.6, 1.0, '#aaa59d'); B.box(lx, 0.15, lz, 1.4, 0.3, 1.4, '#8f8b84'); B.box(lx, 0.6, lz, 1.04, 0.22, 1.04, '#f2d14a'); } // legs on the pavement, with a yellow band
       B.box(o.x, Y - 1.45, o.z, ax ? 1.2 : 15.6, 0.9, ax ? 15.6 : 1.2, '#9e9a92'); break; } // crossbeam over the whole road
+    case 'cactus': { const gy = groundH(o.x, o.z) - 0.1, S2 = o.s, c = '#3f7d3a'; B.box(o.x, gy, o.z, 0.55 * S2, 4.2 * S2, 0.55 * S2, c);
+      if (o.arms > 0) { B.box(o.x + 0.55 * S2, gy + 1.6 * S2, o.z, 0.9 * S2, 0.42 * S2, 0.42 * S2, c); B.box(o.x + 0.95 * S2, gy + 1.6 * S2, o.z, 0.42 * S2, 1.6 * S2, 0.42 * S2, c); }
+      if (o.arms > 1) { B.box(o.x - 0.55 * S2, gy + 2.2 * S2, o.z, 0.9 * S2, 0.42 * S2, 0.42 * S2, c); B.box(o.x - 0.95 * S2, gy + 2.2 * S2, o.z, 0.42 * S2, 1.3 * S2, 0.42 * S2, c); } break; }
+    case 'boulder': { const gy = groundH(o.x, o.z) - 0.4; B.box(o.x, gy, o.z, o.w, o.h + 0.4, o.w * 0.8, '#9a5a3a', { rot: o.x * 0.37 }); B.box(o.x + o.w * 0.2, gy + o.h * 0.7, o.z, o.w * 0.6, o.h * 0.5, o.w * 0.5, '#b0683f', { rot: o.z * 0.29 }); break; }
+    case 'lighthouse': { const gy = groundH(o.x, o.z); for (let k = 0; k < 6; k++) B.cyl(o.x, gy + k * 3.4, o.z, 2.6 - k * 0.2, 3.4, k % 2 ? '#c9302c' : '#f4f1ea', 12); B.cyl(o.x, gy + 20.4, o.z, 1.6, 2.2, '#fff1c4', 10, 'glow'); B.cyl(o.x, gy + 22.6, o.z, 2, 0.5, '#2a2a2e', 10); break; } // red and white bands, a lamp room on top
     case 'otank': { B.cyl(o.x, 0, o.z, o.r, o.h, '#dcdcd8', 16, 'solid', '#c4c4c0'); B.cyl(o.x, o.h * 0.45, o.z, o.r + 0.05, 0.6, '#c9302c', 16); B.box(o.x + o.r - 0.1, 0, o.z, 0.3, o.h + 0.6, 0.3, '#6a6d74'); break; } // fuel tank with a red band and a ladder
     case 'quaywall': { B.box(o.x, 0, o.z, o.w, 0.6, o.d, '#c9c4ba'); const along = o.w > o.d, L = along ? o.w : o.d; for (let i = -L / 2 + 4; i < L / 2; i += 12) B.cyl(o.x + (along ? i : 0), 0.6, o.z + (along ? 0 : i), 0.25, 0.4, '#2a2a2e', 6); break; } // edge kerb with bollards
     case 'ship': { const x = o.x, z = o.z; // a cargo ship: dark hull, red waterline, white bridge at the stern, containers stacked on deck
@@ -1493,6 +1564,7 @@ function buildCanyon(cx, cz, B) {
     const a = R.s[i], b = R.s[i + 1], mx = (a.x + b.x) / 2, mz = (a.z + b.z) / 2; if (mx < x0 || mx >= x1 || mz < z0 || mz >= z1) continue;
     const P2 = (q, w, up) => [q.x + q.nx * w, q.h + ends(q) + up, q.z + q.nz * w], c3 = [mx, -100, mz];
     const jn = a.jn || b.jn, low = (a.under || b.under) ? -0.015 : 0;
+    if (R.dirt) { B.gt = GT.dirt; B.quad('ground', P2(a, -HW, low - 0.05), P2(a, HW, low - 0.05), P2(b, HW, low - 0.05), P2(b, -HW, low - 0.05), i % 2 ? '#a07a50' : '#9a744c', c3); for (const s2 of [-1, 1]) B.quad('solid', P2(a, s2 * HW, -0.05), P2(a, s2 * (HW + 0.8), -0.4), P2(b, s2 * (HW + 0.8), -0.4), P2(b, s2 * HW, -0.05), '#8a6a44', c3); continue; } // a dirt trail: no lines, no lamps
     B.gt = GT.asphalt; B.quad('ground', P2(a, -HW, low), P2(a, HW, low), P2(b, HW, low), P2(b, -HW, low), '#4b4b53', c3);
     if (!jn) for (const s2 of [-1, 1]) { B.quad('solid', P2(a, s2 * (HW - 0.45), 0.012), P2(a, s2 * (HW - 0.3), 0.012), P2(b, s2 * (HW - 0.3), 0.012), P2(b, s2 * (HW - 0.45), 0.012), '#e8e8e2', c3); // white edge lines
       B.quad('solid', P2(a, s2 * HW, 0), P2(a, s2 * (HW + 0.8), -0.32), P2(b, s2 * (HW + 0.8), -0.32), P2(b, s2 * HW, 0), '#8a7a60', c3); } // dirt verge so the edge never floats
@@ -1521,7 +1593,7 @@ export function drawMap(size = 512) {
     const wx = WORLD.x0 + (i + 0.5) * sx, wz = WORLD.z0 + (j + 0.5) * sz;
     if (groundH(wx, wz) < WATER_Y) c.set('#3d8fd0');
     else groundColor(wx, wz, c);
-    if ((wx < -540 || wz < -780) && groundH(wx, wz) >= WATER_Y) c.set('#6f6a63');
+    if (wz < -780 && wx > -560 && groundH(wx, wz) >= WATER_Y) c.set('#6f6a63');
     const k = (j * size + i) * 4;
     img.data[k] = Math.min(255, Math.pow(c.r, 1 / 2.2) * 255); img.data[k + 1] = Math.min(255, Math.pow(c.g, 1 / 2.2) * 255); img.data[k + 2] = Math.min(255, Math.pow(c.b, 1 / 2.2) * 255); img.data[k + 3] = 255;
   }
@@ -1545,7 +1617,7 @@ export function drawMap(size = 512) {
   return { canvas: cv, tx, tz, sx, sz };
 }
 export const LABELS = [
-  ['DOWNTOWN', 0, 0], ['BAY BEACH', 100, 395], ['HIDDEN HILLS', -420, -60], ['BAYWOOD PEAK', -502, -232], ['EASTPORT', 600, 0], ['NORTHFIELD', 0, -520], ['NORTHPORT', 648, -432], ['LONG BEACH', 1056, 0], ['BAY RIVER', 505, -620], ['EAST BAY', 850, 200], ['BAY PORT', 1056, -650], ['AIRPORT', 20, -690], ['FARMLAND', 370, 160],
+  ['DOWNTOWN', 0, 0], ['BAY BEACH', 100, 395], ['HIDDEN HILLS', -420, -60], ['BAYWOOD PEAK', -502, -232], ['EASTPORT', 600, 0], ['NORTHFIELD', 0, -520], ['NORTHPORT', 648, -432], ['LONG BEACH', 1056, 0], ['BAY RIVER', 505, -620], ['EAST BAY', 850, 200], ['BAY PORT', 1056, -650], ['WILDWOOD', -740, -200], ['RED ROCK DESERT', -1000, -300], ['RED RIVER', -1100, 60], ['WEST BEACH', -1350, 150], ['AIRPORT', 20, -690], ['FARMLAND', 370, 160],
 ];
 export const SPAWN = { x: 8.2, z: 30, carX: 3, carZ: 40, carH: Math.PI };
 

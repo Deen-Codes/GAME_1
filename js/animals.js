@@ -2,7 +2,7 @@
 // stray cats, dogs out on walks with their owners, squirrels, deer in the hills by day, and raccoons,
 // possums, coyotes and owls at night. All low-poly, baked into a few meshes each so they're cheap to draw.
 import * as THREE from '../lib/three.module.min.js';
-import { CITIES, LAMPS, FIELDS, sandLine, shoreLine, walkable, groundH, cityAt, roadAt, wallTop } from './world.js?v=166';
+import { CITIES, LAMPS, FIELDS, sandLine, shoreLine, walkable, groundH, cityAt, roadAt, wallTop } from './world.js?v=167';
 // a spot on a nearby rooftop (roof edge-ish), or null
 function roofSpot(x, z, rMin = 8, rMax = 45) { for (let i = 0; i < 10; i++) { const a = Math.random() * 6.28, d = rMin + Math.random() * (rMax - rMin), px = x + Math.sin(a) * d, pz = z + Math.cos(a) * d, t = wallTop(px, pz); if (t != null && t > 3 && t < 40) return { x: px, z: pz, y: t + 0.02 }; } return null; }
 
@@ -117,7 +117,9 @@ export class Animals {
     const want = {};
     if (c) Object.assign(want, night ? { cat: 3, raccoon: 2, possum: 1, owl: 2, coyote: Math.random() < 0.5 ? 1 : 0, pigeonPerch: 2, roofFlock: 1 } : { pigeonFlock: 3, pigeonPerch: 3, roofFlock: 3, crow: dusk ? 3 : 1, cat: 2, dog: 3, squirrel: 1 });
     if (beach) Object.assign(want, night ? { seagull: 1, raccoon: 1 } : { seagullFlock: 3, dog: 2 });
-    if (hills) Object.assign(want, night ? { coyote: 3, owl: 2, raccoon: 1, possum: 1 } : { deer: 3, squirrel: 3, crow: 2 });
+    const desert = px < -880, wildwood = px < -560 && !desert;
+    if (hills && desert) Object.assign(want, night ? { coyote: 4, owl: 1 } : { coyote: 2, horse: 3, crow: 3 }); // wild horses and coyotes out in the desert
+    else if (hills) Object.assign(want, night ? { coyote: 3, owl: 2, raccoon: 1, possum: 1 } : wildwood ? { deer: 6, horse: 2, squirrel: 3, crow: 2 } : { deer: 3, squirrel: 3, crow: 2 });
     // farms: livestock in the fields, chickens pecking near the barns
     let farm = null, fd = 1e9; for (const f of FIELDS) { const dx = Math.max(f.x0 - px, 0, px - f.x1), dz = Math.max(f.z0 - pz, 0, pz - f.z1), d = Math.hypot(dx, dz); if (d < fd) { fd = d; farm = f; } }
     if (farm && fd < 90) { this.farm = farm; Object.assign(want, { cow: night ? 3 : 5, horse: 2, sheep: 4, pig: 2, goat: 1, chicken: night ? 0 : 6 }); } else this.farm = null;
@@ -172,7 +174,7 @@ export class Animals {
       }
       return;
     }
-    const where = tag === 'deer' || (tag === 'coyote' && !c) || (tag === 'squirrel' && !c) || (tag === 'crow' && !c) ? 'wild' : tag === 'seagull' ? 'beach' : 'sidewalk';
+    const where = (tag === 'horse' && !this.farm) || tag === 'deer' || (tag === 'coyote' && !c) || (tag === 'squirrel' && !c) || (tag === 'crow' && !c) ? 'wild' : tag === 'seagull' ? 'beach' : 'sidewalk';
     const s = this.spot(px, pz, where, c); if (!s) return;
     const kind = tag, n = tag === 'deer' && Math.random() < 0.5 ? 2 : 1;
     for (let i = 0; i < n; i++) this.add(kind, s.x + i * 1.5, s.z + i, { tag });

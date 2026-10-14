@@ -1,7 +1,7 @@
 // Modular car builder. Car faces +Z, sits on y=0, origin at the centre of the wheelbase.
 import * as THREE from '../lib/three.module.min.js';
-import { BASIC } from './character.js?v=166';
-import { patternTexture } from './gun.js?v=166';
+import { BASIC } from './character.js?v=167';
+import { patternTexture } from './gun.js?v=167';
 
 export const BODIES = {
   hatch:  { label: 'Hatchback', L: 3.8, W: 1.75, bh: 0.55, cl: 2.0, ch: 0.62, co: -0.4,  wr: 0.34, mass: 1.0 },
@@ -550,9 +550,9 @@ export function buildCar(cfg) {
   let glow = null;
   if (c.underglow === 'on') {
     glow = new THREE.Mesh(new THREE.PlaneGeometry(W + 3.2, L + 2.8), new THREE.MeshBasicMaterial({ color: c.glowColor, map: glowTex(), transparent: true, opacity: 0.55, blending: THREE.AdditiveBlending, depthWrite: false }));
-    glow.rotation.x = -Math.PI / 2; glow.position.y = 0.03; glow.renderOrder = 2; grp.add(glow);
+    glow.rotation.x = -Math.PI / 2; glow.position.y = 0.24; glow.renderOrder = 2; grp.add(glow); // high enough to clear kerbs and pavement slabs, so it doesn't flicker
   }
-  grp.traverse(m => { if (m.isMesh) m.castShadow = true; });
+  grp.traverse(m => { if (m.isMesh) m.castShadow = m !== glow; }); // (the glow itself casts no shadow)
   const heads = { '-1': [], '1': [] }; grp.traverse(m => { if (m.material === headM) heads[m.position.x < 0 ? '-1' : '1'].push(m); }); // each side's headlamp, so one can get smashed
   return { group: grp, wheels, headM, tailM, revM, glow, length: L, width: W, height: top + B.ch, wr, doors, heads };
 }

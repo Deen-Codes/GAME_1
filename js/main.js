@@ -1,30 +1,30 @@
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=166';
-import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun, partEffects, partPerk } from './gun.js?v=166';
-import { buildCar, computeCarStats, carStatBars, carClass, carPartEffects, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=166';
-import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, STAIRS, unblockPillars, canyonAt, canyonNear, PEAK, SKYWAYS, SKY_Y, skyAt, skyY, rampSeg, windowShader, makeOceanMaterial, WATER_U, WIND_U, METRO, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=166';
-import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=166';
-import { buildPanel, renderStats } from './ui.js?v=166';
-import { Input } from './input.js?v=166';
-import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime, animalCall } from './audio.js?v=166';
-import { runMinigame } from './minigames.js?v=166';
-import { CUT, initCutGames } from './cutgames.js?v=166';
-import { initOnline, updateOnline, goOnline, goOffline, NET, onNet, sendMagicLink, signOut, signedIn } from './online.js?v=166';
-import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk, setReservedNames, seededLook } from './peds.js?v=166';
-import { citizens, whereNow } from './citizens.js?v=166';
-import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=166';
-import { findRoute } from './nav.js?v=166';
-import { COURSES, CAREERS, QUIZ } from './careers.js?v=166';
-import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=166';
-import { attachWheel } from './wheel.js?v=166';
-import { GROUND_U } from './groundtex.js?v=166';
-import { Animals, makeAnimalMesh } from './animals.js?v=166';
-import { Talk } from './talk.js?v=166';
-import { incomingText, classify, textOptions, textReply } from './texts.js?v=166';
-import { svg, drawIcon, ICONS as ICON_SET } from './icons.js?v=166';
-import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=166';
-import { FURN, CATALOG } from './furniture.js?v=166';
-import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=166';
+import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=167';
+import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun, partEffects, partPerk } from './gun.js?v=167';
+import { buildCar, computeCarStats, carStatBars, carClass, carPartEffects, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=167';
+import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, STAIRS, unblockPillars, canyonAt, canyonNear, PEAK, SKYWAYS, SKY_Y, skyAt, skyY, rampSeg, windowShader, makeOceanMaterial, WATER_U, WIND_U, METRO, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=167';
+import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=167';
+import { buildPanel, renderStats } from './ui.js?v=167';
+import { Input } from './input.js?v=167';
+import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime, animalCall } from './audio.js?v=167';
+import { runMinigame } from './minigames.js?v=167';
+import { CUT, initCutGames } from './cutgames.js?v=167';
+import { initOnline, updateOnline, goOnline, goOffline, NET, onNet, sendMagicLink, signOut, signedIn } from './online.js?v=167';
+import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk, setReservedNames, seededLook } from './peds.js?v=167';
+import { citizens, whereNow } from './citizens.js?v=167';
+import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=167';
+import { findRoute } from './nav.js?v=167';
+import { COURSES, CAREERS, QUIZ } from './careers.js?v=167';
+import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=167';
+import { attachWheel } from './wheel.js?v=167';
+import { GROUND_U } from './groundtex.js?v=167';
+import { Animals, makeAnimalMesh } from './animals.js?v=167';
+import { Talk } from './talk.js?v=167';
+import { incomingText, classify, textOptions, textReply } from './texts.js?v=167';
+import { svg, drawIcon, ICONS as ICON_SET } from './icons.js?v=167';
+import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=167';
+import { FURN, CATALOG } from './furniture.js?v=167';
+import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=167';
 
 const $ = id => document.getElementById(id);
 let inside = null, editMode = false, held = null, pendingCar = false, homeMusic = false, phoneBadge = 0;
@@ -191,11 +191,11 @@ G.scene.add(sun, sun.target);
 const lantern = new THREE.PointLight('#ffd9a0', 0, 14, 1.6); G.scene.add(lantern);
 const muzzleLight = new THREE.PointLight('#ffd080', 0, 9, 1.6); G.scene.add(muzzleLight);
 const boomLight = new THREE.PointLight('#ffa040', 0, 30, 1.4); G.scene.add(boomLight);
-const water = new THREE.Mesh(new THREE.PlaneGeometry(1440, 700), makeOceanMaterial());
-water.rotation.x = -Math.PI / 2; water.position.set(40, WATER_Y, 700); water.receiveShadow = true; G.scene.add(water);
+const water = new THREE.Mesh(new THREE.PlaneGeometry(3060, 800), makeOceanMaterial());
+water.rotation.x = -Math.PI / 2; water.position.set(-770, WATER_Y, 750); water.receiveShadow = true; G.scene.add(water);
 const waters = [water];
 // the east bay (round Long Beach island) and the Bay River: their own sheets of water so none of them overlap
-for (const [w, d, x, z] of [[1140, 2000, 1330, 100], [290, 740, 615, -530]]) { const m = new THREE.Mesh(new THREE.PlaneGeometry(w, d), water.material); m.rotation.x = -Math.PI / 2; m.position.set(x, WATER_Y, z); m.receiveShadow = true; G.scene.add(m); waters.push(m); }
+for (const [w, d, x, z] of [[1140, 2050, 1330, 125], [290, 740, 615, -530], [1000, 1450, -1800, -375], [740, 365, -930, -917.5], [140, 1085, -1100, -192.5]]) { /* east bay, Bay River, west ocean, north sea, Red River */ const m = new THREE.Mesh(new THREE.PlaneGeometry(w, d), water.material); m.rotation.x = -Math.PI / 2; m.position.set(x, WATER_Y, z); m.receiveShadow = true; G.scene.add(m); waters.push(m); }
 const world = new THREE.Group(); G.scene.add(world);
 const dyn = new THREE.Group(); G.scene.add(dyn);
 const peds = new Peds(dyn);
@@ -2083,7 +2083,7 @@ function collideCars(v, o, spd) {
 let driveDist = 0;
 function updateVehicles(dt) {
   for (const v of [...vehicles]) {
-    const c = v.s, s = v.st, b = v.b, driving = v === ride;
+    const c = v.s, s = v.st, b = v.b, driving = v === ride; let hb = false; // hb: handbrake held
     if (!driving && !v.ai && !(v.hp < 45) && Math.abs(c.v) < 0.05 && Math.abs(c.vx) + Math.abs(c.vz) < 0.05) { if (!v.personal && !v.taxi && Math.hypot(c.x - P.x, c.z - P.z) > 220) removeVehicle(v); continue; }
     c.braking = false;
     const dk = driving ? 1 + (lvl('driving') - 1) * 0.02 : 1;
@@ -2104,7 +2104,7 @@ function updateVehicles(dt) {
       if (stickMode) {
         if (input.consume('a')) v.req = 'a'; // handled at the end of this car's update so nothing below runs without a driver
         if (input.consume('b')) v.req = 'b';
-        if (ws.kind !== 'gun' && !nosBtn && input.consume('x')) toggleLights();
+        if (ws.kind !== 'gun' && !nosBtn && !b.two && !b.boat && !dead) hb = input.held('x'); // X: handbrake, for drifting (headlights are automatic)
       }
       // full stick driving: push where you want to go and the car drives there; pull back against it to brake, then reverse
       let thr = 1, stickDrive = false;
@@ -2178,10 +2178,11 @@ function updateVehicles(dt) {
     else if (v.stolenBack > 0) { v.stolenBack -= dt; c.v = 11; c.steer = 0; if (v.stolenBack <= 0) { removeVehicle(v); continue; } }
     else { v.coast = (v.coast || 0) - dt; c.v = damp(c.v, 0, v.coast > 0 ? 0.45 : 3, dt); c.steer = damp(c.steer, 0, v.coast > 0 ? 0.5 : 6, dt); }
     const spd = Math.abs(c.v);
-    const turn = c.steer * s.turn * clamp(spd / 6, 0, 1) * (1 - Math.min(0.45, spd / s.top * 0.45)) * Math.sign(c.v || 1);
+    const turn = c.steer * s.turn * clamp(spd / 6, 0, 1) * (1 - Math.min(0.45, spd / s.top * 0.45)) * Math.sign(c.v || 1) * (hb && spd > 5 ? 1.55 : 1);
     c.h = wrapA(c.h + turn * dt);
     const fx = Math.sin(c.h), fz = Math.cos(c.h);
-    const grip = (c.braking && spd > 12 && Math.abs(c.steer) > 0.3 ? 1.8 : 7) * s.grip * dk * (driving ? wetGrip() : 1); // wet roads: slide
+    const grip = (hb && spd > 4 ? 1.1 : c.braking && spd > 12 && Math.abs(c.steer) > 0.3 ? 1.8 : 7) * s.grip * dk * (driving ? wetGrip() : 1); // wet roads: slide; handbrake: the back steps out
+    if (hb) { c.v = damp(c.v, 0, 0.5, dt); if (spd > 6 && Math.random() < dt * 30) spawnParticles(c.x - fx * b.length * 0.4 + rand(-0.6, 0.6), 0.25, c.z - fz * b.length * 0.4 + rand(-0.6, 0.6), [v.cfg?.smokeColor || '#ececec', '#c4c4c4'], 1, 1.1, 1.2, 0.5, -1); if (spd > 8 && !v.hbS) { v.hbS = true; sfx.screech?.(0.05); } } else v.hbS = false;
     c.vx = damp(c.vx, fx * c.v, grip, dt); c.vz = damp(c.vz, fz * c.v, grip, dt);
     const ox = c.x, oz = c.z; c.x += c.vx * dt; c.z += c.vz * dt;
     const half = b.length * 0.3, r = b.width * 0.55;
@@ -2329,6 +2330,15 @@ function boatWake(v, spd, dt) {
   const c = v.s, fx = Math.sin(c.h), fz = Math.cos(c.h), L = v.b.length;
   if (Math.random() < dt * (8 + spd)) for (const sd of [-1, 1]) spawnParticles(c.x - fx * L * 0.5 + Math.cos(c.h) * sd * 0.9, WATER_Y + 0.15, c.z - fz * L * 0.5 - Math.sin(c.h) * sd * 0.9, ['#ffffff', '#d8f2ff'], 1, 1.2, 1.4, 0.35, 0); // white wake behind
   if (spd > 12 && Math.random() < dt * spd * 0.6) spawnParticles(c.x + fx * L * 0.3, WATER_Y + 0.4, c.z + fz * L * 0.3, ['#ffffff', '#bfe8ff'], 2, 3, 0.5, 0.12, 9); // spray off the bow
+}
+function hireRide(p) { // a dune buggy or dirt bike for the trails, waiting on the trail
+  if (ride) { toast('Get out of the car first.'); return; }
+  if (money < 40) { toast('Hire is $40.'); return; }
+  const c = canyonNear(p.x, p.z); if (!c || c.d > 40) { toast('No trail nearby.'); return; }
+  const q = c.q, nb = q.R.s[Math.min(q.R.s.length - 1, q.i + 1)], h = Math.atan2(nb.x - q.x, nb.z - q.z);
+  spend(40); sfx.coin();
+  fade(() => { const cfg = p.ride === 'moto' ? { body: 'moto', bodyColor: pick(['#ff8a2a', '#e23b3b', '#2f80ed']), engine: 'sport', tyres: 'offroad', name: 'Dirt bike' } : { ...CAR_PRESETS['Beach Buggy'], bodyColor: pick(['#ffd23f', '#ff8a2a', '#4cd964', '#e23b3b']), name: 'Hire buggy' };
+    const v = makeVehicle(cfg, q.x, q.z, h, false); v.rental = true; v.paid = true; enterVehicle(v, false); toast(p.ride === 'moto' ? 'Dirt bike hired: $40. Hit the trails.' : 'Buggy hired: $40. Get it dirty.', 2.6); }, true);
 }
 function hireBoat(p) {
   if (ride) { toast('Get out of the car first.'); return; }
@@ -2551,7 +2561,7 @@ function makeMarker(x, z, icon, color, data, parent = G.scene) {
   if (!data.interior) markers.push(m);
   return m;
 }
-const PLACE_COLORS = { boats: '#38e8ff', biz: '#ff8a2a', ride: '#ff6fb5', carny: '#ffd23f', stadium: '#2f80ed', marina: '#38e8ff', tattoo: '#ff5a8a', dealer: '#4cd964', clothes: '#ff6fb5', barber: '#38e8ff', game: '#ffd23f', chop: '#ff8a2a', race: '#ff3b4a', property: '#b26bff', guns: '#ff5a3c', venue: '#ffb35c', job: '#ffd23f', customer: '#7dff9a' };
+const PLACE_COLORS = { boats: '#38e8ff', rides: '#ff8a2a', biz: '#ff8a2a', ride: '#ff6fb5', carny: '#ffd23f', stadium: '#2f80ed', marina: '#38e8ff', tattoo: '#ff5a8a', dealer: '#4cd964', clothes: '#ff6fb5', barber: '#38e8ff', game: '#ffd23f', chop: '#ff8a2a', race: '#ff3b4a', property: '#b26bff', guns: '#ff5a3c', venue: '#ffb35c', job: '#ffd23f', customer: '#7dff9a' };
 const NPC_ROLE = { dealer: 'dealer', job: 'dispatcher' };
 const npcs = [];
 PLACES.forEach((p, i) => {
@@ -2947,7 +2957,7 @@ function openStorage() {
 
 // ================================================================ ACTIONS (context button)
 let action = null;
-const VERB = { boats: 'Hire boat ($60)', biz: 'Talk', ride: 'Ride', carny: 'Play', stadium: 'Match', marina: 'Boats', tattoo: 'Get inked', dealer: 'Talk', clothes: 'Enter', barber: 'Enter', guns: 'Enter', venue: 'Enter', game: 'Play', chop: 'Sell car', mods: 'Customise', service: 'Repair', race: 'Race', property: 'View', job: 'Talk', customer: 'Talk' };
+const VERB = { boats: 'Hire boat ($60)', rides: 'Hire ($40)', biz: 'Talk', ride: 'Ride', carny: 'Play', stadium: 'Match', marina: 'Boats', tattoo: 'Get inked', dealer: 'Talk', clothes: 'Enter', barber: 'Enter', guns: 'Enter', venue: 'Enter', game: 'Play', chop: 'Sell car', mods: 'Customise', service: 'Repair', race: 'Race', property: 'View', job: 'Talk', customer: 'Talk' };
 const SPOT_VERB = s => s.label;
 function findAction() {
   if (P.dead) return null;
@@ -3037,6 +3047,7 @@ function openPlace(p) {
   else if (p.kind === 'tattoo') openTattoo(p);
   else if (p.kind === 'biz') openBiz(p);
   else if (p.kind === 'boats') hireBoat(p);
+  else if (p.kind === 'rides') hireRide(p);
   else if (p.kind === 'ride') openRide(p);
   else if (p.kind === 'carny') openCarny(p);
   else if (p.kind === 'stadium') openStadium(p);
@@ -6012,7 +6023,7 @@ function updateCamera(dt, snap) {
   G.cam.position.set(camLook.x + sx + Math.sin(camYaw) * hz, camLook.y + Math.sin(pitch) * camDist, camLook.z + Math.cos(camYaw) * hz + sz);
   G.cam.lookAt(camLook.x + sx, camLook.y, camLook.z + sz);
   G.scene.fog.near = camDist + 25; G.scene.fog.far = camDist + 130;
-  fadeU.uPlayer.value.set(f.x, ride ? ty : P.y, f.z); fadeU.uCam.value.copy(G.cam.position);
+  fadeU.uPlayer.value.set(f.x, ride ? ty : P.y, f.z); fadeU.uCam.value.copy(G.cam.position); fadeU.uFade.value = P.ladder && !ride ? 0 : 1; /* on a ladder you're outside the building: no see-through hole cut in the wall above you */
   { const py = ride ? ty : P.y, ax = ride ? (f.vx || 0) * 0.7 : 0, az = ride ? (f.vz || 0) * 0.7 : 0, under = !inside && py < 3 && [[0, 0], [5, 0], [-5, 0], [0, 5], [0, -5], [ax, az], [ax * 2, az * 2]].some(([ox, oz]) => { const k = skyAt(f.x + ox, f.z + oz); return k && !k.ramp; }); fadeU.uBig.value = damp(fadeU.uBig.value, under ? (ride ? 3.6 + Math.min(1.6, Math.abs(ride.s.v) * 0.05) : 2.6) : 1, ride ? 8 : 5, dt); } // a car needs a bigger window, and it opens ahead of you at speed // under a skyway: a much bigger window through the deck
   lantern.position.set(f.x, ty + 3, f.z);
   boomLight.intensity = Math.max(0, boomLight.intensity - dt * 160);
@@ -6427,6 +6438,7 @@ const ICONS = {
 };
 const BTN_SVG = {
   attack: '<path d="M12 2l2.2 5.2L19.5 5l-2.2 5.3L22 12l-4.7 1.7 2.2 5.3-5.3-2.2L12 22l-2.2-5.2L4.5 19l2.2-5.3L2 12l4.7-1.7L4.5 5l5.3 2.2z"/><circle cx="12" cy="12" r="2.6"/>',
+  drift: '<path d="M5 17c3-1 5-4 6-8M9 19c3-1 6-5 7-10"/><circle cx="18" cy="6" r="3"/><path d="M3 21h6M13 21h8"/>', // a car's tracks curling into a slide
   nitro: '<rect x="7" y="7" width="10" height="15" rx="4"/><path d="M10 7V4h4v3M9 2h6M7 12h10M7 16h10"/>', // a NOS bottle
   jump: '<path d="M12 20V6"/><path d="M6 12l6-6 6 6"/><path d="M5 3h14"/>', gas: '<path d="M6 13l6-6 6 6"/><path d="M6 19l6-6 6 6"/>', brake: '<path d="M6 5l6 6 6-6"/><path d="M6 11l6 6 6-6"/>',
   burnout: '<circle cx="12" cy="14" r="5"/><circle cx="12" cy="14" r="1.6"/><path d="M5 6c1-2 3-2 4 0M10 4c1-2 3-2 4 0M15 6c1-2 3-2 4 0"/>',
@@ -6476,7 +6488,7 @@ function updateHUD(dt) {
   setText('raceTxt', jt); $('raceTxt').classList.toggle('hidden', !jt);
   if (editMode) { setBtn('btnA', held ? 'check' : 'hand', held ? 'Place' : 'Pick up'); setBtn('btnB', 'check', 'Done'); setBtn('btnX', held ? 'rotate' : 'none', held ? 'Rotate' : ''); setBtn('btnY', held ? 'box' : 'none', held ? 'Store' : ''); } // rotate/store only while you're holding something
   else if (ride && (settings.steer || 'screen') === 'screen') { setBtn('btnA', action ? action.icon : 'phone', action ? action.label : 'Phone'); setBtn('btnB', 'exit', 'Get out');
-    if (ws.kind === 'gun') setBtn('btnX', 'fire', 'Shoot'); else if (ride.st?.nitro && !ride.b.two) setBtn('btnX', 'nitro', `Nitro ${Math.round((ride.nos ?? 1) * 100)}%`); else setBtn('btnX', 'lights', stats.lights === 'off' ? 'Lights off' : 'Lights auto'); }
+    if (ws.kind === 'gun') setBtn('btnX', 'fire', 'Shoot'); else if (ride.st?.nitro && !ride.b.two) setBtn('btnX', 'nitro', `Nitro ${Math.round((ride.nos ?? 1) * 100)}%`); else if (ride.b.two || ride.b.boat) setBtn('btnX', 'none', ''); else setBtn('btnX', 'drift', 'Drift'); }
   else if (ride) { setBtn('btnA', 'gas', 'Drive'); setBtn('btnX', 'brake', ride.s.v > 0.5 ? 'Brake' : 'Reverse'); setBtn('btnB', ws.kind === 'gun' ? 'fire' : 'none', ws.kind === 'gun' ? 'Shoot' : ''); setBtn('btnY', action ? action.icon : 'exit', action ? action.label : 'Get out'); }
   else {
     setBtn('btnA', action ? action.icon : P.dead ? 'none' : 'phone', action ? action.label : P.dead ? '' : 'Phone'); // nothing to do here: the button is your phone
@@ -6996,7 +7008,7 @@ function saveGame() {
   store.set('bc_save', save); store.set('bc_arsenal', arsenal); store.set('bc_cars', garage);
 }
 // auto-update: bookmarks and home-screen apps can hold on to an old copy. Check version.json (never cached) and reload once if newer.
-const BUILD = 166;
+const BUILD = 167;
 function checkUpdate() {
   fetch('version.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(j => {
     if (!(j.v > BUILD)) return;
@@ -7078,6 +7090,12 @@ function canyonSpot(p, d0, d1) { const c = canyonNear(p.x, p.z); if (!c) return 
 function updateDelivery(dt) {
   const v = myCar, D = v?.delivery; if (!D) return; D.t += dt;
   if (ride === v) { v.delivery = null; v.ai = null; return; }
+  // the driver keeps an eye out for you: walk up to the car and they pull over right there; wander off and they follow you
+  if (!inside && !ride) { const pd = Math.hypot(v.s.x - P.x, v.s.z - P.z), moved = Math.hypot(P.x - D.to.x, P.z - D.to.z);
+    if (pd < 15 && !D.met) { D.met = true; D.to = { x: v.s.x, z: v.s.z }; v.target = D.to; }
+    else if (!D.met && moved > 28 && (D.reT = (D.reT || 0) - dt) <= 0) { D.reT = 2;
+      let nb = null; for (let r = 4; r < 50 && !nb; r += 4) for (let a = 0; a < Math.PI * 2 && !nb; a += Math.PI / 8) { const x = P.x + Math.cos(a) * r, z = P.z + Math.sin(a) * r; if ((roadAt(x, z) || canyonAt(x, z)) && walkable(x, z, false)) { const q = { x, z }; if (!resolve(q, 1.4, 0)) nb = q; } }
+      if (nb) { D.to = nb; v.target = nb; D.t = Math.min(D.t, 15); } } }
   const d = Math.hypot(v.s.x - D.to.x, v.s.z - D.to.z);
   if (D.t > 45 || inside) { Object.assign(v.s, { x: D.to.x, z: D.to.z, v: 0, vx: 0, vz: 0 }); placeVehicle(v); v.ai = null; v.delivery = null; if (!inside) toast('Your car has been delivered. It\'s waiting nearby.'); return; }
   if (d < 11 && Math.abs(v.s.v) < 1) { // pulled up: the driver gets out, hands over the keys and walks off
