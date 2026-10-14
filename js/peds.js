@@ -1,7 +1,7 @@
 // Pedestrians: baked low-poly people who stroll sidewalks, wander the beach, flee from trouble.
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, randomChar, disposeObject } from './character.js?v=119';
-import { CITIES, sandLine, shoreLine, groundH, walkable as worldWalkable, resolve } from './world.js?v=119';
+import { buildCharacter, randomChar, disposeObject } from './character.js?v=120';
+import { CITIES, sandLine, shoreLine, groundH, walkable as worldWalkable, resolve } from './world.js?v=120';
 // interiors swap in their own floor test so brawlers can move around inside
 let walkable = worldWalkable; export function setWalk(fn) { walkable = fn || worldWalkable; }
 
@@ -34,7 +34,9 @@ const FIRST_M = ['James', 'Marcus', 'Leo', 'Andre', 'Tyler', 'Diego', 'Ethan', '
 const FIRST_F = ['Jade', 'Mia', 'Sofia', 'Chloe', 'Lexi', 'Nina', 'Ava', 'Zoe', 'Maya', 'Bella', 'Kira', 'Luna', 'Rosa', 'Tasha', 'Gabi', 'Leah', 'Imani', 'Priya', 'Yuki', 'Carmen', 'Brooke', 'Skye', 'Dana', 'Nadia', 'Erin', 'Fatima', 'Grace', 'Holly', 'Iris', 'Jasmine', 'Kayla', 'Lola', 'Megan', 'Nova', 'Olivia', 'Paige', 'Quinn', 'Rachel', 'Sienna', 'Tara'];
 const LAST = ['Johnson', 'Garcia', 'Nguyen', 'Kim', 'Patel', 'Lopez', 'Brown', 'Okafor', 'Silva', 'Murphy', 'Rossi', 'Chen', 'Walker', 'Rivera', 'Haddad', 'Novak', 'Reyes', 'Santos', 'Brooks', 'Diaz', 'Cole', 'Ward', 'Price', 'Fox', 'Mendoza', 'Hayes', 'Bennett', 'Park', 'Yamada', 'Costa', 'Ali', 'Kowalski', 'Moreau', 'Jensen', 'Ortiz', 'Grant', 'Shaw', 'Ramos', 'Bell', 'Stone', 'Vega', 'Lee', 'Adams', 'Cruz', 'Holt', 'Banks', 'Monroe', 'Webb', 'Duarte', 'Sato'];
 let nameSeq = Math.floor(Math.random() * 4000);
-export function personName(fem) { nameSeq = (nameSeq * 1103515245 + 12345) % 2147483647; const r = nameSeq; return (fem ? FIRST_F : FIRST_M)[r % 40] + ' ' + LAST[Math.floor(r / 40) % LAST.length]; }
+let reservedFn = null; export function setReservedNames(fn) { reservedFn = fn; } // names already taken by your partner, family and contacts
+export function personName(fem) { const R = reservedFn?.(); for (let k = 0; k < 12; k++) { const n = rawName(fem); if (!R || !R.has(n) && !R.has(n.split(' ')[0])) return n; } return rawName(fem); }
+function rawName(fem) { nameSeq = (nameSeq * 1103515245 + 12345) % 2147483647; const r = nameSeq; return (fem ? FIRST_F : FIRST_M)[r % 40] + ' ' + LAST[Math.floor(r / 40) % LAST.length]; }
 const FEM_HAIR = ['long', 'bob', 'ponytail', 'bun', 'long', 'afro'], MASC_HAIR = ['short', 'buzz', 'quiff', 'spiky', 'afro', 'none', 'short'];
 function makeLook(beach, fem = Math.random() < 0.5, style = 'mid') {
   const cfg = { ...randomChar(), mask: 'none', skin: pick(SKINS), hairColor: pick(HAIRS), eyewear: Math.random() < 0.25 ? 'shades' : 'none', back: Math.random() < 0.15 ? 'backpack' : 'none', eyes: 'normal', headSize: rand(0.95, 1.1), height: rand(0.88, 1.12) };
