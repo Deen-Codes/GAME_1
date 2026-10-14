@@ -1,7 +1,7 @@
 // Modular car builder. Car faces +Z, sits on y=0, origin at the centre of the wheelbase.
 import * as THREE from '../lib/three.module.min.js';
-import { BASIC } from './character.js?v=200';
-import { patternTexture } from './gun.js?v=200';
+import { BASIC } from './character.js?v=201';
+import { patternTexture } from './gun.js?v=201';
 
 export const BODIES = {
   hatch:  { label: 'Hatchback', L: 3.8, W: 1.75, bh: 0.55, cl: 2.0, ch: 0.62, co: -0.4,  wr: 0.34, mass: 1.0 },
@@ -19,6 +19,7 @@ export const BODIES = {
   lowrider: { label: 'Lowrider', L: 5.2, W: 1.95, bh: 0.46, cl: 2.2, ch: 0.48, co: -0.35, wr: 0.33, mass: 1.15 },
   classic: { label: 'Classic',  L: 5.1, W: 1.95, bh: 0.6,  cl: 2.0, ch: 0.52, co: -0.25, wr: 0.38, mass: 1.1, fins: true },
   boxtruck: { label: 'Box Truck', L: 6.3, W: 2.2, bh: 0.8, cl: 1.4, ch: 0.95, co: 2.0, wr: 0.45, mass: 1.6, box: true },
+  bintruck: { label: 'Bin Lorry', L: 6.6, W: 2.25, bh: 0.8, cl: 1.4, ch: 0.95, co: 2.15, wr: 0.47, mass: 1.8, box: true, bin: true },
   compact: { label: 'City Car', L: 2.9, W: 1.6, bh: 0.55, cl: 1.75, ch: 0.72, co: -0.2, wr: 0.3, mass: 0.75, boxy: true },
   hothatch: { label: 'Hot Hatch', L: 4.0, W: 1.85, bh: 0.5, cl: 1.9, ch: 0.56, co: -0.45, wr: 0.36, mass: 0.95 },
   jeep:   { label: '4x4',       L: 4.2, W: 1.95, bh: 0.72, cl: 2.1, ch: 0.82, co: -0.35, wr: 0.46, mass: 1.25, boxy: true, spare: true },
@@ -161,7 +162,7 @@ export function computeCarStats(cfg) {
   const c = { ...DEFAULT_CAR, ...cfg };
   const b = BODIES[c.body] || BODIES.coupe;
   const e = CAR_PARTS.engine[c.engine]?.m || CAR_PARTS.engine.stock.m;
-  const s = { top: e.top, acc: e.acc / b.mass, grip: 1, off: c.body === 'buggy' ? 1.4 : 1, brake: 1, tough: ['van', 'pickup', 'boxtruck', 'jeep', 'limo'].includes(c.body) ? 1.25 : 1, nitro: 0, bp: 0, runflat: 0, ram: 0 };
+  const s = { top: e.top, acc: e.acc / b.mass, grip: 1, off: c.body === 'buggy' ? 1.4 : 1, brake: 1, tough: c.body === 'bintruck' ? 1.6 : ['van', 'pickup', 'boxtruck', 'jeep', 'limo'].includes(c.body) ? 1.25 : 1, nitro: 0, bp: 0, runflat: 0, ram: 0 };
   if (b.boat) return { top: 29, acc: 10, grip: 0.42, off: 1, turn: 1.7, brake: 0.6, tough: 1, nitro: 0, boat: true }; // ~65 mph, slides through turns
   if (b.tractor) return { top: 13, acc: 5, grip: 1.4, off: 1.6, turn: 2.2, brake: 1, tough: 1.5, nitro: 0 };
   if (b.two === 'bike') return { top: 11, acc: 6, grip: 1.3, off: 1.1, turn: 3.2, two: 'bike', brake: 1, tough: 0.6, nitro: 0 };
@@ -201,6 +202,16 @@ export function carPartEffects(slot, val) {
 }
 
 // ---------------- geometry
+let _crack = null;
+export function crackTex() { /* spider-web cracks, drawn once */
+  if (_crack) return _crack; const cv = document.createElement('canvas'); cv.width = cv.height = 128; const x = cv.getContext('2d');
+  x.strokeStyle = 'rgba(235,245,255,0.95)'; x.lineWidth = 1.4; let sd = 7; const r = () => (sd = (sd * 9301 + 49297) % 233280) / 233280;
+  for (let k = 0; k < 2; k++) { const cx = 40 + k * 50, cy = 50 + k * 25; const rays = [];
+    for (let i = 0; i < 11; i++) { const a = i / 11 * 6.283 + r() * 0.4, L = 40 + r() * 60; rays.push(a); x.beginPath(); x.moveTo(cx, cy); let px = cx, py = cy; for (let j = 1; j <= 5; j++) { px = cx + Math.cos(a + (r() - 0.5) * 0.25) * L * j / 5; py = cy + Math.sin(a + (r() - 0.5) * 0.25) * L * j / 5; x.lineTo(px, py); } x.stroke(); }
+    for (const rr of [8, 18, 30]) { x.beginPath(); rays.forEach((a, i) => { const q = rr * (0.8 + r() * 0.4); i ? x.lineTo(cx + Math.cos(a) * q, cy + Math.sin(a) * q) : x.moveTo(cx + Math.cos(a) * q, cy + Math.sin(a) * q); }); x.closePath(); x.stroke(); }
+    x.fillStyle = 'rgba(255,255,255,0.5)'; x.beginPath(); x.arc(cx, cy, 4, 0, 6.3); x.fill(); }
+  _crack = new THREE.CanvasTexture(cv); return _crack;
+}
 function taper(w, h, l, topL, topW, shift) {
   const g = new THREE.BoxGeometry(w, h, l), p = g.attributes.position;
   for (let i = 0; i < p.count; i++) if (p.getY(i) > 0) { p.setZ(i, p.getZ(i) * topL + shift); p.setX(i, p.getX(i) * topW); }
@@ -260,6 +271,7 @@ function buildTractor(c, B) {
   bx(0.22, 0.14, 0.06, headM, -0.3, 1.25, 1.77); bx(0.22, 0.14, 0.06, headM, 0.3, 1.25, 1.77);
   bx(0.14, 0.1, 0.05, tailM, -0.6, 1.05, -1.4); bx(0.14, 0.1, 0.05, tailM, 0.6, 1.05, -1.4); bx(0.1, 0.08, 0.05, revM, 0, 1.05, -1.4);
   bx(1.1, 0.1, 0.3, steel, 0, 0.6, -1.6);                 // hitch
+  for (const sx of [-1, 1]) { bx(0.05, 1.0, 0.05, steel, sx * 0.72, 0.6, -0.55); bx(0.05, 1.0, 0.05, steel, sx * 0.72, 0.6, -0.95); for (const ry of [0.35, 0.65, 0.95]) bx(0.06, 0.04, 0.45, steel, sx * 0.72, ry, -0.75); } // ladder up to the cab
   { const sw = new THREE.Mesh(new THREE.TorusGeometry(0.2, 0.03, 8, 22), dark); sw.position.set(0, 1.78, -0.42); sw.rotation.x = 0.7; grp.add(sw); // steering wheel
     const col = new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.035, 0.5, 8), dark); col.rotation.x = Math.PI / 2; col.position.z = 0.25; sw.add(col); } // column down into the dash
   for (const [fz, r, w] of [[1, 0.42, 0.3], [-1, 0.78, 0.5]]) for (const sx of [-1, 1]) {
@@ -272,7 +284,7 @@ function buildTractor(c, B) {
     if (fz < 0) bx(0.6, 0.06, 1.0, body, sx * 0.92, r * 2 + 0.05, -0.85); // mudguards
   }
   grp.traverse(m => { if (m.isMesh) m.castShadow = true; });
-  return { group: grp, wheels, headM, tailM, revM, glow: null, length: L, width: W, height: 2.9, wr: 0.6, tractor: true, seat: { x: 0, y: 1.32, z: -0.82 } };
+  return { group: grp, wheels, headM, tailM, revM, glow: null, length: L, width: W, height: 2.9, wr: 0.6, tractor: true, seat: { x: 0, y: 1.32, z: -0.82 }, climb: { steps: [0.37, 0.67, 0.97], floor: 1.14, jump: true }, doorZ: -0.75 };
 }
 function buildTwo(c, B) {
   const grp = new THREE.Group(), M = (col, o = {}) => new THREE.MeshStandardMaterial({ color: col, roughness: 0.5, ...o });
@@ -327,7 +339,10 @@ function buildTwo(c, B) {
 // cars are drawn a size up from their old proportions so people fit in them; bikes, scooters and boats were already right
 export const CAR_SCALE = 1.2;
 export function buildCar(cfg) {
-  const r = buildCarRaw(cfg); if (r.two || r.boat) { r.s = 1; return r; }
+  const r = buildCarRaw(cfg);
+  r.group.traverse(m => { if (!r.steerW && m.isMesh && m.geometry.type === 'TorusGeometry' && m.geometry.parameters.radius < 0.22) r.steerW = m; }); /* the steering wheel: give it spokes so you can see it turn */
+  if (r.steerW) { const R = r.steerW.geometry.parameters.radius, mt = r.steerW.material; const a = new THREE.Mesh(new THREE.BoxGeometry(R * 1.9, 0.028, 0.02), mt), b2 = new THREE.Mesh(new THREE.BoxGeometry(0.028, R, 0.02), mt), hub = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.06, 0.03), mt); b2.position.y = -R / 2; r.steerW.add(a, b2, hub); r.steerW.rotation.order = 'XYZ'; }
+  if (r.two || r.boat) { r.s = 1; return r; }
   const S = CAR_SCALE; r.group.scale.setScalar(S); r.s = S;
   for (const k of ['length', 'width', 'height', 'wr', 'top', 'co', 'cl']) if (typeof r[k] === 'number') r[k] *= S; // world-size numbers (collisions, doors, smoke); local ones (seat, doors) scale with the group
   return r;
@@ -339,7 +354,7 @@ function buildCarRaw(cfg) {
   if (B.tractor) return buildTractor(c, B);
   if (B.boat) return buildBoat(c, B);
   const grp = new THREE.Group();
-  let doors = null, seat = null;
+  let doors = null, seat = null, panes = null;
   const fin = c.finish;
   const look = { gloss: [0.25, 0.2], matte: [0.85, 0], metallic: [0.3, 0.75], chrome: [0.06, 1], camo: [0.8, 0], carbon: [0.35, 0.3] }[fin] || [0.3, 0.3];
   const bodyM = new THREE.MeshStandardMaterial({ color: c.bodyColor, roughness: look[0], metalness: look[1], flatShading: true });
@@ -349,7 +364,7 @@ function buildCarRaw(cfg) {
   const dark = new THREE.MeshStandardMaterial({ color: '#16161a', roughness: 0.8, flatShading: true });
   const chrome = new THREE.MeshStandardMaterial({ color: '#d0d4da', roughness: 0.15, metalness: 1 });
   const tintCol = { clear: '#a9d6ef', smoke: '#3c4b5c', black: '#0c0e12', gold: '#c89b3c' }[c.tint] || '#3c4b5c';
-  const glass = new THREE.MeshStandardMaterial({ color: tintCol, roughness: 0.08, metalness: 0.5, transparent: true, opacity: c.tint === 'clear' ? 0.6 : 0.9, flatShading: true });
+  const glass = new THREE.MeshStandardMaterial({ color: tintCol, roughness: 0.08, metalness: 0.5, transparent: true, opacity: { clear: 0.28, smoke: 0.5, gold: 0.6, black: 0.86 }[c.tint] ?? 0.5, flatShading: true, depthWrite: false }); /* see who's inside, unless you paid for the dark tint */
   const headM = new THREE.MeshStandardMaterial({ color: '#ffffff', emissive: c.headlights, emissiveIntensity: 0.6, roughness: 0.2 });
   const tailM = new THREE.MeshStandardMaterial({ color: '#7a0a10', emissive: '#ff1a2a', emissiveIntensity: 0.5, roughness: 0.3 });
   const revM = new THREE.MeshStandardMaterial({ color: '#d8dce0', emissive: '#ffffff', emissiveIntensity: 0, roughness: 0.3 });
@@ -397,9 +412,14 @@ function buildCarRaw(cfg) {
       const d = new THREE.Mesh(new THREE.BoxGeometry(0.04, bh * 0.9, dl), bodyM); d.position.z = -dl / 2; d.castShadow = true; pv.add(d);
       if (c.decal === 'twotone') { const t2 = new THREE.Mesh(new THREE.BoxGeometry(0.045, bh * 0.4, dl), accM); t2.position.set(0, -bh * 0.23, -dl / 2); pv.add(t2); }
       const hd = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.05, 0.18), chrome); hd.position.set(sx * 0.03, bh * 0.22, -dl + 0.22); pv.add(hd);
+      const card = new THREE.Mesh(new THREE.BoxGeometry(0.012, bh * 0.82, dl * 0.94), M2('#2c2d33')); card.position.set(-sx * 0.026, 0, -dl / 2); pv.add(card); /* the door's inside: trim and an armrest, not more paintwork */
+      const arm = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.05, dl * 0.45), M2('#45464e')); arm.position.set(-sx * 0.05, bh * 0.08, -dl * 0.55); pv.add(arm);
+      const hole = bx(0.03, bh * 0.86, dl - 0.06, M2('#121317'), sx * (W / 2 - 0.006), by + bh * 0.02, hz - dl / 2); hole.castShadow = false; hole.visible = false; /* the doorway, seen once the door swings open */
+      const sill = new THREE.Mesh(new THREE.BoxGeometry(0.036, 0.1, dl * 0.55), M2('#3a332d')); sill.position.set(sx * 0.003, -bh * 0.08, 0.02); hole.add(sill); pv.userData.hole = hole;
       grp.add(pv); doors[sx] = pv;
     }
     doors.len = dl; // (front hinge at the pivot, door runs back from it)
+    if (B.box) for (const sx of [-1, 1]) for (const [sy, sd] of [[clr * 0.35, 0.22], [clr * 0.8, 0.12]]) bx(0.24 + sd, 0.06, dl * 0.7, M2('#3a3d45'), sx * (W / 2 + sd / 2), sy, hz - dl / 2); // cab steps
     if (c.decal === 'twotone') bx(W + 0.02, bh * 0.45, L + 0.02, accM, 0, clr + bh * 0.22, 0);
     if (c.decal === 'side') for (const sx of [-1, 1]) bx(0.02, 0.1, L * 0.86, accM, sx * (W / 2 + 0.005), by + 0.05, 0);
     if (c.decal === 'flames') for (const sx of [-1, 1]) for (let i = 0; i < 5; i++) { const len = L * (0.22 + (i % 2) * 0.12 + (i === 2 ? 0.12 : 0)); bx(0.02, 0.07, len, i % 2 ? M2('#ffd23f') : accM, sx * (W / 2 + 0.045), by - 0.1 + i * 0.07, L / 2 - len / 2 - 0.05); }
@@ -424,8 +444,33 @@ function buildCarRaw(cfg) {
     // pillars
     for (const sx of [-1, 1]) bx(0.05, ch * 0.9, 0.08, bodyM, sx * W * 0.37, top + ch / 2, roofZ);
     if (c.body === 'van') for (const sx of [-1, 1]) bx(0.02, ch * 0.6, cl * 0.7, bodyM, sx * W * 0.43, top + ch * 0.35, B.co - 0.3);
+    { /* the inside you can see through the glass: seats, headrests, dash and wheel */
+      const im = M2('#25262b'), dz = B.co - 0.08, tL = boxy ? 0.92 : 0.68, sh = boxy ? -0.04 : -0.08;
+      for (const sx of [-1, 1]) { bx(W * 0.24, ch * 0.5, 0.09, im, sx * W * 0.22, top + ch * 0.15, dz - 0.3); bx(W * 0.13, 0.1, 0.07, im, sx * W * 0.22, top + ch * 0.47, dz - 0.31); }
+      if (cl > 1.75) bx(W * 0.7, ch * 0.42, 0.09, im, 0, top + ch * 0.1, B.co - cl / 2 + 0.16);
+      bx(W * 0.76, 0.09, 0.22, im, 0, top + 0.03, B.co + cl / 2 - 0.22);
+      const sw = new THREE.Mesh(new THREE.TorusGeometry(0.13, 0.022, 6, 16), dark); sw.position.set(W * 0.22, top + 0.12, B.co + cl / 2 - 0.4); sw.rotation.x = 0.5; grp.add(sw);
+      /* glass panes over each face of the cabin: these are what crack and smash */
+      const pm = () => new THREE.MeshBasicMaterial({ map: crackTex(), transparent: true, depthWrite: false, opacity: 0.95 });
+      const zf0 = B.co + cl / 2, zf1 = B.co + cl / 2 * tL + sh, zr0 = B.co - cl / 2, zr1 = B.co - cl / 2 * tL + sh, x0 = W * 0.43, x1 = W * 0.43 * (boxy ? 0.92 : 0.86);
+      const pane = (w, h, mat) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), mat); m.visible = false; m.renderOrder = 3; grp.add(m); return m; };
+      const front = pane(W * 0.8, Math.hypot(zf0 - zf1, ch) * 0.86, pm()); front.position.set(0, top + ch / 2, (zf0 + zf1) / 2 + 0.015); front.rotation.x = -Math.atan2(zf0 - zf1, ch);
+      const rear = pane(W * 0.76, Math.hypot(zr1 - zr0, ch) * 0.8, pm()); rear.rotation.order = 'YXZ'; rear.position.set(0, top + ch / 2, (zr0 + zr1) / 2 - 0.015); rear.rotation.y = Math.PI; rear.rotation.x = -Math.atan2(zr1 - zr0, ch);
+      const side = {}; for (const sx of [-1, 1]) { const m = pane(cl * (1 + tL) / 2 * 0.78, ch * 0.78, pm()); m.rotation.order = 'ZYX'; m.position.set(sx * ((x0 + x1) / 2 + 0.015), top + ch / 2, B.co + sh / 2); m.rotation.y = sx * Math.PI / 2; m.rotation.z = sx * Math.atan2(x0 - x1, ch); side[sx] = m; }
+      panes = { front, rear, side };
     }
-    if (B.box) {
+    }
+    if (B.bin) { /* refuse truck: a rounded compactor body, ribbed sides, a hopper and bin lifter at the back, amber beacons */
+      const boxL = halfL + (B.co - cl / 2) - 0.25, bz = -halfL + boxL / 2 + 0.05, hopL = 1.0, mainL = boxL - hopL, mz = bz + hopL / 2;
+      add(taper(W * 1.0, 1.85, mainL, 0.97, 0.84, 0), bodyM, 0, top + 0.925, mz);
+      for (let i = 0; i < 6; i++) for (const sx of [-1, 1]) bx(0.05, 1.5, 0.09, M2('#2c6e3a'), sx * W * 0.5, top + 0.8, mz - mainL / 2 + 0.3 + i * (mainL - 0.6) / 5); // ribs
+      for (const sx of [-1, 1]) bx(0.02, 0.18, mainL * 0.9, accM, sx * (W * 0.5 + 0.03), top + 0.3, mz); // white band
+      const hz2 = -halfL + hopL / 2 + 0.05; add(taper(W * 1.04, 1.6, hopL, 0.55, 0.9, 0.18), bodyM, 0, top + 0.8, hz2); // the tailgate/hopper
+      bx(W * 0.82, 0.55, 0.06, dark, 0, top + 0.45, -halfL + 0.06); // the mouth the rubbish goes in
+      bx(W * 0.9, 0.08, 0.12, chrome, 0, top + 0.08, -halfL - 0.02); bx(W * 0.9, 0.08, 0.12, chrome, 0, clr + 0.15, -halfL - 0.08); // lifter bars
+      for (let i = 0; i < 6; i++) { const st = bx(0.14, 0.42, 0.03, M2(i % 2 ? '#f2f2f2' : '#d4302c'), -W * 0.45 + i * W * 0.18, top + 1.25, -halfL + 0.25); st.rotation.z = 0.5; } // hazard chevrons
+      for (const sx of [-1, 1]) { const be = add(new THREE.CylinderGeometry(0.07, 0.08, 0.12, 8), new THREE.MeshStandardMaterial({ color: '#ffb020', emissive: '#ff9a00', emissiveIntensity: 1.2 }), sx * W * 0.3, top + B.ch + 0.11, B.co - 0.05); be.castShadow = false; }
+    } else if (B.box) {
       const boxL = halfL + (B.co - cl / 2) - 0.25, bz = -halfL + boxL / 2 + 0.05;
       bx(W * 1.02, 1.9, boxL, c.decal === 'twotone' ? accM : new THREE.MeshStandardMaterial({ color: '#f2f2f2', roughness: 0.7, flatShading: true }), 0, top + 0.95, bz);
       bx(W * 1.04, 0.08, boxL + 0.04, accM, 0, top + 1.9, bz);
@@ -577,7 +622,14 @@ function buildCarRaw(cfg) {
   }
   grp.traverse(m => { if (m.isMesh) m.castShadow = m !== glow; }); // (the glow itself casts no shadow)
   const heads = { '-1': [], '1': [] }; grp.traverse(m => { if (m.material === headM) heads[m.position.x < 0 ? '-1' : '1'].push(m); }); // each side's headlamp, so one can get smashed
-  return { group: grp, wheels, headM, tailM, revM, glow, length: L, width: W, height: top + B.ch, wr, doors, heads, top, co: B.co, cl: B.cl, topless: !!B.topless, body: c.body, seat, drv: seat || { x: W * 0.22, y: top - 0.12, z: B.co - 0.08 } };
+  const tails = { '-1': [], '1': [] }; grp.traverse(m => { if (m.material === tailM) tails[m.position.x < 0 ? '-1' : '1'].push(m); });
+  let bonnet = null; const bz0 = B.co + B.cl / 2, bl = halfL - bz0 - 0.06;
+  if (!B.open && !B.box && !B.topless && bl > 0.45 && doors) { /* a bonnet on a hinge by the windscreen: a big enough knock pops it, and it flaps as you drive */
+    bonnet = new THREE.Group(); bonnet.position.set(0, top + 0.004, bz0 + 0.02); grp.add(bonnet);
+    const lid = new THREE.Mesh(new THREE.BoxGeometry(W * 0.9, 0.03, bl), bodyM); lid.position.set(0, 0.016, bl / 2); lid.castShadow = true; bonnet.add(lid);
+    for (const m of [...grp.children]) if (m.isMesh && m !== lid && m.position.y > top - 0.005 && m.position.y < top + 0.2 && m.position.z > bz0 + 0.05 && Math.abs(m.position.x) < W * 0.45 && m.material !== headM) { grp.remove(m); m.position.sub(bonnet.position); m.position.y += 0.03; bonnet.add(m); }
+    const bay = new THREE.Mesh(new THREE.BoxGeometry(W * 0.84, 0.01, bl * 0.92), dark); bay.position.set(0, top + 0.002, bz0 + 0.02 + bl / 2); grp.add(bay); }
+  return { group: grp, wheels, headM, tailM, revM, glow, length: L, width: W, height: top + B.ch, wr, doors, heads, tails, bonnet, panes, ch: B.ch, top, co: B.co, cl: B.cl, topless: !!B.topless, body: c.body, seat, drv: seat || { x: W * 0.22, y: Math.min(top - 0.12, top + B.ch - 0.74), z: B.co - 0.08 }, climb: B.box ? { steps: [clr * 0.35 + 0.03, clr * 0.8 + 0.03], floor: top - 0.3 } : null };
 }
 
 let _glowTex = null;
@@ -590,4 +642,4 @@ function glowTex() {
   _glowTex = new THREE.CanvasTexture(cv); _glowTex.colorSpace = THREE.SRGBColorSpace; return _glowTex;
 }
 
-export const CAR_PRICES = { compact: 5000, hothatch: 21000, jeep: 28000, minivan: 15000, gt: 64000, tractor: 12000, scooter: 800, bike: 400, moto: 9000, hatch: 6000, sedan: 9000, wagon: 11000, coupe: 16000, van: 14000, pickup: 18000, suv: 26000, classic: 30000, lowrider: 24000, convertible: 38000, muscle: 42000, buggy: 15000, boxtruck: 22000, sports: 85000, limo: 70000, hyper: 160000 };
+export const CAR_PRICES = { compact: 5000, hothatch: 21000, jeep: 28000, minivan: 15000, gt: 64000, tractor: 12000, scooter: 800, bike: 400, moto: 9000, hatch: 6000, sedan: 9000, wagon: 11000, coupe: 16000, van: 14000, pickup: 18000, suv: 26000, classic: 30000, lowrider: 24000, convertible: 38000, muscle: 42000, buggy: 15000, boxtruck: 22000, bintruck: 30000, sports: 85000, limo: 70000, hyper: 160000 };
