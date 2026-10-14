@@ -1,7 +1,7 @@
 // Pedestrians: baked low-poly people who stroll sidewalks, wander the beach, flee from trouble.
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, randomChar, disposeObject } from './character.js?v=90';
-import { CITIES, sandLine, shoreLine, groundH, walkable as worldWalkable, resolve } from './world.js?v=90';
+import { buildCharacter, randomChar, disposeObject } from './character.js?v=91';
+import { CITIES, sandLine, shoreLine, groundH, walkable as worldWalkable, resolve } from './world.js?v=91';
 // interiors swap in their own floor test so brawlers can move around inside
 let walkable = worldWalkable; export function setWalk(fn) { walkable = fn || worldWalkable; }
 
@@ -253,7 +253,7 @@ export class Peds {
         if (ddx || ddz) { if (p.state === 'walk') { p.offx = (p.offx || 0) + ddx; p.offz = (p.offz || 0) + ddz; } }
         else if (p.offx || p.offz) { const k = Math.exp(-dt * 0.7); p.offx *= k; p.offz *= k; if (Math.abs(p.offx) + Math.abs(p.offz) < 0.02) p.offx = p.offz = 0; }
       }
-      if (p.hitT > 0 && p.state !== 'down') { p.hitT -= dt; const ox = p.x, oz = p.z; p.x += p.hkx * dt * 2; p.z += p.hkz * dt * 2; resolve(p, 0.35, 0); if (!walkable(p.x, p.z)) { p.x = ox; p.z = oz; } }
+      if (p.hitT > 0 && p.state !== 'down') { p.hitT -= dt; const ox = p.x, oz = p.z; p.x += p.hkx * dt * 2; p.z += p.hkz * dt * 2; resolve(p, 0.35, 0); if (!walkable(p.x, p.z)) { p.x = ox; p.z = oz; } if (p.state === 'walk') { p.offx = (p.offx || 0) + p.x - ox; p.offz = (p.offz || 0) + p.z - oz; } }
       if (p.state === 'down') {
         p.t -= dt; p.x += (p.kx || 0) * dt; p.z += (p.kz || 0) * dt; p.kx *= Math.exp(-4 * dt); p.kz *= Math.exp(-4 * dt); resolve(p, 0.35, 0);
         p.inner.rotation.x += (-Math.PI / 2 - p.inner.rotation.x) * Math.min(1, dt * 10);

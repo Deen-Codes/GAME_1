@@ -1,25 +1,25 @@
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=90';
-import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=90';
-import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=90';
-import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=90';
-import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=90';
-import { buildPanel, renderStats } from './ui.js?v=90';
-import { Input } from './input.js?v=90';
-import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime } from './audio.js?v=90';
-import { runMinigame } from './minigames.js?v=90';
-import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk } from './peds.js?v=90';
-import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=90';
-import { findRoute } from './nav.js?v=90';
-import { COURSES, CAREERS, QUIZ } from './careers.js?v=90';
-import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=90';
-import { attachWheel } from './wheel.js?v=90';
-import { Animals } from './animals.js?v=90';
-import { Talk } from './talk.js?v=90';
-import { svg, drawIcon } from './icons.js?v=90';
-import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=90';
-import { FURN, CATALOG } from './furniture.js?v=90';
-import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=90';
+import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=91';
+import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=91';
+import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=91';
+import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=91';
+import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=91';
+import { buildPanel, renderStats } from './ui.js?v=91';
+import { Input } from './input.js?v=91';
+import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime } from './audio.js?v=91';
+import { runMinigame } from './minigames.js?v=91';
+import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk } from './peds.js?v=91';
+import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=91';
+import { findRoute } from './nav.js?v=91';
+import { COURSES, CAREERS, QUIZ } from './careers.js?v=91';
+import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=91';
+import { attachWheel } from './wheel.js?v=91';
+import { Animals } from './animals.js?v=91';
+import { Talk } from './talk.js?v=91';
+import { svg, drawIcon } from './icons.js?v=91';
+import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=91';
+import { FURN, CATALOG } from './furniture.js?v=91';
+import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=91';
 
 const $ = id => document.getElementById(id);
 let inside = null, editMode = false, held = null, pendingCar = false, homeMusic = false, phoneBadge = 0;
@@ -1388,7 +1388,7 @@ function updateFoot(dt) {
       return;
     }
   }
-  const st = P.dead ? { x: 0, y: 0, m: 0 } : input.stick;
+  const st = P.dead ? { x: 0, y: 0, m: 0 } : camStick();
   P.x += P.kx * dt; P.z += P.kz * dt; P.kx = damp(P.kx, 0, 4, dt); P.kz = damp(P.kz, 0, 4, dt);
   const tired = stats.energy < 10 ? 0.7 : 1, runMul = 1 + (lvl('stamina') - 1) * 0.035;
   const swim = inWater(P.x, P.z) && P.y < WATER_Y + 0.2;
@@ -1412,7 +1412,7 @@ function updateFoot(dt) {
     const px = hw - Math.abs(lx), pz = hl - Math.abs(lz);
     if (px < pz) { const k = Math.sign(lx || 1) * px; P.x += rx * k; P.z += rz * k; } else { const k = Math.sign(lz || 1) * pz; P.x += fx * k; P.z += fz * k; }
   }
-  for (const p of peds.list) { const dx = P.x - p.x, dz = P.z - p.z, d = Math.hypot(dx, dz); if (d < 0.7 && d > 0.01 && p.state !== 'down') { if (p.kind === 'homeless' || p.state === 'lie' || p.state === 'sit' || p.state === 'talk') { P.x = p.x + dx / d * 0.7; P.z = p.z + dz / d * 0.7; } else { p.x -= dx / d * (0.7 - d); p.z -= dz / d * (0.7 - d); if (input.stick.m > 0.8 && !p.ev && (p.bumpT || 0) < time && Math.random() < 0.5 && chatCd('bump', 6)) { p.bumpT = time + 20; const w = pedWho(p); if (w) subs.say(w, pick(['Hey! Watch it!', 'Excuse YOU.', 'Woah, where\'s the fire?', 'Rude!']), { expr: 'angry', pri: 1 }); } } } } // you can't shove someone sleeping on the pavement
+  for (const p of peds.list) { const dx = P.x - p.x, dz = P.z - p.z, d = Math.hypot(dx, dz); if (d < 0.7 && d > 0.01 && p.state !== 'down') { if (p.kind === 'homeless' || p.state === 'lie' || p.state === 'sit' || p.state === 'talk') { P.x = p.x + dx / d * 0.7; P.z = p.z + dz / d * 0.7; } else { p.x -= dx / d * (0.7 - d); p.z -= dz / d * (0.7 - d); if (input.stick.m > 0.45 && !(p.hitT > 0) && (p.bargeT || 0) < time) { p.bargeT = time + 0.8; const pw = input.stick.m > 0.85 ? 4.2 : 2; p.hitT = 0.38; p.hkx = -dx / d * pw; p.hkz = -dz / d * pw; if (pw > 3) { sfx.thud?.(); p.inner.rotation.x = -0.35; } } if (input.stick.m > 0.8 && !p.ev && (p.bumpT || 0) < time && Math.random() < 0.5 && chatCd('bump', 6)) { p.bumpT = time + 20; const w = pedWho(p); if (w) subs.say(w, pick(['Hey! Watch it!', 'Excuse YOU.', 'Woah, where\'s the fire?', 'Rude!']), { expr: 'angry', pri: 1 }); } } } } // you can't shove someone sleeping on the pavement
   for (const n of allNpcs()) { if (n.hidden || (n.y || 0) > P.y + 1.5 || (n.y || 0) < P.y - 1.5) continue; const dx = P.x - n.x, dz = P.z - n.z, d = Math.hypot(dx, dz); if (d < 0.75 && d > 0.01) { P.x = n.x + dx / d * 0.75; P.z = n.z + dz / d * 0.75; } }
   if (!canWalk(P.x, P.z)) { P.x = ox; P.z = oz; }
   if (inside?.id === 'prison' && stats.jail && P.z > ORIGIN.z + 17.4 && Math.abs(P.x - ORIGIN.x) < 10.2 && P.z < ORIGIN.z + 19) { P.z = ORIGIN.z + 17.4; if (time > gateT) { gateT = time + 3; toast(`Security gate. Locked. ${hrs(jailLeft())} left.`); } }
@@ -1560,7 +1560,6 @@ function updateDoors(dt) {
 function seatSpot(v, side) { const s = v.s, h = s.h; return { x: s.x + Math.cos(h) * 0.35 * side + Math.sin(h) * 0.2, z: s.z - Math.sin(h) * 0.35 * side + Math.cos(h) * 0.2 }; }
 function sitIn(v) {
   ride = v; heroRoot.visible = !!v.b.two; muzzleFlash.visible = false; audio();
-  setTimeout(() => { const n = nowPlaying(); if (n && ride === v) peek('radioBtn', `<b>${n.title}</b><small>${n.artist}</small>`, 3); }, 900);
   // every car remembers its own station: yours keeps what you left on, other people's are on whatever their owner liked
   if (v === myCar && v.radio == null) v.radio = stats.carRadio ?? 0;
   if (v.radio == null) v.radio = v.b.two ? STATIONS.length - 1 : Math.floor(Math.random() * STATIONS.length);
@@ -1849,7 +1848,7 @@ function updateVehicles(dt) {
     c.braking = false;
     const dk = driving ? 1 + (lvl('driving') - 1) * 0.02 : 1;
     if (driving && !P.dead) {
-      const st = input.stick;
+      const st = camStick();
       const dead = v.wrecked || (v.hp ?? 100) <= 0;
       const stickMode = (settings.steer || 'screen') === 'screen';
       // stick driving frees up the buttons: horn and headlights instead of drive and brake
@@ -5072,6 +5071,22 @@ function updateRoute(dt) {
 // ================================================================ CAMERA
 const camLook = new THREE.Vector3();
 let camDist = 58;
+// ---- auto-pan: if a building is between the camera and you, the camera swings round to a clear angle (and the stick follows the camera)
+let camYaw = 0, camYawT = 0, camChkT = 0, camClearT = 0, camBlockT = 0;
+function camStick() { const s = input.stick; if (Math.abs(camYaw) < 0.01) return s; const c = Math.cos(camYaw), n = Math.sin(camYaw); return { x: s.x * c + s.y * n, y: -s.x * n + s.y * c, m: s.m }; }
+function camBlocked(yaw, x, z, y) { // walk up the sight line from you towards the camera and see if a building pokes through it
+  const sx = Math.sin(yaw), sz = Math.cos(yaw), tp = Math.tan((56 * DEG) - (1 - Math.min(1, zoom)) * 0.45);
+  for (let h = 1.2; h < 34; h += 1.4) { const px = x + sx * h, pz = z + sz * h, top = wallTop(px, pz); if (top != null && top > y + 1.4 + h * tp) return true; }
+  return false;
+}
+function updateCamYaw(dt) {
+  if (inside || state !== 'play') { camYawT = 0; }
+  else { camChkT -= dt; if (camChkT <= 0) { camChkT = 0.15; const f = focusPos(), y = ride ? (ride.s.y || 0) : P.y;
+    const curBlocked = camBlocked(camYawT, f.x, f.z, y), homeClear = !camBlocked(0, f.x, f.z, y);
+    if (curBlocked) { camBlockT += 0.15; camClearT = 0; if (camBlockT > (ride ? 0.45 : 0.25)) { let best = null; const C = [0, 0.55, -0.55, 1.1, -1.1, 1.7, -1.7, 2.4, -2.4, Math.PI], near = (a, b2) => Math.abs(wrapA(a - camYaw)) < Math.abs(wrapA(b2 - camYaw)); for (const wide of [true, false]) { for (const c of C) if (!camBlocked(c, f.x, f.z, y) && (!wide || (!camBlocked(c + 0.28, f.x, f.z, y) && !camBlocked(c - 0.28, f.x, f.z, y))) && (best === null || near(c, best))) best = c; if (best !== null) break; } if (best !== null) camYawT = best; camBlockT = 0; } }
+    else { camBlockT = 0; if (camYawT !== 0 && homeClear) { camClearT += 0.15; if (camClearT > 1.2) { camYawT = 0; camClearT = 0; } } else camClearT = 0; } } }
+  camYaw += wrapA(camYawT - camYaw) * Math.min(1, dt * 2.2); if (Math.abs(wrapA(camYawT - camYaw)) < 0.002) camYaw = camYawT;
+}
 function padHeight() { return Math.min(H * 0.36, 310); }
 function focusPos() { return ride ? ride.s : P; }
 // pinch (two fingers on the game view) or mouse wheel to zoom in on the action and out for the big picture
@@ -5097,7 +5112,9 @@ function updateCamera(dt, snap) {
   const pitch = (inside ? 60 : 56) * DEG - (1 - Math.min(1, zoom)) * 0.45; // zoomed in = a lower, closer angle so you can see faces and clothes
   shake = Math.max(0, shake - dt * 1.5);
   const sx = (Math.random() - 0.5) * shake, sz = (Math.random() - 0.5) * shake;
-  G.cam.position.set(camLook.x + sx, camLook.y + Math.sin(pitch) * camDist, camLook.z + Math.cos(pitch) * camDist + sz);
+  if (!snap) updateCamYaw(dt); else if (inside) camYaw = camYawT = 0;
+  const hz = Math.cos(pitch) * camDist;
+  G.cam.position.set(camLook.x + sx + Math.sin(camYaw) * hz, camLook.y + Math.sin(pitch) * camDist, camLook.z + Math.cos(camYaw) * hz + sz);
   G.cam.lookAt(camLook.x + sx, camLook.y, camLook.z + sz);
   G.scene.fog.near = camDist + 25; G.scene.fog.far = camDist + 130;
   fadeU.uPlayer.value.set(f.x, ride ? ty : P.y, f.z); fadeU.uCam.value.copy(G.cam.position);
@@ -5410,47 +5427,45 @@ function ensureMap() { if (!MAP) MAP = drawMap(512); }
 function markerIcon(m) { return m.place.kind === 'property' && owned.has(m.place.id) ? 'key' : m.icon; }
 function drawMinimap() {
   ensureMap();
-  const S = mm.width, R = S / 2 - 18;
+  const S = mm.width, SH = mm.height, CX = S / 2, CY = SH / 2, R = Math.max(S, SH) / 2;
   mctx.save(); mctx.clearRect(0, 0, S, S);
-  mctx.beginPath(); mctx.arc(S / 2, S / 2, R, 0, Math.PI * 2); mctx.clip();
+  
   if (inside) {
-    mctx.fillStyle = '#1a1626'; mctx.fillRect(0, 0, S, S);
+    mctx.fillStyle = '#1a1626'; mctx.fillRect(0, 0, S, SH);
     const sc = R * 1.6 / Math.max(inside.h.w, inside.h.d);
-    mctx.fillStyle = INTERIORS[inside.id].floor; mctx.fillRect(S / 2 - inside.h.w * sc / 2, S / 2 - inside.h.d * sc / 2, inside.h.w * sc, inside.h.d * sc);
-    for (const m of inside.marks) { drawIcon(mctx, m.spot.icon, S / 2 + (m.x - ORIGIN.x) * sc, S / 2 + (m.z - ORIGIN.z) * sc, 20, { stroke: '#ffd23f', width: 2.6 }); }
-    mctx.fillStyle = '#ffd23f'; mctx.beginPath(); mctx.arc(S / 2 + (P.x - ORIGIN.x) * sc, S / 2 + (P.z - ORIGIN.z) * sc, 7, 0, 7); mctx.fill();
+    mctx.fillStyle = INTERIORS[inside.id].floor; mctx.fillRect(S / 2 - inside.h.w * sc / 2, CY - inside.h.d * sc / 2, inside.h.w * sc, inside.h.d * sc);
+    for (const m of inside.marks) { drawIcon(mctx, m.spot.icon, S / 2 + (m.x - ORIGIN.x) * sc, CY + (m.z - ORIGIN.z) * sc, 20, { stroke: '#ffd23f', width: 2.6 }); }
+    mctx.fillStyle = '#ffd23f'; mctx.beginPath(); mctx.arc(S / 2 + (P.x - ORIGIN.x) * sc, CY + (P.z - ORIGIN.z) * sc, 7, 0, 7); mctx.fill();
     mctx.restore();
   } else {
     const f = focusPos(), px = f.x, pz = f.z, face = ride ? ride.s.h : P.face, span = ride ? 260 : 170;
     const mx = MAP.tx(px), mz = MAP.tz(pz), ms = span / MAP.sx;
-    mctx.fillStyle = '#3d8fd0'; mctx.fillRect(0, 0, S, S);
-    mctx.drawImage(MAP.canvas, mx - ms / 2, mz - ms / 2, ms, ms, S / 2 - R, S / 2 - R, R * 2, R * 2);
-    const toS = (wx, wz) => [S / 2 + (wx - px) / span * R * 2, S / 2 + (wz - pz) / span * R * 2];
+    mctx.fillStyle = '#3d8fd0'; mctx.fillRect(0, 0, S, SH);
+    mctx.save(); mctx.translate(CX, CY); mctx.rotate(camYaw); mctx.drawImage(MAP.canvas, mx - ms * 0.75, mz - ms * 0.75, ms * 1.5, ms * 1.5, -R * 1.5, -R * 1.5, R * 3, R * 3); mctx.restore();
+    const ca = Math.cos(camYaw), sa = Math.sin(camYaw), toS = (wx, wz) => { const dx = (wx - px) / span * R * 2, dz = (wz - pz) / span * R * 2; return [CX + dx * ca - dz * sa, CY + dx * sa + dz * ca]; };
     if (route) { mctx.strokeStyle = '#b26bff'; mctx.lineWidth = 9; mctx.lineJoin = 'round'; mctx.lineCap = 'round'; mctx.beginPath(); route.forEach(([x, z], i) => { const [a, b] = toS(x, z); i ? mctx.lineTo(a, b) : mctx.moveTo(a, b); }); mctx.stroke(); }
     mctx.fillStyle = '#ffffff';
     for (const t of traffic) { const [a, b] = toS(t.rx, t.rz); mctx.fillRect(a - 3, b - 3, 6, 6); }
     if ((WANT.stars && !WANT.seen) || WANT.patrolT > 0) { const [a, b] = toS(WANT.lx, WANT.lz), rr = searchR() / span * R * 2, fl = Math.floor(time * 3) % 2, pat = !WANT.stars; mctx.fillStyle = pat ? 'rgba(42,106,255,.12)' : fl ? 'rgba(255,42,58,.22)' : 'rgba(42,106,255,.22)'; mctx.strokeStyle = pat ? 'rgba(42,106,255,.6)' : fl ? 'rgba(255,42,58,.8)' : 'rgba(42,106,255,.8)'; mctx.lineWidth = 2; if (pat) mctx.setLineDash([6, 5]); mctx.beginPath(); mctx.arc(a, b, rr, 0, 7); mctx.fill(); mctx.stroke(); mctx.setLineDash([]); }
     // police vision cones: always on, so you can see who's watching before a deal
-    for (const e of eyes()) { const [a, b] = toS(e[0], e[1]); if (Math.hypot(a - S / 2, b - S / 2) > R + 30) continue; const rr = e[3] / span * R * 2, ang = Math.atan2(Math.cos(e[2]), Math.sin(e[2])); const g = mctx.createRadialGradient(a, b, 0, a, b, rr); g.addColorStop(0, WANT.stars ? 'rgba(255,60,70,.38)' : 'rgba(80,140,255,.34)'); g.addColorStop(1, 'rgba(80,140,255,0)'); mctx.fillStyle = g; mctx.beginPath(); mctx.moveTo(a, b); mctx.arc(a, b, rr, ang - CONE, ang + CONE); mctx.closePath(); mctx.fill(); }
+    for (const e of eyes()) { const [a, b] = toS(e[0], e[1]); if (Math.abs(a - CX) > CX + 30 || Math.abs(b - CY) > CY + 30) continue; const rr = e[3] / span * R * 2, ang = Math.atan2(Math.cos(e[2]), Math.sin(e[2])); const g = mctx.createRadialGradient(a, b, 0, a, b, rr); g.addColorStop(0, WANT.stars ? 'rgba(255,60,70,.38)' : 'rgba(80,140,255,.34)'); g.addColorStop(1, 'rgba(80,140,255,0)'); mctx.fillStyle = g; mctx.beginPath(); mctx.moveTo(a, b); mctx.arc(a, b, rr, ang - CONE, ang + CONE); mctx.closePath(); mctx.fill(); }
     for (const t of traffic) if (t.police) { const [a, b] = toS(t.rx, t.rz); mctx.fillStyle = '#2a6aff'; mctx.strokeStyle = '#fff'; mctx.lineWidth = 2; mctx.beginPath(); mctx.arc(a, b, 6, 0, 7); mctx.fill(); mctx.stroke(); }
     for (const v of copCars) { const [a, b] = toS(v.s.x, v.s.z); mctx.fillStyle = Math.floor(time * 6) % 2 ? '#ff2a3a' : '#2a6aff'; mctx.beginPath(); mctx.arc(a, b, 7, 0, 7); mctx.fill(); }
     for (const c of cops) { const [a, b] = toS(c.x, c.z); mctx.fillStyle = '#2a6aff'; mctx.fillRect(a - 3, b - 3, 6, 6); }
     mctx.fillStyle = '#ffffff';
-    for (const m of markers) { const [a, b] = toS(m.x, m.z); if (Math.hypot(a - S / 2, b - S / 2) < R - 8) { mctx.fillStyle = 'rgba(20,18,38,.85)'; mctx.beginPath(); mctx.arc(a, b, 13, 0, 7); mctx.fill(); drawIcon(mctx, markerIcon(m), a, b, 18, { stroke: m.color, width: 2.6 }); } }
+    for (const m of markers) { const [a, b] = toS(m.x, m.z); if (Math.abs(a - CX) < CX - 10 && Math.abs(b - CY) < CY - 10) { mctx.fillStyle = 'rgba(20,18,38,.85)'; mctx.beginPath(); mctx.arc(a, b, 13, 0, 7); mctx.fill(); drawIcon(mctx, markerIcon(m), a, b, 18, { stroke: m.color, width: 2.6 }); } }
     if (myCar && ride !== myCar) { const [a, b] = toS(myCar.s.x, myCar.s.z); mctx.fillStyle = '#ff8a2a'; mctx.strokeStyle = '#fff'; mctx.lineWidth = 3; mctx.beginPath(); mctx.arc(a, b, 9, 0, 7); mctx.fill(); mctx.stroke(); }
-    const edgeDot = (wx, wz, col, r) => { let [a, b] = toS(wx, wz); const dd = Math.hypot(a - S / 2, b - S / 2); if (dd > R - 10) { a = S / 2 + (a - S / 2) / dd * (R - 10); b = S / 2 + (b - S / 2) / dd * (R - 10); } mctx.fillStyle = col; mctx.strokeStyle = '#fff'; mctx.lineWidth = 3; mctx.beginPath(); mctx.arc(a, b, r, 0, 7); mctx.fill(); mctx.stroke(); };
+    const edgeDot = (wx, wz, col, r) => { let [a, b] = toS(wx, wz); a = clamp(a, 12, S - 12); b = clamp(b, 12, SH - 12); mctx.fillStyle = col; mctx.strokeStyle = '#fff'; mctx.lineWidth = 3; mctx.beginPath(); mctx.arc(a, b, r, 0, 7); mctx.fill(); mctx.stroke(); };
     if (waypoint) edgeDot(waypoint.x, waypoint.z, '#ffd23f', 11);
     if (race) edgeDot(...RACE.points[race.i], '#ff3b4a', 11);
-    mctx.translate(S / 2, S / 2); mctx.rotate(Math.PI - face);
+    mctx.translate(CX, CY); mctx.rotate(Math.PI - face + camYaw);
     mctx.fillStyle = '#ffd23f'; mctx.strokeStyle = '#1a1a2a'; mctx.lineWidth = 4;
     mctx.beginPath(); mctx.moveTo(0, -16); mctx.lineTo(11, 11); mctx.lineTo(0, 5); mctx.lineTo(-11, 11); mctx.closePath(); mctx.stroke(); mctx.fill();
     mctx.restore();
   }
-  const hp = P.hp / maxHP(), ringR = R + 10;
-  mctx.lineCap = 'round';
-  mctx.lineWidth = 11; mctx.strokeStyle = 'rgba(10,10,24,.55)'; mctx.beginPath(); mctx.arc(S / 2, S / 2, ringR, 0, Math.PI * 2); mctx.stroke();
-  if (hp > 0) { mctx.lineWidth = 8; mctx.strokeStyle = hp > 0.6 ? '#4cd964' : hp > 0.3 ? '#ffd23f' : '#ff3b4a'; mctx.beginPath(); mctx.arc(S / 2, S / 2, ringR, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * hp); mctx.stroke(); }
-  mctx.lineWidth = 2; mctx.strokeStyle = 'rgba(255,255,255,.7)'; mctx.beginPath(); mctx.arc(S / 2, S / 2, R, 0, Math.PI * 2); mctx.stroke();
+  const hp = P.hp / maxHP(); // health: a bar along the bottom of the screen-phone
+  mctx.fillStyle = 'rgba(10,10,24,.6)'; mctx.fillRect(14, SH - 16, S - 28, 8);
+  if (hp > 0) { mctx.fillStyle = hp > 0.6 ? '#4cd964' : hp > 0.3 ? '#ffd23f' : '#ff3b4a'; mctx.fillRect(14, SH - 16, (S - 28) * hp, 8); }
 }
 function drawMapTo(cv) {
   ensureMap();
@@ -5508,7 +5523,7 @@ function updateHUD(dt) {
   $('radioBtn').classList.toggle('hidden', !ride);
   $('carLabel').classList.toggle('on', !!ride && time < carLabelT);
   $('speedo').classList.toggle('hidden', !ride || time < carLabelT || !!ride.b.two && ride.cfg?.body === 'bike'); // car name first, then the speed
-  $('phoneBtn').classList.toggle('badge', phoneBadge > 0); $('phoneBtn').classList.toggle('hidden', !!stats.jail);
+  $('mmWrap').classList.toggle('badge', phoneBadge > 0); $('phoneBtn').classList.add('hidden');
   if (ride) { const mph = Math.round(Math.abs(ride.s.v) * 2.237), lim = speedLimit(ride.s.x, ride.s.z); setText('speedTxt', String(mph)); $('speedo').classList.toggle('over', !!lim && mph > lim + 4); } // the number flashes red when you're over the limit
   const jt = race ? `Race ${race.i}/${RACE.points.length} · ${Math.ceil(race.t)}s` : job ? (job.type === 'bins' ? (job.stage === 'return' ? 'Bins · return the lorry' : `Bins · ${8 - job.bins.length}/8 · ${fmt(job.earned)}`) : job.type === 'taxi' ? (job.stage === 'pickup' ? `Cab · pick up fare · ${fmt(job.earned)}` : `Cab · drop off · ${Math.ceil(job.t)}s · ${fmt(job.pay)}`) : `Courier · ${Math.ceil(job.t)}s · ${fmt(job.pay)}`) : '';
   setText('raceTxt', jt); $('raceTxt').classList.toggle('hidden', !jt);
@@ -5544,7 +5559,7 @@ attachWheel($('wpnBtn'), {
   onOpen: () => { timeScale = 0.2; }, onClose: () => { timeScale = 1; },
 });
 const ST_ICON = ['sun', 'music', 'moon', 'bolt', 'book', 'fist', 'heart', 'wave', 'mic', 'star', 'x'];
-onSong((song, st) => { if (ride || homeMusic) slotNote('music', song.title, `${song.artist}${st?.name ? ' · ' + st.name : ''}`, 3.4, 'radio'); });
+let lastSong = ''; onSong((song, st) => { if (!song || song.title === lastSong) return; lastSong = song.title; if (ride || homeMusic) slotNote('music', song.title, `${song.artist}${st?.name ? ' · ' + st.name : ''}`, 3.4, 'radio'); });
 attachWheel($('radioBtn'), {
   items: () => STATIONS.map((s, i) => ({ icon: svg(ST_ICON[i] || 'radio', 'wheel'), label: s.name.split(' — ')[0], sub: s.name.split(' — ')[1] || '', current: radioIndex() === i })),
   onSelect: (it, i) => { radioSet(i); radioOn(!!ride); toast(STATIONS[i].name, 1.4); },
@@ -5842,7 +5857,7 @@ function renderPhone() {
 $('phoneBtn').addEventListener('pointerdown', e => { e.stopPropagation(); openPhone(); });
 $('phHome').onclick = () => closePhone();
 $('phone').addEventListener('pointerdown', e => { if (e.target.id === 'phone') closePhone(); });
-mm.addEventListener('pointerdown', e => { e.stopPropagation(); if (state === 'play') openPhone('maps'); });
+mm.addEventListener('pointerdown', e => { e.stopPropagation(); if (state === 'play') openPhone(); }); // the map is your phone: tap it
 
 // ================================================================ save / load
 function saveGame() {
@@ -5851,7 +5866,7 @@ function saveGame() {
   store.set('bc_save', save); store.set('bc_arsenal', arsenal); store.set('bc_cars', garage);
 }
 // auto-update: bookmarks and home-screen apps can hold on to an old copy. Check version.json (never cached) and reload once if newer.
-const BUILD = 90;
+const BUILD = 91;
 function checkUpdate() {
   fetch('version.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(j => {
     if (!(j.v > BUILD)) return;
@@ -6143,4 +6158,4 @@ function frame(now) {
 }
 startGame();
 requestAnimationFrame(frame);
-window.__game = { get animals() { return animals; }, crime, WANT, copCars, cops, pitFight, busted, fam, famNewDay, makeOfficial, talkFamily, get dayN() { return dayN; }, set dayN(v) { dayN = v; }, scene: G.scene, cam: G.cam, snap: () => updateCamera(0, true), get state() { return state; }, P, input, get ride() { return ride; }, get myCar() { return myCar; }, get traffic() { return traffic; }, peds, setTime: h => { clockH = h; }, openCustom, enterVehicle, exitCar, get money() { return money; }, set money(v) { money = v; }, openPlace, PLACES, PROPERTIES, runMinigame, get action() { return action; }, arsenal, selectWeapon, openPhone, setWaypoint, get route() { return route; }, talkToPed, talk, doAction, stats, get inside() { return inside; }, enterInterior, exitInterior, get customers() { return customers; }, newCustomer, startEdit, endEdit, get job() { return job; }, gainXP, storage, doSpot, useFurn, phoneGo, talkVenue, talkJob, openPlace, talkCustomer, startJob, openCarShop, damageCar, repairCar, addFire, get fires() { return fires; }, get ems() { return ems; }, get vehicles() { return vehicles; }, makeVehicle, makeCop, prisonFight, life, startDealMeet, get lifeAct() { return lifeAct; }, get train() { return train; }, get trainRide() { return trainRide; }, boardTrain, eventReset: () => { eventOpen = false; }, bodyCheck, attendClass, talkAdmissions, edu, startDance, get dance() { return dance; }, radioSet: i => { radioSet(i); radioOn(true); }, get zoom() { return zoom; }, set zoom(z) { zoom = z; }, DEFAULT_CAR, setState: x => setState(x), get jail() { return stats.jail; }, witness, personOf, dealHeat, trafficStop, carNear, carTop, startDate, talkDate, get date() { return date; }, get carAnim() { return carAnim; }, lifeApi, startShower, bizNewDay, subs, forceWanted, get buddy() { return buddy; }, startBuddy, ev: { evChase, evMug, evRobbery, evGang, evBusk, evCrash, evFire, evMarket, evParade, evProtest, streetEvents } };
+window.__game = { get animals() { return animals; }, crime, WANT, copCars, cops, pitFight, busted, fam, famNewDay, makeOfficial, talkFamily, get dayN() { return dayN; }, set dayN(v) { dayN = v; }, scene: G.scene, cam: G.cam, snap: () => updateCamera(0, true), get state() { return state; }, P, input, get ride() { return ride; }, get myCar() { return myCar; }, get traffic() { return traffic; }, peds, setTime: h => { clockH = h; }, openCustom, enterVehicle, exitCar, get money() { return money; }, set money(v) { money = v; }, openPlace, PLACES, PROPERTIES, runMinigame, get action() { return action; }, arsenal, selectWeapon, openPhone, setWaypoint, get route() { return route; }, talkToPed, talk, doAction, stats, get inside() { return inside; }, enterInterior, exitInterior, get customers() { return customers; }, newCustomer, startEdit, endEdit, get job() { return job; }, gainXP, storage, doSpot, useFurn, phoneGo, talkVenue, talkJob, openPlace, talkCustomer, startJob, openCarShop, damageCar, repairCar, addFire, get fires() { return fires; }, get ems() { return ems; }, get vehicles() { return vehicles; }, makeVehicle, makeCop, prisonFight, life, startDealMeet, get lifeAct() { return lifeAct; }, get train() { return train; }, get trainRide() { return trainRide; }, boardTrain, eventReset: () => { eventOpen = false; }, bodyCheck, attendClass, talkAdmissions, edu, startDance, get dance() { return dance; }, radioSet: i => { radioSet(i); radioOn(true); }, get zoom() { return zoom; }, set zoom(z) { zoom = z; }, DEFAULT_CAR, setState: x => setState(x), get jail() { return stats.jail; }, witness, personOf, dealHeat, trafficStop, carNear, carTop, startDate, talkDate, get date() { return date; }, get carAnim() { return carAnim; }, lifeApi, startShower, bizNewDay, subs, forceWanted, get buddy() { return buddy; }, startBuddy, camBlocked, get camYaw() { return camYaw; }, ev: { evChase, evMug, evRobbery, evGang, evBusk, evCrash, evFire, evMarket, evParade, evProtest, streetEvents } };
