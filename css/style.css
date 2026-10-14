@@ -662,3 +662,4 @@ body.phone-out #mmWrap { opacity: 0; transition: opacity .1s; }
 .panel.scroll > * { flex-shrink: 0; }
 .statx .cls { display: inline-grid; place-items: center; min-width: 20px; height: 18px; padding: 0 5px; border-radius: 5px; font-weight: 900; color: #16161b; background: #9aa0aa; }
 .statx .clsS { background: linear-gradient(135deg, #ffe066, #ff8a2a); } .statx .clsA { background: #ff6fb5; } .statx .clsB { background: #38e8ff; } .statx .clsC { background: #4cd964; }
+.wbtns { display: flex; gap: 6px; flex-shrink: 0; } .wbtns button { min-width: 0; padding-inline: 12px; }

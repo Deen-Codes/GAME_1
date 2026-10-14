@@ -70,6 +70,7 @@ export function randomChar() {
   }
   if (Math.random() < 0.5) c.mask = 'none';
   if (Math.random() < 0.5) c.eyewear = 'none';
+  if (Math.random() < 0.7) c.neck = 'none';
   return c;
 }
 
