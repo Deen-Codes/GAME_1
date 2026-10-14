@@ -1,8 +1,8 @@
 // Conversations staged like a Pokémon battle: they stand on a platform facing you,
 // you see the back of your own head in the foreground, subtitles type out, you pick replies.
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject } from './character.js?v=142';
-import { sfx, audio } from './audio.js?v=142';
+import { buildCharacter, poseCharacter, disposeObject } from './character.js?v=143';
+import { sfx, audio } from './audio.js?v=143';
 
 const $ = id => document.getElementById(id);
 const BG = {
