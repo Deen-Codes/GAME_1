@@ -7660,7 +7660,7 @@ const CUSTOM_STATES = ['char', 'gun', 'car', 'clothes', 'barber', 'carshop'];
 function setState(s) { if (s === 'talk') subs.stop(); if (s !== 'play') setTimeout(stackTabs, 60); /* a conversation replaces what's on screen; other screens just pause the queue */
   state = s;
   show('custom', CUSTOM_STATES.includes(s));
-  show('hud', s === 'play' || s === 'ui' || s === 'phone'); show('pad', s === 'play');
+  show('hud', s === 'play' || s === 'ui' || s === 'phone'); show('pad', s === 'play'); $('sbBtn')?.classList.toggle('hidden', s !== 'play');
   if (CUSTOM_STATES.includes(s)) { previewMode = s; previewLayout(); }
   if (s !== 'play') engineSound(false, 0);
   if (s === 'play') gameLayout();
