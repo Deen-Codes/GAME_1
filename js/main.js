@@ -1,30 +1,30 @@
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=177';
-import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun, partEffects, partPerk } from './gun.js?v=177';
-import { buildCar, computeCarStats, carStatBars, carClass, carPartEffects, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=177';
-import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, STAIRS, unblockPillars, canyonAt, canyonNear, PEAK, SKYWAYS, SKY_Y, skyAt, skyY, rampSeg, windowShader, makeOceanMaterial, WATER_U, WIND_U, METRO, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=177';
-import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=177';
-import { buildPanel, renderStats } from './ui.js?v=177';
-import { Input } from './input.js?v=177';
-import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime, animalCall } from './audio.js?v=177';
-import { runMinigame } from './minigames.js?v=177';
-import { CUT, initCutGames } from './cutgames.js?v=177';
-import { initOnline, updateOnline, goOnline, goOffline, NET, onNet, sendMagicLink, verifyCode, signOut, signedIn, cloudLoad, cloudSave } from './online.js?v=177';
-import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk, setReservedNames, seededLook } from './peds.js?v=177';
-import { citizens, whereNow } from './citizens.js?v=177';
-import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=177';
-import { findRoute } from './nav.js?v=177';
-import { COURSES, CAREERS, QUIZ } from './careers.js?v=177';
-import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=177';
-import { attachWheel } from './wheel.js?v=177';
-import { GROUND_U } from './groundtex.js?v=177';
-import { Animals, makeAnimalMesh } from './animals.js?v=177';
-import { Talk } from './talk.js?v=177';
-import { incomingText, classify, textOptions, textReply } from './texts.js?v=177';
-import { svg, drawIcon, ICONS as ICON_SET } from './icons.js?v=177';
-import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=177';
-import { FURN, CATALOG } from './furniture.js?v=177';
-import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=177';
+import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=178';
+import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun, partEffects, partPerk } from './gun.js?v=178';
+import { buildCar, computeCarStats, carStatBars, carClass, carPartEffects, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=178';
+import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, STAIRS, unblockPillars, canyonAt, canyonNear, PEAK, SKYWAYS, SKY_Y, skyAt, skyY, rampSeg, windowShader, makeOceanMaterial, WATER_U, WIND_U, METRO, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=178';
+import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=178';
+import { buildPanel, renderStats } from './ui.js?v=178';
+import { Input } from './input.js?v=178';
+import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime, animalCall } from './audio.js?v=178';
+import { runMinigame } from './minigames.js?v=178';
+import { CUT, initCutGames } from './cutgames.js?v=178';
+import { initOnline, updateOnline, goOnline, goOffline, NET, onNet, sendMagicLink, verifyCode, signOut, signedIn, cloudLoad, cloudSave, cloudList, cloudDelete } from './online.js?v=178';
+import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk, setReservedNames, seededLook } from './peds.js?v=178';
+import { citizens, whereNow } from './citizens.js?v=178';
+import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=178';
+import { findRoute } from './nav.js?v=178';
+import { COURSES, CAREERS, QUIZ } from './careers.js?v=178';
+import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=178';
+import { attachWheel } from './wheel.js?v=178';
+import { GROUND_U } from './groundtex.js?v=178';
+import { Animals, makeAnimalMesh } from './animals.js?v=178';
+import { Talk } from './talk.js?v=178';
+import { incomingText, classify, textOptions, textReply } from './texts.js?v=178';
+import { svg, drawIcon, ICONS as ICON_SET } from './icons.js?v=178';
+import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=178';
+import { FURN, CATALOG } from './furniture.js?v=178';
+import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=178';
 
 const $ = id => document.getElementById(id);
 let inside = null, editMode = false, held = null, pendingCar = false, homeMusic = false, phoneBadge = 0;
@@ -6882,7 +6882,7 @@ function storyMessage() {
   return { from: stepWho(st).name, av: 'flag', main: true, title: st.title, text: st.text, goal: st.goal(S), at: st.wp && !st.last ? st.wp(S) : null, key: 'main:' + st.id };
 }
 function messages() {
-  const intro = { rich: { from: "Dad's Lawyer", av: 'case', text: "Your father has instructed me to inform you that this is the last of it: $25,000 and the deeds to the Eastport Bungalow. He suggests you 'get a job'. Bay City College is a fine place to start." },
+  const intro = storyStep() ? null : { rich: { from: "Dad's Lawyer", av: 'case', text: "Your father has instructed me to inform you that this is the last of it: $25,000 and the deeds to the Eastport Bungalow. He suggests you 'get a job'. Bay City College is a fine place to start." },
     excon: { from: 'Big Carlos', av: 'lock', text: "You're out. Don't come back in here. Slim downtown remembers you, go see him. And watch yourself, the cops know your face. Cheap food at the taco truck. Now go make some money." },
     hustler: { from: 'Slim', av: 'deal', text: "Ayy, you got the pack? Sell it to the customers who text you or flip it to another dealer. Prices change every day, so ask around. Don't get caught, the cops are watching the deals now." },
     grad: { from: 'Bay Corp HR', av: 'case', text: "Welcome to Bay Corp! You start as Office Assistant. Clock in at the Tower reception between 7am and 7pm. Strong performance leads to promotion. We're proud to have you." },
@@ -6982,7 +6982,8 @@ function renderPhone() {
     const ms = messages();
     const chatIds = [...new Set([...(fam().partner ? [fam().partner.id] : []), ...Object.keys(stats.texts || {}), ...Object.keys(stats.dates || {}).filter(id => !stats.dates[id].noNum), ...fam().kids.filter(k => ['Teen', 'Adult'].includes(kidStage(k))).map(k => k.id)])];
     const hid = stats.hideThr ||= {};
-    const chats = chatIds.filter(id => !(hid[id] != null && (stats.texts?.[id]?.length || 0) <= hid[id])).map(id => { const T = stats.texts?.[id] || [], last = T[T.length - 1]; return `<div class="swr" data-swthr="${id}"><div class="swr-del">Delete</div><button class="ph-row" data-thr="${id}"><span>${svg(id.startsWith('kid:') ? 'smile' : 'heart', 'sm')} <b>${nameOf(id)}</b> <small style="white-space:normal">${last ? (last.me ? 'You: ' : '') + last.t : 'Tap to text'}</small></span></button></div>`; }).join('');
+    const mainTxt = ms.find(m => m.main)?.text, dupe = id => { const T = stats.texts?.[id] || []; return mainTxt && T.length && T[T.length - 1].t === mainTxt && !T.some(x => x.me); }; /* the story card in the inbox already shows this text: one welcome, not two */
+    const chats = chatIds.filter(id => !dupe(id) && !(hid[id] != null && (stats.texts?.[id]?.length || 0) <= hid[id])).map(id => { const T = stats.texts?.[id] || [], last = T[T.length - 1]; return `<div class="swr" data-swthr="${id}"><div class="swr-del">Delete</div><button class="ph-row" data-thr="${id}"><span>${svg(id.startsWith('kid:') ? 'smile' : 'heart', 'sm')} <b>${nameOf(id)}</b> <small style="white-space:normal">${last ? (last.me ? 'You: ' : '') + last.t : 'Tap to text'}</small></span></button></div>`; }).join('');
     el.innerHTML = `${back}<h4>Messages</h4>${chats ? `<div class="ph-sec">Chats</div>${chats}<div class="ph-sec">Inbox</div>` : ''}${stats.burner ? `<button class="ph-row" id="msCust"><span>${svg('phone', 'sm')} Burner phone</span><b>${CUST_MODES[custMode()]}</b></button>` : ''}${ms.length ? '<p class="ph-hint">Swipe a message left to delete it.</p>' : '<p class="ph-hint">No messages.</p>'}<div class="ph-list">${ms.map((m, i) => m.main ? `<div class="ph-msg main"><div class="av">${svg(m.av)}</div><div><span class="mainpill">MAIN · ${m.title}</span><b>${m.from}</b><p>${m.text}</p><p class="goal">${svg('flag', 'sm')} ${m.goal}</p>${m.at ? `<button class="ph-mini" data-wp="${i}">${svg('pin', 'sm')} Set waypoint</button>` : ''}</div></div>` : `<div class="swr" data-swmsg="${i}"><div class="swr-del">Delete</div><div class="ph-msg"><div class="av">${svg(m.av)}</div><div><b>${m.from}</b><p>${m.text}</p>${m.at ? `<button class="ph-mini" data-wp="${i}">${svg('pin', 'sm')} Set waypoint</button>` : ''}</div></div></div>`).join('')}</div>`;
     swipeDelete(el, '[data-swmsg]', w => { const m = ms[+w.dataset.swmsg]; stats.delMsgs[m.key] = dayN; if (m.cust) { const c = customers.find(q => q.id === m.cust); if (c) { removeCustomer(c); toast(`You texted ${c.name}: "Not interested."`, 2.2); } } if (m.meet && lifeAct?.kind === 'meet') { if (lifeAct.p) endLifePed({ p: lifeAct.p }); lifeAct = null; clearWaypoint(); toast('You texted the buyer: "Not interested."', 2.2); } saveGame(); renderPhone(); });
     swipeDelete(el, '[data-swthr]', w => { const id = w.dataset.swthr; stats.hideThr[id] = stats.texts?.[id]?.length || 0; saveGame(); renderPhone(); });
@@ -7095,7 +7096,7 @@ function renderPhone() {
       <button class="ph-row" id="stSteer"><span>Car steering</span><b>${(settings.steer || 'screen') === 'screen' ? 'Point where you go' : 'Classic (left/right)'}</b></button>
       <button class="ph-row" id="stShadow"><span>Shadows (off = smoother)</span><b>${settings.shadows ? 'On' : 'Off'}</b></button>
       ${isTouch() && !isStandalone() ? `<div class="ph-sec">App</div>${!isIOS() ? `<button class="ph-row" id="stFull"><span>Full screen</span><b>${document.fullscreenElement ? 'On' : 'Off'}</b></button>` : ''}<button class="ph-row" id="stInstall"><span>${isIOS() ? 'Add to Home Screen' : 'Download the app'}</span><b>${svg('download')}</b></button>` : ''}
-      <div class="ph-sec">Account</div><button class="ph-row" id="stAcct"><span>${signedIn() ? (NET.email || 'Signed in').replace(/</g, '') : 'Not signed in'}</span><b>${signedIn() ? 'Save now' : 'Sign in to save online'}</b></button>
+      <div class="ph-sec">Account</div><button class="ph-row" id="stAcct"><span>${signedIn() ? (NET.email || 'Signed in').replace(/</g, '') : 'Not signed in'}</span><b>${signedIn() ? 'Your lives' : 'Sign in to save online'}</b></button>
       <div class="ph-sec">Danger zone</div><button class="ph-row danger" id="stReset"><span>Reset all progress</span></button>
       <p class="ph-hint">Bay City v${BUILD}</p>`;
     $('stSound').onclick = () => { settings.sound = !settings.sound; applySettings(); renderPhone(); };
@@ -7104,7 +7105,7 @@ function renderPhone() {
     $('stSteer').onclick = () => { settings.steer = (settings.steer || 'screen') === 'screen' ? 'car' : 'screen'; applySettings(); renderPhone(); };
     if ($('stFull')) $('stFull').onclick = () => { if (document.fullscreenElement) document.exitFullscreen?.(); else goFullscreen(); setTimeout(renderPhone, 300); };
     if ($('stInstall')) $('stInstall').onclick = () => { closePhone(); installHelp(); };
-    $('stAcct').onclick = () => { saveGame(); if (signedIn()) { cloudTick(0, true); toast('Saved to your account', 1.6); return; } closePhone(); showTitle(); };
+    $('stAcct').onclick = () => { saveGame(); closePhone(); if (signedIn()) { cloudTick(0, true); setTimeout(() => titleSignedIn(true), 600); return; } showTitle(); };
     $('stShadow').onclick = () => { settings.shadows = !settings.shadows; applySettings(); renderPhone(); };
     let armed = false; $('stReset').onclick = () => { if (!armed) { armed = true; $('stReset').querySelector('span').textContent = 'Tap again to wipe everything'; return; } for (const k of ['bc_save', 'bc_arsenal', 'rr_char', 'rr_gun', 'bc_car', 'bc_cars']) localStorage.removeItem(k); location.reload(); };
   }
@@ -7122,7 +7123,7 @@ function saveGame() {
   store.set('bc_save', save); store.set('bc_arsenal', arsenal); store.set('bc_cars', garage); store.set('bc_savedAt', Date.now());
 }
 // auto-update: bookmarks and home-screen apps can hold on to an old copy. Check version.json (never cached) and reload once if newer.
-const BUILD = 177;
+const BUILD = 178;
 function checkUpdate() {
   fetch('version.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(j => {
     if (!(j.v > BUILD)) return;
@@ -7160,57 +7161,107 @@ function storyPicker() {
   document.querySelectorAll('[data-story]').forEach(b => b.onclick = () => { closeModal(); applyStory(b.dataset.story === 'random' ? pick(STORIES).id : b.dataset.story); });
 }
 // ================================================================ TITLE: sign in, pick up your save from any device, play (full screen)
-const SAVE_SKIP = ['bc_sid', 'bc_email', 'bc_online', 'bc_net_id', 'bc_autoplay'];
+const SAVE_SKIP = ['bc_sid', 'bc_email', 'bc_online', 'bc_net_id', 'bc_autoplay', 'bc_slot'];
+const curSlot = () => +localStorage.getItem('bc_slot') || null, setSlot = n => n ? localStorage.setItem('bc_slot', n) : localStorage.removeItem('bc_slot');
 const titleUp = !/[?&](test|local)\b/.test(location.search) && sessionStorage.getItem('bc_autoplay') !== '1';
 sessionStorage.removeItem('bc_autoplay');
 let titleNewLife = false, titleStep = null, titleEmail = '', titleDev = null, cloudState = null;
 function saveBundle() { const out = {}; for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (/^(bc_|rr_)/.test(k) && !SAVE_SKIP.includes(k)) out[k] = localStorage.getItem(k); } return out; }
 function bundleSummary(B) { try { const s2 = JSON.parse(B?.bc_save || 'null'); if (!s2) return null; return { day: s2.day || 1, money: s2.money || 0, at: +(B.bc_savedAt || 0) }; } catch (e) { return null; } }
-function applyBundle(B) { for (const k of Object.keys(saveBundle())) localStorage.removeItem(k); for (const [k, v] of Object.entries(B)) if (!SAVE_SKIP.includes(k)) localStorage.setItem(k, v); sessionStorage.setItem('bc_autoplay', '1'); location.reload(); }
+function applyBundle(B, slot, title) { if (slot !== undefined) setSlot(slot); for (const k of Object.keys(saveBundle())) localStorage.removeItem(k); for (const [k, v] of Object.entries(B)) if (!SAVE_SKIP.includes(k)) localStorage.setItem(k, v); if (!title) sessionStorage.setItem('bc_autoplay', '1'); location.reload(); }
 let cloudT = 0, cloudLast = '';
 function cloudTick(dt, force) { // while you play, your save goes up to your account every minute (and when you leave)
-  if (!signedIn() || titleUp && $('title')) return; cloudT -= dt; if (cloudT > 0 && !force) return; cloudT = 60;
-  saveGame(); const B = saveBundle(), j = JSON.stringify(B); if (j === cloudLast) return; cloudLast = j; cloudSave(B, bundleSummary(B), force);
+  if (!signedIn() || $('title') || !curSlot()) return; cloudT -= dt; if (cloudT > 0 && !force) return; cloudT = 60;
+  saveGame(); const B = saveBundle(), j = JSON.stringify(B); if (j === cloudLast) return; cloudLast = j; const sl = curSlot(); if (sl) cloudSave(B, bundleSummary(B), force, sl);
 }
 document.addEventListener('visibilitychange', () => { if (document.hidden) cloudTick(0, true); });
 const isTouch = () => matchMedia('(pointer: coarse)').matches || navigator.maxTouchPoints > 0;
 const isIOS = () => /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 const isStandalone = () => matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
 function goFullscreen() { if (isStandalone() || isIOS()) return; const el = document.documentElement; try { (el.requestFullscreen || el.webkitRequestFullscreen)?.call(el, { navigationUI: 'hide' })?.catch?.(() => {}); } catch (e) {} }
+// the opening: a slow fly-over of the city at sunset under the big sign, then you're in
+const PITCH = ['Hustle on the corners', 'Climb the Bay Corp tower', 'Race across the bridges', 'Fall in love, raise a family', 'Buy the whole block', 'Sail the bay at sunset', 'Do time. Or don\'t get caught', 'Play online with everyone'];
+let titlePick = false, pitchI = 0, pitchTimer = null;
+function titlePlay() { $('title')?.remove(); clearInterval(pitchTimer); setState('play'); goFullscreen(); if (titleNewLife && !save) setTimeout(() => applyStory(pick(STORIES).id), 300); titleNewLife = false; if (signedIn()) { goOnline(); cloudT = 5; } }
+const TSHOTS = [ // [look x, z, radius, height, start angle, turn per shot]
+  () => [0, 0, 170, 60, 0.6, 0.12], // downtown skyline
+  () => [300, 0, 130, 50, 2.2, -0.1], // across the bay
+  () => { const c = CITIES.find(q => q.id === 'strip'); return c ? [c.cx, c.cz, 110, 45, 4, 0.14] : [P.x, P.z, 70, 40, 4, 0.14]; }]; // the Sun Valley strip
+function titleCam(dt) {
+  ptime += dt; const n = Math.floor(ptime / 10) % TSHOTS.length, u = (ptime % 10) / 10, S = TSHOTS[n]();
+  let [x, z, r, h, a0, w] = S; if (!isFinite(x) || !isFinite(z)) { x = P.x; z = P.z; }
+  const a = a0 + u * w * 10, cam = G.cam;
+  cam.position.set(x + Math.sin(a) * r * (1 - u * 0.15), h * (1 - u * 0.2) + 10, z + Math.cos(a) * r * (1 - u * 0.15)); cam.lookAt(x, 12, z);
+  updateChunks(x, z, 3); applyTime(18.4, x, z); G.scene.fog.near = r * 0.8; G.scene.fog.far = r * 2.6;
+  const fade = $('ttFade'); if (fade) fade.style.opacity = u < 0.06 ? 1 - u / 0.06 : u > 0.94 ? (u - 0.94) / 0.06 : 0;
+}
+function fitPhone() { const land = innerWidth > innerHeight && innerHeight <= 540; document.documentElement.style.setProperty('--phs', land ? Math.min(1, innerHeight * 0.95 / (560 * 0.985 + 310 * 0.139)).toFixed(3) : 1); } // a 270x500 phone tilted 8 degrees, scaled to the screen height
+addEventListener('resize', fitPhone); fitPhone();
 function showTitle() {
-  let el = $('title'); if (!el) { el = document.createElement('div'); el.id = 'title'; document.body.appendChild(el); }
+  let el = $('title'); const fresh = !el; if (!el) { el = document.createElement('div'); el.id = 'title'; document.body.appendChild(el); }
   setState('title');
   const S = signedIn(), loc = bundleSummary(saveBundle()), sumTxt = s2 => s2 ? `Day ${s2.day} · ${fmt(s2.money)}` : 'New life';
   let body = '';
-  if (!S && titleStep !== 'code') body = `<p class="tt-sub">Sign in to save your life to your account and play online with everyone else.</p>
-    <input id="ttEmail" type="email" autocomplete="email" placeholder="you@email.com" value="${titleEmail.replace(/"/g, '')}"><button class="tt-btn" id="ttSend">Send me a code</button>
+  if (!S && titleStep !== 'code') body = `<input id="ttEmail" type="email" autocomplete="email" placeholder="you@email.com" value="${titleEmail.replace(/"/g, '')}"><button class="tt-btn" id="ttSend">Sign in to play</button>
+    <p class="tt-sub"><small>We'll email you a code. Your life is saved to your account and you play online with everyone.</small></p>
     <button class="tt-link" id="ttOffline">Play offline on this ${isTouch() ? 'phone' : 'computer'}</button>`;
   else if (!S) body = `<p class="tt-sub">We sent a 6-digit code to <b>${titleEmail}</b>.${titleDev ? ` <small>(test code ${titleDev.code})</small>` : ''}</p>
     <input id="ttCode" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="123456" class="tt-code"><button class="tt-btn" id="ttVerify">Sign in</button>
     <div class="tt-apps">${mailApps(titleEmail).map(m => `<a class="tt-app" href="${m.href}" ${m.web ? 'target="_blank" rel="noopener"' : ''}>${svg('mail', 'sm')} ${m.label}</a>`).join('')}</div>
     <button class="tt-link" id="ttBack">Use a different email</button>`;
-  else if (!cloudState) body = `<p class="tt-sub">Signed in as <b>${NET.email}</b></p><p class="tt-sub">Finding your save...</p>`;
-  else { const C = cloudState.sum, differ = cloudState.data && loc && JSON.stringify(cloudState.data.bc_save) !== JSON.stringify(saveBundle().bc_save);
-    body = `<p class="tt-sub">Signed in as <b>${NET.email}</b></p>` + (differ
-      ? `<p class="tt-sub">You've got two lives. Which one do you want to carry on?</p><button class="tt-save" id="ttCloud"><b>${svg('cloud', 'sm')} Your account</b><span>${sumTxt(C)}</span></button><button class="tt-save alt" id="ttLocal"><b>${svg('phone', 'sm')} This ${isTouch() ? 'phone' : 'computer'}</b><span>${sumTxt(loc)}</span></button>`
-      : `<button class="tt-btn big" id="ttPlay">${cloudState.data && !loc ? 'Carry on' : loc ? 'Carry on' : 'Start your life'}<small>${sumTxt(cloudState.data ? C : loc)}</small></button>`)
-      + `<button class="tt-link" id="ttOut">Sign out</button>`; }
-  const inst = isTouch() && !isStandalone() ? `<button class="tt-link" id="ttInstall">${svg('download', 'sm')} ${isIOS() ? 'Play full screen: add to your Home Screen' : 'Install the app'}</button>` : '';
-  el.innerHTML = `<div class="tt-card"><div class="tt-logo">BAY<span>CITY</span></div>${body}${inst}${!isTouch() ? '<p class="tt-keys">WASD move · Mouse attack · E use · F car · Space jump · T phone · M map</p>' : ''}</div>`;
-  const play = () => { el.remove(); setState('play'); goFullscreen(); if (titleNewLife && !save) setTimeout(() => applyStory(pick(STORIES).id), 300); titleNewLife = false; if (signedIn()) { goOnline(); cloudT = 5; } };
+  else if (!cloudState || !titlePick) body = `<div class="tt-load"><i></i><span>Loading your life...</span></div><p class="tt-sub"><small>${NET.email}</small></p>`;
+  else { const sl = cloudState.slots, cur = curSlot(), linked = sl.some(q => q.slot === cur), here = isTouch() ? 'phone' : 'computer';
+    const ago = t => { const m = (Date.now() - t) / 6e4; return m < 2 ? 'just now' : m < 60 ? `${Math.round(m)} min ago` : m < 1440 ? `${Math.round(m / 60)}h ago` : `${Math.round(m / 1440)} days ago`; };
+    body = `<p class="tt-sub">Your lives · <b>${NET.email}</b></p><div class="tt-slots">`
+      + sl.map(q => `<div class="tt-slot"><button class="tt-save${q.slot === cur ? '' : ' alt'}" data-slot="${q.slot}"><b>${svg(q.slot === cur ? 'phone' : 'cloud', 'sm')} Life ${q.slot}${q.slot === cur ? ' · playing' : ''}</b><span>${sumTxt(q.summary?.day ? q.summary : null)} · ${ago(q.t)}</span></button><button class="tt-del" data-del="${q.slot}" aria-label="Delete">${svg('trash', 'sm')}</button></div>`).join('')
+      + (loc && !linked ? `<div class="tt-slot"><button class="tt-save" data-up="1"><b>${svg('phone', 'sm')} This ${here}</b><span>${sumTxt(loc)} · not saved yet</span></button></div>` : '')
+      + `</div>${sl.length < cloudState.max ? `<button class="tt-btn" id="ttNew">Start a new life</button>` : `<p class="tt-sub"><small>All ${cloudState.max} save slots are full. Delete one to start another life.</small></p>`}`
+      + `<p class="tt-sub"><small>${sl.length} of ${cloudState.max} saves</small></p>${linked && $('hud') ? '<button class="tt-link" id="ttResume">Back to the game</button>' : ''}<button class="tt-link" id="ttOut">Sign out</button>`; }
+  const inst = isTouch() && !isStandalone() && !S ? `<button class="tt-link" id="ttInstall">${svg('download', 'sm')} ${isIOS() ? 'Play full screen: add to your Home Screen' : 'Install the app'}</button>` : '';
+  el.innerHTML = `<div id="ttFade"></div><div class="tt-top"><div class="tt-kicker">An open city life game</div><div class="tt-logo">BAY<span>CITY</span></div><div class="tt-tag">One city. Any life.</div><div class="tt-pitch" id="ttPitch">${PITCH[pitchI % PITCH.length]}</div></div>
+    <div class="tt-card">${body}${inst}${!isTouch() && !S ? '<p class="tt-keys">WASD move · Mouse attack · E use · F car · Space jump · T phone · M map</p>' : ''}</div>`;
+  if (fresh) { el.classList.add('intro'); clearInterval(pitchTimer); pitchTimer = setInterval(() => { const pe = $('ttPitch'); if (!pe) return; pe.classList.remove('in'); void pe.offsetWidth; pitchI++; pe.textContent = PITCH[pitchI % PITCH.length]; pe.classList.add('in'); }, 2600); }
+  const play = titlePlay;
   el.querySelector('#ttSend')?.addEventListener('click', async e => { titleEmail = el.querySelector('#ttEmail').value.trim().toLowerCase(); if (!/^\S+@\S+\.\S+$/.test(titleEmail)) { toast('Type your email first'); return; } e.target.disabled = true; e.target.textContent = 'Sending...'; const r = await sendMagicLink(titleEmail); if (r.ok) { titleStep = 'code'; titleDev = r.dev; } else toast(r.error, 4); showTitle(); });
   el.querySelector('#ttOffline')?.addEventListener('click', play);
+  el.querySelector('#ttResume')?.addEventListener('click', play);
   el.querySelector('#ttBack')?.addEventListener('click', () => { titleStep = null; showTitle(); });
   const code = el.querySelector('#ttCode'), tryCode = async () => { const c = code.value.replace(/\D/g, ''); if (c.length !== 6) return; const r = await verifyCode(titleEmail, c); if (r.ok) { titleStep = null; titleSignedIn(); } else { toast(r.error, 3); code.value = ''; } };
   if (code) { code.oninput = () => code.value.replace(/\D/g, '').length === 6 && tryCode(); el.querySelector('#ttVerify').onclick = tryCode; setTimeout(() => code.focus(), 50); }
-  el.querySelector('#ttPlay')?.addEventListener('click', () => { if (cloudState.data && !loc) return applyBundle(cloudState.data); if (!cloudState.data && loc) { const B = saveBundle(); cloudSave(B, bundleSummary(B)); } play(); });
-  el.querySelector('#ttCloud')?.addEventListener('click', () => applyBundle(cloudState.data));
-  el.querySelector('#ttLocal')?.addEventListener('click', () => { const B = saveBundle(); cloudSave(B, bundleSummary(B)); play(); });
-  el.querySelector('#ttOut')?.addEventListener('click', async () => { await signOut(); cloudState = null; showTitle(); });
+  const freeSlot = () => { for (let n = 1; n <= cloudState.max; n++) if (!cloudState.slots.some(q => q.slot === n)) return n; return null; };
+  el.querySelectorAll('[data-slot]').forEach(b => b.onclick = async () => { const n = +b.dataset.slot, q = cloudState.slots.find(x => x.slot === n);
+    if (n === curSlot() && loc && !(q.t > (loc.at || 0) + 30000)) return play(); // this device has the latest of this life: just carry on
+    if (curSlot() && curSlot() !== n && loc) { const B = saveBundle(); await cloudSave(B, bundleSummary(B), false, curSlot()); } // park the life you're leaving
+    b.disabled = true; try { const r = await cloudLoad(n); if (r.data) applyBundle(r.data, n); else toast('That save is empty', 2); } catch (e) { toast(e.message, 3); b.disabled = false; } });
+  el.querySelector('[data-up]')?.addEventListener('click', async () => { const n = freeSlot(); if (!n) { toast('Your save slots are full. Delete one first.', 3); return; } const B = saveBundle(); await cloudSave(B, bundleSummary(B), false, n); setSlot(n); play(); });
+  el.querySelector('#ttNew')?.addEventListener('click', async () => { const n = freeSlot(); if (!n) return;
+    if (loc && curSlot()) { const B = saveBundle(); await cloudSave(B, bundleSummary(B), false, curSlot()); } applyBundle({}, n); });
+  el.querySelectorAll('[data-del]').forEach(b => b.onclick = async () => { const n = +b.dataset.del;
+    if (!b.classList.contains('armed')) { el.querySelectorAll('.tt-del.armed').forEach(x => { x.classList.remove('armed'); x.innerHTML = svg('trash', 'sm'); }); b.classList.add('armed'); b.innerHTML = 'Delete?'; return; }
+    b.disabled = true; try { const r = await cloudDelete(n); cloudState = { slots: r.slots, max: r.max }; if (n === curSlot()) { sessionStorage.setItem('bc_pick', '1'); return applyBundle({}, null, true); } showTitle(); } catch (e) { toast(e.message, 3); b.disabled = false; } });
+  el.querySelector('#ttOut')?.addEventListener('click', async () => { await signOut(); setSlot(null); cloudState = null; titlePick = false; showTitle(); });
   el.querySelector('#ttInstall')?.addEventListener('click', () => installHelp());
-  if (S && !cloudState) titleSignedIn();
+  if (S && !cloudState && !titleBusy) titleSignedIn();
 }
-async function titleSignedIn() { cloudState = null; showTitle(); try { const r = await cloudLoad(); cloudState = { data: r.data, sum: r.data ? bundleSummary(r.data) : null }; } catch (e) { cloudState = { data: null, sum: null }; if (/signed in/i.test(e.message)) { await signOut(); cloudState = null; } else toast('Couldn\'t reach your saves. Playing on this device.', 3); } if ($('title')) showTitle(); }
+// signed in: straight into your life. The list only shows when there's a real choice to make (or you ask for it in Settings)
+let titleBusy = false;
+async function titleSignedIn(pickList) {
+  titleBusy = true; cloudState = null; titlePick = !!pickList || sessionStorage.getItem('bc_pick') === '1'; sessionStorage.removeItem('bc_pick'); showTitle(); const t0 = performance.now();
+  try { const r = await cloudList(); cloudState = { slots: r.slots || [], max: r.max || 3 }; }
+  catch (e) { titleBusy = false; if (/signed in/i.test(e.message)) { await signOut(); setSlot(null); cloudState = null; showTitle(); } else { toast('Couldn\'t reach your saves. Playing on this device.', 3); cloudState = null; if ($('title')) titlePlay(); } return; }
+  titleBusy = false;
+  if (!titlePick) { await new Promise(r => setTimeout(r, Math.max(0, 2600 - (performance.now() - t0)))); if (await autoResume()) return; titlePick = true; }
+  if ($('title')) showTitle();
+}
+async function autoResume() {
+  const sl = cloudState.slots, cur = curSlot(), loc = bundleSummary(saveBundle()), q = sl.find(x => x.slot === cur);
+  try {
+    if (q) { if (loc && !(q.t > (loc.at || 0) + 30000)) { titlePlay(); return true; } const r = await cloudLoad(cur); if (r.data) { applyBundle(r.data, cur); return true; } return false; } // another device played this life more recently: take theirs
+    if (!loc) { if (sl.length) { const L = sl.reduce((a, b) => b.t > a.t ? b : a); const r = await cloudLoad(L.slot); if (r.data) { applyBundle(r.data, L.slot); return true; } return false; } setSlot(1); titlePlay(); return true; }
+    if (!sl.length) { const B = saveBundle(); await cloudSave(B, bundleSummary(B), false, 1); setSlot(1); titlePlay(); return true; } // first sign-in on this device: its life becomes your account's
+  } catch (e) { return false; }
+  return false; // this device has a life your account doesn't, and the account has others: ask
+}
 let installEvt = null; addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
 function installHelp() { // Android: the real install prompt. iPhone: how to do it by hand
   if (installEvt) { installEvt.prompt(); installEvt = null; return; }
@@ -7538,12 +7589,13 @@ function frame(now) {
   } else if (state === 'talk') { talk.update(rdt); talk.render(renderer); }
   else if (state === 'phone' || state === 'ui') { if (state === 'ui') updateHUD(rdt); renderer.render(G.scene, G.cam); }
   else if (state === 'mini') { /* minigame overlay owns the screen */ }
+  else if (state === 'title') { titleCam(rdt); renderer.render(G.scene, G.cam); }
   else { ptime += rdt; updatePreview(rdt, ptime); renderer.render(pv.scene, pv.cam); }
 }
 startGame();
 if (titleUp) showTitle();
 requestAnimationFrame(frame);
-window.__game = { get markersT() { return markers; }, get animals() { return animals; }, crime, WANT, copCars, cops, pitFight, busted, fam, famNewDay, makeOfficial, talkFamily, get dayN() { return dayN; }, set dayN(v) { dayN = v; }, scene: G.scene, cam: G.cam, snap: () => updateCamera(0, true), get state() { return state; }, P, input, get ride() { return ride; }, get myCar() { return myCar; }, get traffic() { return traffic; }, peds, setTime: h => { clockH = h; }, openCustom, enterVehicle, exitCar, get money() { return money; }, set money(v) { money = v; }, openPlace, PLACES, PROPERTIES, runMinigame, get action() { return action; }, arsenal, selectWeapon, openPhone, setWaypoint, get route() { return route; }, talkToPed, talk, doAction, stats, get inside() { return inside; }, enterInterior, exitInterior, get customers() { return customers; }, newCustomer, startEdit, endEdit, get job() { return job; }, gainXP, storage, doSpot, useFurn, phoneGo, talkVenue, talkJob, openPlace, talkCustomer, startJob, openCarShop, damageCar, repairCar, addFire, get fires() { return fires; }, get ems() { return ems; }, get vehicles() { return vehicles; }, makeVehicle, makeCop, prisonFight, life, startDealMeet, get lifeAct() { return lifeAct; }, get train() { return train; }, get trainRide() { return trainRide; }, boardTrain, eventReset: () => { eventOpen = false; }, bodyCheck, attendClass, talkAdmissions, edu, startDance, get dance() { return dance; }, radioSet: i => { radioSet(i); radioOn(true); }, get zoom() { return zoom; }, set zoom(z) { zoom = z; }, DEFAULT_CAR, setState: x => setState(x), get jail() { return stats.jail; }, witness, personOf, dealHeat, trafficStop, carNear, carTop, startDate, playCutT: (k, o) => { setState("mini"); return playCut(k, o || {}).then(r => { setState("play"); window.__cutR = r; return r; }); }, payPhoneT: () => payPhone(), get metro() { return metro; }, METRO, boardMetroT: i => { metro.si = i; metro.stop = 8; metro.s = METRO.stations[i].s; boardMetro(i); }, unblockT: (id, f) => unblockDoors(id, f), get HD() { return HOME_DEFAULTS; }, smashT: () => { const cx = Math.floor(P.x / CHUNK), cz = Math.floor(P.z / CHUNK); let b = null, bd = 1e9; for (let i = -2; i <= 2; i++) for (let j = -2; j <= 2; j++) for (const q of parkedIn(cx + i, cz + j)) { const d = Math.hypot(q.x - P.x, q.z - P.z); if (!q.taken && d < bd) { bd = d; b = q; } } if (!b) return "none"; P.x = b.x + Math.cos(b.rot) * 1.8; P.z = b.z - Math.sin(b.rot) * 1.8; breakIntoParked(b); return "ok"; }, gymT: o => mini("gym", o || {}), openArmoryT: () => openArmory(PLACES.find(q => q.kind === "guns"), null), get rinfo() { return { calls: renderer.info.render.calls, tris: renderer.info.render.triangles, geos: renderer.info.memory.geometries, tex: renderer.info.memory.textures }; }, saveGameT: () => saveGame(), maybePregnantT: (id, t) => maybePregnant(id, t), deliverT: id => deliverEvent(EVENT_BY_ID[id], {}), runEventT: (id, d) => runEventTalk(EVENT_BY_ID[id], d || {}, { name: 'Tester', tag: 'Test', cfg: null }, null), get pet() { return pet; }, CIT: () => CIT(), citizenRecord: c => citizenRecord(c), get town() { return town(); }, get ownedT() { return owned; }, openGunsmithT: (s, p, n) => openGunsmith(s, p, n), ambient, get ambEl() { return ambEl; }, openTradeT: p => openTrade(p), get stashT() { return stash; }, startWooT: (k, b) => startWoo(k, b), get woo() { return woo; }, endDate, dateCall, addDateContact, get phoneThread() { return phoneThread; }, set phoneThread(v) { phoneThread = v; }, talkDate, get date() { return date; }, get carAnim() { return carAnim; }, lifeApi, startShower, bizNewDay, subs, forceWanted, get buddy() { return buddy; }, startBuddy, textMe, toast, levelUp, closePhone, bringCar, useFurn, damageCar, debtorScene, get debtor() { return debtor; }, camBlocked, get camYaw() { return camYaw; }, ev: { evChase, evMug, evRobbery, evGang, evBusk, evCrash, evFire, evMarket, evParade, evProtest, streetEvents } };
+window.__game = { get markersT() { return markers; }, get animals() { return animals; }, crime, WANT, copCars, cops, pitFight, busted, fam, famNewDay, makeOfficial, talkFamily, get dayN() { return dayN; }, set dayN(v) { dayN = v; }, scene: G.scene, cam: G.cam, snap: () => updateCamera(0, true), get state() { return state; }, P, input, get ride() { return ride; }, get myCar() { return myCar; }, get traffic() { return traffic; }, peds, setTime: h => { clockH = h; }, openCustom, enterVehicle, exitCar, get money() { return money; }, set money(v) { money = v; }, openPlace, PLACES, PROPERTIES, runMinigame, get action() { return action; }, arsenal, selectWeapon, openPhone, setWaypoint, get route() { return route; }, talkToPed, talk, doAction, stats, get inside() { return inside; }, enterInterior, exitInterior, get customers() { return customers; }, newCustomer, startEdit, endEdit, get job() { return job; }, gainXP, storage, doSpot, useFurn, phoneGo, talkVenue, talkJob, openPlace, talkCustomer, startJob, openCarShop, damageCar, repairCar, addFire, get fires() { return fires; }, get ems() { return ems; }, get vehicles() { return vehicles; }, makeVehicle, makeCop, prisonFight, life, startDealMeet, get lifeAct() { return lifeAct; }, get train() { return train; }, get trainRide() { return trainRide; }, boardTrain, eventReset: () => { eventOpen = false; }, bodyCheck, attendClass, talkAdmissions, edu, startDance, get dance() { return dance; }, radioSet: i => { radioSet(i); radioOn(true); }, get zoom() { return zoom; }, set zoom(z) { zoom = z; }, DEFAULT_CAR, setState: x => setState(x), get jail() { return stats.jail; }, witness, personOf, dealHeat, trafficStop, carNear, carTop, startDate, playCutT: (k, o) => { setState("mini"); return playCut(k, o || {}).then(r => { setState("play"); window.__cutR = r; return r; }); }, payPhoneT: () => payPhone(), get metro() { return metro; }, METRO, boardMetroT: i => { metro.si = i; metro.stop = 8; metro.s = METRO.stations[i].s; boardMetro(i); }, unblockT: (id, f) => unblockDoors(id, f), get HD() { return HOME_DEFAULTS; }, smashT: () => { const cx = Math.floor(P.x / CHUNK), cz = Math.floor(P.z / CHUNK); let b = null, bd = 1e9; for (let i = -2; i <= 2; i++) for (let j = -2; j <= 2; j++) for (const q of parkedIn(cx + i, cz + j)) { const d = Math.hypot(q.x - P.x, q.z - P.z); if (!q.taken && d < bd) { bd = d; b = q; } } if (!b) return "none"; P.x = b.x + Math.cos(b.rot) * 1.8; P.z = b.z - Math.sin(b.rot) * 1.8; breakIntoParked(b); return "ok"; }, gymT: o => mini("gym", o || {}), openArmoryT: () => openArmory(PLACES.find(q => q.kind === "guns"), null), get rinfo() { return { calls: renderer.info.render.calls, tris: renderer.info.render.triangles, geos: renderer.info.memory.geometries, tex: renderer.info.memory.textures }; }, saveGameT: () => saveGame(), maybePregnantT: (id, t) => maybePregnant(id, t), msgsT: () => messages().map(m => m.from + ": " + m.text.slice(0, 50)), deliverT: id => deliverEvent(EVENT_BY_ID[id], {}), runEventT: (id, d) => runEventTalk(EVENT_BY_ID[id], d || {}, { name: 'Tester', tag: 'Test', cfg: null }, null), get pet() { return pet; }, CIT: () => CIT(), citizenRecord: c => citizenRecord(c), get town() { return town(); }, get ownedT() { return owned; }, openGunsmithT: (s, p, n) => openGunsmith(s, p, n), ambient, get ambEl() { return ambEl; }, openTradeT: p => openTrade(p), get stashT() { return stash; }, startWooT: (k, b) => startWoo(k, b), get woo() { return woo; }, endDate, dateCall, addDateContact, get phoneThread() { return phoneThread; }, set phoneThread(v) { phoneThread = v; }, talkDate, get date() { return date; }, get carAnim() { return carAnim; }, lifeApi, startShower, bizNewDay, subs, forceWanted, get buddy() { return buddy; }, startBuddy, textMe, toast, levelUp, closePhone, bringCar, useFurn, damageCar, debtorScene, get debtor() { return debtor; }, camBlocked, get camYaw() { return camYaw; }, ev: { evChase, evMug, evRobbery, evGang, evBusk, evCrash, evFire, evMarket, evParade, evProtest, streetEvents } };
 
 // ================================================================ install as an app (Add to Home Screen)
 if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('sw.js').catch(() => {});

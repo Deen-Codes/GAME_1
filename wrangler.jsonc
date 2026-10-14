@@ -7,5 +7,5 @@
   "durable_objects": { "bindings": [{ "name": "HUB", "class_name": "Hub" }] },
   "migrations": [{ "tag": "v1", "new_sqlite_classes": ["Hub"] }],
   "send_email": [{ "name": "EMAIL" }],
-  "vars": { "MAIL_ADDR": "login@baycity.app" }
+  "vars": { "MAIL_ADDR": "login@baycity.app", "TESTERS": "421bff457015c6d1400631b0f8a49d3f48e6bb5c49e2ca3a241f12ae64981a6d" }
 }

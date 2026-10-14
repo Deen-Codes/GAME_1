@@ -4,7 +4,7 @@ import { DurableObject } from 'cloudflare:workers';
 
 const ORIGINS = ['https://baycity.app', 'https://www.baycity.app', 'https://deen-codes.github.io'];
 const okOrigin = o => !!o && (ORIGINS.includes(o) || /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(o) || /\.workers\.dev$/.test(o));
-const cors = req => { const o = req.headers.get('Origin'); return okOrigin(o) ? { 'Access-Control-Allow-Origin': o, 'Access-Control-Allow-Headers': 'content-type, authorization', 'Access-Control-Allow-Methods': 'GET, POST, OPTIONS', Vary: 'Origin' } : {}; };
+const cors = req => { const o = req.headers.get('Origin'); return okOrigin(o) ? { 'Access-Control-Allow-Origin': o, 'Access-Control-Allow-Headers': 'content-type, authorization', 'Access-Control-Allow-Methods': 'GET, POST, DELETE, OPTIONS', Vary: 'Origin' } : {}; };
 
 export default {
   async fetch(req, env) {
@@ -33,7 +33,8 @@ export class Hub extends DurableObject {
       CREATE TABLE IF NOT EXISTS sessions (sid TEXT PRIMARY KEY, email TEXT, exp INTEGER);
       CREATE TABLE IF NOT EXISTS users (email TEXT PRIMARY KEY, created INTEGER, seen INTEGER);
       CREATE TABLE IF NOT EXISTS sends (ip TEXT, t INTEGER);
-      CREATE TABLE IF NOT EXISTS saves (email TEXT PRIMARY KEY, data TEXT, t INTEGER, summary TEXT);`);
+      CREATE TABLE IF NOT EXISTS saves (email TEXT PRIMARY KEY, data TEXT, t INTEGER, summary TEXT);
+      CREATE TABLE IF NOT EXISTS slots (email TEXT, slot INTEGER, data TEXT, t INTEGER, summary TEXT, PRIMARY KEY (email, slot));`);
   }
   one(q, ...a) { return this.sql.exec(q, ...a).toArray()[0] || null; }
   session(sid) { if (!sid || !/^[0-9a-f]{64}$/.test(sid)) return null; const s = this.one('SELECT * FROM sessions WHERE sid = ?', sid); return s && s.exp > Date.now() ? s : null; }
@@ -46,19 +47,30 @@ export class Hub extends DurableObject {
       if (p === '/api/verify' && req.method === 'POST') return await this.verify(req, now);
       if (p === '/api/me') { const s = this.session((req.headers.get('authorization') || '').replace(/^Bearer /, '')); return s ? json({ email: s.email }) : json({ error: 'Not signed in' }, 401); }
       if (p === '/api/logout' && req.method === 'POST') { const sid = (req.headers.get('authorization') || '').replace(/^Bearer /, ''); this.sql.exec('DELETE FROM sessions WHERE sid = ?', sid); return json({ ok: true }); }
-      if (p === '/api/save') return await this.saveApi(req, now);
+      if (p === '/api/save' || p === '/api/saves') return await this.saveApi(req, now, url);
       if (p === '/api/status') return json({ ok: true, online: this.ctx.getWebSockets().length });
       return json({ error: 'Not found' }, 404);
     } catch (e) { return json({ error: 'Server error' }, 500); }
   }
 
-  // ---- cloud saves: one save per account, so you carry on from any phone or computer
-  async saveApi(req, now) {
+  // ---- cloud saves: a few save slots per account, so you carry on from any phone or computer (testers get lots, for trying new lives)
+  async maxSlots(email) { const h = [...new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(email)))].map(b => b.toString(16).padStart(2, '0')).join(''); return (this.env.TESTERS || '').split(',').map(x => x.trim()).includes(h) ? 30 : 3; }
+  async saveApi(req, now, url) {
     const s = this.session((req.headers.get('authorization') || '').replace(/^Bearer /, '')); if (!s) return json({ error: 'Not signed in' }, 401);
-    if (req.method === 'GET') { const r = this.one('SELECT data, t, summary FROM saves WHERE email = ?', s.email); return json(r ? { data: JSON.parse(r.data), t: r.t, summary: JSON.parse(r.summary || '{}') } : { data: null }); }
+    const old = this.one('SELECT data, t, summary FROM saves WHERE email = ?', s.email); // the old one-save table becomes slot 1
+    if (old) { this.sql.exec('INSERT OR IGNORE INTO slots (email, slot, data, t, summary) VALUES (?, 1, ?, ?, ?)', s.email, old.data, old.t, old.summary); this.sql.exec('DELETE FROM saves WHERE email = ?', s.email); }
+    const max = await this.maxSlots(s.email), list = () => this.sql.exec('SELECT slot, t, summary FROM slots WHERE email = ? ORDER BY slot', s.email).toArray().map(r => ({ slot: r.slot, t: r.t, summary: JSON.parse(r.summary || '{}') }));
+    if (url.pathname === '/api/saves') return json({ slots: list(), max });
+    const latest = () => this.one('SELECT slot FROM slots WHERE email = ? ORDER BY t DESC LIMIT 1', s.email)?.slot;
+    const q = url.searchParams.get('slot'), slot = q == null ? latest() : Math.floor(+q);
+    if (q != null && !(slot >= 1 && slot <= max)) return json({ error: 'Bad slot' }, 400);
+    if (req.method === 'GET') { const r = slot && this.one('SELECT data, t, summary FROM slots WHERE email = ? AND slot = ?', s.email, slot); return json(r ? { slot, data: JSON.parse(r.data), t: r.t, summary: JSON.parse(r.summary || '{}') } : { slot: slot || null, data: null }); }
+    if (req.method === 'DELETE') { this.sql.exec('DELETE FROM slots WHERE email = ? AND slot = ?', s.email, slot); return json({ ok: true, slots: list(), max }); }
     if (req.method === 'POST') { const body = await req.text(); if (body.length > 1800000) return json({ error: 'Save too big' }, 413); let j; try { j = JSON.parse(body); } catch (e) { return json({ error: 'Bad save' }, 400); }
       if (!j || typeof j.data !== 'object') return json({ error: 'Bad save' }, 400);
-      this.sql.exec('INSERT OR REPLACE INTO saves (email, data, t, summary) VALUES (?, ?, ?, ?)', s.email, JSON.stringify(j.data), now, JSON.stringify(j.summary || {})); return json({ ok: true, t: now }); }
+      const sl = slot || 1, has = this.one('SELECT 1 AS x FROM slots WHERE email = ? AND slot = ?', s.email, sl);
+      if (!has && list().length >= max) return json({ error: 'All your save slots are full' }, 403);
+      this.sql.exec('INSERT OR REPLACE INTO slots (email, slot, data, t, summary) VALUES (?, ?, ?, ?, ?)', s.email, sl, JSON.stringify(j.data), now, JSON.stringify(j.summary || {})); return json({ ok: true, slot: sl, t: now }); }
     return json({ error: 'Not found' }, 404);
   }
 

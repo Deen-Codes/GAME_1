@@ -27,9 +27,11 @@ export async function verifyCode(email, code) { try { const j = await api('/api/
 export async function signOut() { goOffline(); const sid = ls.get('bc_sid'); if (sid) api('/api/logout', {}, sid).catch(() => {}); ls.set('bc_sid', null); ls.set('bc_email', null); NET.email = ''; emit(); }
 export const signedIn = () => !!ls.get('bc_sid');
 // cloud save: the whole game (save, character, cars, guns, settings) kept against your account
-export async function cloudLoad() { return api('/api/save', null, ls.get('bc_sid')); }
-export async function cloudSave(data, summary, keepalive) { const sid = ls.get('bc_sid'); if (!sid) return; const body = JSON.stringify({ data, summary });
-  return fetch(API + '/api/save', { method: 'POST', keepalive: !!keepalive && body.length < 60000, headers: { 'content-type': 'application/json', authorization: 'Bearer ' + sid }, body }).then(r => r.ok).catch(() => false); }
+export async function cloudList() { return api('/api/saves', null, ls.get('bc_sid')); }
+export async function cloudLoad(slot) { return api('/api/save' + (slot ? '?slot=' + slot : ''), null, ls.get('bc_sid')); }
+export async function cloudSave(data, summary, keepalive, slot) { const sid = ls.get('bc_sid'); if (!sid) return; const body = JSON.stringify({ data, summary });
+  return fetch(API + '/api/save' + (slot ? '?slot=' + slot : ''), { method: 'POST', keepalive: !!keepalive && body.length < 60000, headers: { 'content-type': 'application/json', authorization: 'Bearer ' + sid }, body }).then(r => r.ok).catch(() => false); }
+export async function cloudDelete(slot) { const sid = ls.get('bc_sid'); const r = await fetch(API + '/api/save?slot=' + slot, { method: 'DELETE', headers: { authorization: 'Bearer ' + sid } }); const j = await r.json().catch(() => ({})); if (!r.ok) throw new Error(j.error || 'Could not delete'); return j; }
 
 function wsTransport() {
   const url = (API ? API.replace(/^http/, 'ws') : location.origin.replace(/^http/, 'ws')) + '/api/ws?sid=' + ls.get('bc_sid');
