@@ -1,7 +1,7 @@
 // Modular car builder. Car faces +Z, sits on y=0, origin at the centre of the wheelbase.
 import * as THREE from '../lib/three.module.min.js';
-import { BASIC } from './character.js?v=195';
-import { patternTexture } from './gun.js?v=195';
+import { BASIC } from './character.js?v=196';
+import { patternTexture } from './gun.js?v=196';
 
 export const BODIES = {
   hatch:  { label: 'Hatchback', L: 3.8, W: 1.75, bh: 0.55, cl: 2.0, ch: 0.62, co: -0.4,  wr: 0.34, mass: 1.0 },
@@ -234,10 +234,11 @@ function buildBoat(c, B) {
   for (const sx of [-0.45, 0.45]) { bx(0.7, 0.35, 0.7, seat, sx, 0.75, -0.6); bx(0.7, 0.6, 0.15, seat, sx, 1.0, -0.95); } // two bucket seats
   bx(W - 0.3, 0.08, 1.6, deck, 0, 0.62, 1.3); // foredeck
   const ws = bx(W - 0.35, 0.55, 0.06, glass, 0, 0.95, 0.35); ws.rotation.x = -0.5; // windscreen
-  bx(0.5, 0.35, 0.3, dark, 0.45, 0.85, 0.1); // dash + wheel
+  bx(0.5, 0.35, 0.3, dark, 0.45, 0.85, 0.1); // dash
+  { const w = new THREE.Mesh(new THREE.TorusGeometry(0.17, 0.03, 8, 22), dark); w.position.set(0.45, 1.1, -0.04); w.rotation.x = 0.55; w.castShadow = true; grp.add(w); const col = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 0.22, 8), dark); col.rotation.x = Math.PI / 2; col.position.z = 0.11; w.add(col); } // steering wheel
   bx(0.5, 1.0, 0.55, dark, 0, 0.55, -hl - 0.2); bx(0.62, 0.45, 0.75, M('#e8e8ea'), 0, 1.2, -hl - 0.2); // outboard motor
   for (const sx of [-1, 1]) { const h = bx(0.18, 0.1, 0.06, headM, sx * 0.35, 0.68, hl - 0.6); h.rotation.y = sx * 0.4; bx(0.14, 0.1, 0.05, tailM, sx * (W / 2 - 0.15), 0.5, -hl - 0.01); }
-  return { group: grp, wheels: [], headM, tailM, revM, glow: null, length: L, width: W, height: 1.3, wr: 0.3, boat: true, seat: { x: 0.45, y: 0.95, z: -0.62 } };
+  return { group: grp, wheels: [], headM, tailM, revM, glow: null, length: L, width: W, height: 1.3, wr: 0.3, boat: true, seat: { x: 0.45, y: 0.95, z: -0.62 }, grip: { x: 0.33, y: 1.13, z: -0.08 } };
 }
 function buildTractor(c, B) {
   const grp = new THREE.Group(), M = (col, o = {}) => new THREE.MeshStandardMaterial({ color: col, roughness: 0.55, flatShading: true, ...o });
@@ -288,14 +289,14 @@ function buildTwo(c, B) {
     spin.add(new THREE.Mesh(new THREE.CylinderGeometry(wr * 0.18, wr * 0.18, 0.08, 10).rotateZ(Math.PI / 2), hubM));
     wheels.push({ pivot, spin, front: fz > 0 });
   }
-  let seatY = 0.9, barY = 1.05, crank = null;
+  let seatY = 0.9, barY = 1.05, barZ = wz - 0.2, barW = 0.5, crank = null;
   if (kind === 'bike') {
     bx(0.04, 0.04, wz * 1.6, bodyM, 0, wr + 0.38, 0.05, -0.15);          // top tube
     bx(0.04, 0.5, 0.04, bodyM, 0, wr + 0.12, -0.12, 0.25);              // seat tube
     bx(0.04, 0.04, wz * 1.3, bodyM, 0, wr + 0.1, 0.25, 0.55);           // down tube
     bx(0.04, 0.55, 0.04, chrome, 0, wr + 0.28, wz - 0.06, -0.3);        // fork
     bx(0.5, 0.03, 0.03, dark, 0, wr + 0.62, wz - 0.18);                 // bars
-    bx(0.14, 0.05, 0.24, dark, 0, wr + 0.5, -0.22); seatY = wr + 0.5; barY = wr + 0.62;
+    bx(0.14, 0.05, 0.24, dark, 0, wr + 0.5, -0.22); seatY = wr + 0.5; barY = wr + 0.62; barZ = wz - 0.18; barW = 0.5;
     bx(0.1, 0.1, 0.1, dark, 0, wr, 0);                                  // crank
     crank = new THREE.Group(); crank.position.set(0, wr, 0); grp.add(crank); // pedal arms that turn as you pedal
     for (const s of [-1, 1]) { const arm = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.03, 0.17), chrome); arm.position.set(s * 0.08, 0, s * 0.08); crank.add(arm); const ped = new THREE.Mesh(new THREE.BoxGeometry(0.11, 0.025, 0.06), dark); ped.position.set(s * 0.13, 0, s * 0.16); crank.add(ped); }
@@ -303,7 +304,7 @@ function buildTwo(c, B) {
     bx(0.16, 0.06, L * 0.8, bodyM, 0, wr + 0.06, 0);                    // deck
     bx(0.05, 1.0, 0.05, M('#3a3d45', { metalness: 0.5 }), 0, wr + 0.55, wz - 0.02, -0.12);  // stem
     bx(0.46, 0.04, 0.04, dark, 0, wr + 1.04, wz - 0.08);                // bars
-    seatY = wr + 0.1; barY = wr + 1.04;
+    seatY = wr + 0.1; barY = wr + 1.04; barZ = wz - 0.08; barW = 0.46;
   } else { // motorbike
     bx(0.32, 0.26, 0.6, bodyM, 0, wr + 0.42, 0.18);                     // tank
     bx(0.28, 0.1, 0.62, dark, 0, wr + 0.44, -0.35);                     // seat
@@ -314,12 +315,12 @@ function buildTwo(c, B) {
     bx(0.3, 0.12, 0.3, bodyM, 0, wr + 0.18, -wz + 0.05);                // rear fender
     bx(0.36, 0.2, 0.18, bodyM, 0, wr + 0.5, wz - 0.18);                 // front cowl
     bx(0.16, 0.12, 0.05, headM, 0, wr + 0.48, wz - 0.07);               // headlight
-    seatY = wr + 0.5; barY = wr + 0.62;
+    seatY = wr + 0.5; barY = wr + 0.62; barZ = wz - 0.25; barW = 0.62;
   }
   if (kind !== 'moto') bx(0.08, 0.06, 0.04, headM, 0, kind === 'scooter' ? barY - 0.1 : barY - 0.06, wz - 0.1);
   bx(0.12, 0.06, 0.04, tailM, 0, kind === 'scooter' ? wr + 0.1 : seatY - 0.08, -wz - 0.02);
   bx(0.05, 0.04, 0.04, revM, 0.07, kind === 'scooter' ? wr + 0.1 : seatY - 0.08, -wz - 0.03);
-  return { group: grp, wheels, headM, tailM, revM, glow: null, length: L, width: B.W, height: barY + 0.1, wr, two: kind, seatY, barY, crank };
+  return { group: grp, wheels, headM, tailM, revM, glow: null, length: L, width: B.W, height: barY + 0.1, wr, two: kind, seatY, barY, barZ, barW, crank };
 }
 export function buildCar(cfg) {
   const c = { ...DEFAULT_CAR, ...cfg };

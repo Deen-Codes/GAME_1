@@ -1,8 +1,8 @@
 // Conversations staged like a Pokémon battle: they stand on a platform facing you,
 // you see the back of your own head in the foreground, subtitles type out, you pick replies.
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, setFace } from './character.js?v=195';
-import { sfx, audio } from './audio.js?v=195';
+import { buildCharacter, poseCharacter, disposeObject, setFace } from './character.js?v=196';
+import { sfx, audio } from './audio.js?v=196';
 
 const $ = id => document.getElementById(id);
 const BG = {
@@ -355,11 +355,16 @@ export class Talk {
     else if (kind === 'bike') { y.root.position.set(0, R.seatY + 0.04 - hl, -0.22); y.legL.pivot.rotation.set(-1.0, 0, 0.05); y.legR.pivot.rotation.set(-0.35, 0, -0.05); y.legL.knee.rotation.x = 1.1; y.legR.knee.rotation.x = 0.5; y.torso && (y.torso.rotation.x = 0.25); }
     else if (kind === 'moto') { y.root.position.set(0, R.seatY - hl + 0.06, -0.1); y.legL.pivot.rotation.set(-1.2, 0, 0.1); y.legR.pivot.rotation.set(-1.2, 0, -0.1); y.legL.knee.rotation.x = 1.5; y.legR.knee.rotation.x = 1.5; }
     else { const st = R.seat; y.root.position.set(st.x, st.y - hl + 0.03, st.z); y.legL.pivot.rotation.set(-1.5, 0, 0.05); y.legR.pivot.rotation.set(-1.5, 0, -0.05); y.legL.knee.rotation.x = 1.35; y.legR.knee.rotation.x = 1.35; }
-    y.armR.pivot.rotation.set(-1.15, 0, -0.1); if (y.armR.elbow) y.armR.elbow.rotation.set(-0.3, 0, 0); // one hand on the bars / wheel
+    // right hand actually on the grip: point the arm at the end of the handlebar (or the rim of the boat's wheel)
+    const grip = R.boat ? new THREE.Vector3(R.grip.x, R.grip.y, R.grip.z) : new THREE.Vector3(-R.barW / 2 + 0.05, R.barY, R.barZ);
+    if (y.armR.elbow) y.armR.elbow.rotation.set(0, 0, 0); y.armR.pivot.rotation.set(0, 0, 0);
+    y.root.updateMatrixWorld(true); const sh = new THREE.Vector3(); y.armR.pivot.getWorldPosition(sh); const d = grip.clone().sub(sh), len = d.length(), reach = 0.66;
+    y.armR.pivot.rotation.set(-Math.atan2(d.z, -d.y), 0, Math.asin(Math.max(-1, Math.min(1, d.x / len))));
+    if (len > reach * 1.02) { const lean = (len - reach) / len; y.root.position.addScaledVector(d, lean * 0.6); } // lean in so the hand meets the bar
     y.armL.pivot.rotation.set(-0.85, -0.15, 0.42); if (y.armL.elbow) y.armL.elbow.rotation.set(-2.6, 0, 0); // phone at the ear
     y.head.rotation.set(talking ? Math.sin(this.t * 11) * 0.06 : 0, 0.45, 0.1);
     y.root.updateMatrixWorld(true); const hp = new THREE.Vector3(); y.head.getWorldPosition(hp);
-    this.cam.position.set(hp.x + 2.6, hp.y - 0.05, hp.z + 1.1); this.cam.lookAt(hp.x, hp.y - 0.5, hp.z + 0.15);
+    this.cam.position.set(hp.x + 2.0, hp.y + 0.05, hp.z + 2.2); this.cam.lookAt(hp.x, hp.y - 0.55, hp.z + 0.35);
   }
   // sat in your own car: zoomed in through the driver's window. On the phone: one hand on the wheel, phone at your ear
   realCarPose(n, y) {
