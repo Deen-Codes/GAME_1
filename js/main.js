@@ -1,30 +1,30 @@
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=178';
-import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun, partEffects, partPerk } from './gun.js?v=178';
-import { buildCar, computeCarStats, carStatBars, carClass, carPartEffects, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=178';
-import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, STAIRS, unblockPillars, canyonAt, canyonNear, PEAK, SKYWAYS, SKY_Y, skyAt, skyY, rampSeg, windowShader, makeOceanMaterial, WATER_U, WIND_U, METRO, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=178';
-import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=178';
-import { buildPanel, renderStats } from './ui.js?v=178';
-import { Input } from './input.js?v=178';
-import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime, animalCall } from './audio.js?v=178';
-import { runMinigame } from './minigames.js?v=178';
-import { CUT, initCutGames } from './cutgames.js?v=178';
-import { initOnline, updateOnline, goOnline, goOffline, NET, onNet, sendMagicLink, verifyCode, signOut, signedIn, cloudLoad, cloudSave, cloudList, cloudDelete } from './online.js?v=178';
-import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk, setReservedNames, seededLook } from './peds.js?v=178';
-import { citizens, whereNow } from './citizens.js?v=178';
-import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=178';
-import { findRoute } from './nav.js?v=178';
-import { COURSES, CAREERS, QUIZ } from './careers.js?v=178';
-import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=178';
-import { attachWheel } from './wheel.js?v=178';
-import { GROUND_U } from './groundtex.js?v=178';
-import { Animals, makeAnimalMesh } from './animals.js?v=178';
-import { Talk } from './talk.js?v=178';
-import { incomingText, classify, textOptions, textReply } from './texts.js?v=178';
-import { svg, drawIcon, ICONS as ICON_SET } from './icons.js?v=178';
-import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=178';
-import { FURN, CATALOG } from './furniture.js?v=178';
-import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=178';
+import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=180';
+import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun, partEffects, partPerk } from './gun.js?v=180';
+import { buildCar, computeCarStats, carStatBars, carClass, carPartEffects, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=180';
+import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, STAIRS, unblockPillars, canyonAt, canyonNear, PEAK, SKYWAYS, SKY_Y, skyAt, skyY, rampSeg, windowShader, makeOceanMaterial, WATER_U, WIND_U, METRO, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=180';
+import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=180';
+import { buildPanel, renderStats } from './ui.js?v=180';
+import { Input } from './input.js?v=180';
+import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime, animalCall } from './audio.js?v=180';
+import { runMinigame } from './minigames.js?v=180';
+import { CUT, initCutGames } from './cutgames.js?v=180';
+import { initOnline, updateOnline, goOnline, goOffline, NET, onNet, sendMagicLink, verifyCode, signOut, signedIn, cloudLoad, cloudSave, cloudList, cloudDelete } from './online.js?v=180';
+import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk, setReservedNames, seededLook } from './peds.js?v=180';
+import { citizens, whereNow } from './citizens.js?v=180';
+import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=180';
+import { findRoute } from './nav.js?v=180';
+import { COURSES, CAREERS, QUIZ } from './careers.js?v=180';
+import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=180';
+import { attachWheel } from './wheel.js?v=180';
+import { GROUND_U } from './groundtex.js?v=180';
+import { Animals, makeAnimalMesh } from './animals.js?v=180';
+import { Talk } from './talk.js?v=180';
+import { incomingText, classify, textOptions, textReply } from './texts.js?v=180';
+import { svg, drawIcon, ICONS as ICON_SET } from './icons.js?v=180';
+import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=180';
+import { FURN, CATALOG } from './furniture.js?v=180';
+import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=180';
 
 const $ = id => document.getElementById(id);
 let inside = null, editMode = false, held = null, pendingCar = false, homeMusic = false, phoneBadge = 0;
@@ -7123,7 +7123,7 @@ function saveGame() {
   store.set('bc_save', save); store.set('bc_arsenal', arsenal); store.set('bc_cars', garage); store.set('bc_savedAt', Date.now());
 }
 // auto-update: bookmarks and home-screen apps can hold on to an old copy. Check version.json (never cached) and reload once if newer.
-const BUILD = 178;
+const BUILD = 180;
 function checkUpdate() {
   fetch('version.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(j => {
     if (!(j.v > BUILD)) return;
@@ -7202,29 +7202,33 @@ function showTitle() {
   setState('title');
   const S = signedIn(), loc = bundleSummary(saveBundle()), sumTxt = s2 => s2 ? `Day ${s2.day} · ${fmt(s2.money)}` : 'New life';
   let body = '';
-  if (!S && titleStep !== 'code') body = `<input id="ttEmail" type="email" autocomplete="email" placeholder="you@email.com" value="${titleEmail.replace(/"/g, '')}"><button class="tt-btn" id="ttSend">Sign in to play</button>
+  if (titleStep === 'install') body = `<h3 class="tt-h">${svg('download', 'sm')} ${isIOS() ? 'Add to your Home Screen' : 'Install the app'}</h3>${INSTALL_STEPS()}<button class="tt-btn" id="ttInstBack">Got it</button>`;
+  else if (!S && titleStep !== 'code') body = `<input id="ttEmail" type="email" autocomplete="email" placeholder="you@email.com" value="${titleEmail.replace(/"/g, '')}"><button class="tt-btn" id="ttSend">Sign in to play</button>
     <p class="tt-sub"><small>We'll email you a code. Your life is saved to your account and you play online with everyone.</small></p>
     <button class="tt-link" id="ttOffline">Play offline on this ${isTouch() ? 'phone' : 'computer'}</button>`;
   else if (!S) body = `<p class="tt-sub">We sent a 6-digit code to <b>${titleEmail}</b>.${titleDev ? ` <small>(test code ${titleDev.code})</small>` : ''}</p>
     <input id="ttCode" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="123456" class="tt-code"><button class="tt-btn" id="ttVerify">Sign in</button>
     <div class="tt-apps">${mailApps(titleEmail).map(m => `<a class="tt-app" href="${m.href}" ${m.web ? 'target="_blank" rel="noopener"' : ''}>${svg('mail', 'sm')} ${m.label}</a>`).join('')}</div>
     <button class="tt-link" id="ttBack">Use a different email</button>`;
-  else if (!cloudState || !titlePick) body = `<div class="tt-load"><i></i><span>Loading your life...</span></div><p class="tt-sub"><small>${NET.email}</small></p>`;
+  else if (!cloudState) body = `<div class="tt-load"><i></i><span>Loading your life...</span></div><p class="tt-sub"><small>${NET.email}</small></p>`;
+  else if (!titlePick) { const R = resumePlan(); body = `<button class="tt-btn big" id="ttGo">${R.sum ? 'Carry on' : 'Start your life'}<small>${R.sum?.day ? sumTxt(R.sum) : 'A new life in Bay City'}</small></button><button class="tt-link" id="ttLives">${svg('cloud', 'sm')} Your lives</button><p class="tt-sub"><small>Signed in as ${NET.email}</small></p>`; }
   else { const sl = cloudState.slots, cur = curSlot(), linked = sl.some(q => q.slot === cur), here = isTouch() ? 'phone' : 'computer';
     const ago = t => { const m = (Date.now() - t) / 6e4; return m < 2 ? 'just now' : m < 60 ? `${Math.round(m)} min ago` : m < 1440 ? `${Math.round(m / 60)}h ago` : `${Math.round(m / 1440)} days ago`; };
     body = `<p class="tt-sub">Your lives · <b>${NET.email}</b></p><div class="tt-slots">`
       + sl.map(q => `<div class="tt-slot"><button class="tt-save${q.slot === cur ? '' : ' alt'}" data-slot="${q.slot}"><b>${svg(q.slot === cur ? 'phone' : 'cloud', 'sm')} Life ${q.slot}${q.slot === cur ? ' · playing' : ''}</b><span>${sumTxt(q.summary?.day ? q.summary : null)} · ${ago(q.t)}</span></button><button class="tt-del" data-del="${q.slot}" aria-label="Delete">${svg('trash', 'sm')}</button></div>`).join('')
       + (loc && !linked ? `<div class="tt-slot"><button class="tt-save" data-up="1"><b>${svg('phone', 'sm')} This ${here}</b><span>${sumTxt(loc)} · not saved yet</span></button></div>` : '')
       + `</div>${sl.length < cloudState.max ? `<button class="tt-btn" id="ttNew">Start a new life</button>` : `<p class="tt-sub"><small>All ${cloudState.max} save slots are full. Delete one to start another life.</small></p>`}`
-      + `<p class="tt-sub"><small>${sl.length} of ${cloudState.max} saves</small></p>${linked && $('hud') ? '<button class="tt-link" id="ttResume">Back to the game</button>' : ''}<button class="tt-link" id="ttOut">Sign out</button>`; }
-  const inst = isTouch() && !isStandalone() && !S ? `<button class="tt-link" id="ttInstall">${svg('download', 'sm')} ${isIOS() ? 'Play full screen: add to your Home Screen' : 'Install the app'}</button>` : '';
+      + `<p class="tt-sub"><small>${sl.length} of ${cloudState.max} saves</small></p>${resumePlan() ? '<button class="tt-link" id="ttBackMenu">Back</button>' : ''}<button class="tt-link" id="ttOut">Sign out</button>`; }
+  const inst = isTouch() && !isStandalone() && titleStep !== 'install' && !(S && titlePick) ? `<button class="tt-link" id="ttInstall">${svg('download', 'sm')} ${isIOS() ? 'Play full screen: add to your Home Screen' : 'Install the app'}</button>` : '';
   el.innerHTML = `<div id="ttFade"></div><div class="tt-top"><div class="tt-kicker">An open city life game</div><div class="tt-logo">BAY<span>CITY</span></div><div class="tt-tag">One city. Any life.</div><div class="tt-pitch" id="ttPitch">${PITCH[pitchI % PITCH.length]}</div></div>
     <div class="tt-card">${body}${inst}${!isTouch() && !S ? '<p class="tt-keys">WASD move · Mouse attack · E use · F car · Space jump · T phone · M map</p>' : ''}</div>`;
   if (fresh) { el.classList.add('intro'); clearInterval(pitchTimer); pitchTimer = setInterval(() => { const pe = $('ttPitch'); if (!pe) return; pe.classList.remove('in'); void pe.offsetWidth; pitchI++; pe.textContent = PITCH[pitchI % PITCH.length]; pe.classList.add('in'); }, 2600); }
   const play = titlePlay;
   el.querySelector('#ttSend')?.addEventListener('click', async e => { titleEmail = el.querySelector('#ttEmail').value.trim().toLowerCase(); if (!/^\S+@\S+\.\S+$/.test(titleEmail)) { toast('Type your email first'); return; } e.target.disabled = true; e.target.textContent = 'Sending...'; const r = await sendMagicLink(titleEmail); if (r.ok) { titleStep = 'code'; titleDev = r.dev; } else toast(r.error, 4); showTitle(); });
   el.querySelector('#ttOffline')?.addEventListener('click', play);
-  el.querySelector('#ttResume')?.addEventListener('click', play);
+  el.querySelector('#ttBackMenu')?.addEventListener('click', () => { titlePick = false; showTitle(); });
+  el.querySelector('#ttGo')?.addEventListener('click', async e => { e.currentTarget.disabled = true; try { await resumePlan().go(); } catch (er) { toast(er.message, 3); showTitle(); } });
+  el.querySelector('#ttLives')?.addEventListener('click', () => { titlePick = true; showTitle(); });
   el.querySelector('#ttBack')?.addEventListener('click', () => { titleStep = null; showTitle(); });
   const code = el.querySelector('#ttCode'), tryCode = async () => { const c = code.value.replace(/\D/g, ''); if (c.length !== 6) return; const r = await verifyCode(titleEmail, c); if (r.ok) { titleStep = null; titleSignedIn(); } else { toast(r.error, 3); code.value = ''; } };
   if (code) { code.oninput = () => code.value.replace(/\D/g, '').length === 6 && tryCode(); el.querySelector('#ttVerify').onclick = tryCode; setTimeout(() => code.focus(), 50); }
@@ -7241,6 +7245,7 @@ function showTitle() {
     b.disabled = true; try { const r = await cloudDelete(n); cloudState = { slots: r.slots, max: r.max }; if (n === curSlot()) { sessionStorage.setItem('bc_pick', '1'); return applyBundle({}, null, true); } showTitle(); } catch (e) { toast(e.message, 3); b.disabled = false; } });
   el.querySelector('#ttOut')?.addEventListener('click', async () => { await signOut(); setSlot(null); cloudState = null; titlePick = false; showTitle(); });
   el.querySelector('#ttInstall')?.addEventListener('click', () => installHelp());
+  el.querySelector('#ttInstBack')?.addEventListener('click', () => { titleStep = null; showTitle(); });
   if (S && !cloudState && !titleBusy) titleSignedIn();
 }
 // signed in: straight into your life. The list only shows when there's a real choice to make (or you ask for it in Settings)
@@ -7250,23 +7255,25 @@ async function titleSignedIn(pickList) {
   try { const r = await cloudList(); cloudState = { slots: r.slots || [], max: r.max || 3 }; }
   catch (e) { titleBusy = false; if (/signed in/i.test(e.message)) { await signOut(); setSlot(null); cloudState = null; showTitle(); } else { toast('Couldn\'t reach your saves. Playing on this device.', 3); cloudState = null; if ($('title')) titlePlay(); } return; }
   titleBusy = false;
-  if (!titlePick) { await new Promise(r => setTimeout(r, Math.max(0, 2600 - (performance.now() - t0)))); if (await autoResume()) return; titlePick = true; }
+  if (!titlePick && !resumePlan()) titlePick = true;
   if ($('title')) showTitle();
 }
-async function autoResume() {
+function resumePlan() { // what "Carry on" does: null = there's a real choice, show the list
   const sl = cloudState.slots, cur = curSlot(), loc = bundleSummary(saveBundle()), q = sl.find(x => x.slot === cur);
-  try {
-    if (q) { if (loc && !(q.t > (loc.at || 0) + 30000)) { titlePlay(); return true; } const r = await cloudLoad(cur); if (r.data) { applyBundle(r.data, cur); return true; } return false; } // another device played this life more recently: take theirs
-    if (!loc) { if (sl.length) { const L = sl.reduce((a, b) => b.t > a.t ? b : a); const r = await cloudLoad(L.slot); if (r.data) { applyBundle(r.data, L.slot); return true; } return false; } setSlot(1); titlePlay(); return true; }
-    if (!sl.length) { const B = saveBundle(); await cloudSave(B, bundleSummary(B), false, 1); setSlot(1); titlePlay(); return true; } // first sign-in on this device: its life becomes your account's
-  } catch (e) { return false; }
-  return false; // this device has a life your account doesn't, and the account has others: ask
+  const fromCloud = n => async () => { const r = await cloudLoad(n); if (r.data) applyBundle(r.data, n); else { titlePick = true; showTitle(); } };
+  if (q) return loc && !(q.t > (loc.at || 0) + 30000) ? { sum: loc, go: titlePlay } : { sum: q.summary, go: fromCloud(cur) }; // another device played this life more recently: take theirs
+  if (!loc) { if (sl.length) { const L = sl.reduce((a, b) => b.t > a.t ? b : a); return { sum: L.summary, go: fromCloud(L.slot) }; } return { sum: null, go: () => { setSlot(1); titlePlay(); } }; }
+  if (!sl.length) return { sum: loc, go: async () => { const B = saveBundle(); await cloudSave(B, bundleSummary(B), false, 1); setSlot(1); titlePlay(); } }; // first sign-in on this device: its life becomes your account's
+  return null; // this device has a life your account doesn't, and the account has others: ask
 }
 let installEvt = null; addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
+const INSTALL_STEPS = () => isIOS()
+  ? `<ol class="inst"><li>Tap <b>Share</b> in Safari. (On newer iPhones, tap <b>•••</b> at the bottom right first, then <b>Share</b>.)</li><li>Scroll down and tap <b>Add to Home Screen</b>.</li><li>Tap <b>Add</b>, then open Bay City from your Home Screen. No address bar, full screen.</li></ol>`
+  : `<ol class="inst"><li>Tap the <b>⋮</b> menu in Chrome.</li><li>Tap <b>Install app</b> or <b>Add to Home screen</b>.</li><li>Open Bay City from your Home Screen.</li></ol>`;
 function installHelp() { // Android: the real install prompt. iPhone: how to do it by hand
   if (installEvt) { installEvt.prompt(); installEvt = null; return; }
-  modal(isIOS() ? `<div class="big-ico">${svg('download', 'big')}</div><h3>Play full screen</h3><p>iPhone can't make websites full screen, but you can add Bay City to your Home Screen and it opens like an app, no address bar:</p><ol class="inst"><li>Tap the <b>Share</b> button at the bottom of Safari (the square with an arrow).</li><li>Scroll down and tap <b>Add to Home Screen</b>.</li><li>Tap <b>Add</b>, then open Bay City from your Home Screen.</li></ol><p class="ph-hint">Your save is on your account, so you'll carry on where you left off.</p>`
-    : `<div class="big-ico">${svg('download', 'big')}</div><h3>Install Bay City</h3><ol class="inst"><li>Tap the <b>⋮</b> menu in Chrome.</li><li>Tap <b>Install app</b> or <b>Add to Home screen</b>.</li></ol>`, [{ label: 'Got it', cls: 'big', fn: closeModal }]);
+  if ($('title')) { titleStep = 'install'; showTitle(); return; } // on the title screen the steps show in its own card
+  modal(`<div class="big-ico">${svg('download', 'big')}</div><h3>${isIOS() ? 'Play full screen' : 'Install Bay City'}</h3>${isIOS() ? '<p>iPhone can\'t make websites full screen, but on your Home Screen Bay City opens like an app:</p>' : ''}${INSTALL_STEPS()}<p class="ph-hint">Your save is on your account, so you'll carry on where you left off.</p>`, [{ label: 'Got it', cls: 'big', fn: closeModal }]);
 }
 function startGame() {
   if (save) { Object.assign(P, { x: save.x, z: save.z, face: save.face || 0 }); clockH = save.h ?? 8; dayN = save.day ?? 1; }
@@ -7595,6 +7602,7 @@ function frame(now) {
 startGame();
 if (titleUp) showTitle();
 requestAnimationFrame(frame);
+{ const B = $('boot'); if (B) { clearInterval(window.__boot); const bar = $('btBar'); if (bar) bar.style.width = '100%'; setTimeout(() => { B.classList.add('out'); setTimeout(() => B.remove(), 800); }, 450); } } // the loading sign hands over to the title fly-over
 window.__game = { get markersT() { return markers; }, get animals() { return animals; }, crime, WANT, copCars, cops, pitFight, busted, fam, famNewDay, makeOfficial, talkFamily, get dayN() { return dayN; }, set dayN(v) { dayN = v; }, scene: G.scene, cam: G.cam, snap: () => updateCamera(0, true), get state() { return state; }, P, input, get ride() { return ride; }, get myCar() { return myCar; }, get traffic() { return traffic; }, peds, setTime: h => { clockH = h; }, openCustom, enterVehicle, exitCar, get money() { return money; }, set money(v) { money = v; }, openPlace, PLACES, PROPERTIES, runMinigame, get action() { return action; }, arsenal, selectWeapon, openPhone, setWaypoint, get route() { return route; }, talkToPed, talk, doAction, stats, get inside() { return inside; }, enterInterior, exitInterior, get customers() { return customers; }, newCustomer, startEdit, endEdit, get job() { return job; }, gainXP, storage, doSpot, useFurn, phoneGo, talkVenue, talkJob, openPlace, talkCustomer, startJob, openCarShop, damageCar, repairCar, addFire, get fires() { return fires; }, get ems() { return ems; }, get vehicles() { return vehicles; }, makeVehicle, makeCop, prisonFight, life, startDealMeet, get lifeAct() { return lifeAct; }, get train() { return train; }, get trainRide() { return trainRide; }, boardTrain, eventReset: () => { eventOpen = false; }, bodyCheck, attendClass, talkAdmissions, edu, startDance, get dance() { return dance; }, radioSet: i => { radioSet(i); radioOn(true); }, get zoom() { return zoom; }, set zoom(z) { zoom = z; }, DEFAULT_CAR, setState: x => setState(x), get jail() { return stats.jail; }, witness, personOf, dealHeat, trafficStop, carNear, carTop, startDate, playCutT: (k, o) => { setState("mini"); return playCut(k, o || {}).then(r => { setState("play"); window.__cutR = r; return r; }); }, payPhoneT: () => payPhone(), get metro() { return metro; }, METRO, boardMetroT: i => { metro.si = i; metro.stop = 8; metro.s = METRO.stations[i].s; boardMetro(i); }, unblockT: (id, f) => unblockDoors(id, f), get HD() { return HOME_DEFAULTS; }, smashT: () => { const cx = Math.floor(P.x / CHUNK), cz = Math.floor(P.z / CHUNK); let b = null, bd = 1e9; for (let i = -2; i <= 2; i++) for (let j = -2; j <= 2; j++) for (const q of parkedIn(cx + i, cz + j)) { const d = Math.hypot(q.x - P.x, q.z - P.z); if (!q.taken && d < bd) { bd = d; b = q; } } if (!b) return "none"; P.x = b.x + Math.cos(b.rot) * 1.8; P.z = b.z - Math.sin(b.rot) * 1.8; breakIntoParked(b); return "ok"; }, gymT: o => mini("gym", o || {}), openArmoryT: () => openArmory(PLACES.find(q => q.kind === "guns"), null), get rinfo() { return { calls: renderer.info.render.calls, tris: renderer.info.render.triangles, geos: renderer.info.memory.geometries, tex: renderer.info.memory.textures }; }, saveGameT: () => saveGame(), maybePregnantT: (id, t) => maybePregnant(id, t), msgsT: () => messages().map(m => m.from + ": " + m.text.slice(0, 50)), deliverT: id => deliverEvent(EVENT_BY_ID[id], {}), runEventT: (id, d) => runEventTalk(EVENT_BY_ID[id], d || {}, { name: 'Tester', tag: 'Test', cfg: null }, null), get pet() { return pet; }, CIT: () => CIT(), citizenRecord: c => citizenRecord(c), get town() { return town(); }, get ownedT() { return owned; }, openGunsmithT: (s, p, n) => openGunsmith(s, p, n), ambient, get ambEl() { return ambEl; }, openTradeT: p => openTrade(p), get stashT() { return stash; }, startWooT: (k, b) => startWoo(k, b), get woo() { return woo; }, endDate, dateCall, addDateContact, get phoneThread() { return phoneThread; }, set phoneThread(v) { phoneThread = v; }, talkDate, get date() { return date; }, get carAnim() { return carAnim; }, lifeApi, startShower, bizNewDay, subs, forceWanted, get buddy() { return buddy; }, startBuddy, textMe, toast, levelUp, closePhone, bringCar, useFurn, damageCar, debtorScene, get debtor() { return debtor; }, camBlocked, get camYaw() { return camYaw; }, ev: { evChase, evMug, evRobbery, evGang, evBusk, evCrash, evFire, evMarket, evParade, evProtest, streetEvents } };
 
 // ================================================================ install as an app (Add to Home Screen)

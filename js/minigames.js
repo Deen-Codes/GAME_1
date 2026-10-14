@@ -1,6 +1,6 @@
 // Touch minigames in the spirit of Chinatown Wars. Each one draws on a 2D canvas overlay.
-import { sfx, audio } from './audio.js?v=178';
-import { drawIcon } from './icons.js?v=178';
+import { sfx, audio } from './audio.js?v=180';
+import { drawIcon } from './icons.js?v=180';
 
 const rnd = (a, b) => a + Math.random() * (b - a);
 const pick = a => a[Math.floor(Math.random() * a.length)];

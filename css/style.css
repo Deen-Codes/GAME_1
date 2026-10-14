@@ -907,3 +907,5 @@ body:has(#title) #keyHints { display: none; }
 .tt-del { border: 0; border-radius: 16px; padding: 0 14px; background: rgba(255,255,255,.14); color: #fff; font-weight: 900; font-size: 13px; }
 .tt-del.armed { background: #e0384f; }
 @media (orientation: landscape) and (max-height: 520px) { #title { flex-direction: row; gap: 24px; justify-content: center; } #title .tt-logo { font-size: clamp(56px, 12vh, 96px); } .tt-slots { max-height: 46vh; } }
+.tt-h { margin: 0; font-size: 19px; display: flex; gap: 8px; align-items: center; justify-content: center; }
+#title .inst { text-align: left; margin: 0; padding-left: 22px; font-size: 15px; line-height: 1.45; display: flex; flex-direction: column; gap: 8px; }
