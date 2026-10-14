@@ -1,6 +1,6 @@
 // Open-world map: layout, deterministic generation, colliders, chunk meshing and minimap.
 import * as THREE from '../lib/three.module.min.js';
-import { groundMaterial, GT } from './groundtex.js?v=169';
+import { groundMaterial, GT } from './groundtex.js?v=170';
 
 export const WORLD = { x0: -1560, x1: 1420, z0: -800, z1: 760 };
 export const CHUNK = 64;
@@ -78,7 +78,15 @@ export function coastW(z) { return -1380 + 8 * Math.sin(z / 47) + 4 * Math.sin(z
 export function northZ(x) { return -770 + 6 * Math.sin(x / 40) + 3 * Math.sin(x / 13); }
 export const FORDS = [-100, -450, 250]; // where the dirt trails splash across the Red River
 export const MESAS = [{ x: -960, z: -560, r: 34, h: 16 }, { x: -1230, z: -620, r: 26, h: 20 }, { x: -1000, z: 120, r: 22, h: 14 }, { x: -1290, z: 300, r: 30, h: 13 }, { x: -1180, z: -260, r: 18, h: 18 }, { x: -940, z: 360, r: 20, h: 11 }];
-export const ISLETS = [{ x: -640, z: 650, r: 30 }, { x: 330, z: 700, r: 24 }, { x: 660, z: 640, r: 20 }, { x: 1345, z: -200, r: 28, light: true }, { x: 1360, z: 320, r: 22 }, { x: -1480, z: -330, r: 30, light: true }, { x: -1470, z: 280, r: 24 }, { x: -1110, z: 660, r: 26 }, { x: 1300, z: 660, r: 20 }, { x: -1490, z: -650, r: 22 }];
+// little islands: each is a few overlapping blobs with a wobbly coast, so they come out as beans, 8s, a 9, long I-shaped strips
+export const ISLETS = [
+  { x: -640, z: 650, parts: [[0, 0, 26], [30, 18, 18]] }, { x: 330, z: 700, parts: [[0, -17, 16], [0, 15, 18]] },
+  { x: 650, z: 640, parts: [[-34, 0, 10], [-12, 0, 12], [12, 2, 12], [34, 4, 10]] }, { x: 1345, z: -200, parts: [[0, 0, 24], [16, 26, 12], [20, 46, 9]], light: true },
+  { x: 1360, z: 320, parts: [[0, 0, 20], [-22, -14, 12]] }, { x: -1480, z: -330, parts: [[0, 0, 26], [-10, 32, 15], [-4, 54, 10]], light: true },
+  { x: -1470, z: 280, parts: [[0, -36, 10], [2, -12, 12], [0, 12, 12], [-2, 36, 10]] }, { x: -1110, z: 660, parts: [[0, 0, 22], [30, -8, 16], [52, -2, 10]] },
+  { x: 1300, z: 660, parts: [[0, -14, 16], [0, 16, 16]] }, { x: -1490, z: -650, parts: [[0, 0, 20], [24, 10, 12]] },
+];
+for (const [k, I] of ISLETS.entries()) { I.seed = k * 1.7; I.r = Math.max(...I.parts.map(([dx, dz, r]) => Math.hypot(dx, dz) + r)) + 12; } // (r: a bounding radius)
 function westBase(x, z, h) { // x < -560: valley noise h comes in; shape it into ridge, valley, desert plateau, canyon and coasts
   const ridge = 16 * Math.exp(-(((x + 600) / 55) ** 2)) * (1 - 0.75 * Math.exp(-((z / 70) ** 2))); // the ridge behind the Hidden Hills, with a low pass where the trail crosses
   const desert = ss((-860 - x) / 60); // 0 in Wildwood, 1 out in the desert
@@ -95,7 +103,12 @@ function westCap(x, z) { // sea levels in the west: the beach then the ocean, we
   const sn = northZ(x) + 22; if (z < sn) cap = Math.min(cap, Math.max(-5, -(sn - z) * 0.08));
   return cap;
 }
-export function isletAt(x, z) { for (const I of ISLETS) { const d = Math.hypot(x - I.x, z - I.z) - I.r; if (d < 6) return { I, d }; } return null; }
+export function isletAt(x, z) {
+  for (const I of ISLETS) { if (Math.abs(x - I.x) > I.r + 8 || Math.abs(z - I.z) > I.r + 8) continue; let d = 1e9;
+    for (const [n, [dx, dz, r]] of I.parts.entries()) { const px = x - I.x - dx, pz = z - I.z - dz, a = Math.atan2(pz, px), s2 = I.seed + n * 2.3; d = Math.min(d, Math.hypot(px, pz) - r * (1 + 0.13 * Math.sin(3 * a + s2) + 0.07 * Math.sin(5 * a + 2 * s2))); }
+    if (d < 6) return { I, d }; }
+  return null;
+}
 // Hidden Hills: rolling terrain west of downtown, flattened along the trail and on house pads.
 function rawHills(x, z) { const b = rawBase(x, z), k = peakK(x, z); return k ? b + (PEAK_H0 - b) * k : b; }
 function rawBase(x, z) {
@@ -228,7 +241,7 @@ export function groundH(x, z) {
 }
 function groundH0(x, z) {
   const s = shoreLine(x) - 22;
-  if (z >= s) { const h = Math.max(-5, -(z - s) * 0.08); return x > 700 ? Math.min(h, eastCap(x, z)) : h; } // (the beach stops at Eastport's corner)
+  if (z >= s) { const h = Math.max(-5, -(z - s) * 0.08); return x > 700 ? Math.min(h, eastCap(x, z)) : x < -560 ? Math.min(h, westCap(x, z)) : h; } // (the beach stops at Eastport's corner)
   if (x >= -300) { const h = rolling(x, z) + dip(x, z); return x > 440 ? Math.min(h, eastCap(x, z)) : h; }
   let h = rawHills(x, z);
   for (const p of PADS) {
@@ -784,7 +797,7 @@ function genWorld() {
   }
   // West Beach palms, and the little islands: palms, rocks, and a lighthouse on a couple of them
   for (let z = -700; z < 330; z += 13) if (hash(3, z | 0, 71) < 0.55) tree(coastW(z) + 36 + hash(4, z | 0, 72) * 6, z, 'palm', 1 + hash(5, z | 0, 73) * 0.4);
-  for (const I of ISLETS) { for (let k = 0; k < 6; k++) { const a = k / 6 * Math.PI * 2 + I.x, rr = I.r - 14 + (k % 2) * 4; tree(I.x + Math.cos(a) * rr, I.z + Math.sin(a) * rr, 'palm', 1 + (k % 3) * 0.15); }
+  for (const I of ISLETS) { for (const [n, [dx, dz, r]] of I.parts.entries()) { const m = r >= 16 ? 3 : 1; for (let k = 0; k < m; k++) { const a = k / m * Math.PI * 2 + I.seed + n, rr = m > 1 ? r - 11 : 0; if (I.light && n === 0 && rr < 5) continue; tree(I.x + dx + Math.cos(a) * rr, I.z + dz + Math.sin(a) * rr, 'palm', 1 + ((k + n) % 3) * 0.15); } }
     if (I.light) { addObj({ t: 'lighthouse', x: I.x, z: I.z }); addCollider({ x: I.x, z: I.z, r: 3.2, h: 24 }); } else { addObj({ t: 'boulder', x: I.x + 3, z: I.z - 2, w: 3.4, h: 2.4 }); addCollider({ x: I.x + 3, z: I.z - 2, r: 1.7, h: 2.4 }); } }
   for (let x = -560; x < 800; x += 10) { const rx = R(), rw = R(), rh = R(); if (groundH(x, -794) < 0.2 || riverD(x, -794) < RIVER.hw + 16 || x > coastX(-794) - 30) continue; addObj({ t: 'rock', x, z: -794 + rx * 4, w: 12 + rw * 6, d: 12, h: 8 + rh * 14, col: '#77726a' }); } // the river runs out through a gap
   // countryside trees
