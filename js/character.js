@@ -33,17 +33,18 @@ export const CHAR_SCHEMA = [
     color('hairColor', 'Hair colour', HAIR_COLORS),
   ] },
   { tab: 'Outfit', items: [
-    choice('top', 'Top', [['tshirt', 'T-shirt'], ['tank', 'Tank top'], ['long', 'Long sleeve'], ['hoodie', 'Hoodie'], ['jacket', 'Jacket'], ['suit', 'Suit'], ['armor', 'Armour'], ['shirtless', 'Shirtless'], ['swimtop', 'Swim top'], ['crop', 'Crop top']]),
+    choice('top', 'Top', [['tshirt', 'T-shirt'], ['tank', 'Tank top'], ['long', 'Long sleeve'], ['hoodie', 'Hoodie'], ['jacket', 'Jacket'], ['suit', 'Suit'], ['armor', 'Armour'], ['shirtless', 'Shirtless'], ['swimtop', 'Swim top'], ['crop', 'Crop top'], ['puffer', 'Puffer jacket'], ['tracksuit', 'Tracksuit top'], ['polo', 'Polo shirt'], ['leather', 'Leather jacket'], ['trench', 'Trench coat'], ['jersey', 'Sports jersey'], ['dress', 'Dress']]),
     color('topColor', 'Top colour', BASIC),
-    choice('pants', 'Legs', [['jeans', 'Trousers'], ['shorts', 'Shorts'], ['cargo', 'Cargo'], ['armored', 'Armoured'], ['swim', 'Swimwear'], ['skirt', 'Skirt']]),
+    choice('pants', 'Legs', [['jeans', 'Trousers'], ['shorts', 'Shorts'], ['cargo', 'Cargo'], ['armored', 'Armoured'], ['swim', 'Swimwear'], ['skirt', 'Skirt'], ['joggers', 'Joggers'], ['leggings', 'Leggings'], ['longskirt', 'Long skirt']]),
     color('pantsColor', 'Legs colour', BASIC),
-    choice('shoes', 'Shoes', [['sneakers', 'Trainers'], ['boots', 'Boots'], ['bare', 'Barefoot']]),
+    choice('shoes', 'Shoes', [['sneakers', 'Trainers'], ['hightops', 'High-tops'], ['boots', 'Boots'], ['heels', 'Heels'], ['loafers', 'Loafers'], ['sandals', 'Sandals'], ['bare', 'Barefoot']]),
     color('shoeColor', 'Shoe colour', BASIC),
+    choice('neck', 'Neck', [['none', 'None'], ['chain', 'Gold chain'], ['tie', 'Tie'], ['scarf', 'Scarf'], ['pearls', 'Pearls']]),
     choice('gloves', 'Gloves', [['none', 'None'], ['gloves', 'Gloves']]),
     color('gloveColor', 'Glove colour', BASIC),
   ] },
   { tab: 'Gear', items: [
-    choice('hat', 'Headwear', [['none', 'None'], ['cap', 'Cap'], ['beanie', 'Beanie'], ['helmet', 'Helmet'], ['cowboy', 'Cowboy'], ['tophat', 'Top hat'], ['headband', 'Headband'], ['crown', 'Crown'], ['horns', 'Horns'], ['halo', 'Halo'], ['antenna', 'Antenna']]),
+    choice('hat', 'Headwear', [['none', 'None'], ['cap', 'Cap'], ['beanie', 'Beanie'], ['helmet', 'Helmet'], ['cowboy', 'Cowboy'], ['tophat', 'Top hat'], ['headband', 'Headband'], ['bucket', 'Bucket hat'], ['snapback', 'Backwards cap'], ['durag', 'Durag'], ['beret', 'Beret'], ['crown', 'Crown'], ['horns', 'Horns'], ['halo', 'Halo'], ['antenna', 'Antenna']]),
     color('hatColor', 'Headwear colour', BASIC),
     choice('back', 'Back', [['none', 'None'], ['backpack', 'Backpack'], ['cape', 'Cape'], ['sword', 'Sword'], ['jetpack', 'Jetpack (double jump)'], ['wings', 'Wings (glide)']]),
     color('backColor', 'Back colour', BASIC),
@@ -116,11 +117,12 @@ export function buildCharacter(cfg) {
   const hips = new THREE.Group(); hips.position.y = legLen; root.add(hips);
   hips.add(box(torsoW * (adultF ? 1.0 + 0.22 * hipF : 0.95), 0.2, torsoD * (adultF ? 1 + 0.12 * hipF : 0.95), pantsM, 0, 0.0, 0));
   if (c.pants === 'skirt') hips.add(box(torsoW * (1.12 + 0.22 * hipF), thighL * 0.62, torsoD * (1.25 + 0.12 * hipF), pantsM, 0, -thighL * 0.25, 0));
+  if (c.pants === 'longskirt' && c.top !== 'dress') hips.add(box(torsoW * (1.14 + 0.22 * hipF), thighL * 1.5, torsoD * (1.28 + 0.12 * hipF), pantsM, 0, -thighL * 0.68, 0));
   if (adultF) { const bd = 0.05 + 0.08 * hipF; hips.add(box(torsoW * (0.82 + 0.16 * hipF), 0.22, bd, pantsM, 0, -0.03, -torsoD * (1 + 0.12 * hipF) / 2 - bd / 2 + 0.02)); } // seat
   const torso = new THREE.Group(); torso.position.y = 0.08; hips.add(torso);
 
   // ---- torso / top ----
-  const longSleeve = ['long', 'hoodie', 'jacket', 'suit'].includes(c.top);
+  const longSleeve = ['long', 'hoodie', 'jacket', 'suit', 'puffer', 'tracksuit', 'leather', 'trench'].includes(c.top);
   const chestW = c.top === 'tank' ? torsoW * 0.92 : torsoW;
   const swim = c.top === 'shirtless' || c.top === 'swimtop';
   if (adultF) { // waist then shoulders, with a bust
@@ -142,7 +144,7 @@ export function buildCharacter(cfg) {
   if (mu > 0.25 && !adultF) { const pd = 0.03 + 0.05 * mu; for (const sx of [-1, 1]) torso.add(box(chestW * 0.4, torsoH * 0.2, pd, swim ? skin : topM, sx * chestW * 0.22, torsoH * 0.62, torsoD / 2 + pd / 2 - 0.01)); for (const sx of [-1, 1]) torso.add(box(limbW * 1.5, limbW * 1.3, torsoD * 0.8, swim ? skin : topM, sx * (chestW / 2 + limbW * 0.25), torsoH * 0.9, 0)); } // pecs + delts
   if (c.belly > 0) { const bd = 0.06 + 0.22 * c.belly; torso.add(box(chestW * (0.7 + 0.15 * c.belly), torsoH * (0.35 + 0.2 * c.belly), bd, swim ? skin : topM, 0, torsoH * 0.18, torsoD / 2 + bd / 2 - 0.01)); }
   if (c.top === 'swimtop' && !adultF) torso.add(box(chestW * 1.02, torsoH * 0.16, torsoD * 1.04, topM, 0, torsoH * 0.72, 0)); // swim top band
-  if (c.pants !== 'swim') { torso.add(box(torsoW * 1.01, 0.06, torsoD * 1.01, dark, 0, 0.02, 0)); // belt
+  if (c.pants !== 'swim' && !['dress', 'trench', 'puffer'].includes(c.top)) { torso.add(box(torsoW * 1.01, 0.06, torsoD * 1.01, dark, 0, 0.02, 0)); // belt
   torso.add(box(0.08, 0.05, 0.02, metal, 0, 0.02, torsoD / 2 + 0.01)); } // buckle
   const fz = torsoD / 2;
   if (c.top === 'hoodie') {
@@ -164,7 +166,32 @@ export function buildCharacter(cfg) {
     torso.add(box(torsoW * 0.3, 0.05, 0.02, dark, 0, torsoH * 0.62, fz + 0.07));
   } else if (c.top === 'tshirt') {
     torso.add(box(torsoW * 0.35, 0.04, 0.02, M(shade(c.topColor, 0.8)), 0, torsoH - 0.03, fz + 0.005));
+  } else if (c.top === 'puffer') { // quilted bands puffing out, high collar
+    for (let i = 0; i < 4; i++) torso.add(box(torsoW * 1.1, torsoH * 0.2, torsoD * 1.14, i % 2 ? topM : M(shade(c.topColor, 0.86)), 0, torsoH * (0.14 + i * 0.235), 0));
+    torso.add(box(torsoW * 0.7, 0.14, torsoD * 1.0, topM, 0, torsoH + 0.02, 0)); torso.add(box(0.02, torsoH * 0.95, 0.02, metal, 0, torsoH / 2, fz * 1.14 + 0.01));
+  } else if (c.top === 'tracksuit') {
+    torso.add(box(0.018, torsoH * 0.95, 0.02, white, 0, torsoH / 2, fz + 0.008)); torso.add(box(torsoW * 0.5, 0.07, torsoD * 0.9, topM, 0, torsoH + 0.0, 0));
+    for (const sx of [-1, 1]) torso.add(box(0.025, torsoH * 0.9, torsoD * 1.01, white, sx * torsoW * 0.5, torsoH / 2, 0));
+  } else if (c.top === 'polo') {
+    torso.add(box(torsoW * 0.5, 0.06, torsoD * 0.6, M(shade(c.topColor, 0.85)), 0, torsoH - 0.02, fz * 0.5)); torso.add(box(0.05, torsoH * 0.2, 0.015, M(shade(c.topColor, 0.8)), 0, torsoH * 0.86, fz + 0.006));
+    for (let i = 0; i < 2; i++) torso.add(box(0.02, 0.02, 0.01, white, 0, torsoH * (0.82 + i * 0.07), fz + 0.012));
+  } else if (c.top === 'leather') {
+    torso.add(box(torsoW * 0.18, torsoH * 0.5, 0.025, acc, -torsoW * 0.16, torsoH * 0.72, fz + 0.006)); torso.add(box(0.02, torsoH * 0.9, 0.02, metal, torsoW * 0.12, torsoH * 0.48, fz + 0.012));
+    torso.add(box(torsoW * 1.05, 0.08, torsoD * 1.05, M(shade(c.topColor, 0.7)), 0, torsoH - 0.03, 0)); torso.add(box(torsoW * 1.04, 0.1, torsoD * 1.04, topM, 0, -0.02, 0));
+  } else if (c.top === 'trench') { // long coat: tails hang down over the thighs, belted
+    torso.add(box(torsoW * 1.06, 0.06, torsoD * 1.06, M(shade(c.topColor, 0.75)), 0, torsoH * 0.3, 0)); torso.add(box(torsoW * 0.35, torsoH * 0.5, 0.02, M(shade(c.topColor, 0.85)), 0, torsoH * 0.75, fz + 0.008));
+    hips.add(box(torsoW * 1.12, thighL * 0.85, torsoD * 1.16, topM, 0, -thighL * 0.4, 0));
+  } else if (c.top === 'jersey') {
+    torso.add(box(torsoW * 1.0, 0.06, torsoD * 1.02, white, 0, torsoH * 0.45, 0));
+    torso.add(box(torsoW * 0.36, torsoH * 0.36, 0.02, white, 0, torsoH * 0.55, -fz - 0.006)); torso.add(box(torsoW * 0.1, torsoH * 0.28, 0.025, topM, 0, torsoH * 0.55, -fz - 0.012));
+  } else if (c.top === 'dress') { // skirt part hangs from the hips down past the knee
+    hips.add(box(torsoW * (1.1 + 0.2 * hipF), thighL * 1.05, torsoD * (1.25 + 0.1 * hipF), topM, 0, -thighL * 0.48, 0));
+    torso.add(box(torsoW * 1.02, 0.05, torsoD * 1.02, acc, 0, torsoH * 0.05, 0));
   }
+  if (c.neck === 'chain') { const g = M('#d4af37'); torso.add(box(torsoW * 0.42, 0.025, 0.02, g, 0, torsoH * 0.78, fz + 0.012)); torso.add(box(0.06, 0.07, 0.02, g, 0, torsoH * 0.7, fz + 0.016)); }
+  if (c.neck === 'pearls') { const g = M('#f4f0e6'); torso.add(box(torsoW * 0.4, 0.03, 0.025, g, 0, torsoH * 0.86, fz + 0.012)); }
+  if (c.neck === 'tie') { torso.add(box(0.05, torsoH * 0.62, 0.02, acc, 0, torsoH * 0.62, fz + 0.016)); torso.add(box(0.07, 0.06, 0.025, acc, 0, torsoH * 0.95, fz + 0.016)); }
+  if (c.neck === 'scarf') { torso.add(box(torsoW * 0.62, 0.1, torsoD * 0.9, acc, 0, torsoH + 0.0, 0)); torso.add(box(0.1, torsoH * 0.45, 0.03, acc, torsoW * 0.15, torsoH * 0.72, fz + 0.02)); }
 
   // ---- neck & head ----
   torso.add(box(0.12 * sb, 0.1, 0.12 * sb, skin, 0, torsoH + 0.03, 0));
@@ -302,6 +329,22 @@ export function buildCharacter(cfg) {
     head.add(box(headW * 1.0, 0.03, headD * 0.5, hatM, 0, top - headH * 0.17, headD * 0.65));
     head.add(box(0.05, 0.03, 0.05, acc, 0, top + headH * 0.11, 0));
   }
+  if (ht === 'snapback') {
+    head.add(box(headW * 1.1, headH * 0.3, headD * 1.1, hatM, 0, top - headH * 0.05, 0));
+    head.add(box(headW * 1.0, 0.03, headD * 0.5, hatM, 0, top - headH * 0.17, -headD * 0.65));
+    head.add(box(headW * 0.3, 0.05, 0.02, acc, 0, top - headH * 0.12, -headD * 0.56));
+  }
+  if (ht === 'bucket') {
+    head.add(box(headW * 1.08, headH * 0.34, headD * 1.08, hatM, 0, top - headH * 0.02, 0));
+    const brim = cyl(headW * 0.85, headW * 0.95, 0.06, hatM, 12); brim.position.y = top - headH * 0.17; head.add(brim);
+  }
+  if (ht === 'durag') {
+    head.add(box(headW * 1.06, headH * 0.36, headD * 1.06, hatM, 0, top - headH * 0.08, 0));
+    head.add(box(headW * 0.2, headH * 0.5, 0.04, hatM, 0, top - headH * 0.55, -headD * 0.56));
+  }
+  if (ht === 'beret') {
+    const b = cyl(headW * 0.62, headW * 0.68, 0.08, hatM, 12); b.position.set(headW * 0.08, top + 0.02, 0); b.rotation.z = -0.18; head.add(b);
+  }
   if (ht === 'beanie') {
     head.add(box(headW * 1.12, headH * 0.45, headD * 1.12, hatM, 0, top - headH * 0.12, 0));
     head.add(box(headW * 1.16, headH * 0.14, headD * 1.16, M(shade(c.hatColor, 0.8)), 0, top - headH * 0.3, 0));
@@ -369,22 +412,34 @@ export function buildCharacter(cfg) {
   const armR = makeArm(-1), armL = makeArm(1);
 
   // ---- legs ----
-  const shinM = c.pants === 'shorts' || c.pants === 'swim' ? skin : pantsM;
+  const skirtLike = c.pants === 'skirt' || c.pants === 'longskirt' || c.top === 'dress';
+  const shinM = c.pants === 'shorts' || c.pants === 'swim' || (c.top === 'dress' && c.pants !== 'leggings') ? skin : pantsM;
   const makeLeg = (side) => {
     const pivot = new THREE.Group(); pivot.position.set(side * torsoW * (0.24 + 0.035 * hipF), 0, 0); hips.add(pivot);
     const tw = legW * (1 + 0.18 * hipF);
-    if (c.pants === 'skirt') pivot.add(box(tw * 0.96, thighL, tw * 0.96, skin, 0, -thighL / 2, 0));
+    if (skirtLike && c.pants !== 'leggings') pivot.add(box(tw * 0.96, thighL, tw * 0.96, c.pants === 'longskirt' ? pantsM : skin, 0, -thighL / 2, 0));
+    else if (c.pants === 'leggings') pivot.add(box(tw * 0.9, thighL, tw * 0.9, pantsM, 0, -thighL / 2, 0));
     else if (c.pants === 'swim') { pivot.add(box(tw, thighL * 0.22, tw, pantsM, 0, -thighL * 0.11, 0)); pivot.add(box(tw * 0.98, thighL * 0.78, tw * 0.98, skin, 0, -thighL * 0.61, 0)); }
     else pivot.add(box(tw, thighL, tw, pantsM, 0, -thighL / 2, 0));
     if (c.pants === 'cargo') pivot.add(box(0.03, thighL * 0.35, legW * 0.6, M(shade(c.pantsColor, 0.8)), side * (legW / 2 + 0.01), -thighL * 0.55, 0));
     if (c.pants === 'shorts') pivot.add(box(legW * 1.08, 0.05, legW * 1.08, M(shade(c.pantsColor, 0.8)), 0, -thighL + 0.03, 0));
+    if (c.pants === 'joggers') pivot.add(box(0.025, thighL * 0.95, legW * 0.3, white, side * (tw / 2 + 0.005), -thighL / 2, 0));
     const knee = new THREE.Group(); knee.position.y = -thighL; pivot.add(knee);
     knee.add(box(legW * 0.92, shinL, legW * 0.92, shinM, 0, -shinL / 2, 0));
     if (c.pants === 'armored') knee.add(box(legW * 1.15, 0.12, 0.06, acc, 0, -0.04, legW / 2 + 0.02));
+    if (c.pants === 'joggers') { knee.add(box(0.025, shinL * 0.85, legW * 0.3, white, side * (legW * 0.46 + 0.005), -shinL * 0.45, 0)); knee.add(box(legW * 0.98, 0.06, legW * 0.98, M(shade(c.pantsColor, 0.75)), 0, -shinL + 0.12, 0)); }
     if (c.shoes === 'boots') knee.add(box(legW * 1.08, 0.24, legW * 1.6, shoeM, 0, -shinL + 0.12, legW * 0.25));
     else if (c.shoes === 'sneakers') {
       knee.add(box(legW * 1.05, 0.1, legW * 1.7, shoeM, 0, -shinL + 0.05, legW * 0.3));
       knee.add(box(legW * 1.07, 0.03, legW * 1.72, M(shade(c.shoeColor, 0.7)), 0, -shinL + 0.015, legW * 0.3));
+    } else if (c.shoes === 'hightops') {
+      knee.add(box(legW * 1.08, 0.2, legW * 1.65, shoeM, 0, -shinL + 0.1, legW * 0.28)); knee.add(box(legW * 1.1, 0.035, legW * 1.7, white, 0, -shinL + 0.018, legW * 0.28)); knee.add(box(legW * 1.1, 0.04, 0.03, white, 0, -shinL + 0.14, legW * 1.1));
+    } else if (c.shoes === 'heels') {
+      knee.add(box(legW * 0.9, 0.06, legW * 1.35, shoeM, 0, -shinL + 0.06, legW * 0.3)); knee.add(box(0.03, 0.08, 0.03, shoeM, 0, -shinL + 0.02, -legW * 0.2));
+    } else if (c.shoes === 'loafers') {
+      knee.add(box(legW * 1.0, 0.08, legW * 1.6, shoeM, 0, -shinL + 0.04, legW * 0.3)); knee.add(box(legW * 0.6, 0.02, 0.05, metal, 0, -shinL + 0.08, legW * 0.75));
+    } else if (c.shoes === 'sandals') {
+      knee.add(box(legW * 0.95, 0.07, legW * 1.4, skin, 0, -shinL + 0.035, legW * 0.2)); knee.add(box(legW * 1.0, 0.025, legW * 1.45, shoeM, 0, -shinL + 0.012, legW * 0.2)); knee.add(box(legW * 1.0, 0.03, 0.04, shoeM, 0, -shinL + 0.07, legW * 0.5));
     } else knee.add(box(legW * 0.95, 0.07, legW * 1.4, skin, 0, -shinL + 0.035, legW * 0.2));
     return { pivot, knee };
   };
