@@ -1,30 +1,30 @@
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=162';
-import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun, partEffects, partPerk } from './gun.js?v=162';
-import { buildCar, computeCarStats, carStatBars, carClass, carPartEffects, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=162';
-import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, STAIRS, unblockPillars, canyonAt, canyonNear, PEAK, SKYWAYS, SKY_Y, skyAt, skyY, rampSeg, windowShader, makeOceanMaterial, WATER_U, WIND_U, METRO, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=162';
-import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=162';
-import { buildPanel, renderStats } from './ui.js?v=162';
-import { Input } from './input.js?v=162';
-import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime, animalCall } from './audio.js?v=162';
-import { runMinigame } from './minigames.js?v=162';
-import { CUT, initCutGames } from './cutgames.js?v=162';
-import { initOnline, updateOnline, goOnline, goOffline, NET, onNet, sendMagicLink, signOut, signedIn } from './online.js?v=162';
-import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk, setReservedNames, seededLook } from './peds.js?v=162';
-import { citizens, whereNow } from './citizens.js?v=162';
-import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=162';
-import { findRoute } from './nav.js?v=162';
-import { COURSES, CAREERS, QUIZ } from './careers.js?v=162';
-import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=162';
-import { attachWheel } from './wheel.js?v=162';
-import { GROUND_U } from './groundtex.js?v=162';
-import { Animals, makeAnimalMesh } from './animals.js?v=162';
-import { Talk } from './talk.js?v=162';
-import { incomingText, classify, textOptions, textReply } from './texts.js?v=162';
-import { svg, drawIcon, ICONS as ICON_SET } from './icons.js?v=162';
-import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=162';
-import { FURN, CATALOG } from './furniture.js?v=162';
-import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=162';
+import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=163';
+import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun, partEffects, partPerk } from './gun.js?v=163';
+import { buildCar, computeCarStats, carStatBars, carClass, carPartEffects, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=163';
+import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, STAIRS, unblockPillars, canyonAt, canyonNear, PEAK, SKYWAYS, SKY_Y, skyAt, skyY, rampSeg, windowShader, makeOceanMaterial, WATER_U, WIND_U, METRO, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=163';
+import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=163';
+import { buildPanel, renderStats } from './ui.js?v=163';
+import { Input } from './input.js?v=163';
+import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime, animalCall } from './audio.js?v=163';
+import { runMinigame } from './minigames.js?v=163';
+import { CUT, initCutGames } from './cutgames.js?v=163';
+import { initOnline, updateOnline, goOnline, goOffline, NET, onNet, sendMagicLink, signOut, signedIn } from './online.js?v=163';
+import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk, setReservedNames, seededLook } from './peds.js?v=163';
+import { citizens, whereNow } from './citizens.js?v=163';
+import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=163';
+import { findRoute } from './nav.js?v=163';
+import { COURSES, CAREERS, QUIZ } from './careers.js?v=163';
+import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=163';
+import { attachWheel } from './wheel.js?v=163';
+import { GROUND_U } from './groundtex.js?v=163';
+import { Animals, makeAnimalMesh } from './animals.js?v=163';
+import { Talk } from './talk.js?v=163';
+import { incomingText, classify, textOptions, textReply } from './texts.js?v=163';
+import { svg, drawIcon, ICONS as ICON_SET } from './icons.js?v=163';
+import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=163';
+import { FURN, CATALOG } from './furniture.js?v=163';
+import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=163';
 
 const $ = id => document.getElementById(id);
 let inside = null, editMode = false, held = null, pendingCar = false, homeMusic = false, phoneBadge = 0;
@@ -191,8 +191,11 @@ G.scene.add(sun, sun.target);
 const lantern = new THREE.PointLight('#ffd9a0', 0, 14, 1.6); G.scene.add(lantern);
 const muzzleLight = new THREE.PointLight('#ffd080', 0, 9, 1.6); G.scene.add(muzzleLight);
 const boomLight = new THREE.PointLight('#ffa040', 0, 30, 1.4); G.scene.add(boomLight);
-const water = new THREE.Mesh(new THREE.PlaneGeometry(1600, 700), makeOceanMaterial());
-water.rotation.x = -Math.PI / 2; water.position.set(120, WATER_Y, 700); water.receiveShadow = true; G.scene.add(water);
+const water = new THREE.Mesh(new THREE.PlaneGeometry(1440, 700), makeOceanMaterial());
+water.rotation.x = -Math.PI / 2; water.position.set(40, WATER_Y, 700); water.receiveShadow = true; G.scene.add(water);
+const waters = [water];
+// the east bay (round Long Beach island) and the Bay River: their own sheets of water so none of them overlap
+for (const [w, d, x, z] of [[1140, 2000, 1330, 100], [290, 740, 615, -530]]) { const m = new THREE.Mesh(new THREE.PlaneGeometry(w, d), water.material); m.rotation.x = -Math.PI / 2; m.position.set(x, WATER_Y, z); m.receiveShadow = true; G.scene.add(m); waters.push(m); }
 const world = new THREE.Group(); G.scene.add(world);
 const dyn = new THREE.Group(); G.scene.add(dyn);
 const peds = new Peds(dyn);
@@ -1133,7 +1136,7 @@ function spawnSkyTraffic(px, pz) {
     const S = pick(near), u = rand(S.a0 + S.ramp + 8, S.a1 - S.ramp - 8), dir = Math.random() < 0.5 ? 1 : -1, [x, z] = skyXZ(S, u, dir * 3), d = Math.hypot(x - px, z - pz);
     if (d < 55 || d > 140 || traffic.some(o => o.sky && o.S === S && Math.abs(o.u - u) < 14)) continue;
     ensureCarLib(); const lib = districtCar(CITIES[0]), mesh = new THREE.Mesh(lib.geo, bakedMat); mesh.castShadow = true; mesh.rotation.order = 'YXZ'; dyn.add(mesh);
-    const t = { sky: true, S, u, dir, c: CITIES[0], lib, speed: 0, cruise: rand(21, 26), mesh, stun: 0, honk: 0, y: SKY_Y }; // skyway: 60 mph limit, so they move
+    const t = { sky: true, S, u, dir, c: CITIES[0], lib, speed: 0, cruise: rand(21, 26), mesh, stun: 0, honk: 0, y: S.y }; // skyway: 60 mph limit, so they move
     skyPose(t); t.rx = t.x; t.rz = t.z; t.rh = t.h; traffic.push(t); return;
   }
 }
@@ -1148,7 +1151,7 @@ function stepSkyTraffic(t, dt, ox, oz, PY) {
   t.u += t.dir * t.speed * dt; skyPose(t);
   const k = skyAt(t.x, t.z); t.y = k ? k.y : 0.04;
   if (t.u < S.a0 - 5.5 || t.u > S.a1 + 5.5) { // down at the edge junction: become a normal street car heading on
-    const node = t.dir > 0 ? S.a1 + 6 : S.a0 - 6; Object.assign(t, { sky: false, axis: S.axis, line: S.line, pos: t.u, next: node, planFor: null, y: 0.04 }); t.mesh.rotation.x = 0; return;
+    const node = t.dir > 0 ? S.a1 + 6 : S.a0 - 6; Object.assign(t, { sky: false, axis: S.axis, line: S.line, pos: t.u, next: node, planFor: null, y: 0.04, c: cityAt(t.x, t.z, 14) || t.c }); // join the street grid of whichever town the ramp lands in t.mesh.rotation.x = 0; return;
   }
   const yf = (skyAt(t.x + t.fx * 1.8, t.z + t.fz * 1.8)?.y ?? 0.04), yb = (skyAt(t.x - t.fx * 1.8, t.z - t.fz * 1.8)?.y ?? 0.04);
   t.rx = damp(t.rx, t.x, 7, dt); t.rz = damp(t.rz, t.z, 7, dt); t.rh += wrapA(t.h - t.rh) * (1 - Math.exp(-7 * dt));
@@ -2179,7 +2182,7 @@ function updateVehicles(dt) {
     const half = b.length * 0.3, r = b.width * 0.55;
     let hit = false;
     carPos.y = c.y || 0; for (const sgn of [1, -1]) { carPos.x = c.x + fx * half * sgn; carPos.z = c.z + fz * half * sgn; if (resolve(carPos, r, 0)) { c.x = carPos.x - fx * half * sgn; c.z = carPos.z - fz * half * sgn; hit = true; } }
-    if (!walkable(c.x, c.z, false)) { c.x = ox; c.z = oz; hit = true; }
+    if (!walkable(c.x, c.z, false)) { const sk = skyAt(c.x, c.z); if (!(sk && (sk.ramp || (c.y || 0) > sk.y - 1.6))) { c.x = ox; c.z = oz; hit = true; } } // up on a bridge the water below doesn't matter
     for (const o of vehicles) if (o !== v && (o.s.x - c.x) ** 2 + (o.s.z - c.z) ** 2 < 81 && Math.abs((o.s.y || 0) - (c.y || 0)) < 2.5) collideCars(v, o, spd);
     if (hit && spd > 7) damageCar(v, (spd - 6) * 1.6, c.x + fx * b.length * 0.5 * Math.sign(c.v || 1), c.z + fz * b.length * 0.5 * Math.sign(c.v || 1));
     if (hit) { if (spd > 9) { spawnParticles(c.x + fx * 2, 0.7, c.z + fz * 2, ['#ffd23f', '#ffffff', '#888'], 10, 5, 0.4, 0.1); if (driving) shake = Math.max(shake, Math.min(0.6, spd / 40)); { const f = focusPos(); if (driving || Math.hypot(f.x - c.x, f.z - c.z) < 35) sfx.thud(); } } if (driving && spd > 15) hurt((spd - 15) * 1.6); c.v *= -0.25; c.vx *= 0.2; c.vz *= 0.2; }
@@ -2735,7 +2738,7 @@ function enterInterior(place, prop) {
     const door = h.toWorld(0, h.d / 2 - 1.3);
     Object.assign(P, { x: door.x, z: door.z, face: Math.PI, y: 0, vy: 0 });
     for (const t of traffic) dyn.remove(t.mesh); traffic.length = 0; peds.clear(); animals?.clear(); setWalk((x, z) => h.inside(x, z));
-    water.visible = false; signGroup.visible = false;
+    for (const w of waters) w.visible = false; signGroup.visible = false;
     updateCamera(0, true); hudCache.zone = null;
     sfx.click();
   });
@@ -2750,7 +2753,7 @@ function exitInterior(silent) {
     for (const m of inside.marks) G.scene.remove(m.g);
     const dn = inside.place?.doorN || [0, 1]; Object.assign(P, { x: inside.back.x + dn[0] * 0.8, z: inside.back.z + dn[1] * 0.8, face: Math.atan2(dn[0], dn[1]) }); P.y = baseY(P.x, P.z);
     const pend = pendingCar; inside = null; pendingCar = false; setWalk(null); peds.clear(); brawl = null; if (buddy) setTimeout(buddyRespawn, 300);
-    water.visible = true; signGroup.visible = true;
+    for (const w of waters) w.visible = true; signGroup.visible = true;
     loadBudget = 60; updateChunks(P.x, P.z, 2); loadBudget = 2;
     updateCamera(0, true);
     if (pend) { bringCar(true); toast('Your new car is parked outside. Enjoy!', 3); }
@@ -6305,7 +6308,7 @@ async function prisonRiot() {
 // ================================================================ HUD, minimap
 let MAP = null;
 const mm = $('minimap'), mctx = mm.getContext('2d');
-function ensureMap() { if (!MAP) { MAP = drawMap(1280); mctx.imageSmoothingEnabled = true; mctx.imageSmoothingQuality = 'high'; } }
+function ensureMap() { if (!MAP) { MAP = drawMap(1600); mctx.imageSmoothingEnabled = true; mctx.imageSmoothingQuality = 'high'; } }
 function markerIcon(m) { return m.place.kind === 'property' && owned.has(m.place.id) ? 'key' : m.icon; }
 function drawMinimap() {
   ensureMap();
@@ -6369,7 +6372,7 @@ function drawMinimap() {
 }
 function drawMapTo(cv) {
   ensureMap();
-  const S = cv.width, x = cv.getContext('2d'); x.drawImage(MAP.canvas, 0, 0, S, S);
+  const S = cv.width, x = cv.getContext('2d'); x.drawImage(MAP.canvas, 0, 0, S, cv.height);
   const k = S / 512, kp = S / MAP.canvas.width, tx = wx => MAP.tx(wx) * kp, tz = wz => MAP.tz(wz) * kp; // k sizes things, kp places them (the base map is bigger than 512 now)
   if (route) { x.strokeStyle = '#b26bff'; x.lineWidth = 3 * k; x.lineJoin = 'round'; x.beginPath(); route.forEach(([a, b], i) => i ? x.lineTo(tx(a), tz(b)) : x.moveTo(tx(a), tz(b))); x.stroke(); }
   x.textAlign = 'center'; x.textBaseline = 'middle'; x.font = `900 ${Math.round(12 * k)}px ui-rounded, system-ui, sans-serif`;
@@ -6772,12 +6775,12 @@ function renderPhone() {
     el.innerHTML = `${back}<h4>My Story</h4><p class="ph-hint">Every choice you made, and what came of it.</p><div class="ph-list">${L.length ? L.map(e => `<div class="ph-msg"><div class="av">${svg(e.tag === 'favour' ? 'star' : 'chat')}</div><div><b>${e.who}</b> <small style="opacity:.6">Day ${e.d}, ${String(e.h).padStart(2, '0')}:00</small><p><i>"${e.c}"</i></p>${e.r ? `<p class="goal">${e.r}</p>` : ''}</div></div>`).join('') : '<p class="ph-hint">Nothing yet. Life happens out there.</p>'}</div>`;
   } else if (phoneApp === 'maps') {
     el.innerHTML = `${back}<h4>Maps</h4><div class="ph-mapwrap"><canvas id="phMap"></canvas><div class="ph-mapbtns"><button id="mzIn">+</button><button id="mzOut">−</button><button id="mzMe">${svg('pin', 'sm')}</button></div></div><p class="ph-hint">${waypoint ? 'Waypoint set. Tap it again to clear. Follow the purple route.' : 'Drag to move, pinch to zoom, tap to set a waypoint.'}</p>${waypoint ? '<button class="ph-btn" id="phClear">Clear waypoint</button>' : ''}`;
-    const cv = $('phMap'), r0 = cv.getBoundingClientRect(), dpr = Math.min(devicePixelRatio, 2), W2 = Math.round(r0.width * dpr), H2 = Math.round(r0.height * dpr); cv.width = W2; cv.height = H2; const ZMIN = Math.max(1, H2 / W2); // never zoom out past the map's own shape (it used to squash)
-    const off = mapView.off ||= document.createElement('canvas'); off.width = off.height = 1536;
-    const info = drawMapTo(off), ctx2 = cv.getContext('2d');
+    const cv = $('phMap'), r0 = cv.getBoundingClientRect(), dpr = Math.min(devicePixelRatio, 2), W2 = Math.round(r0.width * dpr), H2 = Math.round(r0.height * dpr); cv.width = W2; cv.height = H2;  // never zoom out past the map's own shape (it used to squash)
+    const off = mapView.off ||= document.createElement('canvas'); ensureMap(); off.width = 1536; off.height = Math.round(1536 * MAP.canvas.height / MAP.canvas.width);
+    const info = drawMapTo(off), ctx2 = cv.getContext('2d'), ZMIN = Math.min(1, off.width * H2 / (W2 * off.height)); // all the way out = the whole map, never squashed
     if (!mapView.init) { const f = inside ? inside.back : focusPos(); mapView.cx = info.tx(f.x); mapView.cz = info.tz(f.z); mapView.z = 3; mapView.init = true; }
-    const view = () => { mapView.z = Math.max(ZMIN, mapView.z); const vw = off.width / mapView.z, vh = vw * H2 / W2; mapView.cx = clamp(mapView.cx, vw / 2, off.width - vw / 2); mapView.cz = clamp(mapView.cz, vh / 2, off.height - vh / 2); return { vw, vh, sx: mapView.cx - vw / 2, sz: mapView.cz - vh / 2 }; };
-    const draw = () => { const v = view(); ctx2.fillStyle = '#3d8fd0'; ctx2.fillRect(0, 0, W2, H2); ctx2.drawImage(off, v.sx, v.sz, v.vw, v.vh, 0, 0, W2, H2); };
+    const view = () => { mapView.z = Math.max(ZMIN, mapView.z); const vw = off.width / mapView.z, vh = vw * H2 / W2; mapView.cx = vw >= off.width ? off.width / 2 : clamp(mapView.cx, vw / 2, off.width - vw / 2); mapView.cz = vh >= off.height ? off.height / 2 : clamp(mapView.cz, vh / 2, off.height - vh / 2); return { vw, vh, sx: mapView.cx - vw / 2, sz: mapView.cz - vh / 2 }; };
+    const draw = () => { const v = view(), k2 = W2 / v.vw; ctx2.fillStyle = '#3d8fd0'; ctx2.fillRect(0, 0, W2, H2); ctx2.drawImage(off, -v.sx * k2, -v.sz * k2, off.width * k2, off.height * k2); };
     draw();
     const pts = new Map(); let moved = 0, pinch = null, last = null;
     const toOff = (cx, cy) => { const r = cv.getBoundingClientRect(), v = view(); return [v.sx + (cx - r.left) / r.width * v.vw, v.sz + (cy - r.top) / r.height * v.vh]; };
@@ -6957,7 +6960,7 @@ function saveGame() {
   store.set('bc_save', save); store.set('bc_arsenal', arsenal); store.set('bc_cars', garage);
 }
 // auto-update: bookmarks and home-screen apps can hold on to an old copy. Check version.json (never cached) and reload once if newer.
-const BUILD = 162;
+const BUILD = 163;
 function checkUpdate() {
   fetch('version.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(j => {
     if (!(j.v > BUILD)) return;

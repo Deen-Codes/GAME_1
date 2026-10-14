@@ -1,5 +1,5 @@
 // Everything you can walk or drive up to: shops, barbers, property, dealers, minigames, chop shop, race.
-import { blockSide, attachDoor, addStructure } from './world.js?v=162';
+import { blockSide, attachDoor, addStructure } from './world.js?v=163';
 
 const S = (city, i, j, side) => blockSide(city, i, j, side);
 
@@ -12,6 +12,8 @@ export const PLACES = [
   { id: 'd_hills', kind: 'dealer', npc: 'Ghost', name: 'Canyon Dealer', icon: 'deal', x: -360, z: -10, area: 'hills' },
   { id: 'd_air', kind: 'dealer', npc: 'Captain', name: 'Hangar Dealer', icon: 'deal', x: 228, z: -622, area: 'airport' },
   { id: 'd_farm', kind: 'dealer', npc: 'Mama Lu', name: 'Farm Road Dealer', icon: 'deal', x: 372, z: -10, area: 'farm' },
+  { id: 'd_isle', kind: 'dealer', npc: 'Coco', name: 'Long Beach Dealer', icon: 'deal', ...S('isle', 0, 1, 'w'), area: 'isle' },
+  { id: 'd_nport', kind: 'dealer', npc: 'Fitz', name: 'Northport Dealer', icon: 'deal', ...S('nport', 1, 1, 'w'), area: 'nport' },
   { id: 'd_ghetto', kind: 'dealer', npc: 'Two-Tone', name: 'Southside Dealer', icon: 'deal', ...S('main', -5, 4, 'e'), area: 'downtown' },
 
   // ---- shops & venues with interiors
@@ -49,6 +51,15 @@ export const PLACES = [
   { id: 'z_burger', kind: 'biz', interior: 'burgershop', biz: 'burger', name: 'Bay Burger', icon: 'food', desc: 'A burger joint. For sale.', ...S('main', 1, 2, 's') },
   { id: 'z_laundry', kind: 'biz', interior: 'laundry', biz: 'laundry', name: 'Suds Laundromat', icon: 'wave', desc: 'Coin laundry. For sale.', ...S('east', -1, 1, 's') },
   { id: 'z_carwash', kind: 'biz', biz: 'carwash', name: 'Shine Hand Car Wash', icon: 'car', desc: 'Hand car wash. For sale.', ...S('north', 1, 0, 's') },
+  // ---- Long Beach (the island) and Northport (over the river)
+  { id: 'c_isle', kind: 'clothes', interior: 'clothes', name: 'Long Beach Boutique', icon: 'shirt', style: 'luxe', ...S('isle', 1, -3, 'w') },
+  { id: 'v_sunset', kind: 'venue', interior: 'bar', name: 'Sunset Beach Bar', icon: 'drink', ...S('isle', -2, 3, 'w') },
+  { id: 'm_mart4', kind: 'venue', interior: 'mart', name: 'QuickMart Long Beach', icon: 'cart', ...S('isle', -2, -2, 'e') },
+  { id: 'b_isle', kind: 'barber', interior: 'barber', name: 'Island Fades', icon: 'scissors', ...S('isle', 1, 2, 'w') },
+  { id: 'gas5', kind: 'service', svc: 'gas', name: 'Bay Gas Long Beach', icon: 'bolt', desc: 'Fill up and get your car patched up.', ...S('isle', -2, 0, 'e'), car: true },
+  { id: 'f_diner3', kind: 'venue', interior: 'diner', name: 'Riverside Diner', icon: 'food', ...S('nport', 0, 1, 's') },
+  { id: 'm_mart5', kind: 'venue', interior: 'mart', name: 'QuickMart Northport', icon: 'cart', ...S('nport', -1, -1, 's') },
+  { id: 'gas4', kind: 'service', svc: 'gas', name: 'Bay Gas Northport', icon: 'bolt', desc: 'Fill up and get your car patched up.', ...S('nport', -2, 2, 's'), car: true },
   { id: 'g_club', kind: 'venue', interior: 'club', name: 'Neon Room Club', icon: 'music', ...S('main', -2, -1, 's') },
 
   // ---- outdoor activities & jobs
@@ -87,6 +98,9 @@ export const PROPERTIES = [
   { id: 'p_villa', name: 'Canyon Villa', icon: 'house', home: 'villa', price: 120000, income: 950, x: -470, z: -141 },
   { id: 'p_ridge', name: 'Ridge House', icon: 'house', home: 'villa', price: 95000, income: 780, x: -392, z: -567 },
   { id: 'p_lake', name: 'Trailside Retreat', icon: 'house', home: 'villa', price: 70000, income: 560, x: -410, z: 137 },
+  { id: 'p_nport', name: 'Northport Townhouse', icon: 'house', home: 'house', price: 32000, income: 260, ...S('nport', 1, -2, 's') },
+  { id: 'p_condo', name: 'Long Beach Sky Condo', icon: 'house', home: 'penthouse', price: 140000, income: 1150, ...S('isle', 1, 4, 'w') },
+  { id: 'p_islevilla', name: 'Island Beach Villa', icon: 'house', home: 'villa', price: 180000, income: 1500, x: 1182, z: -262 },
   { id: 'p_mansion', name: 'Baywood Hills Mansion', icon: 'house', home: 'mansion', price: 250000, income: 2200, x: -432, z: -370 },
 ];
 
@@ -107,6 +121,8 @@ const AREA_BIAS = {
   north: { haze: 0.9, pills: 1.3, dust: 0.9, moon: 1.3, glow: 0.8, gold: 1.0 },
   hills: { haze: 1.2, pills: 0.9, dust: 1.35, moon: 1.1, glow: 1.3, gold: 1.4 },
   airport: { haze: 0.8, pills: 0.8, dust: 0.75, moon: 0.7, glow: 0.75, gold: 0.7 },
+  isle: { haze: 1.4, pills: 1.15, dust: 1.3, moon: 1.25, glow: 1.4, gold: 1.5 }, // rich island money: sell here
+  nport: { haze: 0.85, pills: 0.95, dust: 0.85, moon: 0.95, glow: 0.9, gold: 0.85 },
   farm: { haze: 0.6, pills: 1.0, dust: 1.1, moon: 1.2, glow: 1.05, gold: 1.1 },
 };
 function hash(a, b) { let h = (a * 374761393 + b * 668265263) | 0; h = (h ^ (h >>> 13)) * 1274126177 | 0; return ((h ^ (h >>> 16)) >>> 0) / 4294967295; }
