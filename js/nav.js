@@ -1,5 +1,5 @@
 // GPS: A* over a road mask so waypoints draw a route along the streets, like GTA.
-import { WORLD, roadAt, skyAt, ROADS, canyonAt } from './world.js?v=181';
+import { WORLD, roadAt, skyAt, ROADS, canyonAt } from './world.js?v=182';
 
 const C = 6, X0 = WORLD.x0, Z0 = WORLD.z0;
 const NX = Math.ceil((WORLD.x1 - X0) / C), NZ = Math.ceil((WORLD.z1 - Z0) / C), N = NX * NZ;

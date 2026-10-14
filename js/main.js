@@ -1,30 +1,30 @@
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=181';
-import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun, partEffects, partPerk } from './gun.js?v=181';
-import { buildCar, computeCarStats, carStatBars, carClass, carPartEffects, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=181';
-import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, STAIRS, unblockPillars, canyonAt, canyonNear, PEAK, SKYWAYS, SKY_Y, skyAt, skyY, rampSeg, windowShader, makeOceanMaterial, WATER_U, WIND_U, METRO, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=181';
-import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=181';
-import { buildPanel, renderStats } from './ui.js?v=181';
-import { Input } from './input.js?v=181';
-import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime, animalCall } from './audio.js?v=181';
-import { runMinigame } from './minigames.js?v=181';
-import { CUT, initCutGames } from './cutgames.js?v=181';
-import { initOnline, updateOnline, goOnline, goOffline, NET, onNet, sendMagicLink, verifyCode, signOut, signedIn, cloudLoad, cloudSave, cloudList, cloudDelete } from './online.js?v=181';
-import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk, setReservedNames, seededLook } from './peds.js?v=181';
-import { citizens, whereNow } from './citizens.js?v=181';
-import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=181';
-import { findRoute } from './nav.js?v=181';
-import { COURSES, CAREERS, QUIZ } from './careers.js?v=181';
-import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=181';
-import { attachWheel } from './wheel.js?v=181';
-import { GROUND_U } from './groundtex.js?v=181';
-import { Animals, makeAnimalMesh } from './animals.js?v=181';
-import { Talk } from './talk.js?v=181';
-import { incomingText, classify, textOptions, textReply } from './texts.js?v=181';
-import { svg, drawIcon, ICONS as ICON_SET } from './icons.js?v=181';
-import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=181';
-import { FURN, CATALOG } from './furniture.js?v=181';
-import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=181';
+import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=182';
+import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun, partEffects, partPerk } from './gun.js?v=182';
+import { buildCar, computeCarStats, carStatBars, carClass, carPartEffects, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=182';
+import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, STAIRS, unblockPillars, canyonAt, canyonNear, PEAK, SKYWAYS, SKY_Y, skyAt, skyY, rampSeg, windowShader, makeOceanMaterial, WATER_U, WIND_U, METRO, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=182';
+import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=182';
+import { buildPanel, renderStats } from './ui.js?v=182';
+import { Input } from './input.js?v=182';
+import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime, animalCall } from './audio.js?v=182';
+import { runMinigame } from './minigames.js?v=182';
+import { CUT, initCutGames } from './cutgames.js?v=182';
+import { initOnline, updateOnline, goOnline, goOffline, NET, onNet, sendMagicLink, verifyCode, signOut, signedIn, cloudLoad, cloudSave, cloudList, cloudDelete } from './online.js?v=182';
+import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk, setReservedNames, seededLook } from './peds.js?v=182';
+import { citizens, whereNow } from './citizens.js?v=182';
+import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=182';
+import { findRoute } from './nav.js?v=182';
+import { COURSES, CAREERS, QUIZ } from './careers.js?v=182';
+import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=182';
+import { attachWheel } from './wheel.js?v=182';
+import { GROUND_U } from './groundtex.js?v=182';
+import { Animals, makeAnimalMesh } from './animals.js?v=182';
+import { Talk } from './talk.js?v=182';
+import { incomingText, classify, textOptions, textReply } from './texts.js?v=182';
+import { svg, drawIcon, ICONS as ICON_SET } from './icons.js?v=182';
+import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=182';
+import { FURN, CATALOG } from './furniture.js?v=182';
+import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=182';
 
 const $ = id => document.getElementById(id);
 let inside = null, editMode = false, held = null, pendingCar = false, homeMusic = false, phoneBadge = 0;
@@ -7123,7 +7123,8 @@ function saveGame() {
   store.set('bc_save', save); store.set('bc_arsenal', arsenal); store.set('bc_cars', garage); store.set('bc_savedAt', Date.now());
 }
 // auto-update: bookmarks and home-screen apps can hold on to an old copy. Check version.json (never cached) and reload once if newer.
-const BUILD = 181;
+const BUILD = 182;
+function updatingCover() { const d = document.createElement('div'); d.id = 'updCover'; d.innerHTML = '<div class="bt-logo">BAY<span>CITY</span></div><p><i></i>Updating Bay City...</p>'; document.body.appendChild(d); requestAnimationFrame(() => d.classList.add('on')); }
 function checkUpdate() {
   fetch('version.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(j => {
     if (!(j.v > BUILD)) return;
@@ -7131,7 +7132,7 @@ function checkUpdate() {
     let tried = 0; try { tried = +sessionStorage.getItem('bc_upd') || 0; } catch (_) {}
     if (tried >= j.v) { toast(`Update ${j.v} is out. Close and reopen the app to get it.`, 4); return; }
     try { sessionStorage.setItem('bc_upd', j.v); } catch (_) {}
-    saveGame(); toast('Updating Bay City...', 2); if (state !== 'title') sessionStorage.setItem('bc_autoplay', '1'); /* mid-game update: come straight back in */ setTimeout(() => location.replace(location.pathname + '?u=' + j.v), 900);
+    saveGame(); if (state !== 'title') sessionStorage.setItem('bc_autoplay', '1'); /* mid-game update: come straight back in */ sessionStorage.setItem('bc_updating', '1'); updatingCover(); setTimeout(() => location.replace(location.pathname + '?u=' + j.v), 900);
   }).catch(() => {});
 }
 setTimeout(checkUpdate, 3000); setInterval(checkUpdate, 5 * 60 * 1000);
