@@ -1,26 +1,26 @@
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=95';
-import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=95';
-import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=95';
-import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=95';
-import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=95';
-import { buildPanel, renderStats } from './ui.js?v=95';
-import { Input } from './input.js?v=95';
-import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime } from './audio.js?v=95';
-import { runMinigame } from './minigames.js?v=95';
-import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk } from './peds.js?v=95';
-import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=95';
-import { findRoute } from './nav.js?v=95';
-import { COURSES, CAREERS, QUIZ } from './careers.js?v=95';
-import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=95';
-import { attachWheel } from './wheel.js?v=95';
-import { Animals } from './animals.js?v=95';
-import { Talk } from './talk.js?v=95';
-import { incomingText, classify, textOptions, textReply } from './texts.js?v=95';
-import { svg, drawIcon } from './icons.js?v=95';
-import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=95';
-import { FURN, CATALOG } from './furniture.js?v=95';
-import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=95';
+import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=96';
+import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=96';
+import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=96';
+import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=96';
+import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=96';
+import { buildPanel, renderStats } from './ui.js?v=96';
+import { Input } from './input.js?v=96';
+import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime } from './audio.js?v=96';
+import { runMinigame } from './minigames.js?v=96';
+import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk } from './peds.js?v=96';
+import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=96';
+import { findRoute } from './nav.js?v=96';
+import { COURSES, CAREERS, QUIZ } from './careers.js?v=96';
+import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=96';
+import { attachWheel } from './wheel.js?v=96';
+import { Animals } from './animals.js?v=96';
+import { Talk } from './talk.js?v=96';
+import { incomingText, classify, textOptions, textReply } from './texts.js?v=96';
+import { svg, drawIcon } from './icons.js?v=96';
+import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=96';
+import { FURN, CATALOG } from './furniture.js?v=96';
+import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=96';
 
 const $ = id => document.getElementById(id);
 let inside = null, editMode = false, held = null, pendingCar = false, homeMusic = false, phoneBadge = 0;
@@ -969,7 +969,7 @@ function rebuildMyCar(at) {
   if (!headSpot) { headSpot = new THREE.SpotLight('#fff4dd', 0, 45, 0.55, 0.6, 1.2); headTarget = new THREE.Object3D(); G.scene.add(headSpot, headTarget); headSpot.target = headTarget; }
   headSpot.color.set(carCfg.headlights || '#ffffff');
 }
-function vehY(x, z, py = 0) { if (py > -2.5 && onBridge(x, z)) return 0.12; const r = roadAt(x, z); return r ? (r.city ? 0.04 : roadY(x, z)) : Math.max(groundH(x, z), cityAt(x, z, 4) ? 0 : -6); }
+function vehY(x, z, py = 0) { if (py > -2.5 && onBridge(x, z)) return 0.12; const r = roadAt(x, z); return r ? (r.city ? 0.04 : roadY(x, z)) : Math.max(groundH(x, z), cityAt(x, z, -6) ? 0.17 : cityAt(x, z, 4) ? 0 : -6); } // on the pavement you're up on the kerb
 function placeVehicle(v) {
   const s = v.s, g = v.b.group, fx = Math.sin(s.h), fz = Math.cos(s.h), hl = v.b.length * 0.4;
   const py = s.y ?? 0, yf = vehY(s.x + fx * hl, s.z + fz * hl, py), yb = vehY(s.x - fx * hl, s.z - fz * hl, py), y = vehY(s.x, s.z, py);
@@ -1563,6 +1563,7 @@ function updateDoors(dt) {
 }
 function seatSpot(v, side) { const s = v.s, h = s.h; return { x: s.x + Math.cos(h) * 0.35 * side + Math.sin(h) * 0.2, z: s.z - Math.sin(h) * 0.35 * side + Math.cos(h) * 0.2 }; }
 function sitIn(v) {
+  { const ci = copCars.indexOf(v); if (ci >= 0) { copCars.splice(ci, 1); v.ai = null; v.quarry = null; v.jackedCop = true; if (v.siren) v.siren.forEach(s => s.visible = false); crime(0.6); } } // you took their car: it isn't hunting you any more, it's yours
   ride = v; heroRoot.visible = !!v.b.two; muzzleFlash.visible = false; audio();
   // every car remembers its own station: yours keeps what you left on, other people's are on whatever their owner liked
   if (v === myCar && v.radio == null) v.radio = stats.carRadio ?? 0;
@@ -3901,7 +3902,7 @@ function peek(id, html, dur = 4.5) {
   let pl = b.querySelector('.peek'); if (!pl) { pl = document.createElement('span'); pl.className = 'peek'; b.appendChild(pl); }
   pl.innerHTML = html; b.classList.add('open'); clearTimeout(peekT[id]); peekT[id] = setTimeout(() => b.classList.remove('open'), dur * 1000);
 }
-function notify(from, text, dur = 4.5, id) { const w = faceFor(id, from); if (w) subs.say(w, text, { silent: true, tag: 'text', expr: /!|love|miss|😘|❤️|yay|best/i.test(text) ? 'happy' : /\?\?|wow|seriously|forgot|where are you|done/i.test(text) ? 'angry' : 'neutral', pri: 2 }); else slotNote('phone', from, text, dur); }
+function notify(from, text, dur = 4.5, id) { if (state === 'phone') return; const w = faceFor(id, from); if (w) subs.say(w, text, { silent: true, tag: 'text', expr: /!|love|miss|😘|❤️|yay|best/i.test(text) ? 'happy' : /\?\?|wow|seriously|forgot|where are you|done/i.test(text) ? 'angry' : 'neutral', pri: 2 }); else slotNote('phone', from, text, dur); }
 // a face for anyone we know: your partner, dates, kids, Ray, the people in town
 function faceFor(id, name) { try { return faceFor2(id, name); } catch { return null; } }
 function faceFor2(id, name) {
@@ -3913,7 +3914,13 @@ function faceFor2(id, name) {
   const k = f.kids.find(q => q.id === id || q.name === name); if (k) return { key: k.id, name: k.name, cfg: kidCfg(k), pitch: 420 };
   if (date && date.name === name) return dateWho();
   if (buddy && buddy.name === name) return buddyWho();
-  return null;
+  const cu = customers.find(c => c.name === name); if (cu?.cfg || cu?.npc?.cfg) return { key: 'cust' + cu.id, name, cfg: cu.cfg || cu.npc.cfg, pitch: 180 };
+  const dl = PLACES.find(p => p.npc === name && p.cfg); if (dl) return { key: dl.id, name, cfg: dl.cfg, pitch: 170 };
+  if (!name || /^(You|Bay |Unknown)/.test(name)) return null;
+  // someone we don't have a look for yet: give them one face, the same one every time
+  let h = 0; for (const ch of name) h = (h * 31 + ch.charCodeAt(0)) | 0; const fem = FEM_NAMES.includes(name.split(' ')[0]) || /a$|ie$|y$/i.test(name.split(' ')[0]);
+  const ff = (faceFor2.cache ||= {}); ff[name] ||= { ...npcCfg('guest', Math.abs(h) % 9999), fem };
+  return { key: 'n:' + name, name, cfg: ff[name], pitch: fem ? 310 : 170 };
 }
 function nameOf(id) { if (stats.dates?.[id]) return stats.dates[id].name; const k = fam().kids.find(k => k.id === id); return k ? k.name : id; }
 // called from WooHoo
@@ -4700,7 +4707,7 @@ function startWoo(kind, bed) {
     const lump = new THREE.Mesh(new THREE.SphereGeometry(0.42, 10, 8), duvet.material); lump.scale.set(1.3, 0.55, 1.1); lump.position.set(0, 0.9, 0.1); g.add(lump);
     const head = (c, x) => { const h = new THREE.Mesh(new THREE.BoxGeometry(0.26, 0.24, 0.24), new THREE.MeshStandardMaterial({ color: c })); h.position.set(x, 0.86, -F.d * 0.36); g.add(h); return h; };
     woo.heads = [head(charCfg.skin, -0.18), head(date.cfg.skin, 0.18)];
-    woo.g = g; woo.duvet = duvet; woo.lump = lump; woo.bedMesh = bed.mesh;
+    woo.g = g; woo.duvet = duvet; woo.lump = lump; woo.bedMesh = bed.mesh; P.x = w.x; P.z = w.z + 1.2; // the camera follows you to the bed
     heroRoot.visible = false; date.fig.root.visible = false;
   } else {
     woo.car = ride; woo.glass = [];
@@ -5188,7 +5195,7 @@ function updateCamera(dt, snap) {
   const k = snap ? 1 : 1 - Math.exp(-6 * dt);
   camLook.x += (tx - camLook.x) * k; camLook.z += (tz - camLook.z) * k; camLook.y += (ty - camLook.y) * k;
   if (FX.drunk > 0.2) { camLook.x += Math.sin(time * 0.8) * Math.min(1.5, FX.drunk) * 0.06; camLook.z += Math.cos(time * 0.6) * Math.min(1.5, FX.drunk) * 0.05; }
-  if (inside) { camLook.x = clamp(camLook.x, ORIGIN.x - inside.h.w / 4, ORIGIN.x + inside.h.w / 4); camLook.z = clamp(camLook.z, ORIGIN.z - inside.h.d / 4, ORIGIN.z + inside.h.d / 4 + 1); }
+  if (inside) { const ex = Math.max(inside.h.w / 4, inside.h.w / 2 - 5), ez = Math.max(inside.h.d / 4, inside.h.d / 2 - 4); camLook.x = clamp(camLook.x, ORIGIN.x - ex, ORIGIN.x + ex); camLook.z = clamp(camLook.z, ORIGIN.z - ez, ORIGIN.z + ez + 1); }
   const pitch = (inside ? 60 : 56) * DEG - (1 - Math.min(1, zoom)) * 0.45; // zoomed in = a lower, closer angle so you can see faces and clothes
   shake = Math.max(0, shake - dt * 1.5);
   const sx = (Math.random() - 0.5) * shake, sz = (Math.random() - 0.5) * shake;
@@ -5602,8 +5609,8 @@ function updateHUD(dt) {
   $('radioBtn').classList.toggle('hidden', !ride);
   $('carLabel').classList.toggle('on', !!ride && time < carLabelT);
   $('speedo').classList.toggle('hidden', !ride || time < carLabelT || !!ride.b.two && ride.cfg?.body === 'bike'); // car name first, then the speed
-  $('mmWrap').classList.toggle('badge', phoneBadge > 0); $('phoneBtn').classList.add('hidden');
-  if (ride) { const mph = Math.round(Math.abs(ride.s.v) * 2.237), lim = speedLimit(ride.s.x, ride.s.z); setText('speedTxt', String(mph)); $('speedo').classList.toggle('over', !!lim && mph > lim + 4); } // the number flashes red when you're over the limit
+  $('phoneBtn').classList.add('hidden');
+  $('speedo').classList.add('hidden'); { const sd = $('mmSpeed'), show = !!ride && !(ride.b.two && ride.cfg?.body === 'bike'); sd.classList.toggle('hidden', !show); if (show) { const mph = Math.round(Math.abs(ride.s.v) * 2.237), lim = speedLimit(ride.s.x, ride.s.z); setText('mmSpeedN', String(mph)); sd.classList.toggle('over', !!lim && mph > lim + 4); } } // the number flashes red when you're over the limit
   const jt = race ? `Race ${race.i}/${RACE.points.length} · ${Math.ceil(race.t)}s` : job ? (job.type === 'bins' ? (job.stage === 'return' ? 'Bins · return the lorry' : `Bins · ${8 - job.bins.length}/8 · ${fmt(job.earned)}`) : job.type === 'taxi' ? (job.stage === 'pickup' ? `Cab · pick up fare · ${fmt(job.earned)}` : `Cab · drop off · ${Math.ceil(job.t)}s · ${fmt(job.pay)}`) : `Courier · ${Math.ceil(job.t)}s · ${fmt(job.pay)}`) : '';
   setText('raceTxt', jt); $('raceTxt').classList.toggle('hidden', !jt);
   if (editMode) { setBtn('btnA', held ? 'check' : 'hand', held ? 'Place' : 'Pick up'); setBtn('btnB', 'check', 'Done'); setBtn('btnX', held ? 'rotate' : 'none', held ? 'Rotate' : ''); setBtn('btnY', held ? 'box' : 'none', held ? 'Store' : ''); } // rotate/store only while you're holding something
@@ -5681,7 +5688,7 @@ function openPhone(app = 'home') {
   document.body.classList.add('phone-out');
   requestAnimationFrame(() => ph.classList.add('open'));
 }
-function closePhone() { $('phone').classList.remove('open'); setTimeout(() => { $('phone').classList.add('hidden'); document.body.classList.remove('phone-out'); if (state === 'phone') setState('play'); }, 380); }
+function closePhone() { { const ip = $('phone').querySelector('.iphone'), r = $('mmWrap').getBoundingClientRect(); ip.style.transform = 'none'; const a = ip.getBoundingClientRect(); ip.style.transform = ''; ip.style.setProperty('--fx', `${r.left + r.width / 2 - (a.left + a.width / 2)}px`); ip.style.setProperty('--fy', `${r.top + r.height / 2 - (a.top + a.height / 2)}px`); ip.style.setProperty('--fs', (r.width / a.width).toFixed(3)); } $('phone').classList.remove('open'); setTimeout(() => { $('phone').classList.add('hidden'); document.body.classList.remove('phone-out'); if (state === 'phone') setState('play'); }, 380); }
 let phoneThread = null;
 function phoneGo(app) { phoneApp = app; if (app === 'msgs') phoneBadge = 0; renderPhone(); }
 // ================================================================ MAIN STORY: pinned mission texts that stay in your inbox until you've done them
@@ -5920,7 +5927,7 @@ function saveGame() {
   store.set('bc_save', save); store.set('bc_arsenal', arsenal); store.set('bc_cars', garage);
 }
 // auto-update: bookmarks and home-screen apps can hold on to an old copy. Check version.json (never cached) and reload once if newer.
-const BUILD = 95;
+const BUILD = 96;
 function checkUpdate() {
   fetch('version.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(j => {
     if (!(j.v > BUILD)) return;
