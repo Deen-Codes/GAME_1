@@ -1,28 +1,28 @@
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=152';
-import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun, partEffects, partPerk } from './gun.js?v=152';
-import { buildCar, computeCarStats, carStatBars, carClass, carPartEffects, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=152';
-import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, canyonAt, canyonNear, SKYWAYS, SKY_Y, skyAt, skyY, rampSeg, windowShader, makeOceanMaterial, WATER_U, WIND_U, METRO, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=152';
-import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=152';
-import { buildPanel, renderStats } from './ui.js?v=152';
-import { Input } from './input.js?v=152';
-import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime, animalCall } from './audio.js?v=152';
-import { runMinigame } from './minigames.js?v=152';
-import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk, setReservedNames, seededLook } from './peds.js?v=152';
-import { citizens, whereNow } from './citizens.js?v=152';
-import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=152';
-import { findRoute } from './nav.js?v=152';
-import { COURSES, CAREERS, QUIZ } from './careers.js?v=152';
-import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=152';
-import { attachWheel } from './wheel.js?v=152';
-import { GROUND_U } from './groundtex.js?v=152';
-import { Animals, makeAnimalMesh } from './animals.js?v=152';
-import { Talk } from './talk.js?v=152';
-import { incomingText, classify, textOptions, textReply } from './texts.js?v=152';
-import { svg, drawIcon } from './icons.js?v=152';
-import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=152';
-import { FURN, CATALOG } from './furniture.js?v=152';
-import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=152';
+import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=153';
+import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun, partEffects, partPerk } from './gun.js?v=153';
+import { buildCar, computeCarStats, carStatBars, carClass, carPartEffects, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=153';
+import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, canyonAt, canyonNear, PEAK, SKYWAYS, SKY_Y, skyAt, skyY, rampSeg, windowShader, makeOceanMaterial, WATER_U, WIND_U, METRO, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=153';
+import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=153';
+import { buildPanel, renderStats } from './ui.js?v=153';
+import { Input } from './input.js?v=153';
+import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime, animalCall } from './audio.js?v=153';
+import { runMinigame } from './minigames.js?v=153';
+import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk, setReservedNames, seededLook } from './peds.js?v=153';
+import { citizens, whereNow } from './citizens.js?v=153';
+import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=153';
+import { findRoute } from './nav.js?v=153';
+import { COURSES, CAREERS, QUIZ } from './careers.js?v=153';
+import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=153';
+import { attachWheel } from './wheel.js?v=153';
+import { GROUND_U } from './groundtex.js?v=153';
+import { Animals, makeAnimalMesh } from './animals.js?v=153';
+import { Talk } from './talk.js?v=153';
+import { incomingText, classify, textOptions, textReply } from './texts.js?v=153';
+import { svg, drawIcon } from './icons.js?v=153';
+import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=153';
+import { FURN, CATALOG } from './furniture.js?v=153';
+import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=153';
 
 const $ = id => document.getElementById(id);
 let inside = null, editMode = false, held = null, pendingCar = false, homeMusic = false, phoneBadge = 0;
@@ -1440,14 +1440,14 @@ function carBox(v, x, z) {
 }
 const trafProxy = t => t.proxy ||= { s: {}, b: { width: t.lib.wid || 1.9, length: t.lib.len || 4.4, height: 1.45 } };
 function carsAround() { const out = [...vehicles]; for (const t of traffic) { const q = trafProxy(t); Object.assign(q.s, { x: t.rx, z: t.rz, h: t.rh, y: t.y ?? 0 }); out.push(q); } return out; } // parked/driven cars + traffic
-function carNear(x, z, reach = 1.3) {
+function carNear(x, z, reach = 1.3, y = P.y) {
   let best = null;
-  for (const v of carsAround()) { if (v === ride || (v.s.x - x) ** 2 + (v.s.z - z) ** 2 > 64) continue; const B = carBox(v, x, z); const d = Math.max(Math.abs(B.lx) - B.hw, Math.abs(B.lz) - B.hl); if (d < reach && (!best || d < best.d)) { B.d = d; best = B; } }
+  for (const v of carsAround()) { if (v === ride || (v.s.x - x) ** 2 + (v.s.z - z) ** 2 > 64 || Math.abs((v.s.y || 0) - y) > 2.2) continue; const B = carBox(v, x, z); const d = Math.max(Math.abs(B.lx) - B.hw, Math.abs(B.lz) - B.hl); if (d < reach && (!best || d < best.d)) { B.d = d; best = B; } }
   return best;
 }
 function carTop(x, z, y) {
   let t = -99;
-  for (const v of carsAround()) { if (v === ride || (v.s.x - x) ** 2 + (v.s.z - z) ** 2 > 64) continue; const B = carBox(v, x, z); if (Math.abs(B.lx) < B.hw - 0.05 && Math.abs(B.lz) < B.hl - 0.1 && y >= B.top - 0.5) t = Math.max(t, B.top); }
+  for (const v of carsAround()) { if (v === ride || (v.s.x - x) ** 2 + (v.s.z - z) ** 2 > 64 || y > (v.s.y || 0) + 4) continue; const B = carBox(v, x, z); if (Math.abs(B.lx) < B.hw - 0.05 && Math.abs(B.lz) < B.hl - 0.1 && y >= B.top - 0.5) t = Math.max(t, B.top); }
   return t;
 }
 // ---------------- toilet: sit, relief. Hold it too long and you have an accident (and need a shower)
@@ -2891,20 +2891,29 @@ function findAction() {
   }
   let best = null, bd = 1e9;
   const consider = (d, a) => { if (d < bd) { bd = d; best = a; } };
-  for (const m of markers) if (!m.car) { const d = Math.hypot(m.x - P.x, m.z - P.z); if (d < 2.6) consider(d - 1, { kind: 'place', m, icon: m.npc ? 'chat' : 'door', label: m.place.kind === 'property' && owned.has(m.place.id) ? 'Enter' : m.place.kind !== 'property' && !isOpen(m.place) ? `Closed · ${hh12(placeHours(m.place)[0])}` : VERB[m.place.kind] }); }
-  for (const c of customers) if (c.npc?.fig) { const d = Math.hypot(c.x - P.x, c.z - P.z); if (d < 2.4) consider(d - 1.2, { kind: 'customer', c, icon: 'chat', label: 'Deal' }); }
+  const lv = (y = 0) => Math.abs(y - P.y) < 2.2; // only things on your level (not the street below a skyway, or the deck above you)
+  for (const m of markers) if (!m.car && lv(m.g?.position.y ?? 0)) { const d = Math.hypot(m.x - P.x, m.z - P.z); if (d < 2.6) consider(d - 1, { kind: 'place', m, icon: m.npc ? 'chat' : 'door', label: m.place.kind === 'property' && owned.has(m.place.id) ? 'Enter' : m.place.kind !== 'property' && !isOpen(m.place) ? `Closed · ${hh12(placeHours(m.place)[0])}` : VERB[m.place.kind] }); }
+  for (const c of customers) if (c.npc?.fig && lv(c.npc.y ?? baseY(c.x, c.z))) { const d = Math.hypot(c.x - P.x, c.z - P.z); if (d < 2.4) consider(d - 1.2, { kind: 'customer', c, icon: 'chat', label: 'Deal' }); }
   { const nl = nearLadder(); if (nl) consider(0.5, { kind: 'ladder', L: nl.L, top: nl.top, icon: 'run', label: nl.top ? 'Climb down' : 'Climb' }); }
   if (trainRide?.metro) return metro.stop > 0.5 ? { kind: 'metrooff', icon: 'exit', label: 'Get off' } : null;
   if (trainRide) return train.stop > 0 ? { kind: 'trainoff', icon: 'exit', label: 'Get off' } : null;
-  if (!ride) METRO.stations.forEach((st, i) => { const d = Math.hypot(P.x - st.tower.x, P.z - st.tower.z); if (d < 3.4) consider(0.05, { kind: 'metroon', si: i, icon: 'run', label: metro.si === i && metro.stop > 0.5 ? 'Metro ($2)' : `Metro (${metroEta(i)}s)` }); });
+  if (!ride && P.y < 2.2) METRO.stations.forEach((st, i) => { const d = Math.hypot(P.x - st.tower.x, P.z - st.tower.z); if (d < 3.4) consider(0.05, { kind: 'metroon', si: i, icon: 'run', label: metro.si === i && metro.stop > 0.5 ? 'Metro ($2)' : `Metro (${metroEta(i)}s)` }); });
   if (!ride && train.stop > 1 && Math.abs(P.x - train.x) < 16 && P.z > RAIL.z + 2 && P.z < RAIL.z + 7) consider(0.1, { kind: 'trainon', icon: 'run', label: 'Board ($3)' });
+  if (Math.hypot(P.x - (PEAK.x - 6), P.z - (PEAK.z - 6)) < 2.2) consider(0.2, { kind: 'lookout', icon: 'map', label: 'Telescope ($1)' });
   if (lifeAct?.kind === 'object' && Math.hypot(lifeAct.x - P.x, lifeAct.z - P.z) < 1.8) consider(0, { kind: 'lifeobj', icon: 'hand', label: 'Pick up' });
-  for (const v of vehicles) { if (v.wrecked || v.towed) continue; const d = Math.hypot(v.s.x - P.x, v.s.z - P.z); if (d < 4) consider(d, { kind: 'vehicle', v, icon: v.b.two ? 'run' : 'car', label: v.b.two ? (v.rental && !v.paid ? 'Ride ($2)' : 'Get on') : 'Get in' }); }
+  for (const v of vehicles) { if (v.wrecked || v.towed || !lv(v.s.y || 0)) continue; const d = Math.hypot(v.s.x - P.x, v.s.z - P.z); if (d < 4) consider(d, { kind: 'vehicle', v, icon: v.b.two ? 'run' : 'car', label: v.b.two ? (v.rental && !v.paid ? 'Ride ($2)' : 'Get on') : 'Get in' }); }
   for (const t of traffic) { const d = Math.hypot(t.rx - P.x, t.rz - P.z); if (d < 3.4 && Math.abs((t.y ?? 0.04) - P.y) < 2) consider(d, { kind: 'jack', t, icon: 'car', label: 'Jack car' }); }
-  for (const p of peds.list) if (p.state !== 'down' && p.state !== 'flee') { const d = Math.hypot(p.x - P.x, p.z - P.z); if (d < 1.9) consider(d - 0.2, { kind: 'ped', p, icon: 'chat', label: 'Talk' }); }
+  for (const p of peds.list) if (p.state !== 'down' && p.state !== 'flee' && lv(p.y ?? baseY(p.x, p.z))) { const d = Math.hypot(p.x - P.x, p.z - P.z); if (d < 1.9) consider(d - 0.2, { kind: 'ped', p, icon: 'chat', label: 'Talk' }); }
   const ccx = Math.floor(P.x / CHUNK), ccz = Math.floor(P.z / CHUNK);
-  for (let i = -1; i <= 1; i++) for (let j = -1; j <= 1; j++) for (const p of parkedIn(ccx + i, ccz + j)) if (!p.taken) { const d = Math.hypot(p.x - P.x, p.z - P.z); if (d < 3.3) consider(d + 0.3, { kind: 'parked', p, icon: 'smash', label: 'Break in' }); }
+  for (let i = -1; i <= 1; i++) for (let j = -1; j <= 1; j++) for (const p of parkedIn(ccx + i, ccz + j)) if (!p.taken && lv(0.17)) { const d = Math.hypot(p.x - P.x, p.z - P.z); if (d < 3.3) consider(d + 0.3, { kind: 'parked', p, icon: 'smash', label: 'Break in' }); }
   return best;
+}
+// Baywood Peak: drop a coin in the telescope and take in the whole bay. Once a day it really lifts your mood.
+function useLookout() {
+  if (money < 1) { toast('You need a dollar for the telescope.'); return; }
+  spend(1); sfx.click(); const first = stats.peakDay !== dayN; stats.peakDay = dayN;
+  fade(() => { advanceTime(0.4); feed({ mood: first ? 18 : 4, energy: 3 }); if (first) gainXP('charm', 6); const h = Math.floor(clockH);
+    toast(pick(h >= 19 || h < 6 ? ['The whole city lit up below you. The skyways glow like rivers.', 'Night from the top: the bay, the metro loop, a thousand windows.'] : h < 9 ? ['Sunrise over the bay. Worth the drive up.', 'Morning haze over downtown. You can see the pier from here.'] : ['You can see all the way to the airport. Somebody\'s plane is taking off.', 'Downtown, the beach, the farms. It\'s your city from up here.', 'You spot your own place from up here. Not bad.']) + (first ? ' Mood up.' : ''), 4); });
 }
 function doAction(a) {
   if (a.kind === 'vehicle') { if (a.v.farm) { a.v.ai = null; if (a.v.field) a.v.field.tractor = null; a.v.field = null; } if (a.v.rental && !a.v.paid) { if (money < 2) { toast('E-scooter rental is $2'); return; } spend(2); a.v.paid = true; toast('Bay Scoot rental: $2'); } enterVehicle(a.v); }
@@ -2918,6 +2927,7 @@ function doAction(a) {
   else if (a.kind === 'exit') exitInterior();
   else if (a.kind === 'fam') talkFamily(a.n);
   else if (a.kind === 'lifeobj') pickupObject();
+  else if (a.kind === 'lookout') useLookout();
   else if (a.kind === 'metroon') boardMetro(a.si);
   else if (a.kind === 'metrooff') leaveMetro();
   else if (a.kind === 'trainon') boardTrain();
@@ -6756,7 +6766,7 @@ function saveGame() {
   store.set('bc_save', save); store.set('bc_arsenal', arsenal); store.set('bc_cars', garage);
 }
 // auto-update: bookmarks and home-screen apps can hold on to an old copy. Check version.json (never cached) and reload once if newer.
-const BUILD = 152;
+const BUILD = 153;
 function checkUpdate() {
   fetch('version.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(j => {
     if (!(j.v > BUILD)) return;

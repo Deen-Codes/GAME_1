@@ -1,6 +1,6 @@
 // Open-world map: layout, deterministic generation, colliders, chunk meshing and minimap.
 import * as THREE from '../lib/three.module.min.js';
-import { groundMaterial, GT } from './groundtex.js?v=152';
+import { groundMaterial, GT } from './groundtex.js?v=153';
 
 export const WORLD = { x0: -560, x1: 800, z0: -800, z1: 520 };
 export const CHUNK = 64;
@@ -39,7 +39,8 @@ export const sandLine = x => 352 + 6 * Math.sin(x / 41) + 3 * Math.sin(x / 13);
 export const shoreLine = x => 432 + 8 * Math.sin(x / 53) + 4 * Math.sin(x / 19);
 export const WATER_Y = -0.8;
 // Hidden Hills: rolling terrain west of downtown, flattened along the trail and on house pads.
-function rawHills(x, z) {
+function rawHills(x, z) { const b = rawBase(x, z), k = peakK(x, z); return k ? b + (PEAK_H0 - b) * k : b; }
+function rawBase(x, z) {
   if (x >= -300) return 0;
   const ramp = Math.min(1, (-300 - x) / 60);
   let h = 6 + 4 * Math.sin(x / 37 + 1) * Math.cos(z / 41) + 3 * Math.sin(z / 23 + x / 57) + 1.2 * Math.sin(z / 9 + x / 13);
@@ -48,6 +49,10 @@ function rawHills(x, z) {
   h *= Math.min(1, Math.max(0, (sandLine(x) - 40 - z) / 50));
   return Math.max(0, h * ramp);
 }
+// Baywood Peak: a mountain west of the canyon crossroad, flat-topped for the lookout
+export const PEAK = { x: -508, z: -250, top: 34, flat: 10, r: 50 };
+function peakK(x, z) { const d = Math.hypot(x - PEAK.x, z - PEAK.z); if (d >= PEAK.r) return 0; if (d <= PEAK.flat) return 1; const t = 1 - (d - PEAK.flat) / (PEAK.r - PEAK.flat); return t * t * (3 - 2 * t); }
+const PEAK_H0 = rawBase(PEAK.x, PEAK.z) + PEAK.top; PEAK.y = PEAK_H0; // the summit's flat height
 export const PADS = [
   { id: 'mansion1', x: -432, z: -392, r: 24 },
   { id: 'mansion2', x: -470, z: -160, r: 19 },
@@ -59,8 +64,11 @@ for (const p of PADS) p.h = rawHills(p.x, p.z);
 // hills house and the BAYWOOD sign to Ridge House; Canyon Road links it to downtown. The hillside is levelled under them.
 export const CR_HW = 4.2;
 export const CANYON = [
-  { id: 'drive', name: 'Canyon Drive', pts: [[-340, 336], [-366, 300], [-390, 240], [-386, 184], [-391, 146], [-384, 112], [-380, 70], [-382, 36], [-386, 0], [-404, -48], [-436, -96], [-452, -132], [-444, -172], [-430, -205], [-414, -246], [-410, -290], [-422, -334], [-428, -364], [-410, -374], [-400, -404], [-405, -438], [-396, -472], [-384, -520], [-392, -562]] },
+  { id: 'drive', name: 'Canyon Drive', pts: [[-340, 336], [-366, 300], [-390, 240], [-386, 184], [-383, 148], [-377, 112], [-378, 70], [-382, 36], [-386, 0], [-404, -48], [-436, -96], [-447, -128], [-439, -172], [-430, -205], [-414, -246], [-410, -290], [-422, -334], [-428, -364], [-402, -372], [-395, -404], [-403, -438], [-396, -472], [-384, -520], [-392, -562]] },
   { id: 'road', name: 'Canyon Road', pts: [[-294, -144], [-318, -146], [-350, -158], [-382, -180], [-410, -196], [-430, -205]] },
+  { id: 'peak', name: 'Peak Road', pts: (() => { const P0 = [[-430, -205], [-448, -213]], c = { x: -508, z: -250 }; for (let k = 0; k <= 18; k++) { const a = (30 + k * 25) * Math.PI / 180, r = 41 - k * 1.55; P0.push([Math.round(c.x + Math.cos(a) * r), Math.round(c.z + Math.sin(a) * r)]); } P0.push([-508, -250]); return P0; })() },
+  { id: 'dw_lake', name: 'Driveway', pts: [[-410, 141], [-398, 142], [-385, 144]] },
+  { id: 'dw_villa', name: 'Driveway', pts: [[-470, -137], [-458, -133], [-449, -129]] },
 ];
 { // sample each road every 2 m along a Catmull-Rom curve, with a smoothed height profile (houses' pads hold their level)
   const prof = (x, z) => { for (const p of PADS) if (Math.hypot(x - p.x, z - p.z) < p.r + 10) return p.h; return x < -300 ? rawHills(x, z) : 0; };
@@ -76,6 +84,12 @@ export const CANYON = [
     out.forEach((q, i) => { q.h = hs[i]; const a = out[Math.max(0, i - 1)], b = out[Math.min(out.length - 1, i + 1)], l = Math.hypot(b.x - a.x, b.z - a.z) || 1; q.nx = (b.z - a.z) / l; q.nz = -(b.x - a.x) / l; q.i = i; q.R = R; });
     R.s = out;
   }
+  const D = CANYON[0];
+  for (const R of CANYON.slice(1)) for (const end of [R.s[0], R.s[R.s.length - 1]]) {
+    let jq = null, jd = 1e9; for (const q of D.s) { const d = Math.hypot(q.x - end.x, q.z - end.z); if (d < jd) { jd = d; jq = q; } }
+    if (jd > 14) continue; R.joins = (R.joins || 0) + 1;
+    for (const q of R.s) { const d = Math.hypot(q.x - end.x, q.z - end.z); if (d < 36) { const w = 1 - d / 36, k = w * w * (3 - 2 * w); q.h = q.h * (1 - k) + jq.h * k; } }
+  }
 }
 const CGRID = new Map(), CG2 = 12;
 for (const R of CANYON) for (const q of R.s) { const k = Math.floor(q.x / CG2) + ',' + Math.floor(q.z / CG2); let a = CGRID.get(k); if (!a) CGRID.set(k, a = []); a.push(q); }
@@ -86,7 +100,7 @@ export function canyonNear(x, z) {
   if (!best) return null; const end = best.i === 0 || best.i === best.R.s.length - 1, d = end ? Math.hypot(x - best.x, z - best.z) : Math.abs((x - best.x) * best.nx + (z - best.z) * best.nz); return { d, h: best.h, q: best };
 }
 // on a canyon road? { y } (the surface sits a touch proud of the dirt)
-const crEnds = q => { const e = Math.min(q.i, q.R.s.length - 1 - q.i); return e < 3 ? 0.06 + e * 0.05 : 0.22; }; // blend into the road it joins
+const crEnds = q => { const S2 = q.R.s, e = Math.min(q.i, S2.length - 1 - q.i), ep = q.i < S2.length / 2 ? S2[0] : S2[S2.length - 1]; return e < 3 && ep.x > -345 ? 0.06 + e * 0.05 : 0.22; }; // only where it meets a town/coast road // blend into the road it joins
 export function canyonAt(x, z) { const c = canyonNear(x, z); if (!c || c.d > CR_HW) return null; return { y: c.h + crEnds(c.q), R: c.q.R }; }
 // ---- rolling countryside between the districts (flat in towns, at the airport, on the beach and along the railway)
 const sm = t => t <= 0 ? 0 : t >= 1 ? 1 : t * t * (3 - 2 * t);
@@ -675,6 +689,11 @@ function genWorld() {
 genWorld();
 // nothing growing or parked on the canyon roads
 for (const ch of chunks.values()) for (let i = ch.objs.length - 1; i >= 0; i--) { const o = ch.objs[i]; if (!['tree', 'bush', 'hedge', 'rock', 'parked', 'bench'].includes(o.t)) continue; const c = canyonNear(o.x, o.z); if (!c || c.d > CR_HW + 2.2) continue; ch.objs.splice(i, 1); for (const cc of collidersNear(o.x, o.z).slice()) if ((cc.r && Math.abs(cc.x - o.x) < 0.01 && Math.abs(cc.z - o.z) < 0.01) || cc === o.col) removeCollider(cc); }
+// Baywood Peak lookout: a car park on the summit with a railing, benches and a coin telescope
+{ const gap = 120 * Math.PI / 180; addObj({ t: 'lookout', x: PEAK.x, z: PEAK.z });
+  for (const ch of chunks.values()) for (let i = ch.objs.length - 1; i >= 0; i--) { const o = ch.objs[i]; if (['tree', 'bush', 'rock'].includes(o.t) && Math.hypot(o.x - PEAK.x, o.z - PEAK.z) < 13) { ch.objs.splice(i, 1); for (const cc of collidersNear(o.x, o.z).slice()) if (cc.r && Math.abs(cc.x - o.x) < 0.01 && Math.abs(cc.z - o.z) < 0.01) removeCollider(cc); } } // a clear summit
+  for (let a = 0; a < Math.PI * 2; a += 0.22) { const c0 = canyonNear(PEAK.x + Math.cos(a) * 11.2, PEAK.z + Math.sin(a) * 11.2); if (c0 && c0.d < CR_HW + 1) continue; addCollider({ x: PEAK.x + Math.cos(a) * 11.2, z: PEAK.z + Math.sin(a) * 11.2, r: 0.5 }); }
+  addCollider({ x: PEAK.x - 6, z: PEAK.z - 6, r: 0.45 }); }
 // nothing parked or growing on the skyway ramps
 for (const S of SKYWAYS) for (const [ua, ub] of [[S.a0, S.a0 + S.ramp], [S.a1 - S.ramp, S.a1]]) { const [xa, za] = skyXZ(S, ua, -SKY_HW - 0.5), [xb, zb] = skyXZ(S, ub, SKY_HW + 0.5); clearRect(Math.min(xa, xb), Math.min(za, zb), Math.max(xa, xb), Math.max(za, zb)); }
 // tidy-up: no trees growing through buildings or on the railway
@@ -1153,6 +1172,14 @@ function drawObj(o, B) {
           const ex = ax ? o.x : o.x + sw * 5.3, ez = ax ? o.z + sw * 5.3 : o.z; B.box(ex, Y, ez, ax ? L : 0.14, 0.012, ax ? 0.14 : L, '#f2d14a'); } // yellow edge lines
         if (Math.round(o.u / 4) % 2 === 0) B.box(o.x, Y, o.z, ax ? 2.2 : 0.16, 0.012, ax ? 0.16 : 2.2, '#f2f2ee'); } // dashed centre line
       break; }
+    case 'lookout': { const T = PEAK.y + 0.05, gap = 120 * Math.PI / 180;
+      for (let a = 0; a < Math.PI * 2; a += 0.22) { const c0 = canyonNear(o.x + Math.cos(a) * 11.2, o.z + Math.sin(a) * 11.2); if (c0 && c0.d < CR_HW + 1) continue; const px = o.x + Math.cos(a) * 11.2, pz = o.z + Math.sin(a) * 11.2; B.box(px, T, pz, 0.14, 1.05, 0.14, '#3a3d45'); B.box(px, T + 1.0, pz, 2.5, 0.08, 0.12, '#c9a24a', { rot: -a + Math.PI / 2 }); } // railing
+      B.gt = GT.asphalt; for (let k = 0; k < 28; k++) { const a0 = k / 28 * Math.PI * 2, a1 = (k + 1) / 28 * Math.PI * 2, R2 = 10.8; B.tri('ground', [o.x, T + 0.12, o.z], [o.x + Math.cos(a0) * R2, T + 0.12, o.z + Math.sin(a0) * R2], [o.x + Math.cos(a1) * R2, T + 0.12, o.z + Math.sin(a1) * R2], '#4b4b53', [o.x, -100, o.z]); } // tarmac car park
+      for (let i = -2; i <= 2; i++) B.box(o.x + i * 2.8, T + 0.12, o.z + 3, 0.12, 0.014, 4.6, '#e8e8e2'); // parking bays
+      B.box(o.x - 6, T, o.z - 6, 0.16, 1.1, 0.16, '#3a3d45'); B.box(o.x - 6, T + 1.1, o.z - 6, 0.34, 0.3, 0.7, '#2f80ed', { rot: Math.PI / 4 }); // coin telescope
+      for (const [bx, bz, r] of [[-1.5, -8.6, 0], [4.5, -7.6, 0.5]]) { B.box(o.x + bx, T + 0.42, o.z + bz, 1.8, 0.1, 0.5, '#9a6a3a', { rot: r }); B.box(o.x + bx, T, o.z + bz, 1.6, 0.42, 0.3, '#3a3d45', { rot: r }); } // benches
+      B.box(o.x + 7.5, T, o.z + 6.5, 0.14, 2.2, 0.14, '#3a3d45'); B.box(o.x + 7.5, T + 2.1, o.z + 6.5, 3.2, 0.9, 0.12, '#1f6b3a', { rot: -0.5 }); // BAYWOOD PEAK sign board
+      break; }
     case 'skypillar': { const S = SKYWAYS.find(q => q.id === o.S), Y = SKY_Y, ax = S.axis === 'x';
       for (const sw of [-1, 1]) { const lx = ax ? o.x : o.x + sw * 7.3, lz = ax ? o.z + sw * 7.3 : o.z; B.box(lx, 0.15, lz, 1.0, Y - 0.6, 1.0, '#aaa59d'); B.box(lx, 0.15, lz, 1.4, 0.3, 1.4, '#8f8b84'); B.box(lx, 0.6, lz, 1.04, 0.22, 1.04, '#f2d14a'); } // legs on the pavement, with a yellow band
       B.box(o.x, Y - 1.45, o.z, ax ? 1.2 : 15.6, 0.9, ax ? 15.6 : 1.2, '#9e9a92'); break; } // crossbeam over the whole road
@@ -1379,7 +1406,7 @@ export function drawMap(size = 512) {
   return { canvas: cv, tx, tz, sx, sz };
 }
 export const LABELS = [
-  ['DOWNTOWN', 0, 0], ['BAY BEACH', 100, 395], ['HIDDEN HILLS', -430, -250], ['EASTPORT', 600, 0], ['NORTHFIELD', 0, -520], ['AIRPORT', 20, -690], ['FARMLAND', 370, 160],
+  ['DOWNTOWN', 0, 0], ['BAY BEACH', 100, 395], ['HIDDEN HILLS', -420, -60], ['BAYWOOD PEAK', -508, -232], ['EASTPORT', 600, 0], ['NORTHFIELD', 0, -520], ['AIRPORT', 20, -690], ['FARMLAND', 370, 160],
 ];
 export const SPAWN = { x: 8.2, z: 30, carX: 3, carZ: 40, carH: Math.PI };
 
