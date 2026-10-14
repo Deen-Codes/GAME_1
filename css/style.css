@@ -663,3 +663,42 @@ body.phone-out #mmWrap { opacity: 0; transition: opacity .1s; }
 .statx .cls { display: inline-grid; place-items: center; min-width: 20px; height: 18px; padding: 0 5px; border-radius: 5px; font-weight: 900; color: #16161b; background: #9aa0aa; }
 .statx .clsS { background: linear-gradient(135deg, #ffe066, #ff8a2a); } .statx .clsA { background: #ff6fb5; } .statx .clsB { background: #38e8ff; } .statx .clsC { background: #4cd964; }
 .wbtns { display: flex; gap: 6px; flex-shrink: 0; } .wbtns button { min-width: 0; padding-inline: 12px; }
+/* the armory: shelf of weapons, part categories, swipeable options, colours at the bottom */
+.arm-hint { font-size: 12px; color: var(--dim); margin: 2px 0 8px; }
+.acar, .acats, .aopts { display: flex; gap: 8px; overflow-x: auto; scroll-snap-type: x proximity; -webkit-overflow-scrolling: touch; padding-bottom: 6px; scrollbar-width: none; }
+.acar::-webkit-scrollbar, .acats::-webkit-scrollbar, .aopts::-webkit-scrollbar { display: none; }
+.acard { flex: 0 0 132px; scroll-snap-align: start; display: grid; justify-items: start; gap: 4px; padding: 12px; border-radius: 16px; background: rgba(255,255,255,.07); border: 2px solid transparent; text-align: left; color: #fff; }
+.acard .aic svg { width: 56px; height: 28px; }
+.acard b { font-size: 14px; font-weight: 900; line-height: 1.15; }
+.acard small { font-size: 12px; font-weight: 800; color: #ffd23f; }
+.acard.own small { color: #5cf08a; }
+.acard.on { border-color: var(--hot); }
+.arm-wallet { margin-top: 10px; font-weight: 900; color: #5cf08a; display: flex; gap: 6px; align-items: center; }
+.arm-top { display: flex; gap: 8px; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.arm-new { font-size: 12px; color: #ffd23f; font-weight: 800; }
+.arm-back, .arm-ammo { border-radius: 999px; padding: 7px 12px; font-size: 12.5px; font-weight: 900; background: rgba(255,255,255,.1); color: #fff; display: inline-flex; gap: 5px; align-items: center; }
+.arm-ammo { background: linear-gradient(180deg, #4cd964, #26a644); }
+.arm-ammo:disabled { opacity: .5; }
+.acat { flex: 0 0 auto; padding: 8px 14px; border-radius: 999px; background: rgba(255,255,255,.07); font-weight: 900; font-size: 13px; color: rgba(255,255,255,.75); position: relative; }
+.acat.on { background: var(--hot); color: #2a1406; }
+.acat.chg::after { content: ''; position: absolute; top: 4px; right: 5px; width: 6px; height: 6px; border-radius: 50%; background: #5cf08a; }
+.aopts { margin-top: 6px; }
+.aopt { flex: 0 0 150px; scroll-snap-align: center; display: grid; gap: 4px; align-content: start; text-align: left; padding: 10px; border-radius: 14px; background: rgba(255,255,255,.07); border: 2px solid transparent; color: #fff; min-height: 92px; }
+.aopt b { font-size: 13.5px; font-weight: 900; }
+.aopt .cfx { display: flex; flex-wrap: wrap; gap: 2px 6px; } .aopt .cfx i { font-style: normal; font-size: 10.5px; font-weight: 800; color: rgba(255,255,255,.6); } .aopt .cfx i.up { color: #5cf08a; } .aopt .cfx i.dn { color: #ff6b78; }
+.aopt small { font-size: 11px; font-weight: 900; color: #ffd23f; margin-top: auto; }
+.aopt.on { border-color: var(--hot); background: rgba(255,138,42,.18); }
+.aopt.locked { opacity: .5; } .aopt.locked small { color: rgba(255,255,255,.6); }
+.acols { margin-top: 10px; display: grid; gap: 8px; }
+.acolk { display: flex; gap: 6px; } .acolk button { flex: 1; padding: 6px 0; border-radius: 10px; background: rgba(255,255,255,.07); font-size: 12px; font-weight: 900; color: rgba(255,255,255,.7); }
+.acolk button.on { background: rgba(255,255,255,.22); color: #fff; }
+.acolsw { display: flex; gap: 7px; overflow-x: auto; padding-bottom: 2px; scrollbar-width: none; } .acolsw .sw { flex: 0 0 30px; height: 30px; }
+.arm-simple { display: grid; justify-items: center; gap: 10px; text-align: center; padding: 10px 0; } .arm-simple .aic svg { width: 90px; height: 45px; } .arm-simple p { margin: 0; color: rgba(255,255,255,.8); font-size: 14px; }
+.arm-buy { padding: 12px 22px; border-radius: 14px; font-weight: 900; background: linear-gradient(180deg, #4cd964, #26a644); color: #fff; font-size: 16px; } .arm-buy:disabled { opacity: .5; }
+.arm-owned { color: #5cf08a; }
+body.armory .panel { height: 60dvh; padding-top: 10px; }
+body.armory .panel.scroll > .stats { margin-bottom: 6px; padding: 6px 8px; }
+body.armory .panel.scroll > .stats .stat { font-size: 10px; padding: 1px 0; }
+body.armory .presets { margin-bottom: 4px; } body.armory .presets button { padding: 5px 9px; font-size: 12px; }
+body.armory .drag-hint { bottom: calc(60dvh + 6px); }
+.tabs:empty { display: none; }

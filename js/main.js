@@ -1,28 +1,28 @@
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=143';
-import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun, partEffects, partPerk } from './gun.js?v=143';
-import { buildCar, computeCarStats, carStatBars, carClass, carPartEffects, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=143';
-import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, WIND_U, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=143';
-import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=143';
-import { buildPanel, renderStats } from './ui.js?v=143';
-import { Input } from './input.js?v=143';
-import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime, animalCall } from './audio.js?v=143';
-import { runMinigame } from './minigames.js?v=143';
-import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk, setReservedNames, seededLook } from './peds.js?v=143';
-import { citizens, whereNow } from './citizens.js?v=143';
-import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=143';
-import { findRoute } from './nav.js?v=143';
-import { COURSES, CAREERS, QUIZ } from './careers.js?v=143';
-import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=143';
-import { attachWheel } from './wheel.js?v=143';
-import { GROUND_U } from './groundtex.js?v=143';
-import { Animals, makeAnimalMesh } from './animals.js?v=143';
-import { Talk } from './talk.js?v=143';
-import { incomingText, classify, textOptions, textReply } from './texts.js?v=143';
-import { svg, drawIcon } from './icons.js?v=143';
-import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=143';
-import { FURN, CATALOG } from './furniture.js?v=143';
-import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=143';
+import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=144';
+import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun, partEffects, partPerk } from './gun.js?v=144';
+import { buildCar, computeCarStats, carStatBars, carClass, carPartEffects, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=144';
+import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, WIND_U, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=144';
+import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=144';
+import { buildPanel, renderStats } from './ui.js?v=144';
+import { Input } from './input.js?v=144';
+import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime, animalCall } from './audio.js?v=144';
+import { runMinigame } from './minigames.js?v=144';
+import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk, setReservedNames, seededLook } from './peds.js?v=144';
+import { citizens, whereNow } from './citizens.js?v=144';
+import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=144';
+import { findRoute } from './nav.js?v=144';
+import { COURSES, CAREERS, QUIZ } from './careers.js?v=144';
+import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=144';
+import { attachWheel } from './wheel.js?v=144';
+import { GROUND_U } from './groundtex.js?v=144';
+import { Animals, makeAnimalMesh } from './animals.js?v=144';
+import { Talk } from './talk.js?v=144';
+import { incomingText, classify, textOptions, textReply } from './texts.js?v=144';
+import { svg, drawIcon } from './icons.js?v=144';
+import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=144';
+import { FURN, CATALOG } from './furniture.js?v=144';
+import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=144';
 
 const $ = id => document.getElementById(id);
 let inside = null, editMode = false, held = null, pendingCar = false, homeMusic = false, phoneBadge = 0;
@@ -144,18 +144,19 @@ const pv = { scene: new THREE.Scene(), cam: new THREE.PerspectiveCamera(35, 1, 0
   const ring = new THREE.Mesh(new THREE.TorusGeometry(3.45, 0.025, 6, 80), new THREE.MeshBasicMaterial({ color: '#ff8a2a' })); ring.rotation.x = Math.PI / 2; pv.scene.add(ring);
 }
 pv.scene.add(pv.turn, pv.gunStand, pv.carStand);
-let previewCfg = null, pvGunCfg = DEFAULT_GUN, pvCarCfg = null;
+let previewCfg = null, pvGunCfg = DEFAULT_GUN, pvCarCfg = null, pvWeapon = null;
 function rebuildPreview() {
   if (pv.char) { pv.turn.remove(pv.char.root); disposeObject(pv.char.root); }
   if (pv.gunView) { pv.gunStand.remove(pv.gunView.group); disposeObject(pv.gunView.group); }
   if (pv.car) { pv.carStand.remove(pv.car.group); disposeObject(pv.car.group); }
   pv.char = buildCharacter(previewCfg || charCfg); pv.turn.add(pv.char.root);
-  pv.gunView = buildGun(pvGunCfg); pv.gunView.group.position.copy(pv.gunView.center).multiplyScalar(-1); pv.gunStand.add(pv.gunView.group);
+  if (pvWeapon) { const m = buildWeaponModel(pvWeapon); const bb = new THREE.Box3().setFromObject(m.group), c = bb.getCenter(new THREE.Vector3()); pv.gunView = { group: m.group, length: Math.max(0.5, bb.max.z - bb.min.z), center: c }; m.group.position.copy(c).multiplyScalar(-1); pv.gunStand.add(m.group); }
+  else { pv.gunView = buildGun(pvGunCfg); pv.gunView.group.position.copy(pv.gunView.center).multiplyScalar(-1); pv.gunStand.add(pv.gunView.group); }
   pv.car = buildCar(pvCarCfg || carCfg); pv.carStand.add(pv.car.group);
   pv.dirty = false;
 }
 let previewMode = 'char';
-function previewLayout() { const c = pv.cam; c.aspect = W / H; c.clearViewOffset(); c.setViewOffset(W, H, 0, H * 0.24, W, H); c.updateProjectionMatrix(); }
+function previewLayout() { const c = pv.cam; c.aspect = W / H; c.clearViewOffset(); c.setViewOffset(W, H, 0, H * (document.body.classList.contains('armory') ? 0.29 : 0.24), W, H); c.updateProjectionMatrix(); }
 function updatePreview(dt, t) {
   if (pv.dirty) rebuildPreview();
   const m = previewMode;
@@ -3390,20 +3391,77 @@ async function talkShop(p, n) {
 }
 async function talkGuns(p, n) {
   beginTalk(n.cfg, n.name, p.name, p.pitch, n.relId);
-  await talk.say(pick(["Welcome to Bay Arms. Cash only.", "Looking to protect yourself?", "Everything here's legal. Mostly."]));
+  await talk.say(rel(n.relId) >= 40 ? pick(['There they are. My favourite customer.', 'Back again? Good. I got new stock.']) : pick(["Welcome to Bay Arms. Cash only.", "Looking to protect yourself?", "Everything here's legal. Mostly."]));
   for (;;) {
-    const c = await talk.choose([I('gun', 'Weapons & ammo'), I('wrench', 'Customise a gun'), I('target', 'How does the range work?'), I('x', 'Leave')]);
-    if (c === 0) { const v = await openGunStore(p); if (v) bumpRel(n.relId, v / 500); await talk.say(pick(['Stay safe out there.', 'Good choice.', 'Anything else?'])); }
-    else if (c === 1) {
-      const guns = SLOTS.filter(s2 => s2.kind === 'gun').map(s2 => s2.id);
-      await talk.say('Which piece are we working on? You can try any of them on the bench first.');
-      const k = await talk.choose([...guns.map(id => arsenal.owned.includes(id) ? `${iconSVG(id, 'sm')} ${arsenal.cfg[id].name || SLOT[id].name} <small>Lvl ${lvl('gun_' + id)}</small>` : `${iconSVG(id, 'sm')} ${SLOT[id].name} <small>try it · ${fmt(SLOT[id].price)}</small>`), I('x', 'Never mind')]);
-      if (k < guns.length) { talk.end(); openGunsmith(guns[k], p, !arsenal.owned.includes(guns[k])); return; }
+    const c = await talk.choose([I('gun', 'Guns'), I('chat', 'Chat'), I('x', 'Leave')]);
+    if (c === 0) { talk.end(); openArmory(p, n); return; }
+    if (c === 1) { // talk to them like a person: small talk, the range, the city, and they warm up to you
+      const k0 = stats.relDay[n.relId + ':chat:' + dayN];
+      const topics = [I('chat', 'How\'s business?'), I('target', 'How does the range work?'), I('star', 'Got any tips?'), I('people', 'What\'s your story?')];
+      const t = await talk.choose(topics);
+      if (t === 1) await talk.say("Fifteen bucks a session. Equip a gun, step up to the lane. Every hit makes you better with that gun, and better guns parts open up as you level it.");
+      else if (t === 0) await talk.say(pick(["Busy. Too busy. This city's getting nervous.", "Can't complain. Well, I can. Nobody listens.", "Quiet week. Which in my line of work is a good thing."]));
+      else if (t === 2) await talk.say(pick(['A suppressor keeps you off the cops\' radar. Worth every penny.', 'Armour-piercing rounds go straight through car doors. Just saying.', 'Level a gun up and I can fit the good stuff. Practice pays.', 'Don\'t bring a pistol to a shotgun fight.']));
+      else await talk.say(pick(['Twenty years in the army, ten behind this counter. The counter\'s scarier.', 'My dad ran this shop. His dad too. Three generations of not asking questions.', 'I used to compete. Shooting, not talking. Obviously.']));
+      if (!k0) { stats.relDay[n.relId + ':chat:' + dayN] = 1; bumpRel(n.relId, 4 + lvl('charm') * 0.5); gainXP('charm', 6); }
+      continue;
     }
-    else if (c === 2) await talk.say("Fifteen bucks a session. Equip a gun, step up to the lane. Every hit makes you better with that gun: tighter aim, faster reloads.");
-    else { await talk.say('Come back soon.'); break; }
+    await talk.say(pick(['Come back soon.', 'Stay safe.', 'Watch yourself out there.'])); break;
   }
   endTalk();
+}
+// ---------------- the armory: a horizontal shelf of every weapon up top; tap one to see it big, buy it, then swipe through each part
+let armory = null;
+const ARM_CATS = [['receiver', 'Frame'], ['fireMode', 'Fire'], ['barrel', 'Barrel'], ['muzzle', 'Muzzle'], ['sight', 'Optic'], ['under', 'Underbarrel'], ['magazine', 'Mag'], ['stock', 'Stock'], ['grip', 'Grip'], ['ammo', 'Ammo'], ['finish', 'Camo'], ['charm', 'Charm']];
+const ARM_COLS = [['bodyColor', 'Body'], ['accentColor', 'Accent'], ['metalColor', 'Metal'], ['tracer', 'Tracer']];
+function openArmory(place, npc) {
+  armory = { place, npc, view: 'list', slot: null, cat: 'barrel', col: 'bodyColor', spent: 0 };
+  const first = arsenal.owned.find(id => SLOT[id].kind === 'gun') || 'pistol';
+  shop = { kind: 'gun', slot: first, place, newGun: false, orig: { ...(arsenal.cfg[first] || DEFAULT_CFGS[first]) } }; pvGunCfg = { ...shop.orig }; previewCfg = null; pvWeapon = null;
+  document.body.classList.add('armory'); setState('gun'); $('randBtn').classList.add('buy'); armoryList();
+}
+function armoryList() {
+  const A = armory; A.view = 'list'; shop.newGun = false; $('customTitle').textContent = A.place.name; $('presets').innerHTML = ''; $('tabs').innerHTML = ''; $('stats').innerHTML = '';
+  $('randBtn').classList.add('hidden');
+  const cards = SLOTS.filter(s2 => s2.id !== 'fist').map(s2 => { const own = arsenal.owned.includes(s2.id), lv = GUN_SKILL_SLOTS.includes(s2.id) ? lvl('gun_' + s2.id) : 0;
+    return `<button class="acard ${own ? 'own' : ''} ${A.slot === s2.id ? 'on' : ''}" data-arm="${s2.id}"><span class="aic">${iconSVG(s2.id)}</span><b>${s2.kind === 'gun' && own ? (arsenal.cfg[s2.id].name || s2.name) : s2.name}</b><small>${own ? (lv ? `Owned · Lvl ${lv}` : 'Owned') : s2.price ? fmt(s2.price) : 'Free'}</small></button>`; }).join('');
+  $('content').innerHTML = `<div class="arm-hint">Swipe through the shelf. Tap a weapon to look at it.</div><div class="acar">${cards}</div><div class="arm-wallet">${svg('wallet', 'sm')} ${fmt(money)}</div>`;
+  $('content').querySelectorAll('[data-arm]').forEach(b => b.onclick = () => armoryGun(b.dataset.arm));
+  const sel = A.slot || shop.slot; pvWeapon = SLOT[sel]?.kind === 'gun' ? null : sel; pv.dirty = true;
+}
+function armoryGun(id) {
+  const A = armory, S2 = SLOT[id]; A.view = 'gun'; A.slot = id; sfx.click();
+  $('customTitle').textContent = S2.kind === 'gun' && arsenal.owned.includes(id) ? (arsenal.cfg[id].name || S2.name) : S2.name;
+  if (S2.kind === 'gun') {
+    const cfg0 = arsenal.cfg[id] || { ...DEFAULT_CFGS[id] }; shop = { kind: 'gun', slot: id, place: A.place, newGun: !arsenal.owned.includes(id), orig: { ...cfg0 } }; pvGunCfg = { ...cfg0 }; pvWeapon = null;
+    $('randBtn').classList.remove('hidden'); updateShopPrice(); gunStatsPanel(); renderBlueprints(id);
+  } else { shop = { kind: 'gun', slot: 'pistol', place: A.place, newGun: false, orig: { ...pvGunCfg } }; pvWeapon = id; $('randBtn').classList.add('hidden'); $('stats').innerHTML = ''; $('presets').innerHTML = ''; }
+  pv.dirty = true; armoryDraw();
+}
+function armoryDraw() {
+  const A = armory, id = A.slot, S2 = SLOT[id], own = arsenal.owned.includes(id), el = $('content');
+  const st = slotStats(id, arsenal.cfg[id]), a = arsenal.ammo[id], box = S2.kind === 'melee' ? null : ammoBox(id, st), full = box && a && a.res + a.mag >= maxReserve(id, st) + (st.mag || 0);
+  const ammoBtn = own && box ? `<button class="arm-ammo" ${money < box.price || full ? 'disabled' : ''} data-ammo="1">${full ? 'Ammo full' : `+${box.n} ammo · ${fmt(box.price)}`}</button>` : '';
+  if (S2.kind !== 'gun') { // bats, launchers and grenades: just buy them
+    el.innerHTML = `<div class="arm-simple"><span class="aic big">${iconSVG(id)}</span><p>${{ bat: 'A solid ash bat. Quiet, cheap, never jams.', rpg: 'Shoulder-fired rocket launcher. Very loud. Very illegal. Very effective.', grenade: 'Frag grenades. Throw, count to three, don\'t be there.' }[id] || ''}</p>${own ? (S2.kind === 'melee' ? '<b class="arm-owned">Owned</b>' : ammoBtn) : `<button class="arm-buy" data-buyw="1" ${money < S2.price ? 'disabled' : ''}>Buy ${fmt(S2.price)}</button>`}</div>`;
+  } else {
+    const schema = smithSchemaRich(id).flatMap(t => t.items), items = Object.fromEntries(schema.map(it => [it.key, it])), cats = ARM_CATS.filter(([k]) => items[k]);
+    if (!items[A.cat]) A.cat = cats[0][0];
+    const it = items[A.cat], cur = pvGunCfg[A.cat];
+    const opts = it.options.map(([v, label]) => { const d = it.decorate?.(v); return `<button class="aopt ${cur === v ? 'on' : ''} ${d?.lock ? 'locked' : ''}" data-opt="${v}"><b>${label}</b>${d?.fx?.length ? `<span class="cfx">${d.fx.map(([l, x, g]) => `<i class="${g ? 'up' : 'dn'}">${x} ${l}</i>`).join('')}</span>` : d?.note ? `<span class="cfx"><i>${d.note}</i></span>` : ''}<small>${d?.lock ? (d.lockText || `Gun level ${d.lock}`) : d?.price || ''}</small></button>`; }).join('');
+    const ci = items[A.col] || items.bodyColor, pal = ci?.palette || [];
+    el.innerHTML = `<div class="arm-top">${own ? ammoBtn : `<span class="arm-new">Not owned yet. Price includes the gun.</span>`}<button class="arm-back" data-list="1">${svg('bag', 'sm')} All weapons</button></div>
+      <div class="acats">${cats.map(([k, l]) => `<button class="acat ${A.cat === k ? 'on' : ''} ${pvGunCfg[k] !== shop.orig[k] ? 'chg' : ''}" data-cat="${k}">${l}</button>`).join('')}</div>
+      <div class="aopts">${opts}</div>
+      <div class="acols"><div class="acolk">${ARM_COLS.filter(([k]) => items[k]).map(([k, l]) => `<button class="${A.col === k ? 'on' : ''}" data-colk="${k}">${l}</button>`).join('')}</div><div class="acolsw">${pal.map(c => `<button class="sw ${String(pvGunCfg[A.col]).toLowerCase() === c.toLowerCase() ? 'on' : ''}" style="background:${c}" data-col="${c}"></button>`).join('')}</div></div>`;
+    el.querySelectorAll('[data-cat]').forEach(b => b.onclick = () => { A.cat = b.dataset.cat; sfx.click(); armoryDraw(); const o = el.querySelector('.aopt.on'); o?.scrollIntoView({ inline: 'center', block: 'nearest' }); });
+    el.querySelectorAll('[data-opt]').forEach(b => b.onclick = () => { const v = b.dataset.opt, d = it.decorate?.(v); if (d?.lock) { it.onLocked?.(v, d.lock); return; } pvGunCfg[A.cat] = v; if (A.cat === 'receiver') pvGunCfg.fireMode = RECEIVERS[v].mode; pv.dirty = true; sfx.click(); gunStatsPanel(); updateShopPrice(); const sl = el.querySelector('.aopts').scrollLeft; armoryDraw(); el.querySelector('.aopts').scrollLeft = sl; });
+    el.querySelectorAll('[data-colk]').forEach(b => b.onclick = () => { A.col = b.dataset.colk; armoryDraw(); });
+    el.querySelectorAll('[data-col]').forEach(b => b.onclick = () => { pvGunCfg[A.col] = b.dataset.col; pv.dirty = true; updateShopPrice(); armoryDraw(); });
+    el.querySelector('[data-list]').onclick = () => { pvGunCfg = { ...shop.orig }; armoryList(); };
+  }
+  el.querySelectorAll('[data-ammo]').forEach(b => b.onclick = () => { if (money < box.price) return; spend(box.price); arsenal.ammo[id].res = Math.min(maxReserve(id, st), arsenal.ammo[id].res + box.n); saveGame(); sfx.coin(); armoryDraw(); });
+  el.querySelectorAll('[data-buyw]').forEach(b => b.onclick = () => { if (money < S2.price) return; spend(S2.price); arsenal.owned.push(id); arsenal.ammo[id] = { mag: st.mag || 0, res: id === 'grenade' ? 3 : id === 'rpg' ? 2 : 0 }; saveGame(); sfx.coin(); toast(`Bought: ${S2.name}.`, 2); armoryDraw(); });
 }
 async function talkFood(n, menu, place) {
   beginTalk(n.cfg, n.name, place.name, 260, n.relId); talkNeeds(true);
@@ -6487,7 +6545,7 @@ function saveGame() {
   store.set('bc_save', save); store.set('bc_arsenal', arsenal); store.set('bc_cars', garage);
 }
 // auto-update: bookmarks and home-screen apps can hold on to an old copy. Check version.json (never cached) and reload once if newer.
-const BUILD = 143;
+const BUILD = 144;
 function checkUpdate() {
   fetch('version.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(j => {
     if (!(j.v > BUILD)) return;
@@ -6750,7 +6808,7 @@ ARRIVE.rare_part = (a, d) => { (stats.rareParts ||= []).push(d.rk); const [k, v]
 function renderBlueprints(slot) {
   const BP = (stats.blueprints ||= {})[slot] ||= [], el = $('presets');
   el.innerHTML = BP.map((b, i) => `<button data-bp="${i}">${svg('gun', 'sm')} ${b.name}</button>`).join('') + (BP.length < 3 ? `<button data-bpsave="1">${svg('plus', 'sm')} Save as blueprint</button>` : '');
-  el.querySelectorAll('[data-bp]').forEach(b => b.onclick = () => { pvGunCfg = { ...BP[+b.dataset.bp].cfg }; pv.dirty = true; gunStatsPanel(); panel.refresh(); updateShopPrice(); sfx.click(); });
+  el.querySelectorAll('[data-bp]').forEach(b => b.onclick = () => { pvGunCfg = { ...BP[+b.dataset.bp].cfg }; pv.dirty = true; gunStatsPanel(); if (armory) armoryDraw(); else panel.refresh(); updateShopPrice(); sfx.click(); });
   el.querySelectorAll('[data-bpsave]').forEach(b => b.onclick = () => { BP.push({ name: (pvGunCfg.name || SLOT[slot].name).slice(0, 14) + ' ' + (BP.length + 1), cfg: { ...pvGunCfg } }); saveGame(); renderBlueprints(slot); toast('Blueprint saved.', 1.6); });
 }
 function openGunsmith(slot, place, newGun = false) {
@@ -6778,6 +6836,8 @@ function changed() {
   else if (state === 'char') { stackTabs(); } if (state === 'char') $('stats').innerHTML = `<div class="statx">Body and face are free. Visit barbers for hair and clothing stores for outfits.</div>`;
 }
 $('backBtn').onclick = () => {
+  if (armory?.view === 'gun' && state === 'gun') { pvGunCfg = { ...shop.orig }; armoryList(); return; }
+  if (armory) { $('randBtn').classList.remove('hidden'); armory = null; pvWeapon = null; document.body.classList.remove('armory'); }
   const wasCar = state === 'car';
   if (shop?.kind === 'mods') { for (const k of Object.keys(carCfg)) if (!(k in shop.orig)) delete carCfg[k]; Object.assign(carCfg, shop.orig); store.set('bc_cars', garage); }
   shop = null; previewCfg = null; pvCarCfg = null;
@@ -6792,7 +6852,7 @@ $('randBtn').onclick = () => {
     const price = shopPrice(); if (!price) return;
     if (money < price) { sfx.fail(); toast(`You need ${fmt(price - money)} more`); return; }
     spend(price);
-    if (shop.kind === 'gun') { const nw = shop.newGun; arsenal.cfg[shop.slot] = { ...pvGunCfg }; shop.orig = { ...pvGunCfg }; if (nw) { shop.newGun = false; if (!arsenal.owned.includes(shop.slot)) arsenal.owned.push(shop.slot); const st = slotStats(shop.slot, pvGunCfg); arsenal.ammo[shop.slot] = { mag: st.mag || 0, res: (st.mag || 0) * 3 }; $('customTitle').textContent = `${SLOT[shop.slot].name} · Lvl ${lvl('gun_' + shop.slot)}`; } saveGame(); toast(nw ? `${pvGunCfg.name || SLOT[shop.slot].name} is yours. Built your way.` : 'Work done. Looks mean.'); sfx.coin(); gunStatsPanel(); panel.refresh(); updateShopPrice(); return; }
+    if (shop.kind === 'gun') { const nw = shop.newGun; arsenal.cfg[shop.slot] = { ...pvGunCfg }; shop.orig = { ...pvGunCfg }; if (nw) { shop.newGun = false; if (!arsenal.owned.includes(shop.slot)) arsenal.owned.push(shop.slot); const st = slotStats(shop.slot, pvGunCfg); arsenal.ammo[shop.slot] = { mag: st.mag || 0, res: (st.mag || 0) * 3 }; $('customTitle').textContent = `${SLOT[shop.slot].name} · Lvl ${lvl('gun_' + shop.slot)}`; } saveGame(); toast(nw ? `${pvGunCfg.name || SLOT[shop.slot].name} is yours. Built your way.` : 'Work done. Looks mean.'); sfx.coin(); gunStatsPanel(); if (armory) armoryDraw(); else panel.refresh(); updateShopPrice(); return; }
     if (shop.kind === 'mods') { shop.orig = { ...carCfg }; store.set('bc_cars', garage); saveGame(); gainXP('driving', Math.round(price / 200)); toast('Bay Customs: work done. She looks great.'); sfx.coin(); updateShopPrice(); return; }
     if (shop.kind === 'carshop') { garage.cars.push({ ...DEFAULT_CAR, ...pvCarCfg }); garage.active = garage.cars.length - 1; store.set('bc_cars', garage); bumpRel(shop.relId, 10, false); if (ride === myCar) exitCar(); rebuildMyCar({ x: inside.back.x, z: inside.back.z, h: 0 }); pendingCar = true; toast(`You bought a ${BODIES[pvCarCfg.body].label}! It'll be outside.`, 3); feed({ mood: 25 }); return; }
     if (stats.escaped) { stats.escaped = null; toast('Jumpsuit in the bin. Nobody will recognise you now.', 3); }
@@ -6835,4 +6895,4 @@ function frame(now) {
 }
 startGame();
 requestAnimationFrame(frame);
-window.__game = { get animals() { return animals; }, crime, WANT, copCars, cops, pitFight, busted, fam, famNewDay, makeOfficial, talkFamily, get dayN() { return dayN; }, set dayN(v) { dayN = v; }, scene: G.scene, cam: G.cam, snap: () => updateCamera(0, true), get state() { return state; }, P, input, get ride() { return ride; }, get myCar() { return myCar; }, get traffic() { return traffic; }, peds, setTime: h => { clockH = h; }, openCustom, enterVehicle, exitCar, get money() { return money; }, set money(v) { money = v; }, openPlace, PLACES, PROPERTIES, runMinigame, get action() { return action; }, arsenal, selectWeapon, openPhone, setWaypoint, get route() { return route; }, talkToPed, talk, doAction, stats, get inside() { return inside; }, enterInterior, exitInterior, get customers() { return customers; }, newCustomer, startEdit, endEdit, get job() { return job; }, gainXP, storage, doSpot, useFurn, phoneGo, talkVenue, talkJob, openPlace, talkCustomer, startJob, openCarShop, damageCar, repairCar, addFire, get fires() { return fires; }, get ems() { return ems; }, get vehicles() { return vehicles; }, makeVehicle, makeCop, prisonFight, life, startDealMeet, get lifeAct() { return lifeAct; }, get train() { return train; }, get trainRide() { return trainRide; }, boardTrain, eventReset: () => { eventOpen = false; }, bodyCheck, attendClass, talkAdmissions, edu, startDance, get dance() { return dance; }, radioSet: i => { radioSet(i); radioOn(true); }, get zoom() { return zoom; }, set zoom(z) { zoom = z; }, DEFAULT_CAR, setState: x => setState(x), get jail() { return stats.jail; }, witness, personOf, dealHeat, trafficStop, carNear, carTop, startDate, get rinfo() { return { calls: renderer.info.render.calls, tris: renderer.info.render.triangles, geos: renderer.info.memory.geometries, tex: renderer.info.memory.textures }; }, saveGameT: () => saveGame(), maybePregnantT: (id, t) => maybePregnant(id, t), runEventT: (id, d) => runEventTalk(EVENT_BY_ID[id], d || {}, { name: 'Tester', tag: 'Test', cfg: null }, null), get pet() { return pet; }, CIT: () => CIT(), citizenRecord: c => citizenRecord(c), get town() { return town(); }, get ownedT() { return owned; }, openGunsmithT: (s, p, n) => openGunsmith(s, p, n), ambient, get ambEl() { return ambEl; }, openTradeT: p => openTrade(p), get stashT() { return stash; }, startWooT: (k, b) => startWoo(k, b), get woo() { return woo; }, endDate, dateCall, addDateContact, get phoneThread() { return phoneThread; }, set phoneThread(v) { phoneThread = v; }, talkDate, get date() { return date; }, get carAnim() { return carAnim; }, lifeApi, startShower, bizNewDay, subs, forceWanted, get buddy() { return buddy; }, startBuddy, textMe, toast, levelUp, closePhone, bringCar, useFurn, damageCar, debtorScene, get debtor() { return debtor; }, camBlocked, get camYaw() { return camYaw; }, ev: { evChase, evMug, evRobbery, evGang, evBusk, evCrash, evFire, evMarket, evParade, evProtest, streetEvents } };
+window.__game = { get animals() { return animals; }, crime, WANT, copCars, cops, pitFight, busted, fam, famNewDay, makeOfficial, talkFamily, get dayN() { return dayN; }, set dayN(v) { dayN = v; }, scene: G.scene, cam: G.cam, snap: () => updateCamera(0, true), get state() { return state; }, P, input, get ride() { return ride; }, get myCar() { return myCar; }, get traffic() { return traffic; }, peds, setTime: h => { clockH = h; }, openCustom, enterVehicle, exitCar, get money() { return money; }, set money(v) { money = v; }, openPlace, PLACES, PROPERTIES, runMinigame, get action() { return action; }, arsenal, selectWeapon, openPhone, setWaypoint, get route() { return route; }, talkToPed, talk, doAction, stats, get inside() { return inside; }, enterInterior, exitInterior, get customers() { return customers; }, newCustomer, startEdit, endEdit, get job() { return job; }, gainXP, storage, doSpot, useFurn, phoneGo, talkVenue, talkJob, openPlace, talkCustomer, startJob, openCarShop, damageCar, repairCar, addFire, get fires() { return fires; }, get ems() { return ems; }, get vehicles() { return vehicles; }, makeVehicle, makeCop, prisonFight, life, startDealMeet, get lifeAct() { return lifeAct; }, get train() { return train; }, get trainRide() { return trainRide; }, boardTrain, eventReset: () => { eventOpen = false; }, bodyCheck, attendClass, talkAdmissions, edu, startDance, get dance() { return dance; }, radioSet: i => { radioSet(i); radioOn(true); }, get zoom() { return zoom; }, set zoom(z) { zoom = z; }, DEFAULT_CAR, setState: x => setState(x), get jail() { return stats.jail; }, witness, personOf, dealHeat, trafficStop, carNear, carTop, startDate, openArmoryT: () => openArmory(PLACES.find(q => q.kind === "guns"), null), get rinfo() { return { calls: renderer.info.render.calls, tris: renderer.info.render.triangles, geos: renderer.info.memory.geometries, tex: renderer.info.memory.textures }; }, saveGameT: () => saveGame(), maybePregnantT: (id, t) => maybePregnant(id, t), runEventT: (id, d) => runEventTalk(EVENT_BY_ID[id], d || {}, { name: 'Tester', tag: 'Test', cfg: null }, null), get pet() { return pet; }, CIT: () => CIT(), citizenRecord: c => citizenRecord(c), get town() { return town(); }, get ownedT() { return owned; }, openGunsmithT: (s, p, n) => openGunsmith(s, p, n), ambient, get ambEl() { return ambEl; }, openTradeT: p => openTrade(p), get stashT() { return stash; }, startWooT: (k, b) => startWoo(k, b), get woo() { return woo; }, endDate, dateCall, addDateContact, get phoneThread() { return phoneThread; }, set phoneThread(v) { phoneThread = v; }, talkDate, get date() { return date; }, get carAnim() { return carAnim; }, lifeApi, startShower, bizNewDay, subs, forceWanted, get buddy() { return buddy; }, startBuddy, textMe, toast, levelUp, closePhone, bringCar, useFurn, damageCar, debtorScene, get debtor() { return debtor; }, camBlocked, get camYaw() { return camYaw; }, ev: { evChase, evMug, evRobbery, evGang, evBusk, evCrash, evFire, evMarket, evParade, evProtest, streetEvents } };
