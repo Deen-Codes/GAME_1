@@ -1,6 +1,6 @@
 // The arsenal: every weapon slot, how it looks in the hand, its stats and its icon.
 import * as THREE from '../lib/three.module.min.js';
-import { buildGun, computeStats, GUN_PRESETS, DEFAULT_GUN, GUN_SCHEMA } from './gun.js?v=108';
+import { buildGun, computeStats, GUN_PRESETS, DEFAULT_GUN, GUN_SCHEMA } from './gun.js?v=109';
 
 export const SLOTS = [
   { id: 'fist', name: 'Fists', kind: 'melee', price: 0 },

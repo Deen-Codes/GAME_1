@@ -1,26 +1,26 @@
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=108';
-import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=108';
-import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=108';
-import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=108';
-import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=108';
-import { buildPanel, renderStats } from './ui.js?v=108';
-import { Input } from './input.js?v=108';
-import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime } from './audio.js?v=108';
-import { runMinigame } from './minigames.js?v=108';
-import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk } from './peds.js?v=108';
-import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=108';
-import { findRoute } from './nav.js?v=108';
-import { COURSES, CAREERS, QUIZ } from './careers.js?v=108';
-import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=108';
-import { attachWheel } from './wheel.js?v=108';
-import { Animals } from './animals.js?v=108';
-import { Talk } from './talk.js?v=108';
-import { incomingText, classify, textOptions, textReply } from './texts.js?v=108';
-import { svg, drawIcon } from './icons.js?v=108';
-import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=108';
-import { FURN, CATALOG } from './furniture.js?v=108';
-import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=108';
+import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=109';
+import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=109';
+import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=109';
+import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=109';
+import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=109';
+import { buildPanel, renderStats } from './ui.js?v=109';
+import { Input } from './input.js?v=109';
+import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime } from './audio.js?v=109';
+import { runMinigame } from './minigames.js?v=109';
+import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk } from './peds.js?v=109';
+import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=109';
+import { findRoute } from './nav.js?v=109';
+import { COURSES, CAREERS, QUIZ } from './careers.js?v=109';
+import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=109';
+import { attachWheel } from './wheel.js?v=109';
+import { Animals } from './animals.js?v=109';
+import { Talk } from './talk.js?v=109';
+import { incomingText, classify, textOptions, textReply } from './texts.js?v=109';
+import { svg, drawIcon } from './icons.js?v=109';
+import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=109';
+import { FURN, CATALOG } from './furniture.js?v=109';
+import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=109';
 
 const $ = id => document.getElementById(id);
 let inside = null, editMode = false, held = null, pendingCar = false, homeMusic = false, phoneBadge = 0;
@@ -5238,8 +5238,8 @@ let camDist = 58;
 let camYaw = 0, camYawT = 0, camChkT = 0, camClearT = 0, camBlockT = 0;
 // while your thumb is on the stick, directions stay locked to how the camera was when you pushed it, so the view can swing round
 // without your walk suddenly changing direction. Let go and it picks up the new view.
-let stickYaw = null;
-function camStick() { const s = input.stick; if (s.m < 0.15) { stickYaw = null; return s; } if (stickYaw === null) stickYaw = camYaw; const y = stickYaw; if (Math.abs(y) < 0.01) return s; const c = Math.cos(y), n = Math.sin(y); return { x: s.x * c + s.y * n, y: -s.x * n + s.y * c, m: s.m }; }
+let stickYaw = null, lastDt = 0.016;
+function camStick() { const s = input.stick; if (s.m < 0.15) { stickYaw = null; return s; } if (stickYaw === null) stickYaw = camYaw; else stickYaw += wrapA(camYaw - stickYaw) * Math.min(1, (lastDt || 0.016) * 1.4); const y = stickYaw; /* eases round with the camera, so up stays up on screen without a sudden lurch */ if (Math.abs(y) < 0.01) return s; const c = Math.cos(y), n = Math.sin(y); return { x: s.x * c + s.y * n, y: -s.x * n + s.y * c, m: s.m }; }
 function camBlocked(yaw, x, z, y) { // walk up the sight line from you towards the camera and see if a building pokes through it
   const sx = Math.sin(yaw), sz = Math.cos(yaw), tp = Math.tan((56 * DEG) - (1 - Math.min(1, zoom)) * 0.45);
   for (let h = 1.2; h < 34; h += 1.4) { const px = x + sx * h, pz = z + sz * h, top = wallTop(px, pz); if (top != null && top > y + 1.4 + h * tp) return true; }
@@ -5249,7 +5249,7 @@ function updateCamYaw(dt) {
   if (inside || state !== 'play') { camYawT = 0; }
   else { camChkT -= dt; if (camChkT <= 0) { camChkT = 0.15; const f = focusPos(), y = ride ? (ride.s.y || 0) : P.y;
     const curBlocked = camBlocked(camYawT, f.x, f.z, y), homeClear = !camBlocked(0, f.x, f.z, y);
-    if (curBlocked) { camBlockT += 0.15; camClearT = 0; if (camBlockT > (ride ? 0.45 : 0.25)) { let best = null; const C = [0, 0.55, -0.55, 1.1, -1.1, 1.7, -1.7, 2.4, -2.4, Math.PI], near = (a, b2) => Math.abs(wrapA(a - camYaw)) < Math.abs(wrapA(b2 - camYaw)); for (const wide of [true, false]) { for (const c of C) if (!camBlocked(c, f.x, f.z, y) && (!wide || (!camBlocked(c + 0.28, f.x, f.z, y) && !camBlocked(c - 0.28, f.x, f.z, y))) && (best === null || near(c, best))) best = c; if (best !== null) break; } if (best !== null) camYawT = best; camBlockT = 0; } }
+    if (curBlocked) { camBlockT += 0.15; camClearT = 0; if (camBlockT > (ride ? 0.45 : 0.25)) { let best = null; const C = [0, 0.45, -0.45, 0.85, -0.85, 1.15, -1.15], near = (a, b2) => Math.abs(wrapA(a - camYaw)) < Math.abs(wrapA(b2 - camYaw)); for (const wide of [true, false]) { for (const c of C) if (!camBlocked(c, f.x, f.z, y) && (!wide || (!camBlocked(c + 0.28, f.x, f.z, y) && !camBlocked(c - 0.28, f.x, f.z, y))) && (best === null || near(c, best))) best = c; if (best !== null) break; } if (best !== null) camYawT = best; camBlockT = 0; } }
     else { camBlockT = 0; if (camYawT !== 0 && homeClear) { camClearT += 0.15; if (camClearT > 1.2) { camYawT = 0; camClearT = 0; } } else camClearT = 0; } } }
   camYaw += wrapA(camYawT - camYaw) * Math.min(1, dt * 2.2); if (Math.abs(wrapA(camYawT - camYaw)) < 0.002) camYaw = camYawT;
 }
@@ -6092,7 +6092,7 @@ function saveGame() {
   store.set('bc_save', save); store.set('bc_arsenal', arsenal); store.set('bc_cars', garage);
 }
 // auto-update: bookmarks and home-screen apps can hold on to an old copy. Check version.json (never cached) and reload once if newer.
-const BUILD = 108;
+const BUILD = 109;
 function checkUpdate() {
   fetch('version.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(j => {
     if (!(j.v > BUILD)) return;
@@ -6219,7 +6219,7 @@ function newDay() {
   if (inc) { money += inc; floatMoney(inc); toast(`New day · property income +${fmt(inc)}`, 3.5); } else toast('New day · dealer prices changed', 3);
   phoneBadge++;
 }
-function step(dt) {
+function step(dt) { lastDt = dt;
   time += dt; WATER_U.uTime.value = time;
   const before = clockH, dh = dt / 30; clockH += dh; if (clockH >= 24) clockH -= 24;
   if (before < 6 && clockH >= 6) newDay();
