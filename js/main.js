@@ -1,30 +1,30 @@
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=205';
-import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun, partEffects, partPerk } from './gun.js?v=205';
-import { buildCar, computeCarStats, carStatBars, carClass, carPartEffects, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=205';
-import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, STAIRS, unblockPillars, canyonAt, canyonNear, PEAK, SKYWAYS, SKY_Y, skyAt, skyY, rampSeg, windowShader, makeOceanMaterial, WATER_U, WIND_U, METRO, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, collidersNear, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=205';
-import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=205';
-import { buildPanel, renderStats } from './ui.js?v=205';
-import { Input } from './input.js?v=205';
-import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime, animalCall } from './audio.js?v=205';
-import { runMinigame } from './minigames.js?v=205';
-import { CUT, initCutGames } from './cutgames.js?v=205';
-import { initOnline, updateOnline, goOnline, goOffline, NET, onNet, sendMagicLink, verifyCode, signOut, signedIn, cloudLoad, cloudSave, cloudList, cloudDelete, isAdmin, checkAdmin, reviewLoad, reviewSet } from './online.js?v=205';
-import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk, setReservedNames, seededLook } from './peds.js?v=205';
-import { citizens, whereNow } from './citizens.js?v=205';
-import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=205';
-import { findRoute } from './nav.js?v=205';
-import { COURSES, CAREERS, QUIZ } from './careers.js?v=205';
-import { EVENTS, EVENT_BY_ID, ARRIVE, PHONE_TEXT, PERSON_TEXT } from './events.js?v=205';
-import { attachWheel } from './wheel.js?v=205';
-import { GROUND_U } from './groundtex.js?v=205';
-import { Animals, makeAnimalMesh } from './animals.js?v=205';
-import { Talk } from './talk.js?v=205';
-import { incomingText, classify, textOptions, textReply } from './texts.js?v=205';
-import { svg, drawIcon, ICONS as ICON_SET } from './icons.js?v=205';
-import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=205';
-import { FURN, CATALOG } from './furniture.js?v=205';
-import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=205';
+import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=206';
+import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun, partEffects, partPerk } from './gun.js?v=206';
+import { buildCar, computeCarStats, carStatBars, carClass, carPartEffects, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=206';
+import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, STAIRS, unblockPillars, canyonAt, canyonNear, PEAK, SKYWAYS, SKY_Y, skyAt, skyY, rampSeg, windowShader, makeOceanMaterial, WATER_U, WIND_U, METRO, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, collidersNear, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=206';
+import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=206';
+import { buildPanel, renderStats } from './ui.js?v=206';
+import { Input } from './input.js?v=206';
+import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime, animalCall } from './audio.js?v=206';
+import { runMinigame } from './minigames.js?v=206';
+import { CUT, initCutGames } from './cutgames.js?v=206';
+import { initOnline, updateOnline, goOnline, goOffline, NET, onNet, sendMagicLink, verifyCode, signOut, signedIn, cloudLoad, cloudSave, cloudList, cloudDelete, isAdmin, checkAdmin, reviewLoad, reviewSet } from './online.js?v=206';
+import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk, setReservedNames, seededLook } from './peds.js?v=206';
+import { citizens, whereNow } from './citizens.js?v=206';
+import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=206';
+import { findRoute } from './nav.js?v=206';
+import { COURSES, CAREERS, QUIZ } from './careers.js?v=206';
+import { EVENTS, EVENT_BY_ID, ARRIVE, PHONE_TEXT, PERSON_TEXT } from './events.js?v=206';
+import { attachWheel } from './wheel.js?v=206';
+import { GROUND_U } from './groundtex.js?v=206';
+import { Animals, makeAnimalMesh } from './animals.js?v=206';
+import { Talk } from './talk.js?v=206';
+import { incomingText, classify, textOptions, textReply } from './texts.js?v=206';
+import { svg, drawIcon, ICONS as ICON_SET } from './icons.js?v=206';
+import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=206';
+import { FURN, CATALOG } from './furniture.js?v=206';
+import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=206';
 
 const $ = id => document.getElementById(id);
 let inside = null, editMode = false, held = null, pendingCar = false, homeMusic = false, phoneBadge = 0;
@@ -2233,7 +2233,14 @@ function seatNpcDriver(v) { const D = v.npcDriver, b = v.b; if (!D.fig) { D.fig 
   o.limbs[0].rotation.set(-1.45, 0, 0.05); o.limbs[1].rotation.set(-1.45, 0, -0.05); o.limbs[2].rotation.set(-1.1, 0, -0.1); o.limbs[3].rotation.set(-1.1, 0, 0.1); }
 // sat at the wheel of an open-top car: you can see them in there, hands on the wheel
 const _seatV = new THREE.Vector3(), _upV = new THREE.Vector3();
-function seatedPose(v) {
+// taking the phone out of your pocket and up to your ear in the car (and back again after)
+let phoneUse = null, phoneMesh = null;
+function phoneAnim(cb) { if (!(ride && !ride.b.two && !carAnim) || P.dead) { cb?.(); return; } phoneUse = { k: 0, dir: 1, cb, held: 0 }; }
+function phoneTick(dt) { const U = phoneUse; if (!U) return null; 
+  if (U.dir) { U.k = clamp(U.k + U.dir * dt / 0.85, 0, 1); if (U.dir > 0 && U.k >= 1) { U.dir = 0; const cb = U.cb; U.cb = null; cb?.(); } else if (U.dir < 0 && U.k <= 0) { phoneUse = null; if (phoneMesh) phoneMesh.visible = false; return null; } }
+  else { U.held += dt; if (U.held > 0.6 && state === 'play' && !talk.active && !eventOpen) U.dir = -1; } /* call over: put it away */
+  if (!ride) { phoneUse = null; if (phoneMesh) phoneMesh.visible = false; return null; } return U.k; }
+function seatedPose(v, dt = 0) {
   const b = v.b, c = v.s, S = 1, hl = 0.86 * (charCfg.height || 1) * (charCfg.legs || 1);
   { const w = seatWorld(v, rideSeat); _seatV.set(w.x, heroSitY(v, w.y), w.z); }
   heroRoot.scale.setScalar(S); heroRoot.rotation.set(0, 0, 0); hero.root.rotation.order = 'XYZ'; hero.root.rotation.set(0, c.h, 0);
@@ -2241,9 +2248,16 @@ function seatedPose(v) {
   poseCharacter(hero, { phase: 0, speed: 0, air: false, aim: -0.55, recoil: 0, t: time });
   hero.legL.pivot.rotation.set(-1.5, 0, 0.05); hero.legR.pivot.rotation.set(-1.5, 0, -0.05); hero.legL.knee.rotation.x = 1.35; hero.legR.knee.rotation.x = 1.35;
   hero.torso.rotation.set(0, 0, 0);
+  const pk = phoneTick(dt);
+  if (pk != null) { /* one hand off the wheel: down to the pocket, phone out, up to the ear */
+    if (!phoneMesh || phoneMesh.parent !== hero.armL.hand) { phoneMesh = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.16, 0.09), new THREE.MeshStandardMaterial({ color: '#16161b', roughness: 0.3 })); phoneMesh.position.set(0, -0.03, 0.05); hero.armL.hand.add(phoneMesh); }
+    phoneMesh.visible = pk > 0.42; heroRoot.updateMatrixWorld(true); hero.root.updateWorldMatrix(true, true);
+    const pocket = hero.root.localToWorld(new THREE.Vector3(0.17, hl + 0.02, 0.12)), hb = new THREE.Box3().setFromObject(hero.head), hc = hb.getCenter(new THREE.Vector3()), ear = hero.root.localToWorld(hero.root.worldToLocal(hc.clone()).add(new THREE.Vector3((hb.max.x - hb.min.x) * 0.5, -0.04, 0)));
+    let T; if (pk < 0.4) { const R = b.steerW?.geometry.parameters.radius || 0.15; b.steerW?.updateMatrixWorld(true); const rim = b.steerW ? b.steerW.localToWorld(new THREE.Vector3(R * 0.82, R * 0.5, 0)) : pocket; T = rim.lerp(pocket, ease3(pk / 0.4)); } else if (pk < 0.5) T = pocket; else T = pocket.clone().lerp(ear, ease3((pk - 0.5) / 0.5));
+    armTo(hero, hero.armL, T); if (pk > 0.5 && hero.armL.elbow) hero.armL.elbow.rotation.x = Math.min(hero.armL.elbow.rotation.x, -1.2 * ((pk - 0.5) / 0.5)); }
   if (rideSeat === 0 && b.steerW) { /* both hands on the rim at ten to two, turning with the wheel */
     const R = b.steerW.geometry.parameters.radius; b.steerW.updateMatrixWorld(true);
-    armTo(hero, hero.armR, b.steerW.localToWorld(_wR.set(-R * 0.82, R * 0.5, 0)).clone()); armTo(hero, hero.armL, b.steerW.localToWorld(_wR.set(R * 0.82, R * 0.5, 0)).clone());
+    armTo(hero, hero.armR, b.steerW.localToWorld(_wR.set(-R * 0.82, R * 0.5, 0)).clone()); if (pk == null) armTo(hero, hero.armL, b.steerW.localToWorld(_wR.set(R * 0.82, R * 0.5, 0)).clone());
   } else if (rideSeat === 0) { const st = clamp(c.steer || 0, -1, 1) * 0.25; hero.armR.pivot.rotation.set(-1.15, 0, 0.12 + st); hero.armL.pivot.rotation.set(-1.15, 0, -0.12 + st); }
   else { hero.armR.pivot.rotation.set(-0.55, 0, 0.1); hero.armL.pivot.rotation.set(-0.55, 0, -0.1); if (hero.armR.elbow) hero.armR.elbow.rotation.set(-0.5, 0, 0); if (hero.armL.elbow) hero.armL.elbow.rotation.set(-0.5, 0, 0); } /* a passenger: hands in the lap */
 }
@@ -2263,7 +2277,7 @@ function armTo(f, arm, T) {
 // rider on a bicycle / scooter / motorbike: sitting (or standing on the scooter), leaning into turns, pedalling
 // two-bone leg: pivot pitch and knee bend that put the foot at (fz forward, fy up) from the hip
 function legIK(L, fz, fy) { const L1 = L / 2, L2 = L / 2, d = Math.max(0.05, Math.min(L - 0.005, Math.hypot(fz, fy))), base = Math.atan2(fz, -fy), inner = Math.acos(clamp((L1 * L1 + d * d - L2 * L2) / (2 * L1 * d), -1, 1)), knee = Math.PI - Math.acos(clamp((L1 * L1 + L2 * L2 - d * d) / (2 * L1 * L2), -1, 1)); return [-(base + inner), knee]; }
-const lerp = (a, b, k) => a + (b - a) * k;
+const lerp = (a, b, k) => a + (b - a) * k, ease3 = k => { k = clamp(k, 0, 1); return k * k * (3 - 2 * k); };
 function riderPose(v, dt) {
   const b = v.b, c = v.s, hl = 0.86 * (charCfg.height || 1) * (charCfg.legs || 1), kind = b.two;
   const back = kind === 'moto' ? -0.28 : kind === 'bike' ? -0.18 : -0.05, gy = b.group.position.y;
@@ -2455,7 +2469,7 @@ function updateVehicles(dt) {
     if (v.rockT > 0) { v.rockT -= dt; const k = Math.max(0, v.rockT) / 0.45; b.group.rotation.z += Math.sin(k * 22) * 0.022 * k * (v.rockS || 1); } /* the car shudders when a door's slammed */
     if (b.boat && spd > 2) boatWake(v, spd, dt);
     if (b.two && v === ride && !carAnim) riderPose(v, dt);
-    else if (v === ride && !carAnim) seatedPose(v); /* you can see whoever's in a car through its windows */
+    else if (v === ride && !carAnim) seatedPose(v, dt); /* you can see whoever's in a car through its windows */
     if (v.npcDriver) seatNpcDriver(v);
     carSmoke(v, dt);
     for (const w of b.wheels) { w.spin.rotation.x += c.v * dt / b.wr; if (w.front) w.pivot.rotation.y = c.steer * 0.45; } if (b.fork) b.fork.rotation.y = c.steer * 0.45; /* the bars turn with the front wheel */
@@ -3630,11 +3644,14 @@ function updateDebtor(dt) {
       D.stage = 3; D.t = 0; } }
   if (D.stage === 2 && D.t > 2.2) { dropCash(p.x, p.z, D.d.amt); peds.flee(p, P.x, P.z); p.t = 5; youSay(pick(['Pleasure doing business.', 'Was that so hard?']), 'happy'); feed({ mood: 6 }); debtor = null; return; }
   if (D.stage === 3) { // beat both of them and the money's yours after all
-    const up = D.thugs.filter(q => peds.list.includes(q) && q.state !== 'down' && q.angry);
+    for (const q of D.thugs) if (q.state === 'down' && !q.kod) { q.kod = true; q.angry = false; q.t = 9999; } /* knocked out: they stay down this time */
+    for (const q of D.thugs) if (q.kod && q.state === 'down') q.t = Math.max(q.t, 2);
+    if (P.hp < maxHP() * 0.18 && !D.lost) { D.lost = true; for (const q of D.thugs) { q.angry = false; if (q.state !== 'down') peds.flee(q, P.x, P.z); } subs.say(D.who, pick(['Now stay down. And forget about that money.', 'Debt\'s cleared, yeah? Don\'t come looking again.']), { expr: 'angry', pri: 3 }); toast(`${D.d.name}'s lot gave you a kicking. The money's gone.`, 3); feed({ mood: -10 }); debtor = null; return; } /* they beat you: they leave you be, and your money with them */
+    const up = D.thugs.filter(q => peds.list.includes(q) && !q.kod && q.angry);
     if (!up.length && D.t > 2) { D.stage = 4; subs.say(D.who, 'Okay okay! Take it! Just leave me alone!', { expr: 'shock', pri: 3 }); p.x = P.x + 2; p.z = P.z + 1; p.state = 'talk'; p.lookX = P.x; p.lookZ = P.z; D.t = 0; gainXP('strength', 30); }
-    else if (D.t > 40) { toast(`${D.d.name} got away with your money.`, 2.6); feed({ mood: -8 }); debtor = null; }
+    else if (D.t > 40) { toast(`${D.d.name} got away with your money.`, 2.6); feed({ mood: -8 }); for (const q of D.thugs) if (q.kod) q.t = rand(4, 7); debtor = null; }
   }
-  if (D.stage === 4 && D.t > 2) { dropCash(p.x, p.z, D.d.amt); peds.flee(p, P.x, P.z); p.t = 5; debtor = null; }
+  if (D.stage === 4 && D.t > 2) { dropCash(p.x, p.z, D.d.amt); peds.flee(p, P.x, P.z); p.t = 5; for (const q of D.thugs) if (q.kod) { q.t = rand(4, 7); } debtor = null; } /* the lads come round a while later and limp off */
 }
 function lifeTick(dt) {
   updateErrands(); updateDebtor(dt);
@@ -3695,7 +3712,7 @@ function deliverEvent(ev, data) {
     { const f = fam(), n = inside?.prop && who.name && (f.partner?.name === who.name ? inside.npcs.find(q => q.role === 'spouse') : inside.npcs.find(q => q.fam?.name === who.name)); if (n) { eventOpen = true; setTimeout(() => { eventOpen = false; if (state !== 'play') { life().queue.push({ id: ev.id, at: gameHours() + 1, data }); return; } runEventTalk(ev, data, { cfg: n.cfg, name: who.name, tag: f.partner?.name === who.name ? 'Your partner' : 'Family' }); }, 500); return; } }
     eventOpen = true; const A = audio(); if (A) for (let i = 0; i < 4; i++) sfx.note(i % 2 ? 1180 : 940, A.currentTime + i * 0.18, 0.15, 'square', 0.03, 3000);
     ringing(who.name || 'Unknown', lifeCfg(who));
-    setTimeout(() => { eventOpen = false; if (state !== 'play') { life().queue.push({ id: ev.id, at: gameHours() + 1, data }); return; } runEventTalk(ev, data, { cfg: lifeCfg(who), name: who.name || 'Caller', tag: `${who.tag || 'Calling'} · on the phone`, phone: true, seat: !!(ride && !ride.b.two) }); }, 1500);
+    setTimeout(() => { eventOpen = false; if (state !== 'play') { life().queue.push({ id: ev.id, at: gameHours() + 1, data }); return; } eventOpen = true; phoneAnim(() => { eventOpen = false; runEventTalk(ev, data, { cfg: lifeCfg(who), name: who.name || 'Caller', tag: `${who.tag || 'Calling'} · on the phone`, phone: true, seat: !!(ride && !ride.b.two) }); }); }, 1500); /* in the car: a hand off the wheel to answer it */
     return;
   }
   if (ev.via === 'approach') {
@@ -3752,7 +3769,7 @@ async function runEventTalk(ev, data, spk, after) {
   const lines = [].concat((alt || ev.text)(api, data));
   for (const l of lines) await talk.say(l);
   const ch = ev.choices(api, data), k = await talk.choose(ch.map(c => I('chat', c.label)));
-  await talk.say(ch[k].label, 'you');
+  if (ch[k].you) await talk.say(ch[k].you, 'you'); /* your pick is acted on, not read back out; a proper line only where one fits */
   const res = ch[k].go(api, data);
   logStory(spk.name || 'You', ch[k].label, typeof res === 'string' ? res : res?.escort ? '(set off together)' : '(it turned into a fight)', ev.id);
   if (res && typeof res === 'object' && res.fight && spk.p && peds.list.includes(spk.p)) { if (res.say) await talk.say(res.say); endTalk(); eventOpen = false; startTalkFight(spk, res, after); return; } // words weren't enough: it kicks off for real
@@ -3762,6 +3779,9 @@ async function runEventTalk(ev, data, spk, after) {
   if (res && typeof res === 'object' && res.act) { if (res.say) await talk.say(res.say); endTalk(); eventOpen = false; playEventAct(spk, res, after); return; } // you actually do it: a little minigame
   if (res && typeof res === 'object' && res.search && spk.p && peds.list.includes(spk.p)) { if (res.say) await talk.say(res.say); endTalk(); eventOpen = false; startSearch(spk, res.search, after); return; } // go and find it for real
   if (res && typeof res === 'object' && res.escort) { const E = res.escort; if (E.say) await talk.say(E.say); endTalk(); eventOpen = false; if (spk.p && peds.list.includes(spk.p)) { startEscort(spk, E, after); return; } const r = E.done(); if (r) toast(r, 3); after?.(); saveGame(); return; } // they walk with you to where they need to be
+  if (res && typeof res === 'object' && res.call) { endTalk(); eventOpen = true; const C = res.call; /* you actually ring them */
+    phoneAnim(async () => { beginTalk(lifeCfg(C.who), C.who.name || 'Them', `${C.who.tag || 'Calling'} · on the phone`, 170, null, null, null, false, !!(ride && !ride.b.two), true);
+      for (const l of C.lines) await (Array.isArray(l) ? talk.say(l[0], l[1]) : talk.say(l)); endTalk(); eventOpen = false; C.done?.(); after?.(); saveGame(); }); return; }
   if (typeof res === 'string' && res) await talk.say(res);
   endTalk(); eventOpen = false; after?.(); saveGame();
 }
@@ -7539,7 +7559,7 @@ function saveGame() {
   store.set('bc_save', save); store.set('bc_arsenal', arsenal); store.set('bc_cars', garage); store.set('bc_savedAt', Date.now());
 }
 // auto-update: bookmarks and home-screen apps can hold on to an old copy. Check version.json (never cached) and reload once if newer.
-const BUILD = 205;
+const BUILD = 206;
 function updatingCover() { const d = document.createElement('div'); d.id = 'updCover'; d.innerHTML = '<div class="bt-logo">BAY<span>CITY</span></div><p><i></i>Updating Bay City...</p>'; document.body.appendChild(d); requestAnimationFrame(() => d.classList.add('on')); }
 function checkUpdate() {
   fetch('version.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(j => {

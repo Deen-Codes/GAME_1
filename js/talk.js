@@ -1,8 +1,8 @@
 // Conversations staged like a Pokémon battle: they stand on a platform facing you,
 // you see the back of your own head in the foreground, subtitles type out, you pick replies.
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, setFace } from './character.js?v=205';
-import { sfx, audio } from './audio.js?v=205';
+import { buildCharacter, poseCharacter, disposeObject, setFace } from './character.js?v=206';
+import { sfx, audio } from './audio.js?v=206';
 
 const $ = id => document.getElementById(id);
 const BG = {
@@ -318,9 +318,11 @@ export class Talk {
         if (this.wheel) this.wheel.rotation.z = Math.sin(this.t * 0.9) * 0.15;
       } else { // standing, hand on chin
         n.root.rotation.y = Math.sin(this.t * 0.5) * 0.15;
-        n.armR.pivot.rotation.set(-2.05, 0, 0.55); n.armL.pivot.rotation.set(-0.15, 0, -0.1); n.head.rotation.x = 0.15 + Math.sin(this.t * 1.1) * 0.04; n.head.rotation.y = -0.2;
+        n.head.rotation.x = 0.15 + Math.sin(this.t * 1.1) * 0.04; n.head.rotation.y = -0.2; n.armL.pivot.rotation.set(-0.15, 0, -0.1);
+        if (!n._chin) { n.armR.pivot.rotation.set(-1.6, 0, 0.3); if (n.armR.elbow) n.armR.elbow.rotation.set(-1.9, 0, 0); this.handToHead(n, n.armR, -0.15, -1.15, 1.05); n._chin = [n.armR.pivot.rotation.clone(), n.armR.elbow?.rotation.clone()]; } /* fingers under the chin */
+        n.armR.pivot.rotation.copy(n._chin[0]); if (n.armR.elbow && n._chin[1]) n.armR.elbow.rotation.copy(n._chin[1]);
       }
-      if (this.bubbles) { this.bubbles.position.set(n.root.position.x, n.root.position.y + (n.height ? n.height - 1.7 : 0), n.root.position.z); this.bubbles.children.forEach((b, i) => { b.position.y = [2.05, 2.3, 2.62][i] + Math.sin(this.t * 2 + i) * 0.04; }); }
+      if (this.bubbles) { const E = this.headBox(n), top = n.head.localToWorld(new THREE.Vector3(E.ctr.x, E.ctr.y + E.hh, E.ctr.z)); this.bubbles.position.copy(top); this.bubbles.children.forEach((b, i) => { b.position.set([0.16, 0.34, 0.6][i], [0.1, 0.32, 0.66][i] + Math.sin(this.t * 2 + i) * 0.03, 0.05); }); } /* the bubbles rise straight out of the top of the head */
     }
     if (this.seat && this.seatG && !this.think && y) { // you're sat in the driver's seat; whoever it is talks to you through the window
       const ry = y.root.rotation.y - Math.PI / 2;
@@ -352,10 +354,12 @@ export class Talk {
   }
   // on your bike / scooter / motorbike / boat, phone at your ear, one hand on the bars or wheel
   // bring the phone hand right up to the ear: a few nudges of shoulder and elbow until the hand sits beside the head
-  earIK(c, arm, sx) {
-    if (!c || !arm?.hand || !c.head) return; c.root.updateWorldMatrix(true, true);
-    if (!c._ear) { const bb = new THREE.Box3().setFromObject(c.head), ctr = c.head.worldToLocal(bb.getCenter(new THREE.Vector3())); c._ear = { ctr, hw: (bb.max.x - bb.min.x) / 2, hh: (bb.max.y - bb.min.y) / 2 }; }
-    const E = c._ear, T = c.head.localToWorld(new THREE.Vector3(E.ctr.x + sx * (E.hw * 0.95), E.ctr.y - E.hh * 0.3, E.ctr.z + 0.02)), h = new THREE.Vector3();
+  earIK(c, arm, sx) { this.handToHead(c, arm, sx * 0.95, -0.3, 0.02, true); }
+  headBox(c) { c.root.updateWorldMatrix(true, true); if (!c._ear) { const bb = new THREE.Box3().setFromObject(c.head), ctr = c.head.worldToLocal(bb.getCenter(new THREE.Vector3())); c._ear = { ctr, hw: (bb.max.x - bb.min.x) / 2, hh: (bb.max.y - bb.min.y) / 2 }; } return c._ear; }
+  // put a hand at a spot on the head (x, y in head half-widths, z in metres): the ear for a phone, the chin when thinking
+  handToHead(c, arm, ox, oy, oz, abs = false) {
+    if (!c || !arm?.hand || !c.head) return; const E = this.headBox(c);
+    const T = c.head.localToWorld(new THREE.Vector3(E.ctr.x + ox * E.hw, E.ctr.y + oy * E.hh, E.ctr.z + (abs ? oz : oz * E.hw))), h = new THREE.Vector3();
     const f = () => { c.root.updateWorldMatrix(true, true); arm.hand.getWorldPosition(h); return h.distanceTo(T); };
     const P = [[arm.pivot.rotation, 'x'], [arm.pivot.rotation, 'z'], [arm.pivot.rotation, 'y']]; if (arm.elbow) P.push([arm.elbow.rotation, 'x']);
     let best = f(), st = 0.3; for (let i = 0; i < 30 && st > 0.01; i++) { let imp = false; for (const [o, k] of P) for (const d of [st, -st]) { o[k] += d; const v = f(); if (v < best - 1e-4) { best = v; imp = true; break; } o[k] -= d; } if (!imp) st *= 0.5; }

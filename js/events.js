@@ -14,18 +14,19 @@ const friend = (a, d) => ({ role: 'guest', seed: d.seed, name: d.name, tag: 'Old
 export const EVENTS = [
   // ---------------------------------------------------------------- money & friends
   { id: 'loan', via: 'approach', who: friend, when: a => a.money() > 300 ? 3 : 0,
-    init: a => ({ name: pick(NAMES), seed: Math.floor(Math.random() * 1e5), amt: Math.min(2000, Math.max(100, Math.round(a.money() * 0.15 / 50) * 50)) }),
-    text: (a, d) => [`Yo! Is that you? It's ${d.name}, from school!`, `Listen... I'm in a bit of a hole. Rent's due and my landlord is not playing. Could you lend me ${a.fmt(d.amt)}? I'll pay you back, swear down.`],
+    init: a => ({ name: pick(NAMES), seed: Math.floor(Math.random() * 1e5), from: pick(['from school', 'from the old estate', 'from Sunday league', 'from college', 'from your old job at the warehouse', 'from your cousin\'s wedding']), amt: Math.min(2000, Math.max(100, Math.round(a.money() * 0.15 / 50) * 50)) }),
+    text: (a, d) => [`Yo! Is that you? It's ${d.name}, ${d.from || 'from school'}!`, `Listen... I'm in a bit of a hole. Rent's due and my landlord is not playing. Could you lend me ${a.fmt(d.amt)}? I'll pay you back, swear down.`],
     choices: (a, d) => [
-      { label: `Lend ${a.fmt(d.amt)}`, go: () => { a.take(d.amt); a.karma(3); a.schedule(roll(0.55 + a.karmaV() * 0.004) ? 'loan_back' : 'loan_gone', 4 + Math.random() * 6, d); return 'You\'re a real one. I won\'t forget this.'; } },
-      { label: 'Sorry, I can\'t', go: () => { if (roll(0.3)) a.schedule('loan_grudge', 6 + Math.random() * 8, d); return '...Yeah. Cool. Forget I asked.'; } },
+      { label: `Lend ${a.fmt(d.amt)}`, you: pick(['Course. I\'ve got you, here.', 'Go on then. Here you go.', 'Yeah, alright. Sort yourself out.']), go: () => { a.take(d.amt); a.karma(3); a.schedule(roll(0.55 + a.karmaV() * 0.004) ? 'loan_back' : 'loan_gone', 4 + Math.random() * 6, d); return 'You\'re a real one. I won\'t forget this.'; } },
+      ...(d.amt >= 200 ? [{ label: `Lend half (${a.fmt(Math.round(d.amt / 2 / 50) * 50)})`, you: 'I can\'t do all of it, but I can do half.', go: () => { d.amt = Math.round(d.amt / 2 / 50) * 50; a.take(d.amt); a.karma(2); a.schedule(roll(0.6 + a.karmaV() * 0.004) ? 'loan_back' : 'loan_gone', 4 + Math.random() * 6, d); return 'Half\'s a massive help. Honestly, thank you.'; } }] : []),
+      { label: 'Sorry, I can\'t', you: pick(['Sorry, I\'m skint myself right now.', 'I can\'t, mate. Money\'s tight.']), go: () => { if (roll(0.3)) a.schedule('loan_grudge', 6 + Math.random() * 8, d); return '...Yeah. Cool. Forget I asked.'; } },
     ] },
   { id: 'loan_back', via: 'approach', follow: true, who: friend,
-    text: (a, d) => [`There you are! I've been looking for you.`, `Told you I'd pay you back. Here, ${a.fmt(d.amt * 2)}. Double, for trusting me when nobody else did.`],
+    text: (a, d) => [`${d.name} here. Got a minute?`, `Told you I'd pay you back. Here, ${a.fmt(d.amt * 2)}. Double, for trusting me when nobody else did.`],
     choices: (a, d) => [
-      { label: 'Take it', go: () => { a.give(d.amt * 2); a.mood(10); a.schedule('loyal_friend', 15 + Math.random() * 15, d); return 'We\'re good, yeah? Proper friends.'; } },
-      { label: 'Just the loan back, keep the rest', go: () => { a.give(d.amt); a.karma(4); a.mood(8); a.schedule('loyal_friend', 8 + Math.random() * 8, { ...d, extra: true }); return 'You\'re too good, man. I owe you big. Bigger.'; } },
-      { label: 'Keep it all. Look after your mum', go: () => { a.karma(9); a.mood(12); a.schedule('loyal_friend', 6 + Math.random() * 6, { ...d, extra: true, saint: true }); return '...Nobody\'s ever done that for me. I won\'t forget it.'; } },
+      { label: 'Take it', you: pick(['Cheers! I didn\'t expect double.', 'Thank you, that\'s proper decent of you.']), go: () => { a.give(d.amt * 2); a.mood(10); a.schedule('loyal_friend', 15 + Math.random() * 15, d); return 'We\'re good, yeah? Proper friends.'; } },
+      { label: 'Just the loan back, keep the rest', you: 'Just give me what I lent you. Keep the rest.', go: () => { a.give(d.amt); a.karma(4); a.mood(8); a.schedule('loyal_friend', 8 + Math.random() * 8, { ...d, extra: true }); return 'You\'re too good, man. I owe you big. Bigger.'; } },
+      { label: 'Keep it all. Look after your mum', you: 'Keep it. Look after your mum with it.', go: () => { a.karma(9); a.mood(12); a.schedule('loyal_friend', 6 + Math.random() * 6, { ...d, extra: true, saint: true }); return '...Nobody\'s ever done that for me. I won\'t forget it.'; } },
     ] },
   { id: 'loan_gone', via: 'thought', follow: true,
     text: (a, d) => [`It's been over a week. ${d.name} still isn't answering...`, `And now their Instagram's full of a new watch and a holiday in Cabo. With MY money.`],
@@ -36,7 +37,7 @@ export const EVENTS = [
   { id: 'loan_grudge', via: 'thought', follow: true,
     text: (a, d) => [`People are saying ${d.name} has been talking about me. Calling me stuck-up.`, 'The dealers round here have heard it too.'],
     choices: (a, d) => [
-      { label: 'Call them and smooth it over', go: () => { a.lvlUp('charm', 15); return 'One awkward phone call later, we\'re mostly fine.'; } },
+      { label: 'Call them and smooth it over', go: () => ({ call: { who: friend(a, d), done: () => a.lvlUp('charm', 15), lines: [[`${d.name}, it's me. I hear you've been talking about me.`, 'you'], 'Yeah... look. I was out of order. I was skint and embarrassed, and I took it out on you.', ['I get it. Next time just talk to me, yeah?', 'you'], 'Yeah. I will. We\'re good?', ['We\'re good.', 'you']] } }) },
       { label: 'Ignore it', go: () => { a.dealerRel(-6); return 'Whatever. Let them talk.'; } },
     ] },
   { id: 'loyal_friend', via: 'call', follow: true, who: (a, d) => ({ ...friend(a, d), tag: 'Calling' }),

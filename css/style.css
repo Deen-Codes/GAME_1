@@ -939,7 +939,7 @@ body:has(#title) #sbBtn, body:has(#mg:not(.hidden)) #sbBtn { display: none; }
 .sb-head { display: flex; justify-content: space-between; align-items: center; padding: 14px 18px 6px; } .sb-head b { font-size: 20px; }
 .sb-x { border: 0; background: #f0eef4; width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; color: #1d1530; }
 .sb-tabs { display: flex; gap: 6px; padding: 4px 14px 10px; } .sb-tabs button { flex: 1; border: 0; border-radius: 999px; padding: 9px; font-weight: 900; background: #f0eef4; color: #1d1530; } .sb-tabs button.on { background: #2a1640; color: #fff; }
-.sb-body { flex: 1; overflow-y: auto; padding: 0 14px 18px; }
+.sb-body { flex: 1; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; touch-action: pan-y; overscroll-behavior: contain; padding: 0 14px 18px; } /* scrolls with a finger: the page itself has touch-action none */
 .sb-body .lab-ev { background: #f5f3f8; } .sb-body .lab-tick { border-color: #b8b0c8; color: #fff; } .sb-body .lab-txt em { font-size: 11px; color: #c4467a; font-style: normal; font-weight: 700; margin-top: 2px; }
 .sb-body .lab-tabs button { background: #f0eef4; color: #1d1530; } .sb-body .lab-tabs button.on { background: #2a1640; color: #fff; }
 .sb-body .lab-bar { background: #ece8f2; }
