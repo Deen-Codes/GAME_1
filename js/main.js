@@ -1,30 +1,30 @@
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=192';
-import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun, partEffects, partPerk } from './gun.js?v=192';
-import { buildCar, computeCarStats, carStatBars, carClass, carPartEffects, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=192';
-import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, STAIRS, unblockPillars, canyonAt, canyonNear, PEAK, SKYWAYS, SKY_Y, skyAt, skyY, rampSeg, windowShader, makeOceanMaterial, WATER_U, WIND_U, METRO, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, collidersNear, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=192';
-import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=192';
-import { buildPanel, renderStats } from './ui.js?v=192';
-import { Input } from './input.js?v=192';
-import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime, animalCall } from './audio.js?v=192';
-import { runMinigame } from './minigames.js?v=192';
-import { CUT, initCutGames } from './cutgames.js?v=192';
-import { initOnline, updateOnline, goOnline, goOffline, NET, onNet, sendMagicLink, verifyCode, signOut, signedIn, cloudLoad, cloudSave, cloudList, cloudDelete, isAdmin, checkAdmin, reviewLoad, reviewSet } from './online.js?v=192';
-import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk, setReservedNames, seededLook } from './peds.js?v=192';
-import { citizens, whereNow } from './citizens.js?v=192';
-import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=192';
-import { findRoute } from './nav.js?v=192';
-import { COURSES, CAREERS, QUIZ } from './careers.js?v=192';
-import { EVENTS, EVENT_BY_ID, ARRIVE, PHONE_TEXT, PERSON_TEXT } from './events.js?v=192';
-import { attachWheel } from './wheel.js?v=192';
-import { GROUND_U } from './groundtex.js?v=192';
-import { Animals, makeAnimalMesh } from './animals.js?v=192';
-import { Talk } from './talk.js?v=192';
-import { incomingText, classify, textOptions, textReply } from './texts.js?v=192';
-import { svg, drawIcon, ICONS as ICON_SET } from './icons.js?v=192';
-import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=192';
-import { FURN, CATALOG } from './furniture.js?v=192';
-import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=192';
+import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=194';
+import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun, partEffects, partPerk } from './gun.js?v=194';
+import { buildCar, computeCarStats, carStatBars, carClass, carPartEffects, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=194';
+import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, STAIRS, unblockPillars, canyonAt, canyonNear, PEAK, SKYWAYS, SKY_Y, skyAt, skyY, rampSeg, windowShader, makeOceanMaterial, WATER_U, WIND_U, METRO, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, collidersNear, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=194';
+import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=194';
+import { buildPanel, renderStats } from './ui.js?v=194';
+import { Input } from './input.js?v=194';
+import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime, animalCall } from './audio.js?v=194';
+import { runMinigame } from './minigames.js?v=194';
+import { CUT, initCutGames } from './cutgames.js?v=194';
+import { initOnline, updateOnline, goOnline, goOffline, NET, onNet, sendMagicLink, verifyCode, signOut, signedIn, cloudLoad, cloudSave, cloudList, cloudDelete, isAdmin, checkAdmin, reviewLoad, reviewSet } from './online.js?v=194';
+import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk, setReservedNames, seededLook } from './peds.js?v=194';
+import { citizens, whereNow } from './citizens.js?v=194';
+import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=194';
+import { findRoute } from './nav.js?v=194';
+import { COURSES, CAREERS, QUIZ } from './careers.js?v=194';
+import { EVENTS, EVENT_BY_ID, ARRIVE, PHONE_TEXT, PERSON_TEXT } from './events.js?v=194';
+import { attachWheel } from './wheel.js?v=194';
+import { GROUND_U } from './groundtex.js?v=194';
+import { Animals, makeAnimalMesh } from './animals.js?v=194';
+import { Talk } from './talk.js?v=194';
+import { incomingText, classify, textOptions, textReply } from './texts.js?v=194';
+import { svg, drawIcon, ICONS as ICON_SET } from './icons.js?v=194';
+import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=194';
+import { FURN, CATALOG } from './furniture.js?v=194';
+import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=194';
 
 const $ = id => document.getElementById(id);
 let inside = null, editMode = false, held = null, pendingCar = false, homeMusic = false, phoneBadge = 0;
@@ -1724,7 +1724,7 @@ function sitIn(v) {
   { const ci = copCars.indexOf(v); if (ci >= 0) { copCars.splice(ci, 1); const crewIn = !v.deployed && v.ai !== 'park'; v.ai = null; v.quarry = null; v.jackedCop = true; v.sirenOn = false; if (v.siren) v.siren.forEach(s => s.visible = false); crime(0.6);
     if (crewIn) { const h = v.s.h, c = makeCop(v.s.x - Math.cos(h) * (v.b.width / 2 + 1.2), v.s.z + Math.sin(h) * (v.b.width / 2 + 1.2)); c.state = 'down'; c.t = 1.4; toast('You threw the officer out of his own car!', 2.4); WANT.v = Math.max(WANT.v, STAR_AT[2]); WANT.stars = Math.max(WANT.stars, 2); } } }
   if (v.police || v.cfg?.roof === 'police') { v.police = true; ensureSiren(v); } // you took their car: it isn't hunting you any more, it's yours
-  ride = v; heroRoot.visible = !!v.b.two; muzzleFlash.visible = false; audio();
+  ride = v; heroRoot.visible = !!(v.b.two || v.b.seat); muzzleFlash.visible = false; audio();
   // every car remembers its own station: yours keeps what you left on, other people's are on whatever their owner liked
   if (v === myCar && v.radio == null) v.radio = stats.carRadio ?? 0;
   if (v.radio == null) v.radio = v.b.two ? STATIONS.length - 1 : Math.floor(Math.random() * STATIONS.length);
@@ -1749,7 +1749,7 @@ function enterVehicle(v, anim = true) {
 }
 function exitCar() {
   const v = ride; if (!v || carAnim) return;
-  heroRoot.rotation.set(0, 0, 0); hero.root.rotation.order = 'XYZ';
+  heroRoot.scale.setScalar(1); heroRoot.rotation.set(0, 0, 0); hero.root.rotation.order = 'XYZ';
   const s = v.s, h = s.h, spd = Math.abs(s.v);
   if (job && job.type === 'taxi') endJob('You left the cab. Shift over.');
   if (ride) { ride.radio = radioIndex(); if (ride === myCar) stats.carRadio = ride.radio; }
@@ -2023,7 +2023,7 @@ function repairCar(v, svc) {
   if (WANT.stars) setTimeout(() => clearWanted('Fresh look, new plates. The cops lost you.'), 900);
   fade(() => {
     const s = { ...v.s }, wasRide = ride === v;
-    if (v === myCar) { rebuildMyCar(s); if (wasRide) { ride = myCar; heroRoot.visible = !!myCar.b.two; } }
+    if (v === myCar) { rebuildMyCar(s); if (wasRide) { ride = myCar; heroRoot.visible = !!(myCar.b.two || myCar.b.seat); } }
     else { dyn.remove(v.b.group); disposeObject(v.b.group); v.b = buildCar(v.cfg); dyn.add(v.b.group); placeVehicle(v); }
     const nv = v === myCar ? myCar : v; nv.hp = 100; nv.fuse = 0; if (wasRide) ride = nv;
     if (svc === 'wash') for (let i = 0; i < 20; i++) spawnParticles(s.x + rand(-2, 2), 1.5, s.z + rand(-2, 2), ['#ffffff', '#bfe8ff', '#ff9fd0'], 1, 1, 1.2, 0.18, -1);
@@ -2031,6 +2031,25 @@ function repairCar(v, svc) {
   });
 }
 const carPos = { x: 0, z: 0 };
+// whoever's riding with you sits in the passenger seat of an open-top car (date, buddy): idling, glancing over at you now and then
+function seatPassenger(o, v, seed = 0) {
+  const b = v.b, S = 0.78, hip = o.limbs[0].position.y; b.group.updateMatrixWorld(true); b.group.localToWorld(_seatV.set(-b.seat.x, b.seat.y, b.seat.z));
+  o.root.visible = true; o.root.scale.setScalar(S); o.root.position.set(_seatV.x, _seatV.y - hip * S, _seatV.z); o.root.rotation.set(0, v.s.h, 0);
+  o.limbs[0].rotation.set(-1.45, 0, 0.05); o.limbs[1].rotation.set(-1.45, 0, -0.05); o.limbs[2].rotation.set(-0.45, 0, -0.1); o.limbs[3].rotation.set(-0.45, 0, 0.1);
+  if (o.inner) o.inner.rotation.y = Math.sin(time * 0.35 + seed) > 0.55 ? 0.45 : Math.sin(time * 0.6 + seed) * 0.08; // a look over at the driver
+}
+function unseatPassenger(o) { if (o.root.scale.x !== 1) { o.root.scale.setScalar(1); if (o.inner) o.inner.rotation.y = 0; } }
+// sat at the wheel of an open-top car: you can see them in there, hands on the wheel
+const _seatV = new THREE.Vector3();
+function seatedPose(v) {
+  const b = v.b, c = v.s, S = 0.78, hl = 0.86 * (charCfg.height || 1) * (charCfg.legs || 1);
+  b.group.updateMatrixWorld(true); b.group.localToWorld(_seatV.set(b.seat.x, b.seat.y, b.seat.z));
+  heroRoot.scale.setScalar(S); heroRoot.rotation.set(0, 0, 0); hero.root.rotation.order = 'XYZ'; hero.root.rotation.set(0, c.h, 0);
+  heroRoot.position.set(_seatV.x, _seatV.y - hl * S, _seatV.z);
+  poseCharacter(hero, { phase: 0, speed: 0, air: false, aim: -0.55, recoil: 0, t: time });
+  hero.legL.pivot.rotation.set(-1.5, 0, 0.05); hero.legR.pivot.rotation.set(-1.5, 0, -0.05); hero.legL.knee.rotation.x = 1.35; hero.legR.knee.rotation.x = 1.35;
+  const st = clamp(c.steer || 0, -1, 1) * 0.25; hero.armR.pivot.rotation.set(-1.15, 0, 0.12 + st); hero.armL.pivot.rotation.set(-1.15, 0, -0.12 + st); hero.torso.rotation.set(0, 0, 0);
+}
 // rider on a bicycle / scooter / motorbike: sitting (or standing on the scooter), leaning into turns, pedalling
 function riderPose(v, dt) {
   const b = v.b, c = v.s, hl = 0.86 * (charCfg.height || 1) * (charCfg.legs || 1), kind = b.two;
@@ -2207,6 +2226,7 @@ function updateVehicles(dt) {
     b.group.rotation.z = b.two ? -c.steer * clamp(spd / 8, 0, 1) * 0.38 : b.boat ? -c.steer * clamp(spd / 10, 0, 1) * 0.16 : clamp((-c.vx * fz + c.vz * fx) * 0.012, -0.08, 0.08);
     if (b.boat && spd > 2) boatWake(v, spd, dt);
     if (b.two && v === ride && !carAnim) riderPose(v, dt);
+    else if (b.seat && v === ride && !carAnim) seatedPose(v);
     carSmoke(v, dt);
     for (const w of b.wheels) { w.spin.rotation.x += c.v * dt / b.wr; if (w.front) w.pivot.rotation.y = c.steer * 0.45; }
   }
@@ -3715,7 +3735,7 @@ function setTalkRel(id) { const el = $('talkRel'); if (!id) { el.classList.add('
 
 // ================================================================ CONVERSATIONS
 function zoneBg(x, z) { if (inside) return 'interior'; if (onPier(x, z)) return 'pier'; const n = zoneName(x, z); return n === 'Bay Beach' ? 'beach' : n === 'Hidden Hills' || n === 'Countryside' || n === 'Farmland' ? 'hills' : n.includes('Airport') ? 'airport' : n === 'Eastport' || n === 'Northfield' ? 'suburb' : 'city'; }
-function beginTalk(cfg, name, tag, pitch, relId, pet = null, pose = null, think = false, seat = false, phone = false, car = false, bed = null) { if (seat && ride && !ride.b.two) { try { talk.nextCar = buildCar(ride.cfg); } catch (e) { talk.nextCar = null; } } talk.layout(W, H); talk.begin({ npcCfg: cfg, youCfg: charCfg, name, tag, pitch, bg: zoneBg(P.x, P.z), night, pet, pose, think, seat, phone, car, bed, wall: inside ? INTERIORS[inside.id].wall : null, floor: inside ? INTERIORS[inside.id].floor : null, room: inside ? inside.id : null }); if (relId) relNames[relId] = name; setTalkRel(relId); setState('talk'); }
+function beginTalk(cfg, name, tag, pitch, relId, pet = null, pose = null, think = false, seat = false, phone = false, car = false, bed = null) { if (seat && ride && !ride.b.two) { try { talk.nextCar = buildCar(ride.cfg); } catch (e) { talk.nextCar = null; } talk.nextPassenger = date?.inCar ? date.cfg : buddy?.inCar ? (buddy.p.look?.cfg || null) : null; } talk.layout(W, H); talk.begin({ npcCfg: cfg, youCfg: charCfg, name, tag, pitch, bg: zoneBg(P.x, P.z), night, pet, pose, think, seat, phone, car, bed, wall: inside ? INTERIORS[inside.id].wall : null, floor: inside ? INTERIORS[inside.id].floor : null, room: inside ? inside.id : null }); if (relId) relNames[relId] = name; setTalkRel(relId); setState('talk'); }
 function endTalk() { talkNeeds(false); talk.end(); setState('play'); }
 const I = (n, t) => `${svg(n, 'sm')} ${t}`;
 const DEALER_HI = { Stranger: ["Do I know you? ...What you need.", "Keep it quick, cops roll through here.", "New face. Prices are prices."], Known: ["You again. What you need?", "Ayy, back for more?"], Friendly: ["My guy! What we doing today?", "Good to see you. Fresh stock in."], Trusted: ["There's my best customer. I got you.", "For you? Always open."], Family: ["Family! Sit down, sit down.", "Anything you need, it's yours."] };
@@ -5154,7 +5174,8 @@ function updateDate(dt) {
   if (dance && D.dancing) { const b = (audioTime() - dance.tr.t0) / (dance.tr.spb16 * 4) * Math.PI, l = D.fig.limbs; D.x = P.x + 1.1; D.z = P.z + 0.3; D.face = -0.5; D.fig.inner.position.y = Math.abs(Math.sin(b)) * 0.09; l[2].rotation.set(-2.4 + Math.sin(b) * 0.5, 0, -0.3); l[3].rotation.set(-2.4 - Math.sin(b) * 0.5, 0, 0.3); l[0].rotation.x = Math.sin(b) * 0.25; l[1].rotation.x = -Math.sin(b) * 0.25; D.fig.root.position.set(D.x, P.y, D.z); D.fig.root.rotation.y = D.face; return; }
   // getting into your car: walk round to the passenger door, if there's a seat for her
   if (ride) {
-    if (D.inCar) { D.x = ride.s.x; D.z = ride.s.z; D.fig.root.visible = false; D.escortCar = null; carDateTick(dt); return; }
+    if (!D.inCar && D.fig) unseatPassenger(D.fig);
+    if (D.inCar) { D.x = ride.s.x; D.z = ride.s.z; if (ride.b.seat) seatPassenger(D.fig, ride, 1); else D.fig.root.visible = false; D.escortCar = null; carDateTick(dt); return; }
     if (D.left) { if (Math.hypot(ride.s.x - D.x, ride.s.z - D.z) < 12 && Math.abs(ride.s.v) < 2) { D.left = false; toast(`${D.name}: "Finally! You came back."`, 2.4); } else { D.fig.root.visible = true; dateLimbs(0); return; } }
     if (seatsFor(ride) < 2) { if (!D.noRoom) { D.noRoom = true; toast(`${D.name}: "Erm, there's no room for me on that."`, 2.6); } dateLimbs(0); D.fig.root.position.set(D.x, baseY(D.x, D.z), D.z); return; }
     // only counts as leaving her behind if you drive away while she's on her way to the car
@@ -5165,7 +5186,7 @@ function updateDate(dt) {
   }
   D.noRoom = false;
   if (carAnim && D.escortCar === carAnim.v && (carAnim.type === 'escort' || carAnim.type === 'in')) {
-    if (D.inCar) { D.fig.root.visible = false; return; }
+    if (D.inCar) { if (ride?.b.seat) seatPassenger(D.fig, ride, 1); else D.fig.root.visible = false; return; }
     if (carAnim.type === 'escort' && carAnim.stage >= 1) { // walk in through the open door
       D.boardCar = carAnim.v; const ds = doorSpot(carAnim.v, -DRIVER), w = dateWalk(ds.x, ds.z, dt, 4.5);
       if (w.d < 0.45) { D.board = (D.board || 0) + dt; if (D.board > 0.35) { D.inCar = true; D.board = 0; D.fig.root.visible = false; } }
@@ -5621,8 +5642,8 @@ function updateBuddy(dt) {
   if (gameHours() - b.since > 4 && !WANT.stars) return endBuddy(pick(['Right, I gotta head off. Good times though!', 'I\'m beat. Catch you later, yeah?', 'Gotta go. Hit me up again!']));
   if (p.state === 'down') return;
   // riding along: they hop in with you
-  if (ride && !ride.b.two) { if (!b.inCar && Math.hypot(p.x - P.x, p.z - P.z) < 14 && seatsFor(ride) >= 2) { b.inCar = true; p.root.visible = false; } if (b.inCar) { p.x = P.x; p.z = P.z; p.state = 'idle'; p.t = 999; } }
-  else if (b.inCar) { b.inCar = false; p.root.visible = true; const h = (ride || myCar)?.s?.h ?? P.face; p.x = P.x + Math.cos(h) * 1.6; p.z = P.z - Math.sin(h) * 1.6; p.state = 'idle'; }
+  if (ride && !ride.b.two) { if (!b.inCar && Math.hypot(p.x - P.x, p.z - P.z) < 14 && seatsFor(ride) >= 2) { b.inCar = true; p.root.visible = false; } if (b.inCar) { p.x = P.x; p.z = P.z; p.state = 'idle'; p.t = 999; if (ride.b.seat) seatPassenger(p, ride, 2); else p.root.visible = false; } }
+  else if (b.inCar) { b.inCar = false; unseatPassenger(p); p.root.visible = true; const h = (ride || myCar)?.s?.h ?? P.face; p.x = P.x + Math.cos(h) * 1.6; p.z = P.z - Math.sin(h) * 1.6; p.state = 'idle'; }
   if (b.inCar) { buddyTalk(dt); return; }
   // backup: anyone fighting you gets a visit
   const foe = peds.list.find(q => q !== p && q.state !== 'down' && (q.angry || q.hunter) && Math.hypot(q.x - P.x, q.z - P.z) < 16);
@@ -7272,7 +7293,7 @@ function saveGame() {
   store.set('bc_save', save); store.set('bc_arsenal', arsenal); store.set('bc_cars', garage); store.set('bc_savedAt', Date.now());
 }
 // auto-update: bookmarks and home-screen apps can hold on to an old copy. Check version.json (never cached) and reload once if newer.
-const BUILD = 192;
+const BUILD = 194;
 function updatingCover() { const d = document.createElement('div'); d.id = 'updCover'; d.innerHTML = '<div class="bt-logo">BAY<span>CITY</span></div><p><i></i>Updating Bay City...</p>'; document.body.appendChild(d); requestAnimationFrame(() => d.classList.add('on')); }
 function checkUpdate() {
   fetch('version.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(j => {
@@ -7373,10 +7394,13 @@ function sandboxInit() {
   if (ride) exitCar(); Object.assign(P, { x: SB.x, z: SB.z + 4, y: baseY(SB.x, SB.z + 4), face: Math.PI });
   if (myCar) { Object.assign(myCar.s, { x: SB.x + 7, z: SB.z + 2, h: 0, v: 0 }); placeVehicle(myCar); }
   if (money < 20000) money = 25000; P.hp = maxHP(); const f = fam();
-  if (!f.partner) { stats.dates ||= {}; stats.dates['lab:p'] = { name: 'Sam', cfg: { ...npcCfg('guest', 3131), fem: true }, met: dayN }; stats.rel['lab:p'] = 70; makeOfficial('lab:p'); }
+  if (!f.partner) { stats.dates ||= {}; stats.dates['lab:p'] = { name: 'Sam', cfg: { ...npcCfg('guest', 3131), fem: true }, met: dayN }; stats.rel['lab:p'] = 70; relNames['lab:p'] = 'Sam'; makeOfficial('lab:p'); }
   if (!f.kids.length) { const k = { id: 'kid:lab', name: 'Jamie', girl: false, born: dayN - 8, seed: 4242, skin: charCfg.skin, hairColor: charCfg.hairColor }; f.kids.push(k); stats.rel[k.id] = 70; }
   for (const id of ['p_studio']) owned.add(id); f.home ||= 'p_studio';
-  ensureCarLib(); for (let i = 0; i < 4; i++) makeVehicle(carLib[(i * 7) % carLib.length].cfg, SB.x - 14 + i * 5, SB.z - 10, 0, false); // a row of parked cars to jump in
+  { // one of every vehicle in the game, parked in rows to jump in and try
+    const kinds = [...Object.keys(BODIES).filter(k => k !== 'speedboat'), 'Taxi', 'Police'];
+    kinds.forEach((k, i) => { const cfg = CAR_PRESETS[k] ? { ...DEFAULT_CAR, ...CAR_PRESETS[k] } : { ...DEFAULT_CAR, body: k, bodyColor: ['#2f80ed', '#e23b3b', '#ffd23f', '#4cd964', '#b26bff', '#ff8a2a'][i % 6] };
+      const v = makeVehicle(cfg, SB.x - 20 + (i % 7) * 6.5, SB.z - 12 - Math.floor(i / 7) * 9, 0, false); if (k === 'Police') v.police = true; if (k === 'Taxi') v.taxi = true; v.sbLabel = k; }); }
   clockH = SB.h; updateCamera(0, true); saveGame();
   const b = document.createElement('button'); b.id = 'sbBtn'; b.innerHTML = `${svg('check', 'sm')} Sandbox`; b.onclick = () => sbOpen(); document.body.appendChild(b);
   reviewLoad().then(r => { SB.rev = r; try { localStorage.setItem('lab_rev', JSON.stringify(r)); } catch (e) {} }).catch(() => { try { SB.rev = JSON.parse(localStorage.getItem('lab_rev')) || SB.rev; } catch (e) {} });

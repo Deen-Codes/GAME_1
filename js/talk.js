@@ -1,8 +1,8 @@
 // Conversations staged like a Pokémon battle: they stand on a platform facing you,
 // you see the back of your own head in the foreground, subtitles type out, you pick replies.
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, setFace } from './character.js?v=192';
-import { sfx, audio } from './audio.js?v=192';
+import { buildCharacter, poseCharacter, disposeObject, setFace } from './character.js?v=194';
+import { sfx, audio } from './audio.js?v=194';
 
 const $ = id => document.getElementById(id);
 const BG = {
@@ -166,6 +166,8 @@ export class Talk {
       const colm = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 0.3, 8), m('#16161a')); colm.rotation.x = Math.PI / 2; colm.position.z = 0.16; wheel.add(colm); // (wheel tilted top-away, so this runs forward and DOWN into the dash)
       I.add(wheel); this.wheel = rim;
       const root = new THREE.Group(); root.add(g); root.add(I); this.scene.add(root); this.carRoot = root;
+      const pc = this.nextPassenger; this.nextPassenger = null; // whoever's riding with you, in the passenger seat
+      if (pc) { try { this.pass = buildCharacter(pc); root.add(this.pass.root); } catch (e) { this.pass = null; } }
     }
     if (seat && !this.realCar) { // car seat, dashboard and steering wheel
       const g = new THREE.Group(), m = c => new THREE.MeshStandardMaterial({ color: c, roughness: 0.7 });
@@ -233,7 +235,7 @@ export class Talk {
     if (this.prop) { this.scene.remove(this.prop); this.prop = null; }
     if (this.bubbles) { this.scene.remove(this.bubbles); this.bubbles = null; }
     if (this.seatG) { this.scene.remove(this.seatG); this.seatG = null; }
-    if (this.carRoot) { this.scene.remove(this.carRoot); disposeObject(this.carRoot); this.carRoot = null; }
+    if (this.carRoot) { this.scene.remove(this.carRoot); disposeObject(this.carRoot); this.carRoot = null; this.pass = null; }
     if (this.carG) { this.scene.remove(this.carG); this.carG = null; }
     if (this.bedG) { this.scene.remove(this.bedG); this.bedG = null; }
   }
@@ -352,6 +354,9 @@ export class Talk {
     if (this.phone) { drv.armL.pivot.rotation.set(-0.85, -0.15, 0.42); if (drv.armL.elbow) drv.armL.elbow.rotation.set(-2.6, 0, 0); drv.head.rotation.set(talkingMe ? Math.sin(this.t * 11) * 0.06 : 0, 0.45, 0.1); } // phone at the ear nearest the window
     else { drv.armL.pivot.rotation.set(-1.05, 0, 0.12); if (drv.armL.elbow) drv.armL.elbow.rotation.set(-0.55, 0, 0); drv.head.rotation.set(talkingMe ? Math.sin(this.t * 11) * 0.06 : 0, other ? side * 1.1 : 0.2, 0); }
     if (this.wheel) this.wheel.rotation.z = Math.sin(this.t * 0.8) * 0.04;
+    if (this.pass) { const q = this.pass, ll = q.legLen || 0.86; poseCharacter(q, { t: this.t + 2, aim: -1.45, speed: 0 }); q.root.position.set(-sx, top + 0.14 - ll + 0.03, sz + 0.02); q.root.rotation.set(0, 0, 0);
+      q.legL.pivot.rotation.set(-1.5, 0, 0.05); q.legR.pivot.rotation.set(-1.5, 0, -0.05); q.legL.knee.rotation.x = 1.35; q.legR.knee.rotation.x = 1.35; q.armL.pivot.rotation.set(-0.5, 0, 0.1); q.armR.pivot.rotation.set(-0.5, 0, -0.1);
+      q.head.rotation.set(0, Math.sin(this.t * 0.35) > 0.3 ? -0.7 : Math.sin(this.t * 0.6) * 0.1, 0); } // idling, looking over at you now and then
     if (other && !this.phone) { // they're stood at your window
       other.root.position.set(sx + side * (W / 2 - sx + 0.7), 0, sz + 0.35); other.root.rotation.set(0, -side * Math.PI / 2, 0); other.root.visible = true;
       this.cam.position.set(side * (W / 2 + 3.2), top + 1.0, sz + 4.2); this.cam.lookAt(sx + side * 0.75, top + 0.62, sz + 0.2);
