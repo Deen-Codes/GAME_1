@@ -1,6 +1,6 @@
 // The arsenal: every weapon slot, how it looks in the hand, its stats and its icon.
 import * as THREE from '../lib/three.module.min.js';
-import { buildGun, computeStats, GUN_PRESETS, DEFAULT_GUN, GUN_SCHEMA } from './gun.js?v=176';
+import { buildGun, computeStats, GUN_PRESETS, DEFAULT_GUN, GUN_SCHEMA } from './gun.js?v=177';
 
 export const SLOTS = [
   { id: 'fist', name: 'Fists', kind: 'melee', price: 0 },
@@ -24,8 +24,8 @@ export const DEFAULT_CFGS = {
 export function slotForReceiver(r) { return SLOTS.find(s => s.receivers?.includes(r))?.id || 'ar'; }
 
 export function newArsenal(oldGunCfg) {
-  const a = { owned: ['fist', 'pistol'], cfg: JSON.parse(JSON.stringify(DEFAULT_CFGS)), ammo: {}, cur: 'pistol', last: 'pistol' };
-  if (oldGunCfg && oldGunCfg.receiver) { const s = slotForReceiver(oldGunCfg.receiver); a.cfg[s] = { ...DEFAULT_GUN, ...oldGunCfg }; if (!a.owned.includes(s)) a.owned.push(s); a.cur = a.last = s; }
+  const a = { owned: ['fist', 'pistol'], cfg: JSON.parse(JSON.stringify(DEFAULT_CFGS)), ammo: {}, cur: 'fist', last: 'pistol' };
+  if (oldGunCfg && oldGunCfg.receiver) { const s = slotForReceiver(oldGunCfg.receiver); a.cfg[s] = { ...DEFAULT_GUN, ...oldGunCfg }; if (!a.owned.includes(s)) a.owned.push(s); a.last = s; }
   for (const s of SLOTS) a.ammo[s.id] = { mag: 0, res: 0 };
   for (const id of a.owned) { const st = slotStats(id, a.cfg[id]); a.ammo[id] = { mag: st.mag || 0, res: (st.mag || 0) * 3 }; }
   return a;
