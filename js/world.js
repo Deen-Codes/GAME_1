@@ -1,6 +1,6 @@
 // Open-world map: layout, deterministic generation, colliders, chunk meshing and minimap.
 import * as THREE from '../lib/three.module.min.js';
-import { groundMaterial, GT } from './groundtex.js?v=125';
+import { groundMaterial, GT } from './groundtex.js?v=126';
 
 export const WORLD = { x0: -560, x1: 800, z0: -800, z1: 520 };
 export const CHUNK = 64;
@@ -651,6 +651,13 @@ export const MATS = {
 };
 // the ground (terrain, roads, pavements, lawns) gets world-space detail textures: grass blades, sand grain, slab joints, asphalt aggregate, crop rows
 MATS.ground = groundMaterial(MATS.solid);
+// leaves sway in the wind (canopies only; trunks stay put)
+MATS.leaf = MATS.solid.clone(); MATS.leaf.flatShading = true;
+export const WIND_U = { uWind: { value: 0 } };
+MATS.leaf.userData.wind = sh => { sh.uniforms.uWind = WIND_U.uWind; sh.vertexShader = 'uniform float uWind;\n' + sh.vertexShader.replace('#include <begin_vertex>', `#include <begin_vertex>
+  { float ph = uWind * 1.6 + position.x * 0.21 + position.z * 0.17; float amp = 0.07 + 0.05 * sin(uWind * 0.37 + position.x * 0.05);
+    transformed.x += sin(ph) * amp * clamp((position.y - 1.2) * 0.25, 0.0, 1.0); transformed.z += cos(ph * 0.8) * amp * 0.7 * clamp((position.y - 1.2) * 0.25, 0.0, 1.0); }`); };
+MATS.leaf.onBeforeCompile = MATS.leaf.userData.wind;
 
 // Interior-mapped windows: each window pane ray-casts into a fake room (walls, floor, ceiling, furniture,
 // people, curtains), so you see into it with real parallax as the camera moves. Every room is different and
@@ -778,6 +785,8 @@ export function windowShader(sh) {
 
 // ---------------- geometry builder
 const _a = new THREE.Vector3(), _b = new THREE.Vector3(), _n = new THREE.Vector3();
+const pick2 = (a, r) => a[Math.floor(r() * a.length)];
+const BLOB_GEO = new THREE.IcosahedronGeometry(1, 1), _bc = new THREE.Color();
 class GB {
   constructor() { this.sets = {}; }
   S(k) { return this.sets[k] || (this.sets[k] = { p: [], n: [], c: [], uv: [], gt: [] }); }
@@ -836,6 +845,18 @@ class GB {
       this.tri(k, [x + Math.cos(a0) * r, y, z + Math.sin(a0) * r], [x + Math.cos(a1) * r, y, z + Math.sin(a1) * r], apex, color, ctr);
     }
   }
+  // a lumpy leafy blob: icosphere with jittered radius; faces facing up are a touch lighter, underneath darker
+  blob(x, y, z, rx, ry, rz, color, seed = 1, k = 'leaf') {
+    y += this.oy || 0;
+    const G = BLOB_GEO, P = G.attributes.position, idx = [], ctr = [x, y, z];
+    const base = col(color), jit = (vx, vy, vz) => 0.82 + 0.36 * (Math.sin(vx * 12.9 + vy * 78.2 + vz * 37.7 + seed * 3.1) * 0.5 + 0.5);
+    for (let i = 0; i < P.count; i++) { const vx = P.getX(i), vy = P.getY(i), vz = P.getZ(i), j = jit(vx, vy, vz); idx.push([x + vx * rx * j, y + vy * ry * j, z + vz * rz * j, vy]); }
+    for (let i = 0; i < P.count; i += 3) {
+      const a = idx[i], b = idx[i + 1], c = idx[i + 2], up = (a[3] + b[3] + c[3]) / 3, f = 0.8 + up * 0.22 + (Math.sin(i * 1.7 + seed) * 0.05);
+      const cc = '#' + _bc.copy(base).multiplyScalar(f).getHexString();
+      this.tri(k, a, b, c, cc, ctr);
+    }
+  }
   cyl(x, y, z, r, h, color, seg = 8, k = 'solid', topCol) {
     y += this.oy || 0;
     const ctr = [x, y + h / 2, z];
@@ -874,7 +895,7 @@ class GB {
       if (k === 'ground') g.setAttribute('gtype', new THREE.Float32BufferAttribute(s.gt, 1));
       g.computeBoundingSphere();
       const m = new THREE.Mesh(g, MATS[k]);
-      m.castShadow = k === 'solid' || k === 'win'; m.receiveShadow = k !== 'pool';
+      m.castShadow = k === 'solid' || k === 'win' || k === 'leaf'; m.receiveShadow = k !== 'pool';
       out.push(m);
     }
     return out;
@@ -912,20 +933,37 @@ function drawObj(o, B) {
       break;
     }
     case 'tree': {
-      const s = o.s, yb = groundH(o.x, o.z);
+      const s = o.s, yb = groundH(o.x, o.z), sd = o.x * 0.37 + o.z * 0.91;
+      const trunk = (h, rr, c = '#6e4c31') => { B.cyl(o.x, yb, o.z, rr * s, h * s * 0.55, c, 7); B.cyl(o.x, yb + h * s * 0.55, o.z, rr * 0.72 * s, h * s * 0.47, c, 7); };
+      const greens = ['#3f8a3c', '#4a9a42', '#3a7f39', '#56a64a', '#447f3a'];
       if (o.kind === 'palm') {
-        let px = o.x, pz = o.z; const lean = (r() - 0.5) * 0.25, h = 5.5 * s;
-        for (let i = 0; i < 5; i++) { B.box(px, yb + i * h / 5, pz, 0.45 * s, h / 5 + 0.05, 0.45 * s, i % 2 ? '#8a6a45' : '#7a5a3a'); px += lean * h / 5; }
-        for (let i = 0; i < 6; i++) { const a = i / 6 * Math.PI * 2 + r(); B.box(px + Math.cos(a) * 1.4 * s, yb + h - 0.3, pz + Math.sin(a) * 1.4 * s, 2.8 * s, 0.15, 0.8 * s, i % 2 ? '#3f9a45' : '#4fb050', { rot: -a }); }
+        let px = o.x, pz = o.z; const la = r() * 6.28, lean = 0.18 + r() * 0.2, h = 5.8 * s, n = 7;
+        for (let i = 0; i < n; i++) { const t = i / n, w = (0.42 - t * 0.12) * s; B.cyl(px, yb + t * h, pz, w, h / n + 0.04, i % 2 ? '#9a7a52' : '#87683f', 7); px += Math.cos(la) * lean * t * h / n; pz += Math.sin(la) * lean * t * h / n; }
+        const tx = px, ty = yb + h, tz = pz; B.blob(tx, ty + 0.05, tz, 0.45 * s, 0.35 * s, 0.45 * s, '#6b5a34', sd); // coconuts and crown
+        for (let i = 0; i < 9; i++) { // fronds droop out from the crown in three segments
+          const a = i / 9 * Math.PI * 2 + r() * 0.4, L = (2.6 + r() * 0.8) * s, cA = Math.cos(a), sA = Math.sin(a), nx = -sA, nz = cA; let x0 = tx, y0 = ty, z0 = tz, w0 = 0.12 * s;
+          const c1 = i % 2 ? '#3f9a45' : '#4fb050';
+          for (let k2 = 1; k2 <= 3; k2++) { const t = k2 / 3, x1 = tx + cA * L * t, z1 = tz + sA * L * t, y1 = ty + 0.35 * s - t * t * 1.5 * s, w1 = (k2 === 3 ? 0.05 : 0.42 - t * 0.1) * s;
+            B.quad('leaf', [x0 - nx * w0, y0, z0 - nz * w0], [x1 - nx * w1, y1, z1 - nz * w1], [x1 + nx * w1, y1, z1 + nz * w1], [x0 + nx * w0, y0, z0 + nz * w0], c1, [ (x0 + x1) / 2, y1 - 3, (z0 + z1) / 2 ]); x0 = x1; y0 = y1; z0 = z1; w0 = w1; }
+        }
       } else if (o.kind === 'pine') {
-        B.box(o.x, yb, o.z, 0.4 * s, 1.4 * s, 0.4 * s, '#6b4a2f');
-        B.cone(o.x, yb + 1.0 * s, o.z, 1.9 * s, 2.8 * s, '#2f6b3a', 6);
-        B.cone(o.x, yb + 2.6 * s, o.z, 1.4 * s, 2.4 * s, '#3a7d44', 6);
+        trunk(1.6, 0.2, '#5e4130');
+        const tiers = 4, g0 = ['#2c5f35', '#2f6b3a', '#336f3c'][Math.floor(r() * 3)];
+        for (let i = 0; i < tiers; i++) { const t = i / tiers, rr = (2.0 - t * 1.45) * s, hh = (2.0 - t * 0.5) * s; B.cone(o.x + (r() - 0.5) * 0.1, yb + (1.0 + t * 3.1) * s, o.z + (r() - 0.5) * 0.1, rr, hh, i % 2 ? g0 : '#3a7d44', 8, 'leaf'); }
       } else {
-        B.box(o.x, yb, o.z, 0.45 * s, 1.8 * s, 0.45 * s, '#7a5536');
-        const g = ['#4f9a45', '#5aa84c', '#468f3f', '#62ad52'][Math.floor(r() * 4)];
-        B.box(o.x, yb + 1.6 * s, o.z, 2.6 * s, 2.2 * s, 2.6 * s, g, { rot: r() });
-        B.box(o.x + 0.3 * s, yb + 3.4 * s, o.z - 0.2 * s, 1.7 * s, 1.2 * s, 1.7 * s, g, { rot: r() });
+        const v = r();
+        if (v < 0.22) { // birch: slim white trunk with dark marks, small light canopy
+          B.cyl(o.x, yb, o.z, 0.16 * s, 3.2 * s, '#e8e4dc', 7);
+          for (let i = 0; i < 4; i++) B.box(o.x + 0.15 * s, yb + (0.5 + i * 0.7) * s, o.z, 0.04, 0.08 * s, 0.14 * s, '#2a2a2a');
+          for (let i = 0; i < 3; i++) B.blob(o.x + (r() - 0.5) * 1.2 * s, yb + (3.0 + r() * 1.0) * s, o.z + (r() - 0.5) * 1.2 * s, (0.9 + r() * 0.4) * s, (1.0 + r() * 0.4) * s, (0.9 + r() * 0.4) * s, pick2(['#7cb85a', '#8cc463', '#6fae52'], r), sd + i);
+        } else { // broadleaf: trunk, a big crown and lumps around it; the odd cherry blossom in spring pink
+          const blossom = v > 0.93, gc = blossom ? '#f3a6c4' : greens[Math.floor(r() * greens.length)], gc2 = blossom ? '#f7c3d7' : greens[Math.floor(r() * greens.length)];
+          trunk(2.0, 0.24);
+          B.blob(o.x, yb + 3.0 * s, o.z, 1.7 * s, 1.35 * s, 1.7 * s, gc, sd);
+          const n = 3 + Math.floor(r() * 3);
+          for (let i = 0; i < n; i++) { const a = i / n * 6.28 + r(), d = (0.9 + r() * 0.5) * s; B.blob(o.x + Math.cos(a) * d, yb + (2.4 + r() * 1.3) * s, o.z + Math.sin(a) * d, (0.95 + r() * 0.4) * s, (0.8 + r() * 0.3) * s, (0.95 + r() * 0.4) * s, i % 2 ? gc : gc2, sd + i * 7); }
+          B.blob(o.x + (r() - 0.5) * 0.5 * s, yb + 4.1 * s, o.z + (r() - 0.5) * 0.5 * s, 1.0 * s, 0.8 * s, 1.0 * s, gc2, sd + 31);
+        }
       }
       break;
     }

@@ -1,26 +1,26 @@
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=125';
-import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun, partEffects, partPerk } from './gun.js?v=125';
-import { buildCar, computeCarStats, carStatBars, carClass, carPartEffects, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=125';
-import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=125';
-import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=125';
-import { buildPanel, renderStats } from './ui.js?v=125';
-import { Input } from './input.js?v=125';
-import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime, animalCall } from './audio.js?v=125';
-import { runMinigame } from './minigames.js?v=125';
-import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk, setReservedNames } from './peds.js?v=125';
-import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=125';
-import { findRoute } from './nav.js?v=125';
-import { COURSES, CAREERS, QUIZ } from './careers.js?v=125';
-import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=125';
-import { attachWheel } from './wheel.js?v=125';
-import { Animals } from './animals.js?v=125';
-import { Talk } from './talk.js?v=125';
-import { incomingText, classify, textOptions, textReply } from './texts.js?v=125';
-import { svg, drawIcon } from './icons.js?v=125';
-import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=125';
-import { FURN, CATALOG } from './furniture.js?v=125';
-import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=125';
+import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=126';
+import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun, partEffects, partPerk } from './gun.js?v=126';
+import { buildCar, computeCarStats, carStatBars, carClass, carPartEffects, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=126';
+import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, WIND_U, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=126';
+import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=126';
+import { buildPanel, renderStats } from './ui.js?v=126';
+import { Input } from './input.js?v=126';
+import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime, animalCall } from './audio.js?v=126';
+import { runMinigame } from './minigames.js?v=126';
+import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk, setReservedNames } from './peds.js?v=126';
+import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=126';
+import { findRoute } from './nav.js?v=126';
+import { COURSES, CAREERS, QUIZ } from './careers.js?v=126';
+import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=126';
+import { attachWheel } from './wheel.js?v=126';
+import { Animals } from './animals.js?v=126';
+import { Talk } from './talk.js?v=126';
+import { incomingText, classify, textOptions, textReply } from './texts.js?v=126';
+import { svg, drawIcon } from './icons.js?v=126';
+import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=126';
+import { FURN, CATALOG } from './furniture.js?v=126';
+import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=126';
 
 const $ = id => document.getElementById(id);
 let inside = null, editMode = false, held = null, pendingCar = false, homeMusic = false, phoneBadge = 0;
@@ -125,7 +125,7 @@ function addFade(mat, extra) {
   };
   mat.needsUpdate = true;
 }
-addFade(MATS.solid); addFade(MATS.win, windowShader); addFade(MATS.glow);
+addFade(MATS.solid); addFade(MATS.win, windowShader); addFade(MATS.glow); addFade(MATS.leaf, MATS.leaf.userData.wind);
 
 // ================================================================ PREVIEW (customisers & shops)
 const pv = { scene: new THREE.Scene(), cam: new THREE.PerspectiveCamera(35, 1, 0.05, 200), turn: new THREE.Group(), gunStand: new THREE.Group(), carStand: new THREE.Group(), rot: -0.5, vel: 0, dirty: true, focus: new THREE.Vector3(0, 1, 0), dist: 6 };
@@ -6357,7 +6357,7 @@ function saveGame() {
   store.set('bc_save', save); store.set('bc_arsenal', arsenal); store.set('bc_cars', garage);
 }
 // auto-update: bookmarks and home-screen apps can hold on to an old copy. Check version.json (never cached) and reload once if newer.
-const BUILD = 125;
+const BUILD = 126;
 function checkUpdate() {
   fetch('version.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(j => {
     if (!(j.v > BUILD)) return;
@@ -6485,7 +6485,7 @@ function newDay() {
   phoneBadge++;
 }
 function step(dt) { lastDt = dt;
-  time += dt; WATER_U.uTime.value = time;
+  time += dt; WATER_U.uTime.value = time; WIND_U.uWind.value = time;
   const before = clockH, dh = dt / 30; clockH += dh; if (clockH >= 24) clockH -= 24;
   if (before < 6 && clockH >= 6) newDay();
   updateNeeds(dh, dt);
