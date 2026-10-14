@@ -66,16 +66,16 @@ export class Hub extends DurableObject {
     const msg = { to: email, from: { email: this.env.MAIL_ADDR || 'login@baycity.app', name: 'Bay City' }, subject: `Your Bay City code: ${code}`, html: mailHtml(code, link), text: `Your Bay City sign-in code is ${code}\n\nOr tap this link on your phone: ${link}\n\nIt works for 15 minutes. If you didn't ask for this, ignore it.` };
     if (this.env.EMAIL) { // Cloudflare's own email sending (Workers Paid)
       try { await this.env.EMAIL.send(msg); return json({ ok: true }); }
-      catch (e) { console.log('email failed', e.code, e.message); if (!this.env.RESEND_KEY) return json({ error: e.code === 'E_RECIPIENT_SUPPRESSED' ? 'That address can\'t receive our emails' : 'Couldn\'t send the email. Try again in a minute.' }, 502); }
+      catch (e) { console.log('email failed', e.code, e.message); if (!this.env.RESEND_KEY) { this.sql.exec('DELETE FROM codes WHERE email = ?', email); } if (!this.env.RESEND_KEY) return json({ error: e.code === 'E_RECIPIENT_SUPPRESSED' ? 'That address can\'t receive our emails' : 'Couldn\'t send the email. Try again in a minute.' }, 502); }
     }
     if (this.env.RESEND_KEY) { // fallback: Resend
       const r = await fetch('https://api.resend.com/emails', { method: 'POST', headers: { authorization: `Bearer ${this.env.RESEND_KEY}`, 'content-type': 'application/json' },
         body: JSON.stringify({ from: `Bay City <${msg.from.email}>`, to: [email], subject: msg.subject, html: msg.html, text: msg.text }) });
-      if (!r.ok) return json({ error: 'Couldn\'t send the email. Try again in a minute.' }, 502);
+      if (!r.ok) { this.sql.exec('DELETE FROM codes WHERE email = ?', email); return json({ error: 'Couldn\'t send the email. Try again in a minute.' }, 502); }
       return json({ ok: true });
     }
     if (this.env.DEV === '1') return json({ ok: true, dev: { code, link } });
-    return json({ error: 'Email isn\'t set up on the server yet' }, 503);
+    this.sql.exec('DELETE FROM codes WHERE email = ?', email); return json({ error: 'Email isn\'t set up on the server yet' }, 503);
   }
 
   // ---- step 2: the link's token, or the email + 6-digit code, becomes a 60-day session
