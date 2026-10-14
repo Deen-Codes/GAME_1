@@ -1,8 +1,8 @@
 // Conversations staged like a Pokémon battle: they stand on a platform facing you,
 // you see the back of your own head in the foreground, subtitles type out, you pick replies.
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject } from './character.js?v=92';
-import { sfx, audio } from './audio.js?v=92';
+import { buildCharacter, poseCharacter, disposeObject } from './character.js?v=94';
+import { sfx, audio } from './audio.js?v=94';
 
 const $ = id => document.getElementById(id);
 const BG = {
@@ -142,12 +142,15 @@ export class Talk {
     }
     if (seat) { // car seat, dashboard and steering wheel
       const g = new THREE.Group(), m = c => new THREE.MeshStandardMaterial({ color: c, roughness: 0.7 });
-      const seatB = new THREE.Mesh(new THREE.BoxGeometry(0.75, 0.16, 0.7), m('#2a2b30')); seatB.position.set(0, 0.55, -0.1); g.add(seatB);
-      const back = new THREE.Mesh(new THREE.BoxGeometry(0.75, 0.95, 0.16), m('#2a2b30')); back.position.set(0, 1.05, -0.5); back.rotation.x = -0.15; g.add(back);
-      const head = new THREE.Mesh(new THREE.BoxGeometry(0.45, 0.28, 0.14), m('#2a2b30')); head.position.set(0, 1.68, -0.58); g.add(head);
-      const dash = new THREE.Mesh(new THREE.BoxGeometry(1.3, 0.22, 0.45), m('#1a1b20')); dash.position.set(0, 0.86, 1.0); g.add(dash);
-      const col = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.5, 8), m('#16161a')); col.position.set(0, 1.1, 0.68); col.rotation.x = 1.1; g.add(col);
-      const wheel = new THREE.Mesh(new THREE.TorusGeometry(0.22, 0.035, 8, 22), m('#16161a')); wheel.position.set(0, 1.22, 0.5); wheel.rotation.x = -0.45; g.add(wheel); this.wheel = wheel;
+      const seatB = new THREE.Mesh(new THREE.BoxGeometry(0.62, 0.16, 0.62), m('#2a2b30')); seatB.position.set(0, 0.47, -0.12); g.add(seatB);
+      const floor = new THREE.Mesh(new THREE.BoxGeometry(1.1, 0.06, 1.5), m('#1a1b20')); floor.position.set(0.15, 0.03, 0.45); g.add(floor);
+      const door = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.55, 1.7), m(car?.color || '#8b1e3f')); door.position.set(-0.55, 0.55, 0.35); g.add(door);
+      const sill = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.06, 1.7), m('#3a3d45')); sill.position.set(-0.55, 0.85, 0.35); g.add(sill);
+      const back = new THREE.Mesh(new THREE.BoxGeometry(0.62, 0.9, 0.16), m('#2a2b30')); back.position.set(0, 0.98, -0.46); back.rotation.x = -0.15; g.add(back);
+      const head = new THREE.Mesh(new THREE.BoxGeometry(0.36, 0.26, 0.12), m('#2a2b30')); head.position.set(0, 1.58, -0.56); g.add(head);
+      const dash = new THREE.Mesh(new THREE.BoxGeometry(1.4, 0.3, 0.5), m('#1a1b20')); dash.position.set(0.3, 0.82, 1.05); g.add(dash);
+      const col = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.5, 8), m('#16161a')); col.position.set(0, 1.0, 0.8); col.rotation.x = 1.1; g.add(col);
+      const wheel = new THREE.Mesh(new THREE.TorusGeometry(0.22, 0.035, 8, 22), m('#16161a')); wheel.position.set(0, 1.08, 0.62); wheel.rotation.x = -0.5; g.add(wheel); this.wheel = wheel;
       const spoke = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.04, 0.03), m('#3a3d45')); wheel.add(spoke);
       this.seatG = g; this.scene.add(g);
     }
@@ -256,9 +259,8 @@ export class Talk {
         if (this.duvet) this.duvet.scale.y = 1 + Math.sin(this.t * 1.6) * 0.04;
       } else if (this.seat && this.seatG) { // sat at the wheel, both hands on it, glancing down at the dash
         this.seatG.position.copy(n.root.position); this.seatG.rotation.y = -1.05;
-        n.root.rotation.y = -1.05; n.root.position.y -= 0.42;
-        n.legL.pivot.rotation.x = -1.45; n.legR.pivot.rotation.x = -1.45; n.legL.knee.rotation.x = 1.3; n.legR.knee.rotation.x = 1.3;
-        n.armR.pivot.rotation.set(-1.25, 0, 0.32); n.armL.pivot.rotation.set(-1.25, 0, -0.32);
+        n.root.rotation.y = -1.05; this.sitIn(n, this.seatG);
+        n.armR.pivot.rotation.set(-1.2, 0, 0.28); n.armL.pivot.rotation.set(-1.2, 0, -0.28); if (n.armR.elbow) { n.armR.elbow.rotation.set(-0.35, 0, 0); n.armL.elbow.rotation.set(-0.35, 0, 0); }
         n.head.rotation.x = 0.18 + Math.sin(this.t * 1.1) * 0.04; n.head.rotation.y = Math.sin(this.t * 0.7) * 0.25;
         if (this.wheel) this.wheel.rotation.z = Math.sin(this.t * 0.9) * 0.15;
       } else { // standing, hand on chin
@@ -270,8 +272,7 @@ export class Talk {
     if (this.seat && this.seatG && !this.think && y) { // you're sat in the driver's seat; whoever it is talks to you through the window
       const ry = y.root.rotation.y - Math.PI / 2;
       this.seatG.position.copy(y.root.position); this.seatG.rotation.y = ry;
-      y.root.rotation.y = ry; y.root.position.y -= 0.42;
-      y.legL.pivot.rotation.x = -1.45; y.legR.pivot.rotation.x = -1.45; y.legL.knee.rotation.x = 1.3; y.legR.knee.rotation.x = 1.3;
+      y.root.rotation.y = ry; this.sitIn(y, this.seatG);
       y.armL.pivot.rotation.set(-1.25, 0, -0.32); if (this.talking !== 'you') y.armR.pivot.rotation.set(-1.25, 0, 0.32);
       y.head.rotation.y = 1.35 + (this.talking === 'you' ? Math.sin(this.t * 3.1) * 0.1 : 0);
     }
@@ -313,6 +314,14 @@ export class Talk {
     if (K === 'kiss') { y.head.rotation.x = 0.25 * e; n.head.rotation.x = 0.25 * e; y.root.rotation.x = 0.12 * e; y.armR.pivot.rotation.set(-1.2 * e, 0, 0.3); y.armL.pivot.rotation.set(-1.2 * e, 0, -0.3); }
     else if (K === 'hug') { for (const c of [y, n]) { c.armR.pivot.rotation.set(-1.4 * e, 0, -0.9 * e); c.armL.pivot.rotation.set(-1.4 * e, 0, 0.9 * e); } }
     else if (K === 'hand') { y.armR.pivot.rotation.set(-0.6 * e, 0, 0); n.armR.pivot.rotation.set(-0.6 * e, 0, 0); }
+  }
+  // sit a character properly on the seat: hips on the cushion, thighs flat, shins down to the floor
+  sitIn(c, seat) {
+    const legLen = c.legLen || 0.86, top = 0.55;
+    c.root.position.y = seat.position.y + top - legLen + 0.03;
+    c.legL.pivot.rotation.set(-Math.PI / 2, 0, 0.04); c.legR.pivot.rotation.set(-Math.PI / 2, 0, -0.04);
+    c.legL.knee.rotation.x = Math.PI / 2 - 0.1; c.legR.knee.rotation.x = Math.PI / 2 - 0.1;
+    if (c.hips) c.hips.rotation.x = 0;
   }
   render(renderer) { renderer.render(this.scene, this.cam); }
 }

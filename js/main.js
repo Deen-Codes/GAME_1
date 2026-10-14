@@ -1,26 +1,26 @@
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=92';
-import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=92';
-import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=92';
-import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=92';
-import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=92';
-import { buildPanel, renderStats } from './ui.js?v=92';
-import { Input } from './input.js?v=92';
-import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime } from './audio.js?v=92';
-import { runMinigame } from './minigames.js?v=92';
-import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk } from './peds.js?v=92';
-import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=92';
-import { findRoute } from './nav.js?v=92';
-import { COURSES, CAREERS, QUIZ } from './careers.js?v=92';
-import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=92';
-import { attachWheel } from './wheel.js?v=92';
-import { Animals } from './animals.js?v=92';
-import { Talk } from './talk.js?v=92';
-import { incomingText, classify, textOptions, textReply } from './texts.js?v=92';
-import { svg, drawIcon } from './icons.js?v=92';
-import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=92';
-import { FURN, CATALOG } from './furniture.js?v=92';
-import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=92';
+import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=94';
+import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=94';
+import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=94';
+import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=94';
+import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=94';
+import { buildPanel, renderStats } from './ui.js?v=94';
+import { Input } from './input.js?v=94';
+import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime } from './audio.js?v=94';
+import { runMinigame } from './minigames.js?v=94';
+import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk } from './peds.js?v=94';
+import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=94';
+import { findRoute } from './nav.js?v=94';
+import { COURSES, CAREERS, QUIZ } from './careers.js?v=94';
+import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=94';
+import { attachWheel } from './wheel.js?v=94';
+import { Animals } from './animals.js?v=94';
+import { Talk } from './talk.js?v=94';
+import { incomingText, classify, textOptions, textReply } from './texts.js?v=94';
+import { svg, drawIcon } from './icons.js?v=94';
+import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=94';
+import { FURN, CATALOG } from './furniture.js?v=94';
+import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=94';
 
 const $ = id => document.getElementById(id);
 let inside = null, editMode = false, held = null, pendingCar = false, homeMusic = false, phoneBadge = 0;
@@ -318,7 +318,7 @@ const subs = (() => {
   function say(who, text, o = {}) {
     if (who === 'me') who = { key: 'me', name: 'You', cfg: charCfg, pitch: 210, me: true };
     if (!who?.cfg) return;
-    const line = { who, text, expr: o.expr || 'neutral', radio: !!o.radio, pri: o.pri || 0, tag: o.tag };
+    const line = { who, text, expr: o.expr || 'neutral', radio: !!o.radio, pri: o.pri || 0, tag: o.tag, silent: !!o.silent };
     if (o.now || (cur && line.pri > cur.pri + 1)) { queue.length = 0; start(line); return; }
     if (queue.length > 2) { const lo = queue.findIndex(q => q.pri < line.pri); if (lo < 0) return; queue.splice(lo, 1); }
     queue.push(line);
@@ -336,9 +336,9 @@ const subs = (() => {
   function update(dt) {
     if (state !== 'play') { if (cur) stop(); return; }
     if (!cur) { if (queue.length) start(queue.shift()); else return; }
-    t += dt; const shown = Math.min(cur.len, Math.floor(t * 34)), talking = shown < cur.len;
+    t += dt; const shown = cur.silent ? cur.len : Math.min(cur.len, Math.floor(t * 34)), talking = !cur.silent && shown < cur.len;
     if (shown !== cur.shown) { cur.shown = shown; txtEl.textContent = cur.text.slice(0, shown); if (talking && shown % 2 === 0 && cur.text[shown - 1] !== ' ') { const A = audio(); if (A) sfx.note((cur.who.pitch || 260) * (0.9 + Math.random() * 0.25), A.currentTime, 0.045, cur.radio ? 'sawtooth' : 'square', 0.012, cur.radio ? 1400 : 2400); } }
-    if (!talking && t > cur.len / 34 + cur.hold) { stop(); return; }
+    if (!talking && t > (cur.silent ? 3.6 : cur.len / 34 + cur.hold)) { stop(); return; }
     frameT -= dt; if (frameT > 0) return; frameT = 1 / 24;
     const f = cur.fig, mouth = talking ? Math.abs(Math.sin(t * 15)) * (0.5 + 0.5 * Math.abs(Math.sin(t * 4.3))) : 0;
     setFace(f, cur.expr, mouth);
@@ -376,6 +376,8 @@ function updateChatter(dt) {
     if (up && s === 1 && !WANT.pull) subs.say(dispatchWho(), pick([`All units, reports of a disturbance. Suspect is ${suspectDesc()}.`, `Units in the area, suspect described as ${suspectDesc()}. Approach with caution.`]), { radio: true, pri: 3, expr: 'neutral' });
     else if (up && s === 2) { subs.say(dispatchWho(), `Suspect is ${ride ? 'fleeing in a ' : 'on foot, '}${suspectDesc()}. All units respond.`, { radio: true, pri: 3 }); if (chatCd('meflee', 20)) setTimeout(() => youSay(pick(['Not today.', 'Gotta go, gotta go!', 'Nope. Nope nope nope.', 'Come on, come on...']), 'shock', { pri: 2 }), 2600); }
     else if (up && s >= 3) subs.say(dispatchWho(), pick([`Shots fired! Suspect ${suspectDesc()}. Requesting backup.`, `Suspect is armed and dangerous. All available units.`, `Suspect still at large. Helicopter is en route.`]), { radio: true, pri: 4, expr: 'angry' });
+    else if (!up && s === 0 && chat.resolved) { const why = chat.resolved; chat.resolved = null; if (why === 'stop') subs.say(dispatchWho(), pick(['Traffic stop complete. Unit back on patrol.', 'Citation issued. Clear.']), { radio: true, pri: 1 }); }
+    else if (!up && s === 0 && (stats.jail || inside)) { chat.resolved = null; }
     else if (!up && s === 0) { subs.say(dispatchWho(), pick(['All units, we lost the suspect. Resume patrol.', 'Suspect lost. Stand down.']), { radio: true, pri: 2 }); if (chatCd('lost', 30)) setTimeout(() => youSay(pick(['Think I lost them.', 'Phew. That was close.', 'Too easy.']), 'happy', { pri: 2 }), 3000); }
   }
   if (WANT.pull !== chat.pull) {
@@ -1250,7 +1252,8 @@ function meleeHit(step = 0) {
 // ---------------- health
 let time = 0, clockH = 8, dayN = 1, shake = 0, saveT = 0, toastT = 0, hurtFlash = 0, timeScale = 1;
 const gameHours = () => dayN * 24 + clockH;
-function toast(msg, dur = 2.4) { const t = $('toast'); t.textContent = msg; t.classList.add('on'); toastT = dur; slotSync(); }
+function toast(msg, dur = 2.4) { const fm = typeof msg === 'string' && msg.match(/^([A-Z][\w.' ]{1,24}): "(.+?)"\s*(.*)$/); if (fm) { const w = faceFor(null, fm[1]); if (w) { subs.say(w, fm[2] + (fm[3] ? ` ${fm[3]}` : ''), { silent: true, expr: /!|love|yay|fun/i.test(fm[2]) ? 'happy' : 'neutral', pri: 2 }); return; } }
+  const t = $('toast'); t.textContent = msg; t.classList.add('on'); toastT = dur; slotSync(); }
 let noteT = 0;
 function slotNote(icon, title, sub, dur = 4, cls = '') { const n = $('note'); $('noteIco').innerHTML = svg(icon, 'sm'); $('noteT').textContent = title; $('noteS').textContent = sub || ''; n.className = 'note ' + cls; noteT = dur; slotSync(); }
 function slotSync() { $('hud').classList.toggle('slot', toastT > 0 || noteT > 0 || !$('subs').classList.contains('hidden')); }
@@ -3461,9 +3464,9 @@ async function trafficStop(v) {
   } else { spend(Math.min(money, fine)); await talk.say('Here\'s your ticket. Drive safe.'); }
   endTalk();
   if (why === 'lights') { stats.lights = 'auto'; toast('You switched your headlights back on.', 2); }
-  stats.stopCd = gameHours() + 2; clearWanted(); v.ai = 'leave';
+  stats.stopCd = gameHours() + 2; chat.resolved = 'stop'; clearWanted(); v.ai = 'leave';
 }
-function clearWanted(msg) { WANT.patrolT = 0; WANT.pull = null; ditchJumpsuit(); WANT.v = 0; WANT.stars = 0; WANT.loseT = 0; WANT.coolT = 0; P.arrestT = 0; for (const v of copCars) v.ai = 'leave'; for (const c of cops) { c.cop = 'leave'; peds.flee(c, P.x, P.z); } if (msg) toast(msg, 2.5); }
+function clearWanted(msg) { if (!msg) chat.resolved ||= 'settled'; WANT.patrolT = 0; WANT.pull = null; ditchJumpsuit(); WANT.v = 0; WANT.stars = 0; WANT.loseT = 0; WANT.coolT = 0; P.arrestT = 0; for (const v of copCars) v.ai = 'leave'; for (const c of cops) { c.cop = 'leave'; peds.flee(c, P.x, P.z); } if (msg) toast(msg, 2.5); }
 function makeCopCar(x, z, h) {
   const v = makeVehicle({ ...DEFAULT_CAR, ...CAR_PRESETS.Police }, x, z, h, false); v.ai = 'chase'; v.police = true;
   const lightM = [new THREE.MeshBasicMaterial({ color: '#ff2a3a' }), new THREE.MeshBasicMaterial({ color: '#2a6aff' })];
@@ -3863,7 +3866,7 @@ function updatePromises() {
   // "8pm, don't be late": she sends her location when it's time
   const DL = stats.dateLater; if (DL && gameHours() >= DL.at) { stats.dateLater = null; if (!date && !stats.dateMeet && stats.dates?.[DL.id]?.cfg) { const sp = randomRoadSpot(70, 220); stats.dateMeet = { id: DL.id, x: sp.x + 3.5, z: sp.z, until: gameHours() + 3 }; setWaypoint(sp.x + 3.5, sp.z, `Pick up ${nameOf(DL.id)}`); textMe(DL.id, nameOf(DL.id), 'It\'s 8! I\'m ready. Location sent 📍', false, 'pickup'); } }
 }
-function textMe(id, from, text, me = false, topic) { const T = (stats.texts ||= {}); (T[id] ||= []).push({ me, t: text, d: dayN, h: gameHours(), k: me ? undefined : topic !== undefined ? topic : classify(text) }); if (T[id].length > 40) T[id].shift(); if (!me) { phoneBadge++; notify(from, text); sfx.coin(); } }
+function textMe(id, from, text, me = false, topic) { const T = (stats.texts ||= {}); (T[id] ||= []).push({ me, t: text, d: dayN, h: gameHours(), k: me ? undefined : topic !== undefined ? topic : classify(text) }); if (T[id].length > 40) T[id].shift(); if (!me) { phoneBadge++; notify(from, text, 4.5, id); sfx.coin(); } }
 // side buttons stretch out into a pill to show what's new: the phone shows a message summary, the radio shows the song
 const peekT = {};
 function peek(id, html, dur = 4.5) {
@@ -3871,7 +3874,20 @@ function peek(id, html, dur = 4.5) {
   let pl = b.querySelector('.peek'); if (!pl) { pl = document.createElement('span'); pl.className = 'peek'; b.appendChild(pl); }
   pl.innerHTML = html; b.classList.add('open'); clearTimeout(peekT[id]); peekT[id] = setTimeout(() => b.classList.remove('open'), dur * 1000);
 }
-function notify(from, text, dur = 4.5) { slotNote('phone', from, text, dur); }
+function notify(from, text, dur = 4.5, id) { const w = faceFor(id, from); if (w) subs.say(w, text, { silent: true, tag: 'text', expr: /!|love|miss|😘|❤️|yay|best/i.test(text) ? 'happy' : /\?\?|wow|seriously|forgot|where are you|done/i.test(text) ? 'angry' : 'neutral', pri: 2 }); else slotNote('phone', from, text, dur); }
+// a face for anyone we know: your partner, dates, kids, Ray, the people in town
+function faceFor(id, name) { try { return faceFor2(id, name); } catch { return null; } }
+function faceFor2(id, name) {
+  const f = fam();
+  if (id === 'ray' || name === 'Uncle Ray') return rayWho();
+  const d = id ? stats.dates?.[id] : Object.values(stats.dates || {}).find(q => q.name === name);
+  if (f.partner && (f.partner.id === id || f.partner.name === name) && f.partner.cfg) return { key: f.partner.id, name: f.partner.name, cfg: f.partner.cfg, pitch: 330 };
+  if (d?.cfg) return { key: id || 'date:' + name, name: d.name || name, cfg: d.cfg, pitch: 320 };
+  const k = f.kids.find(q => q.id === id || q.name === name); if (k) return { key: k.id, name: k.name, cfg: kidCfg(k), pitch: 420 };
+  if (date && date.name === name) return dateWho();
+  if (buddy && buddy.name === name) return buddyWho();
+  return null;
+}
 function nameOf(id) { if (stats.dates?.[id]) return stats.dates[id].name; const k = fam().kids.find(k => k.id === id); return k ? k.name : id; }
 // called from WooHoo
 function maybePregnant(withId, tryForBaby) {
@@ -5460,7 +5476,7 @@ async function prisonRiot() {
 // ================================================================ HUD, minimap
 let MAP = null;
 const mm = $('minimap'), mctx = mm.getContext('2d');
-function ensureMap() { if (!MAP) MAP = drawMap(512); }
+function ensureMap() { if (!MAP) { MAP = drawMap(1280); mctx.imageSmoothingEnabled = true; mctx.imageSmoothingQuality = 'high'; } }
 function markerIcon(m) { return m.place.kind === 'property' && owned.has(m.place.id) ? 'key' : m.icon; }
 function drawMinimap() {
   ensureMap();
@@ -5877,7 +5893,7 @@ function saveGame() {
   store.set('bc_save', save); store.set('bc_arsenal', arsenal); store.set('bc_cars', garage);
 }
 // auto-update: bookmarks and home-screen apps can hold on to an old copy. Check version.json (never cached) and reload once if newer.
-const BUILD = 92;
+const BUILD = 94;
 function checkUpdate() {
   fetch('version.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(j => {
     if (!(j.v > BUILD)) return;
@@ -6169,4 +6185,4 @@ function frame(now) {
 }
 startGame();
 requestAnimationFrame(frame);
-window.__game = { get animals() { return animals; }, crime, WANT, copCars, cops, pitFight, busted, fam, famNewDay, makeOfficial, talkFamily, get dayN() { return dayN; }, set dayN(v) { dayN = v; }, scene: G.scene, cam: G.cam, snap: () => updateCamera(0, true), get state() { return state; }, P, input, get ride() { return ride; }, get myCar() { return myCar; }, get traffic() { return traffic; }, peds, setTime: h => { clockH = h; }, openCustom, enterVehicle, exitCar, get money() { return money; }, set money(v) { money = v; }, openPlace, PLACES, PROPERTIES, runMinigame, get action() { return action; }, arsenal, selectWeapon, openPhone, setWaypoint, get route() { return route; }, talkToPed, talk, doAction, stats, get inside() { return inside; }, enterInterior, exitInterior, get customers() { return customers; }, newCustomer, startEdit, endEdit, get job() { return job; }, gainXP, storage, doSpot, useFurn, phoneGo, talkVenue, talkJob, openPlace, talkCustomer, startJob, openCarShop, damageCar, repairCar, addFire, get fires() { return fires; }, get ems() { return ems; }, get vehicles() { return vehicles; }, makeVehicle, makeCop, prisonFight, life, startDealMeet, get lifeAct() { return lifeAct; }, get train() { return train; }, get trainRide() { return trainRide; }, boardTrain, eventReset: () => { eventOpen = false; }, bodyCheck, attendClass, talkAdmissions, edu, startDance, get dance() { return dance; }, radioSet: i => { radioSet(i); radioOn(true); }, get zoom() { return zoom; }, set zoom(z) { zoom = z; }, DEFAULT_CAR, setState: x => setState(x), get jail() { return stats.jail; }, witness, personOf, dealHeat, trafficStop, carNear, carTop, startDate, talkDate, get date() { return date; }, get carAnim() { return carAnim; }, lifeApi, startShower, bizNewDay, subs, forceWanted, get buddy() { return buddy; }, startBuddy, camBlocked, get camYaw() { return camYaw; }, ev: { evChase, evMug, evRobbery, evGang, evBusk, evCrash, evFire, evMarket, evParade, evProtest, streetEvents } };
+window.__game = { get animals() { return animals; }, crime, WANT, copCars, cops, pitFight, busted, fam, famNewDay, makeOfficial, talkFamily, get dayN() { return dayN; }, set dayN(v) { dayN = v; }, scene: G.scene, cam: G.cam, snap: () => updateCamera(0, true), get state() { return state; }, P, input, get ride() { return ride; }, get myCar() { return myCar; }, get traffic() { return traffic; }, peds, setTime: h => { clockH = h; }, openCustom, enterVehicle, exitCar, get money() { return money; }, set money(v) { money = v; }, openPlace, PLACES, PROPERTIES, runMinigame, get action() { return action; }, arsenal, selectWeapon, openPhone, setWaypoint, get route() { return route; }, talkToPed, talk, doAction, stats, get inside() { return inside; }, enterInterior, exitInterior, get customers() { return customers; }, newCustomer, startEdit, endEdit, get job() { return job; }, gainXP, storage, doSpot, useFurn, phoneGo, talkVenue, talkJob, openPlace, talkCustomer, startJob, openCarShop, damageCar, repairCar, addFire, get fires() { return fires; }, get ems() { return ems; }, get vehicles() { return vehicles; }, makeVehicle, makeCop, prisonFight, life, startDealMeet, get lifeAct() { return lifeAct; }, get train() { return train; }, get trainRide() { return trainRide; }, boardTrain, eventReset: () => { eventOpen = false; }, bodyCheck, attendClass, talkAdmissions, edu, startDance, get dance() { return dance; }, radioSet: i => { radioSet(i); radioOn(true); }, get zoom() { return zoom; }, set zoom(z) { zoom = z; }, DEFAULT_CAR, setState: x => setState(x), get jail() { return stats.jail; }, witness, personOf, dealHeat, trafficStop, carNear, carTop, startDate, talkDate, get date() { return date; }, get carAnim() { return carAnim; }, lifeApi, startShower, bizNewDay, subs, forceWanted, get buddy() { return buddy; }, startBuddy, textMe, toast, camBlocked, get camYaw() { return camYaw; }, ev: { evChase, evMug, evRobbery, evGang, evBusk, evCrash, evFire, evMarket, evParade, evProtest, streetEvents } };
