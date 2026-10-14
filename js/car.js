@@ -1,7 +1,7 @@
 // Modular car builder. Car faces +Z, sits on y=0, origin at the centre of the wheelbase.
 import * as THREE from '../lib/three.module.min.js';
-import { BASIC } from './character.js?v=199';
-import { patternTexture } from './gun.js?v=199';
+import { BASIC } from './character.js?v=200';
+import { patternTexture } from './gun.js?v=200';
 
 export const BODIES = {
   hatch:  { label: 'Hatchback', L: 3.8, W: 1.75, bh: 0.55, cl: 2.0, ch: 0.62, co: -0.4,  wr: 0.34, mass: 1.0 },
@@ -260,6 +260,8 @@ function buildTractor(c, B) {
   bx(0.22, 0.14, 0.06, headM, -0.3, 1.25, 1.77); bx(0.22, 0.14, 0.06, headM, 0.3, 1.25, 1.77);
   bx(0.14, 0.1, 0.05, tailM, -0.6, 1.05, -1.4); bx(0.14, 0.1, 0.05, tailM, 0.6, 1.05, -1.4); bx(0.1, 0.08, 0.05, revM, 0, 1.05, -1.4);
   bx(1.1, 0.1, 0.3, steel, 0, 0.6, -1.6);                 // hitch
+  { const sw = new THREE.Mesh(new THREE.TorusGeometry(0.2, 0.03, 8, 22), dark); sw.position.set(0, 1.78, -0.42); sw.rotation.x = 0.7; grp.add(sw); // steering wheel
+    const col = new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.035, 0.5, 8), dark); col.rotation.x = Math.PI / 2; col.position.z = 0.25; sw.add(col); } // column down into the dash
   for (const [fz, r, w] of [[1, 0.42, 0.3], [-1, 0.78, 0.5]]) for (const sx of [-1, 1]) {
     const pivot = new THREE.Group(); pivot.position.set(sx * (fz > 0 ? 0.72 : 0.92), r, fz > 0 ? 1.15 : -0.85); grp.add(pivot);
     const spin = new THREE.Group(); pivot.add(spin);
@@ -270,7 +272,7 @@ function buildTractor(c, B) {
     if (fz < 0) bx(0.6, 0.06, 1.0, body, sx * 0.92, r * 2 + 0.05, -0.85); // mudguards
   }
   grp.traverse(m => { if (m.isMesh) m.castShadow = true; });
-  return { group: grp, wheels, headM, tailM, revM, glow: null, length: L, width: W, height: 2.9, wr: 0.6 };
+  return { group: grp, wheels, headM, tailM, revM, glow: null, length: L, width: W, height: 2.9, wr: 0.6, tractor: true, seat: { x: 0, y: 1.32, z: -0.82 } };
 }
 function buildTwo(c, B) {
   const grp = new THREE.Group(), M = (col, o = {}) => new THREE.MeshStandardMaterial({ color: col, roughness: 0.5, ...o });
@@ -397,6 +399,7 @@ function buildCarRaw(cfg) {
       const hd = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.05, 0.18), chrome); hd.position.set(sx * 0.03, bh * 0.22, -dl + 0.22); pv.add(hd);
       grp.add(pv); doors[sx] = pv;
     }
+    doors.len = dl; // (front hinge at the pivot, door runs back from it)
     if (c.decal === 'twotone') bx(W + 0.02, bh * 0.45, L + 0.02, accM, 0, clr + bh * 0.22, 0);
     if (c.decal === 'side') for (const sx of [-1, 1]) bx(0.02, 0.1, L * 0.86, accM, sx * (W / 2 + 0.005), by + 0.05, 0);
     if (c.decal === 'flames') for (const sx of [-1, 1]) for (let i = 0; i < 5; i++) { const len = L * (0.22 + (i % 2) * 0.12 + (i === 2 ? 0.12 : 0)); bx(0.02, 0.07, len, i % 2 ? M2('#ffd23f') : accM, sx * (W / 2 + 0.045), by - 0.1 + i * 0.07, L / 2 - len / 2 - 0.05); }
@@ -574,7 +577,7 @@ function buildCarRaw(cfg) {
   }
   grp.traverse(m => { if (m.isMesh) m.castShadow = m !== glow; }); // (the glow itself casts no shadow)
   const heads = { '-1': [], '1': [] }; grp.traverse(m => { if (m.material === headM) heads[m.position.x < 0 ? '-1' : '1'].push(m); }); // each side's headlamp, so one can get smashed
-  return { group: grp, wheels, headM, tailM, revM, glow, length: L, width: W, height: top + B.ch, wr, doors, heads, top, co: B.co, cl: B.cl, topless: !!B.topless, body: c.body, seat };
+  return { group: grp, wheels, headM, tailM, revM, glow, length: L, width: W, height: top + B.ch, wr, doors, heads, top, co: B.co, cl: B.cl, topless: !!B.topless, body: c.body, seat, drv: seat || { x: W * 0.22, y: top - 0.12, z: B.co - 0.08 } };
 }
 
 let _glowTex = null;
