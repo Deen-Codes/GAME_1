@@ -1,30 +1,30 @@
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=173';
-import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun, partEffects, partPerk } from './gun.js?v=173';
-import { buildCar, computeCarStats, carStatBars, carClass, carPartEffects, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=173';
-import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, STAIRS, unblockPillars, canyonAt, canyonNear, PEAK, SKYWAYS, SKY_Y, skyAt, skyY, rampSeg, windowShader, makeOceanMaterial, WATER_U, WIND_U, METRO, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=173';
-import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=173';
-import { buildPanel, renderStats } from './ui.js?v=173';
-import { Input } from './input.js?v=173';
-import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime, animalCall } from './audio.js?v=173';
-import { runMinigame } from './minigames.js?v=173';
-import { CUT, initCutGames } from './cutgames.js?v=173';
-import { initOnline, updateOnline, goOnline, goOffline, NET, onNet, sendMagicLink, verifyCode, signOut, signedIn } from './online.js?v=173';
-import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk, setReservedNames, seededLook } from './peds.js?v=173';
-import { citizens, whereNow } from './citizens.js?v=173';
-import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=173';
-import { findRoute } from './nav.js?v=173';
-import { COURSES, CAREERS, QUIZ } from './careers.js?v=173';
-import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=173';
-import { attachWheel } from './wheel.js?v=173';
-import { GROUND_U } from './groundtex.js?v=173';
-import { Animals, makeAnimalMesh } from './animals.js?v=173';
-import { Talk } from './talk.js?v=173';
-import { incomingText, classify, textOptions, textReply } from './texts.js?v=173';
-import { svg, drawIcon, ICONS as ICON_SET } from './icons.js?v=173';
-import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=173';
-import { FURN, CATALOG } from './furniture.js?v=173';
-import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=173';
+import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=174';
+import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun, partEffects, partPerk } from './gun.js?v=174';
+import { buildCar, computeCarStats, carStatBars, carClass, carPartEffects, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=174';
+import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, STAIRS, unblockPillars, canyonAt, canyonNear, PEAK, SKYWAYS, SKY_Y, skyAt, skyY, rampSeg, windowShader, makeOceanMaterial, WATER_U, WIND_U, METRO, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=174';
+import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=174';
+import { buildPanel, renderStats } from './ui.js?v=174';
+import { Input } from './input.js?v=174';
+import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime, animalCall } from './audio.js?v=174';
+import { runMinigame } from './minigames.js?v=174';
+import { CUT, initCutGames } from './cutgames.js?v=174';
+import { initOnline, updateOnline, goOnline, goOffline, NET, onNet, sendMagicLink, verifyCode, signOut, signedIn } from './online.js?v=174';
+import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk, setReservedNames, seededLook } from './peds.js?v=174';
+import { citizens, whereNow } from './citizens.js?v=174';
+import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=174';
+import { findRoute } from './nav.js?v=174';
+import { COURSES, CAREERS, QUIZ } from './careers.js?v=174';
+import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=174';
+import { attachWheel } from './wheel.js?v=174';
+import { GROUND_U } from './groundtex.js?v=174';
+import { Animals, makeAnimalMesh } from './animals.js?v=174';
+import { Talk } from './talk.js?v=174';
+import { incomingText, classify, textOptions, textReply } from './texts.js?v=174';
+import { svg, drawIcon, ICONS as ICON_SET } from './icons.js?v=174';
+import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=174';
+import { FURN, CATALOG } from './furniture.js?v=174';
+import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=174';
 
 const $ = id => document.getElementById(id);
 let inside = null, editMode = false, held = null, pendingCar = false, homeMusic = false, phoneBadge = 0;
@@ -3461,12 +3461,13 @@ function updateLifeAct(dt) {
     if (!peds.list.includes(p) || inside || d > 70 || A2.t > 30 || (A2.busyT || 0) > 6) { endLifePed(A2); lifeAct = null; if (A2.ev.follow) life().queue.push({ id: A2.ev.id, at: gameHours() + 2, data: A2.data }); return; }
     if (ride) { p.state = 'idle'; return; } // they wait while you're in a car
     p.state = 'chase'; p.tx = P.x; p.tz = P.z;
-    if (d < 1.9 && !lifeBusy()) { peds.talk(p, P.x, P.z); lifeAct = null; runEventTalk(A2.ev, A2.data, { cfg: A2.cfg, name: A2.who.name || 'Stranger', tag: A2.who.tag || 'Stranger' }, () => endLifePed(A2)); }
+    if (d < 1.9 && !lifeBusy()) { peds.talk(p, P.x, P.z); lifeAct = null; runEventTalk(A2.ev, A2.data, { cfg: A2.cfg, name: A2.who.name || 'Stranger', tag: A2.who.tag || 'Stranger', p: A2.p }, () => endLifePed(A2)); }
   } else if (A2.kind === 'object') {
     A2.g.rotation.y += dt * 0.8;
     if (A2.t > 150 || inside || Math.hypot(A2.x - P.x, A2.z - P.z) > 90) { dyn.remove(A2.g); lifeAct = null; }
   } else if (A2.kind === 'pickup') updatePickup(dt, A2);
   else if (A2.kind === 'meet') updateMeet(dt, A2);
+  else if (A2.kind === 'brawl') updateTalkFight(dt, A2);
   else if (A2.kind === 'ambush') updateAmbush(dt, A2);
 }
 function endLifePed(A2) { const p = A2.p; if (!p) return; peds.release?.(p); p.state = 'flee'; p.fx = Math.sin(p.face + Math.PI); p.fz = Math.cos(p.face + Math.PI); p.t = 3; setTimeout(() => { const i = peds.list.indexOf(p); if (i >= 0) { peds.list.splice(i, 1); dyn.remove(p.root); } }, 6000); }
@@ -3481,9 +3482,32 @@ async function runEventTalk(ev, data, spk, after) {
   const ch = ev.choices(api, data), k = await talk.choose(ch.map(c => I('chat', c.label)));
   await talk.say(ch[k].label, 'you');
   const res = ch[k].go(api, data);
-  logStory(spk.name || 'You', ch[k].label, res, ev.id);
-  if (res) await talk.say(res);
+  logStory(spk.name || 'You', ch[k].label, typeof res === 'string' ? res : '(it turned into a fight)', ev.id);
+  if (res && typeof res === 'object' && res.fight && spk.p && peds.list.includes(spk.p)) { if (res.say) await talk.say(res.say); endTalk(); eventOpen = false; startTalkFight(spk, res, after); return; } // words weren't enough: it kicks off for real
+  if (res && typeof res === 'object' && res.fight) { const R = Math.random() < 0.5 + lvl('strength') * 0.05 ? res.win : res.lose; for (const l of [].concat(R.text)) await talk.say(l); R.go?.(api); } // (no one standing there to fight: settle it quickly)
+  if (typeof res === 'string' && res) await talk.say(res);
   endTalk(); eventOpen = false; after?.(); saveGame();
+}
+// ---------------- a conversation that turns into a real fight, then picks back up depending on who won
+function startTalkFight(spk, res, after) {
+  const p = spk.p, F = res.fight; peds.release?.(p);
+  Object.assign(p, { angry: true, angryT: 999, brawler: true, power: F.power || 7, hp: F.hp || 6, state: 'chase', tx: P.x, tz: P.z, selfDefense: true });
+  lifeAct = { kind: 'brawl', p, spk, res, after, hp0: P.hp, t: 0 }; toast(res.fightToast || 'Fight!', 1.6); shake = Math.max(shake, 0.2);
+}
+function updateTalkFight(dt, B) {
+  const p = B.p, d = Math.hypot(p.x - P.x, p.z - P.z); B.t += dt;
+  const won = p.state === 'down' || p.hp <= 0, lost = P.dead || P.hp < Math.max(18, B.hp0 * 0.4);
+  if (!won && !lost) { if (d > 45 || B.t > 90 || inside) { p.angry = false; lifeAct = null; B.after?.(); toast('You got away from the fight.', 2); } return; }
+  lifeAct = null; p.angry = false; p.angryT = 0; p.state = won ? p.state : 'idle';
+  setTimeout(async () => { if (P.dead) { B.after?.(); return; } // back to talking: he's on the floor, or you are
+    const R = won ? B.res.win : B.res.lose; eventOpen = true;
+    beginTalk(B.spk.cfg, B.spk.name, won ? 'Beaten' : 'Gloating', 160 + Math.random() * 100, null);
+    for (const l of [].concat(R.text)) await talk.say(l);
+    R.go?.(lifeApi());
+    if (R.choices) { const ch = R.choices(lifeApi()), k = await talk.choose(ch.map(c => I('chat', c.label))); await talk.say(ch[k].label, 'you'); const r2 = ch[k].go(lifeApi());
+      if (r2 && typeof r2 === 'object' && r2.fight && peds.list.includes(p)) { if (r2.say) await talk.say(r2.say); endTalk(); eventOpen = false; if (!won) startTalkFight(B.spk, r2, B.after); else { B.after?.(); } return; }
+      if (typeof r2 === 'string' && r2) await talk.say(r2); }
+    endTalk(); eventOpen = false; B.after?.(); saveGame(); }, won ? 1400 : 700);
 }
 // ---------------- deal meets: a buyer calls, you pull up and do it for real (it might be a setup)
 function startDealMeet() {
@@ -5518,7 +5542,7 @@ async function talkToPed(p) {
   if (p.vendor) { const E = streetEvents.find(E => E.kind === 'market' && E.vendors.includes(p)); if (E) return talkStall(E, p); }
   if (p.protest && !p.angry) { const E = streetEvents.find(E => E.kind === 'protest' && E.crowd.includes(p)); if (E) return talkProtest(E, p); }
   if (p.parade) { peds.talk(p, P.x, P.z); feed({ mood: 3 }); toast(pick(['"Happy parade day!" They high-five you without breaking step.', '"Come on, dance with us!"', 'They hand you a little flag. Nice.']), 2.4); setTimeout(() => { if (p.state === 'talk') p.state = 'march'; }, 1500); return; }
-  if (lifeAct?.kind === 'approach' && lifeAct.p === p) { const A2 = lifeAct; lifeAct = null; peds.talk(p, P.x, P.z); return runEventTalk(A2.ev, A2.data, { cfg: A2.cfg, name: A2.who.name || 'Stranger', tag: A2.who.tag || 'Stranger' }, () => endLifePed(A2)); } // the person walking up to you
+  if (lifeAct?.kind === 'approach' && lifeAct.p === p) { const A2 = lifeAct; lifeAct = null; peds.talk(p, P.x, P.z); return runEventTalk(A2.ev, A2.data, { cfg: A2.cfg, name: A2.who.name || 'Stranger', tag: A2.who.tag || 'Stranger', p: A2.p }, () => endLifePed(A2)); } // the person walking up to you
   if (p.gang && !p.angry) return talkGang(p);
   if (p.guard) return talkGuard(p);
   if (p.angry) { toast(`${p.name || 'They'} want their car back!`); return; }
@@ -7048,7 +7072,7 @@ function saveGame() {
   store.set('bc_save', save); store.set('bc_arsenal', arsenal); store.set('bc_cars', garage);
 }
 // auto-update: bookmarks and home-screen apps can hold on to an old copy. Check version.json (never cached) and reload once if newer.
-const BUILD = 173;
+const BUILD = 174;
 function checkUpdate() {
   fetch('version.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(j => {
     if (!(j.v > BUILD)) return;

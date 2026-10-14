@@ -311,7 +311,11 @@ export const EVENTS = [
     text: () => ['Oi. What you looking at?', 'You looking at my girl? Eh? You wanna go?'],
     choices: a => [
       { label: 'Talk him down', go: () => { if (roll(0.4 + a.lvl('charm') * 0.07)) { a.lvlUp('charm', 25); return '...Yeah. Sorry mate. Long night. *He hugs you. A bit too long.*'; } a.hp(-20); return 'Wrong answer. *He catches you with a lucky swing.*'; } },
-      { label: 'Square up', go: () => { if (roll(0.35 + a.lvl('strength') * 0.07)) { a.lvlUp('strength', 35); a.mood(6); return '*One punch. He sits down on the kerb and rethinks his life.*'; } a.hp(-35); a.mood(-8); return '*He was a boxer. Of course he was.*'; } },
+      { label: 'Square up', go: () => ({ say: 'Come on then! COME ON!', fightToast: 'Fight! Knock him down.', fight: { hp: 5 + Math.floor(Math.random() * 3), power: 6 },
+        win: { text: ['*From the floor* Alright! Alright. You win. Stay down, me.', 'Good punch, that. Proper good punch. No hard feelings, yeah?'], go: () => { a.lvlUp('strength', 35); a.mood(6); },
+          choices: () => [{ label: 'No hard feelings', go: () => { a.karma(2); return '*He shakes your hand from the floor.* You\'re alright, you.'; } }, { label: 'Take his wallet', go: () => { a.give(20 + Math.floor(Math.random() * 60)); a.karma(-6); a.crime(1); return '*You lift his wallet. He doesn\'t even notice.*'; } }] },
+        lose: { text: ['HA! Who\'s looking now, eh? WHO\'S LOOKING NOW?', '*He spits on the pavement next to you.* Go home.'], go: () => a.mood(-8),
+          choices: () => [{ label: 'Rematch. Now.', go: () => ({ say: 'Oh you want MORE? Come on then!', fightToast: 'Round two!', fight: { hp: 3, power: 6 } }) }, { label: 'Fair enough', go: () => 'Yeah. Fair enough. *He wanders off, singing.*' }] } }) },
       { label: 'Walk away', go: () => { a.mood(-2); return 'Yeah, walk away! WALK AWAY! *He yells at a lamppost.*'; } },
     ] },
   { id: 'lost_dog', via: 'approach', w: 2, who: () => ({ role: 'guest', seed: 6262, name: 'Upset owner', tag: 'Lost her dog', fem: true }),
