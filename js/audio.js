@@ -45,6 +45,7 @@ export const sfx = {
   thunder(d = 1) { if (!audio()) return; const t = A.currentTime + d; const s = A.createBufferSource(); s.buffer = NB || (NB = noiseBuf()); const f = A.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = 180; const g = A.createGain(); g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.5, t + 0.08); g.gain.exponentialRampToValueAtTime(0.18, t + 0.8); g.gain.exponentialRampToValueAtTime(0.0008, t + 3.2); s.connect(f); f.connect(g); g.connect(out()); s.start(t); s.stop(t + 3.3); },
   boom() { if (!audio()) return; burst(1.1, 500, 'lowpass', 0.6); tone(70, 0.8, 'sine', 0.35, 0, 30); burst(0.3, 3000, 'highpass', 0.12); },
   whoosh() { if (!audio()) return; burst(0.18, 900, 'bandpass', 0.12, 1.5); },
+  screech(g = 0.06) { if (!audio()) return; burst(0.35, 2600, 'bandpass', g, 9); tone(1900 + Math.random() * 300, 0.3, 'sawtooth', g * 0.18, 0, 1500); },
   punch() { if (!audio()) return; tone(120, 0.12, 'sine', 0.25, 0, 50); burst(0.06, 1500, 'lowpass', 0.2); },
   launch() { if (!audio()) return; burst(0.6, 1200, 'bandpass', 0.25, 0.6); tone(200, 0.4, 'sawtooth', 0.04, 0, 80); },
   equip() { if (!audio()) return; tone(1800, 0.03, 'square', 0.025); tone(900, 0.05, 'square', 0.025, 0.04); },

@@ -1,4 +1,4 @@
-// Bay City College courses and the careers they unlock (BitLife-style education → job ladder).
+// Bay City College courses and the careers they unlock (education → job ladder).
 // Each class is a short quiz; pass enough classes to graduate. Careers pay per shift and promote with performance.
 
 export const COURSES = {

@@ -745,3 +745,40 @@ body.armory .drag-hint { bottom: calc(60dvh + 6px); }
 #a2hs .ish { width: 15px; height: 15px; vertical-align: -3px; fill: none; stroke: #4aa3ff; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
 #a2hs .pill { flex: none; }
 #a2hs .pill.hot { background: #ff8a2a; border-color: #ff8a2a; color: #1a1208; }
+/* area name sits just under the phone-map, top right (clear of the thumbstick) */
+#zoneTxt { left: auto !important; bottom: auto !important; right: calc(8px + var(--sar)); top: calc(6px + var(--sat) + 139px + 6px); max-width: 140px; text-align: center; align-self: auto; font-size: 11.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+body.righty #zoneTxt { right: calc(8px + var(--sar)); }
+/* ---- phone home: swipeable pages, dots, dock, wiggle mode */
+#phApp.home { overflow: hidden; padding: 0; touch-action: none; }
+.ph-home2 { position: relative; height: 100%; display: flex; flex-direction: column; user-select: none; -webkit-user-select: none; }
+.ph-pages { flex: 1; overflow: hidden; position: relative; }
+.ph-track { display: flex; height: 100%; transition: transform .25s cubic-bezier(.2,.8,.3,1); }
+.ph-page { flex: 0 0 100%; padding: 6px 16px 0; box-sizing: border-box; text-align: center; }
+.ph-page .ph-grid { gap: 14px 6px; }
+.ph-dots { height: 22px; display: flex; justify-content: center; align-items: center; gap: 7px; }
+.ph-dots i { width: 7px; height: 7px; border-radius: 50%; background: rgba(255,255,255,.4); }
+.ph-dots i.on { background: #fff; }
+.ph-dock { margin: 0 10px 22px; padding: 10px 6px; border-radius: 28px; background: rgba(255,255,255,.22); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.ph-dock .ph-icon span { display: none; }
+.ph-done { position: absolute; top: 2px; right: 14px; z-index: 5; padding: 5px 14px; border-radius: 999px; background: rgba(255,255,255,.9); color: #111; font-weight: 800; font-size: 13px; }
+.jiggle .ph-icon i { animation: wiggle .3s infinite alternate ease-in-out; }
+.jiggle .ph-icon:nth-child(2n) i { animation-delay: -.15s; animation-direction: alternate-reverse; }
+@keyframes wiggle { from { transform: rotate(-2.2deg); } to { transform: rotate(2.2deg); } }
+.ph-del { position: absolute; top: -6px; left: 2px; width: 22px; height: 22px; border-radius: 50%; background: rgba(60,60,70,.92); color: #fff; font-size: 17px; line-height: 20px; font-weight: 900; z-index: 2; box-shadow: 0 1px 4px rgba(0,0,0,.4); }
+.ph-ghost { position: fixed !important; z-index: 9999; pointer-events: none; transform: scale(1.15); opacity: .95; display: flex; }
+.ph-ghost i { animation: none !important; box-shadow: 0 10px 24px rgba(0,0,0,.45) !important; }
+.ph-hole { opacity: .2; }
+/* App Store, Weather, News */
+.store-row { align-items: center; }
+.st-app { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.st-app i { flex: none; width: 44px; height: 44px; border-radius: 11px; display: grid; place-items: center; font-style: normal; }
+.st-app span { display: flex; flex-direction: column; min-width: 0; } .st-app small { opacity: .7; font-size: 11px; }
+.ph-mini.get { background: rgba(56,176,255,.25); color: #8fd0ff; min-width: 60px; }
+.ph-mini.loading { width: 26px; min-width: 26px; height: 26px; padding: 0; border-radius: 50%; border: 3px solid rgba(143,208,255,.3); border-top-color: #8fd0ff; animation: spin .8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.wx-now { display: flex; align-items: center; gap: 12px; margin: 10px 0 14px; } .wx-now .ic.big { width: 56px; height: 56px; }
+.wx-t { font-size: 46px; font-weight: 900; } .wx-now small { display: block; opacity: .75; font-size: 12px; }
+.wx-hours { display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px; background: rgba(255,255,255,.08); border-radius: 14px; padding: 10px 4px; text-align: center; }
+.wx-h { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 12px; }
+.ph-row.news span { white-space: normal; }
+.ph-row.news { align-items: flex-start; text-align: left; } .ph-row.news span, .ph-row.news small { text-align: left; }
