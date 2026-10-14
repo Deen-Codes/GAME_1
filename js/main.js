@@ -1,26 +1,26 @@
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=124';
-import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun, partEffects, partPerk } from './gun.js?v=124';
-import { buildCar, computeCarStats, carStatBars, carClass, carPartEffects, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=124';
-import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=124';
-import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=124';
-import { buildPanel, renderStats } from './ui.js?v=124';
-import { Input } from './input.js?v=124';
-import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime, animalCall } from './audio.js?v=124';
-import { runMinigame } from './minigames.js?v=124';
-import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk, setReservedNames } from './peds.js?v=124';
-import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=124';
-import { findRoute } from './nav.js?v=124';
-import { COURSES, CAREERS, QUIZ } from './careers.js?v=124';
-import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=124';
-import { attachWheel } from './wheel.js?v=124';
-import { Animals } from './animals.js?v=124';
-import { Talk } from './talk.js?v=124';
-import { incomingText, classify, textOptions, textReply } from './texts.js?v=124';
-import { svg, drawIcon } from './icons.js?v=124';
-import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=124';
-import { FURN, CATALOG } from './furniture.js?v=124';
-import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=124';
+import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=125';
+import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun, partEffects, partPerk } from './gun.js?v=125';
+import { buildCar, computeCarStats, carStatBars, carClass, carPartEffects, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=125';
+import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=125';
+import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=125';
+import { buildPanel, renderStats } from './ui.js?v=125';
+import { Input } from './input.js?v=125';
+import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime, animalCall } from './audio.js?v=125';
+import { runMinigame } from './minigames.js?v=125';
+import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk, setReservedNames } from './peds.js?v=125';
+import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=125';
+import { findRoute } from './nav.js?v=125';
+import { COURSES, CAREERS, QUIZ } from './careers.js?v=125';
+import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=125';
+import { attachWheel } from './wheel.js?v=125';
+import { Animals } from './animals.js?v=125';
+import { Talk } from './talk.js?v=125';
+import { incomingText, classify, textOptions, textReply } from './texts.js?v=125';
+import { svg, drawIcon } from './icons.js?v=125';
+import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=125';
+import { FURN, CATALOG } from './furniture.js?v=125';
+import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=125';
 
 const $ = id => document.getElementById(id);
 let inside = null, editMode = false, held = null, pendingCar = false, homeMusic = false, phoneBadge = 0;
@@ -3513,6 +3513,8 @@ function crime(amt, x = P.x, z = P.z) {
   else if (WANT.coolT <= 0 && heatStars() > before) WANT.stars = before + 1;
   if (WANT.stars > before) { WANT.coolT = 7; if (!before) { WANT.seen = copSaw; WANT.spawnT = copSaw ? 1.5 : RESPONSE[WANT.stars]; if (!copSaw) setTimeout(() => toast('Someone called it in. Get out of the red circle!', 2.5), 2300); } }
   if (WANT.stars > before) { toast(WANT.stars === 1 ? 'The police are on to you!' : `Wanted level ${WANT.stars}!`, 2); WANT.flash = 1.2; navigator.vibrate?.([20, 40, 20]); }
+  // your mate from the docks (the friend you lent money to) calls in a fake tip and pulls the heat off you, once
+  const fl = life().flags; if (WANT.stars >= 3 && fl.docks_friend && !WANT.tipT) { const nm = fl.docks_friend; WANT.tipT = 1; setTimeout(() => { WANT.tipT = 0; if (WANT.stars < 3) return; delete fl.docks_friend; WANT.stars = 1; WANT.v = STAR_AT[1] + 0.5; WANT.coolT = 7; for (const v of copCars) if (Math.random() < 0.6) v.ai = 'leave'; const who = faceFor(null, nm); if (who) subs.say(who, pick(['Got you. I just called in a fake robbery across town. Half of them are gone. GO.', 'Told you I had your back. Tip\'s in. Move!']), { expr: 'happy', pri: 4, now: true, tag: 'calling' }); }, 2500); }
 }
 // drug deals: a cop who can see the deal calls it in; otherwise there's a small chance someone snitches later
 function dealHeat(x, z, value) {
@@ -6355,7 +6357,7 @@ function saveGame() {
   store.set('bc_save', save); store.set('bc_arsenal', arsenal); store.set('bc_cars', garage);
 }
 // auto-update: bookmarks and home-screen apps can hold on to an old copy. Check version.json (never cached) and reload once if newer.
-const BUILD = 124;
+const BUILD = 125;
 function checkUpdate() {
   fetch('version.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(j => {
     if (!(j.v > BUILD)) return;
