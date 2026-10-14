@@ -586,3 +586,6 @@ body.phone-out #mmWrap { opacity: 0; transition: opacity .1s; }
 #mmNav { flex-direction: row; justify-content: flex-end; align-items: center; height: 30px; padding: 0 8px 6px 48px; }
 #mmWrap:has(#mmSpeed.hidden) #mmNav { justify-content: center; padding-left: 8px; align-items: center; }
 #mmNav b { white-space: nowrap; font-size: 15px; font-variant-numeric: tabular-nums; line-height: 1; }
+
+#pad #wpnBtn { position: absolute; right: calc(12px + var(--sar)); left: auto; top: 22px; bottom: auto; z-index: 3; }
+#pad.righty #wpnBtn { right: auto; left: calc(12px + var(--sal)); }

@@ -1,26 +1,26 @@
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=112';
-import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=112';
-import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=112';
-import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=112';
-import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=112';
-import { buildPanel, renderStats } from './ui.js?v=112';
-import { Input } from './input.js?v=112';
-import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime } from './audio.js?v=112';
-import { runMinigame } from './minigames.js?v=112';
-import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk } from './peds.js?v=112';
-import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=112';
-import { findRoute } from './nav.js?v=112';
-import { COURSES, CAREERS, QUIZ } from './careers.js?v=112';
-import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=112';
-import { attachWheel } from './wheel.js?v=112';
-import { Animals } from './animals.js?v=112';
-import { Talk } from './talk.js?v=112';
-import { incomingText, classify, textOptions, textReply } from './texts.js?v=112';
-import { svg, drawIcon } from './icons.js?v=112';
-import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=112';
-import { FURN, CATALOG } from './furniture.js?v=112';
-import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=112';
+import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=114';
+import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=114';
+import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=114';
+import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=114';
+import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=114';
+import { buildPanel, renderStats } from './ui.js?v=114';
+import { Input } from './input.js?v=114';
+import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime } from './audio.js?v=114';
+import { runMinigame } from './minigames.js?v=114';
+import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk } from './peds.js?v=114';
+import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=114';
+import { findRoute } from './nav.js?v=114';
+import { COURSES, CAREERS, QUIZ } from './careers.js?v=114';
+import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=114';
+import { attachWheel } from './wheel.js?v=114';
+import { Animals } from './animals.js?v=114';
+import { Talk } from './talk.js?v=114';
+import { incomingText, classify, textOptions, textReply } from './texts.js?v=114';
+import { svg, drawIcon } from './icons.js?v=114';
+import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=114';
+import { FURN, CATALOG } from './furniture.js?v=114';
+import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=114';
 
 const $ = id => document.getElementById(id);
 let inside = null, editMode = false, held = null, pendingCar = false, homeMusic = false, phoneBadge = 0;
@@ -1821,6 +1821,7 @@ async function breakIntoParked(p) {
 }
 
 // ---------------- car damage: dents where you hit, smoke, fire, then it blows
+const BROKEN_LAMP = new THREE.MeshStandardMaterial({ color: '#2a2a30', roughness: 0.9 });
 function damageCar(v, amt, ix, iz) {
   if (!v || v.wrecked || amt <= 0) return;
   if (v === ride && amt > 10 && chatCd('crash', 8)) { if (date?.inCar) subs.say(dateWho(), pick(['Oh my god! Watch the road!', 'Are you CRAZY?!', 'I nearly hit my head!', 'Seriously?!']), { expr: 'shock', pri: 3, now: true }); else if (Math.random() < 0.5) youSay(pick(['Whoops.', 'My bad, my bad.', 'That\'s gonna leave a mark.', 'Who put that there?']), 'shock', { pri: 2 }); }
@@ -1837,7 +1838,10 @@ function damageCar(v, amt, ix, iz) {
       m.rotation.z += (Math.random() - 0.5) * 0.12 * k; m.rotation.x += (Math.random() - 0.5) * 0.08 * k;
       if (m.material?.color && !m.material.transparent && m.material.metalness < 0.9 && !m.material._dented) { m.material = m.material.clone(); m.material._dented = true; m.material.color.multiplyScalar(0.85); }
     }
-    if (hitL.z > v.b.length * 0.3 && v.hp < 70 && v.b.headM) v.b.headM.emissiveIntensity = 0, v.headsOut = true;
+    if (hitL.z > v.b.length * 0.3 && amt > 8 && v.b.heads) { // a knock to the front can smash a headlight (or both, head-on)
+      const sides = Math.abs(hitL.x) < 0.25 && amt > 22 ? ['-1', '1'] : [hitL.x < 0 ? '-1' : '1'];
+      for (const sd of sides) if (!(v.headBroken ||= {})[sd]) { v.headBroken[sd] = true; for (const hm of v.b.heads[sd]) hm.material = BROKEN_LAMP; spawnParticles(ix, 0.8, iz, ['#e8f4ff', '#ffffff', '#bfe0ff'], 8, 3, 0.6, 0.06); sfx.thud?.(); if (v === ride && chatCd('lamp', 20) && !date?.inCar) setTimeout(() => youSay(pick(['There goes a headlight.', 'Great. Now I\'m a pirate car.']), 'sad'), 900); }
+    }
   }
   if (v.hp <= 0) wreckCar(v);
 }
@@ -1862,7 +1866,7 @@ function repairCar(v, svc) {
   if (v.wrecked) { toast("It's a burnt-out wreck. Nothing to fix."); return; }
   if (WANT.stars && WANT.seen) { toast("Not with the cops watching! Lose them first."); sfx.fail(); return; }
   if (money < cost) { toast(`That'll be ${fmt(cost)}. You can't afford it.`); sfx.fail(); return; }
-  spend(cost); v.s.v = 0;
+  spend(cost); v.s.v = 0; if (v.headBroken && v.b.heads) { for (const sd of ['-1', '1']) for (const hm of v.b.heads[sd]) hm.material = v.b.headM; v.headBroken = null; } // new headlights
   if (WANT.stars) setTimeout(() => clearWanted('Fresh look, new plates. The cops lost you.'), 900);
   fade(() => {
     const s = { ...v.s }, wasRide = ride === v;
@@ -2025,8 +2029,8 @@ function updateVehicles(dt) {
   }
   const lv = ride || myCar, on = night > 0.25;
   for (const v of vehicles) { if (v.b.blink) setBlink(v.b.blink, v.wrecked ? 0 : v === ride ? gpsTurn(v) : 0); v.b.headM.emissiveIntensity = on && (v !== ride || lightsOn()) ? 2.2 : 0.4; v.b.tailM.emissiveIntensity = v.s.braking ? 3 : on && (v !== ride || lightsOn()) ? 1.2 : 0.4; if (v.b.revM) v.b.revM.emissiveIntensity = v.s.v < -0.4 ? 2.4 : 0; if (v.b.glow) v.b.glow.material.opacity = 0.35 + night * 0.4; }
-  for (const v of vehicles) { if (v.b.two) continue; const want = on && !v.wrecked && ((v === ride && lightsOn()) || (!!v.ai && v !== ride)); if (want && !v.beams) { v.beams = headBeams(v.b.width, v.b.length); v.b.group.add(v.beams); } if (v.beams) v.beams.visible = want; } // two cones of light, one per lamp
-  if (lv) { const s = lv.s, fx = Math.sin(s.h), fz = Math.cos(s.h); headSpot.intensity = on && ride && lightsOn() ? 30 : 0; headSpot.position.set(s.x + fx * lv.b.length * 0.5, 1.0, s.z + fz * lv.b.length * 0.5); headTarget.position.set(s.x + fx * 18, 0, s.z + fz * 18); }
+  for (const v of vehicles) { if (v.b.two) continue; const want = on && !v.wrecked && ((v === ride && lightsOn()) || (!!v.ai && v !== ride)); if (want && !v.beams) { v.beams = headBeams(v.b.width, v.b.length); v.b.group.add(v.beams); } if (v.beams) { v.beams.visible = want; if (v.headBroken) { v.beams.children[0].visible = !v.headBroken['-1']; v.beams.children[1].visible = !v.headBroken['1']; } } } // two cones of light, one per lamp
+  if (lv) { const s = lv.s, fx = Math.sin(s.h), fz = Math.cos(s.h); headSpot.intensity = on && ride && lightsOn() ? (ride.headBroken ? (ride.headBroken['-1'] && ride.headBroken['1'] ? 0 : 15) : 30) : 0; headSpot.position.set(s.x + fx * lv.b.length * 0.5, 1.0, s.z + fz * lv.b.length * 0.5); headTarget.position.set(s.x + fx * 18, 0, s.z + fz * 18); }
   engineSound(!!ride, ride ? Math.max(Math.abs(ride.s.v), (ride.launch || 0) * 30) : 0);
 }
 
@@ -5755,6 +5759,7 @@ function updateHUD(dt) {
 }
 
 // ---------------- weapon & radio wheels
+$('pad').appendChild($('wpnBtn')); // the weapon sits in with the action buttons, beside the top one
 attachWheel($('wpnBtn'), {
   items: () => SLOTS.map(s => {
     const own = arsenal.owned.includes(s.id), a = arsenal.ammo[s.id];
@@ -6113,7 +6118,7 @@ function saveGame() {
   store.set('bc_save', save); store.set('bc_arsenal', arsenal); store.set('bc_cars', garage);
 }
 // auto-update: bookmarks and home-screen apps can hold on to an old copy. Check version.json (never cached) and reload once if newer.
-const BUILD = 112;
+const BUILD = 114;
 function checkUpdate() {
   fetch('version.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(j => {
     if (!(j.v > BUILD)) return;
@@ -6425,4 +6430,4 @@ function frame(now) {
 }
 startGame();
 requestAnimationFrame(frame);
-window.__game = { get animals() { return animals; }, crime, WANT, copCars, cops, pitFight, busted, fam, famNewDay, makeOfficial, talkFamily, get dayN() { return dayN; }, set dayN(v) { dayN = v; }, scene: G.scene, cam: G.cam, snap: () => updateCamera(0, true), get state() { return state; }, P, input, get ride() { return ride; }, get myCar() { return myCar; }, get traffic() { return traffic; }, peds, setTime: h => { clockH = h; }, openCustom, enterVehicle, exitCar, get money() { return money; }, set money(v) { money = v; }, openPlace, PLACES, PROPERTIES, runMinigame, get action() { return action; }, arsenal, selectWeapon, openPhone, setWaypoint, get route() { return route; }, talkToPed, talk, doAction, stats, get inside() { return inside; }, enterInterior, exitInterior, get customers() { return customers; }, newCustomer, startEdit, endEdit, get job() { return job; }, gainXP, storage, doSpot, useFurn, phoneGo, talkVenue, talkJob, openPlace, talkCustomer, startJob, openCarShop, damageCar, repairCar, addFire, get fires() { return fires; }, get ems() { return ems; }, get vehicles() { return vehicles; }, makeVehicle, makeCop, prisonFight, life, startDealMeet, get lifeAct() { return lifeAct; }, get train() { return train; }, get trainRide() { return trainRide; }, boardTrain, eventReset: () => { eventOpen = false; }, bodyCheck, attendClass, talkAdmissions, edu, startDance, get dance() { return dance; }, radioSet: i => { radioSet(i); radioOn(true); }, get zoom() { return zoom; }, set zoom(z) { zoom = z; }, DEFAULT_CAR, setState: x => setState(x), get jail() { return stats.jail; }, witness, personOf, dealHeat, trafficStop, carNear, carTop, startDate, talkDate, get date() { return date; }, get carAnim() { return carAnim; }, lifeApi, startShower, bizNewDay, subs, forceWanted, get buddy() { return buddy; }, startBuddy, textMe, toast, bringCar, useFurn, debtorScene, get debtor() { return debtor; }, camBlocked, get camYaw() { return camYaw; }, ev: { evChase, evMug, evRobbery, evGang, evBusk, evCrash, evFire, evMarket, evParade, evProtest, streetEvents } };
+window.__game = { get animals() { return animals; }, crime, WANT, copCars, cops, pitFight, busted, fam, famNewDay, makeOfficial, talkFamily, get dayN() { return dayN; }, set dayN(v) { dayN = v; }, scene: G.scene, cam: G.cam, snap: () => updateCamera(0, true), get state() { return state; }, P, input, get ride() { return ride; }, get myCar() { return myCar; }, get traffic() { return traffic; }, peds, setTime: h => { clockH = h; }, openCustom, enterVehicle, exitCar, get money() { return money; }, set money(v) { money = v; }, openPlace, PLACES, PROPERTIES, runMinigame, get action() { return action; }, arsenal, selectWeapon, openPhone, setWaypoint, get route() { return route; }, talkToPed, talk, doAction, stats, get inside() { return inside; }, enterInterior, exitInterior, get customers() { return customers; }, newCustomer, startEdit, endEdit, get job() { return job; }, gainXP, storage, doSpot, useFurn, phoneGo, talkVenue, talkJob, openPlace, talkCustomer, startJob, openCarShop, damageCar, repairCar, addFire, get fires() { return fires; }, get ems() { return ems; }, get vehicles() { return vehicles; }, makeVehicle, makeCop, prisonFight, life, startDealMeet, get lifeAct() { return lifeAct; }, get train() { return train; }, get trainRide() { return trainRide; }, boardTrain, eventReset: () => { eventOpen = false; }, bodyCheck, attendClass, talkAdmissions, edu, startDance, get dance() { return dance; }, radioSet: i => { radioSet(i); radioOn(true); }, get zoom() { return zoom; }, set zoom(z) { zoom = z; }, DEFAULT_CAR, setState: x => setState(x), get jail() { return stats.jail; }, witness, personOf, dealHeat, trafficStop, carNear, carTop, startDate, talkDate, get date() { return date; }, get carAnim() { return carAnim; }, lifeApi, startShower, bizNewDay, subs, forceWanted, get buddy() { return buddy; }, startBuddy, textMe, toast, bringCar, useFurn, damageCar, debtorScene, get debtor() { return debtor; }, camBlocked, get camYaw() { return camYaw; }, ev: { evChase, evMug, evRobbery, evGang, evBusk, evCrash, evFire, evMarket, evParade, evProtest, streetEvents } };

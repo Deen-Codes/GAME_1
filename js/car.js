@@ -1,7 +1,7 @@
 // Modular car builder. Car faces +Z, sits on y=0, origin at the centre of the wheelbase.
 import * as THREE from '../lib/three.module.min.js';
-import { BASIC } from './character.js?v=112';
-import { patternTexture } from './gun.js?v=112';
+import { BASIC } from './character.js?v=114';
+import { patternTexture } from './gun.js?v=114';
 
 export const BODIES = {
   hatch:  { label: 'Hatchback', L: 3.8, W: 1.75, bh: 0.55, cl: 2.0, ch: 0.62, co: -0.4,  wr: 0.34, mass: 1.0 },
@@ -481,7 +481,8 @@ export function buildCar(cfg) {
     glow.rotation.x = -Math.PI / 2; glow.position.y = 0.03; grp.add(glow);
   }
   grp.traverse(m => { if (m.isMesh) m.castShadow = true; });
-  return { group: grp, wheels, headM, tailM, revM, glow, length: L, width: W, height: top + B.ch, wr, doors };
+  const heads = { '-1': [], '1': [] }; grp.traverse(m => { if (m.material === headM) heads[m.position.x < 0 ? '-1' : '1'].push(m); }); // each side's headlamp, so one can get smashed
+  return { group: grp, wheels, headM, tailM, revM, glow, length: L, width: W, height: top + B.ch, wr, doors, heads };
 }
 
 export const CAR_PRICES = { compact: 5000, hothatch: 21000, jeep: 28000, minivan: 15000, gt: 64000, tractor: 12000, scooter: 800, bike: 400, moto: 9000, hatch: 6000, sedan: 9000, wagon: 11000, coupe: 16000, van: 14000, pickup: 18000, suv: 26000, classic: 30000, lowrider: 24000, convertible: 38000, muscle: 42000, buggy: 15000, boxtruck: 22000, sports: 85000, limo: 70000, hyper: 160000 };

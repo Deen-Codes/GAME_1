@@ -293,7 +293,7 @@ export function buildCharacter(cfg) {
     const s = new THREE.Mesh(new THREE.ConeGeometry(0.05, 0.22, 4), hairM);
     s.position.set(0, headH * 0.6, (i / 4 - 0.5) * headD * 0.95); s.rotation.x = (i / 4 - 0.5) * -0.8; s.castShadow = true; head.add(s);
   }
-  if (hr === 'afro') { const s = new THREE.Mesh(new THREE.IcosahedronGeometry(headW * 0.8, 1), hairM); s.position.set(0, headH * 0.28, -headD * 0.1); s.castShadow = true; head.add(s); }
+  if (hr === 'afro') { const s = new THREE.Mesh(new THREE.IcosahedronGeometry(headW * 0.8, 1), hairM); s.scale.set(1, 0.95, 0.82); s.position.set(0, headH * 0.4, -headD * 0.3); s.castShadow = true; head.add(s); } // sits up and back so the face shows
 
   // hats
   const ht = c.hat, top = headH / 2;
