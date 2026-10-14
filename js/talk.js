@@ -1,8 +1,8 @@
 // Conversations staged like a Pokémon battle: they stand on a platform facing you,
 // you see the back of your own head in the foreground, subtitles type out, you pick replies.
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, setFace } from './character.js?v=188';
-import { sfx, audio } from './audio.js?v=188';
+import { buildCharacter, poseCharacter, disposeObject, setFace } from './character.js?v=189';
+import { sfx, audio } from './audio.js?v=189';
 
 const $ = id => document.getElementById(id);
 const BG = {
@@ -219,9 +219,9 @@ export class Talk {
   }
   faceFrame() {
     const f = this.faceFig; if (!f) return; const talking = this.talking === 'npc', open = talking ? Math.abs(Math.sin(this.t * 15)) * (0.5 + 0.5 * Math.abs(Math.sin(this.t * 4.3))) : 0;
-    f.armR.pivot.rotation.set(-0.85, 0.15, -0.42); if (f.armR.elbow) f.armR.elbow.rotation.set(-2.6, 0, 0); f.head.rotation.set(talking ? Math.sin(this.t * 11) * 0.05 : 0, -0.25, -0.1);
+    f.armR.pivot.rotation.set(-0.85, 0.15, -0.42); if (f.armR.elbow) f.armR.elbow.rotation.set(-2.6, 0, 0); f.root.rotation.y = -0.35; f.head.rotation.set(talking ? Math.sin(this.t * 11) * 0.05 : 0, 0.1, -0.1);
     try { setFace(f, 'neutral', open); } catch (e) {}
-    const hp = f.hp; this.faceCam.position.set(hp.x + 0.35, hp.y + 0.05, hp.z + 1.7); this.faceCam.lookAt(hp.x + 0.08, hp.y - 0.02, hp.z); this.faceR.render(this.faceScene, this.faceCam);
+    const hp = f.hp; this.faceCam.position.set(hp.x - 0.55, hp.y - 0.02, hp.z + 2.3); this.faceCam.lookAt(hp.x - 0.12, hp.y - 0.12, hp.z); this.faceR.render(this.faceScene, this.faceCam);
   }
   clear() {
     for (const k of ['npc', 'you']) if (this[k]) { this.scene.remove(this[k].root); disposeObject(this[k].root); this[k] = null; }
@@ -320,8 +320,10 @@ export class Talk {
       else { if (this.talking !== 'you') y.armR.pivot.rotation.set(-1.25, 0, 0.32); y.head.rotation.y = 1.35 + (this.talking === 'you' ? Math.sin(this.t * 3.1) * 0.1 : 0); }
     }
     if (this.phone && !this.seat && n && y) { // a call on foot: just you, phone to your ear; they're in the portrait
-      n.root.visible = false; this.pNpc.g.visible = true; this.pYou.g.visible = false;
-      y.root.position.copy(this.pNpc.g.position); y.root.rotation.y = Math.atan2(this.cam.position.x - y.root.position.x, this.cam.position.z - y.root.position.z) * 0.8;
+      n.root.visible = false; this.pNpc.g.visible = false; this.pYou.g.visible = false; // no pedestal: a close-up of you, waist up, facing us
+      y.root.position.set(0, 0, 0); y.root.rotation.y = -0.18;
+      y.root.updateMatrixWorld(true); const hp = new THREE.Vector3(); y.head.getWorldPosition(hp); const k = hp.y / 1.55; // frame head to waist whatever their size
+      this.cam.position.set(hp.x + 0.2 * k, hp.y - 0.05 * k, hp.z + 2.05 * k); this.cam.lookAt(hp.x, hp.y - 0.4 * k, hp.z);
     }
     if (this.realCar && n && y) this.realCarPose(n, y);
     else if (this.car && n && y) this.carPose(n, y);
@@ -340,7 +342,7 @@ export class Talk {
   realCarPose(n, y) {
     const { sx, top, sz, side, W } = this.rc, drv = this.think ? n : y, other = this.think ? null : n, talkingMe = this.think ? this.talking === 'npc' : this.talking === 'you';
     drv.root.position.set(sx, 0, sz + 0.02); drv.root.rotation.set(0, 0, 0);
-    const legLen = drv.legLen || 0.86; drv.root.position.y = top + 0.1 - legLen + 0.03;
+    const legLen = drv.legLen || 0.86; drv.root.position.y = top - 0.04 - legLen + 0.03; // sat low in the seat, head well under the roof
     drv.legL.pivot.rotation.set(-1.4, 0, 0.05); drv.legR.pivot.rotation.set(-1.4, 0, -0.05); drv.legL.knee.rotation.x = 1.25; drv.legR.knee.rotation.x = 1.25; if (drv.hips) drv.hips.rotation.x = 0;
     drv.armR.pivot.rotation.set(-1.05, 0, -0.12); if (drv.armR.elbow) drv.armR.elbow.rotation.set(-0.55, 0, 0); // one hand on the wheel
     if (this.phone) { drv.armL.pivot.rotation.set(-0.85, -0.15, 0.42); if (drv.armL.elbow) drv.armL.elbow.rotation.set(-2.6, 0, 0); drv.head.rotation.set(talkingMe ? Math.sin(this.t * 11) * 0.06 : 0, 0.45, 0.1); } // phone at the ear nearest the window
@@ -351,7 +353,7 @@ export class Talk {
       this.cam.position.set(side * (W / 2 + 3.2), top + 1.0, sz + 4.2); this.cam.lookAt(sx + side * 0.75, top + 0.62, sz + 0.2);
     } else {
       if (other) other.root.visible = false; // a phone call: it's just you in the car
-      this.cam.position.set(sx + side * 2.15, top + 0.95, sz + 0.6); this.cam.lookAt(sx - side * 0.05, top + 0.8, sz + 0.2); // through the window: head, shoulders and the hand on the wheel
+      this.cam.position.set(sx + side * 2.15, top + 0.82, sz + 0.6); this.cam.lookAt(sx - side * 0.05, top + 0.66, sz + 0.2); // through the window: head, shoulders and the hand on the wheel
     }
   }
   carPose(n, y) {
