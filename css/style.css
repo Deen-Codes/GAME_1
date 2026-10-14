@@ -589,3 +589,15 @@ body.phone-out #mmWrap { opacity: 0; transition: opacity .1s; }
 
 #pad #wpnBtn { position: absolute; right: calc(12px + var(--sar)); left: auto; top: 22px; bottom: auto; z-index: 3; }
 #pad.righty #wpnBtn { right: auto; left: calc(12px + var(--sal)); }
+
+/* speed sits above the distance strip so they never overlap */
+#mmSpeed { bottom: 28px; left: 5px; width: 36px; height: 36px; }
+#mmNav, #mmWrap:has(#mmSpeed.hidden) #mmNav, #mmWrap:not(:has(#mmSpeed.hidden)) #mmNav, #mmWrap.navving #mmNav { justify-content: center; padding: 0 6px 5px 6px; height: 26px; }
+
+/* level up: gold, bouncy, a bit of shine */
+#subs.plain.levelup { background: linear-gradient(135deg, rgba(255,210,63,.95), rgba(255,138,42,.95)); border-color: #fff3a0; box-shadow: 0 0 24px rgba(255,210,63,.6); }
+#subs.plain.levelup #subName { color: #16161b; font-size: 13px; letter-spacing: .12em; }
+#subs.plain.levelup #subTxt { color: #16161b; font-weight: 900; }
+#subs.plain.levelup .subIco { color: #16161b; box-shadow: 0 0 0 2px #fff; }
+#subs.levelup.show { animation: lvlPop .7s cubic-bezier(.2,1.6,.4,1); }
+@keyframes lvlPop { 0% { transform: scale(.6); } 60% { transform: scale(1.08); } 100% { transform: scale(1); } }

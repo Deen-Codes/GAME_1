@@ -1,26 +1,26 @@
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=114';
-import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=114';
-import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=114';
-import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=114';
-import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=114';
-import { buildPanel, renderStats } from './ui.js?v=114';
-import { Input } from './input.js?v=114';
-import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime } from './audio.js?v=114';
-import { runMinigame } from './minigames.js?v=114';
-import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk } from './peds.js?v=114';
-import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=114';
-import { findRoute } from './nav.js?v=114';
-import { COURSES, CAREERS, QUIZ } from './careers.js?v=114';
-import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=114';
-import { attachWheel } from './wheel.js?v=114';
-import { Animals } from './animals.js?v=114';
-import { Talk } from './talk.js?v=114';
-import { incomingText, classify, textOptions, textReply } from './texts.js?v=114';
-import { svg, drawIcon } from './icons.js?v=114';
-import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=114';
-import { FURN, CATALOG } from './furniture.js?v=114';
-import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=114';
+import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=115';
+import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=115';
+import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=115';
+import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=115';
+import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=115';
+import { buildPanel, renderStats } from './ui.js?v=115';
+import { Input } from './input.js?v=115';
+import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime } from './audio.js?v=115';
+import { runMinigame } from './minigames.js?v=115';
+import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk } from './peds.js?v=115';
+import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=115';
+import { findRoute } from './nav.js?v=115';
+import { COURSES, CAREERS, QUIZ } from './careers.js?v=115';
+import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=115';
+import { attachWheel } from './wheel.js?v=115';
+import { Animals } from './animals.js?v=115';
+import { Talk } from './talk.js?v=115';
+import { incomingText, classify, textOptions, textReply } from './texts.js?v=115';
+import { svg, drawIcon } from './icons.js?v=115';
+import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=115';
+import { FURN, CATALOG } from './furniture.js?v=115';
+import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=115';
 
 const $ = id => document.getElementById(id);
 let inside = null, editMode = false, held = null, pendingCar = false, homeMusic = false, phoneBadge = 0;
@@ -302,7 +302,7 @@ const subs = (() => {
   // ONE card at a time in the top-left slot: people talking (face + moving mouth), texts, notifications, little messages.
   // Cards bubble in and out; if a few are waiting they move along a bit quicker, but always long enough to read.
   const el = $('subs'), cv = $('subFace'), nameEl = $('subName'), txtEl = $('subTxt'), faceW = el.querySelector('.subFaceWrap'), icoW = $('subIco');
-  let R = null, scene = null, cam = null, cur = null, t = 0, frameT = 0, outT = 0;
+  let R = null, scene = null, cam = null, cur = null, t = 0, frameT = 0, outT = 0, paused = false;
   const queue = [], cache = new Map();
   function init() {
     R = new THREE.WebGLRenderer({ canvas: cv, alpha: true, antialias: true }); R.setPixelRatio(1); R.setSize(160, 160, false); R.outputColorSpace = THREE.SRGBColorSpace;
@@ -336,7 +336,7 @@ const subs = (() => {
     cur = line; t = 0; outT = 0; cur.shown = -1; cur.len = line.text.length;
     const rush = queue.length ? 0.72 : 1;
     if (line.plain) {
-      faceW.style.display = 'none'; icoW.style.display = line.icon ? 'grid' : 'none'; if (line.icon) { icoW.innerHTML = svg(line.icon, 'sm'); icoW.style.background = line.color || (line.cls === 'radio' ? '#9b51e0' : '#2f80ed'); }
+      faceW.style.display = 'none'; icoW.style.display = line.icon ? 'grid' : 'none'; if (line.icon) { icoW.innerHTML = svg(line.icon, 'sm'); icoW.style.background = line.cls === 'levelup' ? 'linear-gradient(135deg,#fff3a0,#ffb020)' : line.color || (line.cls === 'radio' ? '#9b51e0' : '#2f80ed'); }
       nameEl.textContent = line.title || ''; nameEl.style.display = line.title ? '' : 'none'; txtEl.textContent = line.text; cur.total = Math.max(1.6, (line.dur ? Math.min(line.dur, readTime(line.text)) : readTime(line.text)) * rush);
     } else {
       faceW.style.display = ''; icoW.style.display = 'none'; nameEl.style.display = '';
@@ -358,7 +358,8 @@ const subs = (() => {
     const hp = f.hp; cam.position.set(hp.x + 0.1, hp.y + 0.06, hp.z + 1.9); cam.lookAt(hp.x, hp.y + 0.02, hp.z); R.render(scene, cam);
   }
   function update(dt) {
-    if (state !== 'play') { if (cur) stop(); return; }
+    if (state !== 'play') { if (!paused && cur) { paused = true; el.classList.add('hidden'); slotSync(); } return; } // phone/menus: hold the queue, carry on after
+    if (paused) { paused = false; if (cur) { el.classList.remove('hidden'); el.classList.add('show'); slotSync(); } }
     if (!cur) { if (queue.length) start(queue.shift()); return; }
     t += dt;
     if (outT > 0) { outT += dt; if (outT > 0.26) { if (cur.fig) cur.fig.root.visible = false; cur = null; outT = 0; if (queue.length) start(queue.shift()); else { el.classList.add('hidden'); slotSync(); } } return; }
@@ -907,7 +908,7 @@ function floatMoney(n) { const el = $('moneyFloat'); el.textContent = (n >= 0 ? 
 function gainXP(id, amt) {
   if (amt <= 0) return;
   const up = addXP(stats, id, amt);
-  if (up) { sfx.cash(); toast(`${skillName(id)} reached level ${up}`, 3); if (id === 'health') P.hp = Math.min(maxHP(), P.hp + 10); if (id.startsWith('gun_') && arsenal.cur === id.slice(4)) equipWeapon(); }
+  if (up) { levelUp(skillName(id), up); if (id === 'health') P.hp = Math.min(maxHP(), P.hp + 10); if (id.startsWith('gun_') && arsenal.cur === id.slice(4)) equipWeapon(); }
 }
 function feed(f) { // apply a food/drink/activity effect object
   if (f.fat) { const B = body(); B.fat = clamp(B.fat + f.fat * (stats.hunger > 85 ? 1.8 : 1), 0, 1); bodyCheck(); }
@@ -1005,9 +1006,11 @@ function headBeams(W, L) {
   if (!BEAM) { const cv = document.createElement('canvas'); cv.width = 128; cv.height = 256; const x = cv.getContext('2d');
     x.filter = 'blur(7px)'; const gr = x.createLinearGradient(0, 256, 0, 0); gr.addColorStop(0, 'rgba(255,244,214,0.95)'); gr.addColorStop(0.45, 'rgba(255,244,214,0.45)'); gr.addColorStop(1, 'rgba(255,244,214,0)'); x.fillStyle = gr;
     x.beginPath(); x.moveTo(56, 250); x.lineTo(72, 250); x.lineTo(124, 8); x.lineTo(4, 8); x.closePath(); x.fill();
-    const tx = new THREE.CanvasTexture(cv); tx.colorSpace = THREE.SRGBColorSpace; const geo = new THREE.PlaneGeometry(2.6, 9); geo.translate(0, 4.5, 0); geo.rotateX(Math.PI / 2);
-    BEAM = { geo, mat: new THREE.MeshBasicMaterial({ map: tx, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide, opacity: 0.6 }) }; }
-  const g = new THREE.Group(); for (const s of [-1, 1]) { const b = new THREE.Mesh(BEAM.geo, BEAM.mat); b.position.set(s * W * 0.3, 0.06, L / 2 - 0.05); b.rotation.y = s * 0.07; g.add(b); } return g;
+    const c2 = document.createElement('canvas'); c2.width = 8; c2.height = 128; const x2 = c2.getContext('2d'), g2 = x2.createLinearGradient(0, 0, 0, 128); g2.addColorStop(0, 'rgba(255,244,214,0.75)'); g2.addColorStop(0.5, 'rgba(255,244,214,0.22)'); g2.addColorStop(1, 'rgba(255,244,214,0)'); x2.fillStyle = g2; x2.fillRect(0, 0, 8, 128);
+    const tc = new THREE.CanvasTexture(c2); tc.colorSpace = THREE.SRGBColorSpace;
+    const cone = new THREE.ConeGeometry(1.25, 8.5, 20, 1, true); cone.rotateX(-Math.PI / 2); cone.translate(0, 0, 4.25); // apex at the lamp, opening forwards
+    BEAM = { cone, cmat: new THREE.MeshBasicMaterial({ map: tc, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide, opacity: 0.55 }) }; }
+  const g = new THREE.Group(); for (const s of [-1, 1]) { const b = new THREE.Mesh(BEAM.cone, BEAM.cmat); b.position.set(s * W * 0.3, 0.62, L / 2 - 0.05); b.rotation.set(0.1, s * 0.06, 0); b.renderOrder = 2; g.add(b); } return g; // light in the air: two cones that tip down to the road
 }
 // traffic switches its lights on after dark: headlamps, tail lights and a pool of light on the road ahead
 let TL = null;
@@ -1310,8 +1313,15 @@ const TOAST_ICONS = [[/rain (has )?stopp|fog is lifting|clear(s|ed) up|sun('s| i
   [/home|house|storage|furniture|bed\b|sleep|edit mode/i, 'house', '#9b51e0'], [/class|school|college|study|enrol/i, 'book', '#2f80ed'], [/gym|workout|membership|weights/i, 'dumbbell', '#ff8a2a'],
   [/market|parade|protest|match|festival|fair/i, 'people', '#ff6fb5'], [/mission|story/i, 'flag', '#e0a010'], [/night|lights out|dark/i, 'moon', '#3a3fbf'], [/morning|new day|day\b/i, 'sun', '#ffb020'], [/phone|text|call/i, 'phone', '#2f80ed']];
 function toastIcon(msg) { for (const [re, ic, col] of TOAST_ICONS) if (re.test(msg)) return [ic, col]; return ['chat', '#4a4f5a']; }
+// levelling up: a gold card that bounces in, a little fanfare and confetti round you
+function levelUp(skill, lvl2) {
+  subs.note('sparkle', `LEVEL UP!`, `${skill} is now level ${lvl2}`, { cls: 'levelup', pri: 4, dur: 3.6 });
+  const A = audio(); if (A) [523, 659, 784, 1047].forEach((f, i) => sfx.note(f, A.currentTime + i * 0.09, i === 3 ? 0.5 : 0.14, 'triangle', 0.06, 3200));
+  if (!inside) spawnParticles(P.x, 2.2, P.z, ['#ffd23f', '#ff6fb5', '#38e8ff', '#4cd964', '#ffffff'], 26, 4, 1.4, 0.12, -2); else spawnParticles(P.x, 2.2, P.z, ['#ffd23f', '#ffffff'], 14, 3, 1.2, 0.1, -2);
+  navigator.vibrate?.([30, 40, 30]);
+}
 function toast(msg, dur = 2.4) { const fm = typeof msg === 'string' && msg.match(/^([A-Z][\w.' ]{1,24}): "(.+?)"\s*(.*)$/); if (fm) { const w = faceFor(null, fm[1]); if (w) { subs.say(w, fm[2] + (fm[3] ? ` ${fm[3]}` : ''), { silent: true, expr: /!|love|yay|fun/i.test(fm[2]) ? 'happy' : 'neutral', pri: 2 }); return; } }
-  if (state === 'play' && typeof msg === 'string') { const [ic, col] = toastIcon(msg); subs.note(ic, null, msg, { dur, color: col }); return; }
+  if (typeof msg === 'string' && state !== 'talk') { const [ic, col] = toastIcon(msg); subs.note(ic, null, msg, { dur, color: col }); return; } // everything goes to the one notification spot
   const t = $('toast'); t.textContent = msg; t.classList.add('on'); toastT = dur; }
 let noteT = 0;
 function slotNote(icon, title, sub, dur = 4, cls = '') { subs.note(icon, title, sub || '', { dur, cls }); }
@@ -6118,7 +6128,7 @@ function saveGame() {
   store.set('bc_save', save); store.set('bc_arsenal', arsenal); store.set('bc_cars', garage);
 }
 // auto-update: bookmarks and home-screen apps can hold on to an old copy. Check version.json (never cached) and reload once if newer.
-const BUILD = 114;
+const BUILD = 115;
 function checkUpdate() {
   fetch('version.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(j => {
     if (!(j.v > BUILD)) return;
@@ -6278,7 +6288,7 @@ const input = new Input();
 input.bindTouch({ zone: $('stickZone'), base: $('stickBase'), knob: $('stickKnob'), canvas, buttons: { a: $('btnA'), b: $('btnB'), x: $('btnX'), y: $('btnY') } });
 function show(id, on) { $(id).classList.toggle('hidden', !on); }
 const CUSTOM_STATES = ['char', 'gun', 'car', 'clothes', 'barber', 'carshop'];
-function setState(s) { if (s !== 'play') subs.stop();
+function setState(s) { if (s === 'talk') subs.stop(); /* a conversation replaces what's on screen; other screens just pause the queue */
   state = s;
   show('custom', CUSTOM_STATES.includes(s));
   show('hud', s === 'play' || s === 'ui' || s === 'phone'); show('pad', s === 'play');
@@ -6430,4 +6440,4 @@ function frame(now) {
 }
 startGame();
 requestAnimationFrame(frame);
-window.__game = { get animals() { return animals; }, crime, WANT, copCars, cops, pitFight, busted, fam, famNewDay, makeOfficial, talkFamily, get dayN() { return dayN; }, set dayN(v) { dayN = v; }, scene: G.scene, cam: G.cam, snap: () => updateCamera(0, true), get state() { return state; }, P, input, get ride() { return ride; }, get myCar() { return myCar; }, get traffic() { return traffic; }, peds, setTime: h => { clockH = h; }, openCustom, enterVehicle, exitCar, get money() { return money; }, set money(v) { money = v; }, openPlace, PLACES, PROPERTIES, runMinigame, get action() { return action; }, arsenal, selectWeapon, openPhone, setWaypoint, get route() { return route; }, talkToPed, talk, doAction, stats, get inside() { return inside; }, enterInterior, exitInterior, get customers() { return customers; }, newCustomer, startEdit, endEdit, get job() { return job; }, gainXP, storage, doSpot, useFurn, phoneGo, talkVenue, talkJob, openPlace, talkCustomer, startJob, openCarShop, damageCar, repairCar, addFire, get fires() { return fires; }, get ems() { return ems; }, get vehicles() { return vehicles; }, makeVehicle, makeCop, prisonFight, life, startDealMeet, get lifeAct() { return lifeAct; }, get train() { return train; }, get trainRide() { return trainRide; }, boardTrain, eventReset: () => { eventOpen = false; }, bodyCheck, attendClass, talkAdmissions, edu, startDance, get dance() { return dance; }, radioSet: i => { radioSet(i); radioOn(true); }, get zoom() { return zoom; }, set zoom(z) { zoom = z; }, DEFAULT_CAR, setState: x => setState(x), get jail() { return stats.jail; }, witness, personOf, dealHeat, trafficStop, carNear, carTop, startDate, talkDate, get date() { return date; }, get carAnim() { return carAnim; }, lifeApi, startShower, bizNewDay, subs, forceWanted, get buddy() { return buddy; }, startBuddy, textMe, toast, bringCar, useFurn, damageCar, debtorScene, get debtor() { return debtor; }, camBlocked, get camYaw() { return camYaw; }, ev: { evChase, evMug, evRobbery, evGang, evBusk, evCrash, evFire, evMarket, evParade, evProtest, streetEvents } };
+window.__game = { get animals() { return animals; }, crime, WANT, copCars, cops, pitFight, busted, fam, famNewDay, makeOfficial, talkFamily, get dayN() { return dayN; }, set dayN(v) { dayN = v; }, scene: G.scene, cam: G.cam, snap: () => updateCamera(0, true), get state() { return state; }, P, input, get ride() { return ride; }, get myCar() { return myCar; }, get traffic() { return traffic; }, peds, setTime: h => { clockH = h; }, openCustom, enterVehicle, exitCar, get money() { return money; }, set money(v) { money = v; }, openPlace, PLACES, PROPERTIES, runMinigame, get action() { return action; }, arsenal, selectWeapon, openPhone, setWaypoint, get route() { return route; }, talkToPed, talk, doAction, stats, get inside() { return inside; }, enterInterior, exitInterior, get customers() { return customers; }, newCustomer, startEdit, endEdit, get job() { return job; }, gainXP, storage, doSpot, useFurn, phoneGo, talkVenue, talkJob, openPlace, talkCustomer, startJob, openCarShop, damageCar, repairCar, addFire, get fires() { return fires; }, get ems() { return ems; }, get vehicles() { return vehicles; }, makeVehicle, makeCop, prisonFight, life, startDealMeet, get lifeAct() { return lifeAct; }, get train() { return train; }, get trainRide() { return trainRide; }, boardTrain, eventReset: () => { eventOpen = false; }, bodyCheck, attendClass, talkAdmissions, edu, startDance, get dance() { return dance; }, radioSet: i => { radioSet(i); radioOn(true); }, get zoom() { return zoom; }, set zoom(z) { zoom = z; }, DEFAULT_CAR, setState: x => setState(x), get jail() { return stats.jail; }, witness, personOf, dealHeat, trafficStop, carNear, carTop, startDate, talkDate, get date() { return date; }, get carAnim() { return carAnim; }, lifeApi, startShower, bizNewDay, subs, forceWanted, get buddy() { return buddy; }, startBuddy, textMe, toast, levelUp, closePhone, bringCar, useFurn, damageCar, debtorScene, get debtor() { return debtor; }, camBlocked, get camYaw() { return camYaw; }, ev: { evChase, evMug, evRobbery, evGang, evBusk, evCrash, evFire, evMarket, evParade, evProtest, streetEvents } };
