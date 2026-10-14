@@ -1,6 +1,6 @@
 // Open-world map: layout, deterministic generation, colliders, chunk meshing and minimap.
 import * as THREE from '../lib/three.module.min.js';
-import { groundMaterial, GT } from './groundtex.js?v=132';
+import { groundMaterial, GT } from './groundtex.js?v=133';
 
 export const WORLD = { x0: -560, x1: 800, z0: -800, z1: 520 };
 export const CHUNK = 64;
@@ -426,6 +426,9 @@ function genBlock(city, bx0, bz0, r, bi, bj) {
       const hx = px + (r() - 0.5) * 2, hz = pz + (r() - 0.5) * 2;
       building(hx, hz, hw, hd, 3.2 + r() * 2.5, PAL.house[Math.floor(r() * PAL.house.length)], { roof: 'pitch', roofH: 2.4, roofCol: PAL.roof[Math.floor(r() * PAL.roof.length)], door: true });
       if (r() < 0.7) { const a = r() * Math.PI * 2; tree(px + Math.cos(a) * 6, pz + Math.sin(a) * 6, 'round', 0.7 + r() * 0.4); }
+      // gardens: a hedge along the back, bushes and flower beds in the corners
+      if (r() < 0.45) { addObj({ t: 'hedge', x: px, z: pz - 6.8, w: 12, seed: Math.floor(r() * 1e6) }); addCollider({ x0: px - 6, x1: px + 6, z0: pz - 7.2, z1: pz - 6.4, h: 1.1 }); }
+      for (const [bx, bz] of [[-6.3, 6.3], [6.3, 6.3], [-6.3, -3], [6.3, -3]]) if (r() < 0.5) { addObj({ t: 'bush', x: px + bx, z: pz + bz, s: 0.7 + r() * 0.5, flowers: r() < 0.4, seed: Math.floor(r() * 1e6) }); addCollider({ x: px + bx, z: pz + bz, r: 0.6 }); }
     }
     return;
   }
@@ -477,6 +480,15 @@ function genWorld() {
       genBlock(city, bx0, bz0, mkRng(hash(i + 100, j + 100, city.cx + city.cz * 7 + 1)), i, j);
       // lamps on block corners-ish
       for (const [lx, lz] of [[bx0 + 1.2, bz0 + 12], [bx0 + 34.8, bz0 + 24], [bx0 + 12, bz0 + 34.8], [bx0 + 24, bz0 + 1.2]]) { LAMPS.push({ x: lx, z: lz }); addObj({ t: 'lamp', x: lx, z: lz }); addCollider({ x: lx, z: lz, r: 0.16 }); }
+      // street furniture along the kerb: bins, hydrants, news boxes, bike racks, planters, bollards and the odd bus stop or phone box
+      const rr = mkRng(hash(i + 300, j + 300, city.cx + 5)), kinds = city.style === 'suburb' ? ['bin', 'hydrant', 'planter', 'planter', 'bin', 'mailbox'] : ['bin', 'hydrant', 'newsbox', 'bikerack', 'planter', 'bollards', 'bin', 'phonebox'];
+      for (const [sx, sz, rot] of [[bx0 + 0.75, null, Math.PI / 2], [bx0 + 35.25, null, -Math.PI / 2], [null, bz0 + 0.75, 0], [null, bz0 + 35.25, Math.PI]]) {
+        for (const off of [7, 18.5, 29.5]) { if (rr() < 0.35) continue; const x = sx ?? bx0 + off, z = sz ?? bz0 + off;
+          const k = off === 18.5 && rr() < 0.18 ? 'busstop' : kinds[Math.floor(rr() * kinds.length)];
+          addObj({ t: 'prop', k, x, z, rot, seed: Math.floor(rr() * 1e6) });
+          if (k === 'busstop') addCollider(Math.abs(Math.sin(rot)) > 0.5 ? { x0: x - 0.5, x1: x + 0.5, z0: z - 1.7, z1: z + 1.7, h: 2.6 } : { x0: x - 1.7, x1: x + 1.7, z0: z - 0.5, z1: z + 0.5, h: 2.6 });
+          else if (k !== 'bollards') addCollider({ x, z, r: k === 'planter' ? 0.55 : k === 'bikerack' ? 0.5 : k === 'phonebox' ? 0.55 : 0.3 }); }
+      }
     }
   }
   // zebra crossings just outside every junction, where pedestrians cross
@@ -1002,6 +1014,28 @@ function drawObj(o, B) {
       if (R() < 0.5) B.box(o.x, 0.62, zz + o.sd * 0.005, o.w * 0.9, 0.08, 0.04, c2); // underline drip
       break; }
     case 'trash': { const R = (a => () => (a = (a * 16807) % 2147483647) / 2147483647)(o.seed || 7); for (let i = 0; i < 3; i++) B.box(o.x + (R() - 0.5) * 1.6, 0.17, o.z + (R() - 0.5) * 0.6, 0.55 + R() * 0.3, 0.45 + R() * 0.2, 0.5, R() < 0.6 ? '#1e2a1e' : '#16161b'); break; }
+    case 'prop': { // kerbside street furniture
+      const x = o.x, z = o.z, rot = o.rot || 0, cs = Math.cos(rot), sn = Math.sin(rot), L = (a, b) => [x + a * cs + b * sn, z - a * sn + b * cs];
+      if (o.k === 'bin') { B.cyl(x, 0.15, z, 0.28, 0.9, '#2f5a3a', 8); B.cyl(x, 1.05, z, 0.31, 0.08, '#24452c', 8); }
+      else if (o.k === 'hydrant') { B.cyl(x, 0.15, z, 0.15, 0.55, '#d63a2f', 7); B.cyl(x, 0.7, z, 0.11, 0.12, '#d63a2f', 7); B.box(x, 0.45, z, 0.42, 0.1, 0.1, '#b82f25'); }
+      else if (o.k === 'mailbox') { B.box(x, 0.15, z, 0.12, 0.9, 0.12, '#3a3d45'); B.box(x, 1.05, z, 0.3, 0.3, 0.45, '#2f6fd8', { rot }); }
+      else if (o.k === 'newsbox') { B.box(x, 0.15, z, 0.5, 0.95, 0.45, ['#e23b3b', '#2f80ed', '#ffd23f'][o.seed % 3], { rot }); const [a, b] = L(0, 0.24); B.box(a, 0.75, b, 0.38, 0.3, 0.02, '#cfe8ff', { rot }); }
+      else if (o.k === 'bikerack') { for (let i = -1; i <= 1; i++) { const [a, b] = L(i * 0.45, 0); B.box(a, 0.15, b, 0.05, 0.7, 0.5, '#8a8f99', { rot }); } if (o.seed % 2) { const [a, b] = L(0.45, 0.05); B.box(a, 0.15, b, 0.06, 0.55, 1.6, '#e23b3b', { rot }); B.cyl(a, 0.15, b + 0.6, 0.3, 0.05, '#16161b', 10); } }
+      else if (o.k === 'planter') { B.box(x, 0.15, z, 1.0, 0.5, 1.0, '#9a8f86'); B.box(x, 0.62, z, 0.9, 0.08, 0.9, '#5a3f2a'); for (let i = 0; i < 5; i++) { const R2 = mkRng(o.seed + i); B.blob(x + (R2() - 0.5) * 0.6, 0.85, z + (R2() - 0.5) * 0.6, 0.2, 0.18, 0.2, ['#ff6fb5', '#ffd23f', '#e23b3b', '#b26bff', '#ffffff'][(o.seed + i) % 5], o.seed + i); } B.blob(x, 0.8, z, 0.42, 0.25, 0.42, '#4f9a45', o.seed); }
+      else if (o.k === 'bollards') { for (let i = -1; i <= 1; i++) { const [a, b] = L(i * 1.1, 0); B.cyl(a, 0.15, b, 0.1, 0.8, '#3a3d45', 7); B.cyl(a, 0.75, b, 0.11, 0.06, '#ffd23f', 7); } }
+      else if (o.k === 'phonebox') { B.box(x, 0.15, z, 0.95, 2.4, 0.95, '#c8261f', { rot }); B.box(x, 2.55, z, 1.05, 0.2, 1.05, '#a01f1a'); const [a, b] = L(0, 0.49); B.box(a, 0.6, b, 0.7, 1.5, 0.02, '#cfe8ff', { rot }); }
+      else if (o.k === 'busstop') { // shelter facing the road: back wall, roof, bench, timetable
+        const [ba, bb] = L(0, -0.45); B.box(ba, 0.15, bb, 3.2, 2.3, 0.06, '#cfe8ff', { rot }); B.box(x, 2.45, z, Math.abs(sn) > 0.5 ? 1.2 : 3.4, 0.1, Math.abs(sn) > 0.5 ? 3.4 : 1.2, '#3a3d45');
+        for (const e of [-1.6, 1.6]) { const [a, b] = L(e, -0.45); B.box(a, 0.15, b, 0.08, 2.3, 0.08, '#3a3d45'); }
+        const [ca, cb] = L(0, -0.15); B.box(ca, 0.55, cb, 2.2, 0.08, 0.4, '#6b4a33', { rot }); const [da, db] = L(1.4, -0.38); B.box(da, 0.9, db, 0.6, 0.9, 0.04, '#ffd23f', { rot });
+      }
+      break;
+    }
+    case 'bush': { const sd = o.seed || 1, R2 = mkRng((sd % 9973) / 9973 + 0.01), g = ['#3f8a3c', '#4a9a42', '#56a64a', '#3a7f39'][sd % 4], yb = groundH(o.x, o.z) + 0.15;
+      for (let i = 0; i < 3; i++) B.blob(o.x + (R2() - 0.5) * 0.7 * o.s, yb + 0.35 * o.s, o.z + (R2() - 0.5) * 0.7 * o.s, 0.55 * o.s, 0.45 * o.s, 0.55 * o.s, g, sd + i);
+      if (o.flowers) for (let i = 0; i < 6; i++) B.blob(o.x + (R2() - 0.5) * 0.9 * o.s, yb + (0.6 + R2() * 0.25) * o.s, o.z + (R2() - 0.5) * 0.9 * o.s, 0.1, 0.09, 0.1, ['#ff6fb5', '#ffd23f', '#ffffff', '#e23b3b', '#b26bff'][(sd + i) % 5], sd + i * 3);
+      break; }
+    case 'hedge': { const yb = groundH(o.x, o.z) + 0.15; B.box(o.x, yb, o.z, o.w, 0.85, 0.7, '#3f7d3a', { key: 'leaf' }); for (let i = 0; i < Math.floor(o.w / 1.2); i++) B.blob(o.x - o.w / 2 + 0.6 + i * 1.2, yb + 0.9, o.z, 0.62, 0.32, 0.4, i % 2 ? '#4a8f42' : '#3f7d3a', (o.seed || 1) + i); break; }
     case 'lamp':
       B.box(o.x, 0.15, o.z, 0.18, 5, 0.18, '#3a3d45');
       B.box(o.x, 5.1, o.z, 0.7, 0.25, 0.7, '#fff6d8', { key: 'glow' });
