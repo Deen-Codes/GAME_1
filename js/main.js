@@ -1,26 +1,26 @@
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=129';
-import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun, partEffects, partPerk } from './gun.js?v=129';
-import { buildCar, computeCarStats, carStatBars, carClass, carPartEffects, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=129';
-import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, WIND_U, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=129';
-import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=129';
-import { buildPanel, renderStats } from './ui.js?v=129';
-import { Input } from './input.js?v=129';
-import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime, animalCall } from './audio.js?v=129';
-import { runMinigame } from './minigames.js?v=129';
-import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk, setReservedNames } from './peds.js?v=129';
-import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=129';
-import { findRoute } from './nav.js?v=129';
-import { COURSES, CAREERS, QUIZ } from './careers.js?v=129';
-import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=129';
-import { attachWheel } from './wheel.js?v=129';
-import { Animals } from './animals.js?v=129';
-import { Talk } from './talk.js?v=129';
-import { incomingText, classify, textOptions, textReply } from './texts.js?v=129';
-import { svg, drawIcon } from './icons.js?v=129';
-import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=129';
-import { FURN, CATALOG } from './furniture.js?v=129';
-import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=129';
+import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=130';
+import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun, partEffects, partPerk } from './gun.js?v=130';
+import { buildCar, computeCarStats, carStatBars, carClass, carPartEffects, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=130';
+import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, WIND_U, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=130';
+import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=130';
+import { buildPanel, renderStats } from './ui.js?v=130';
+import { Input } from './input.js?v=130';
+import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime, animalCall } from './audio.js?v=130';
+import { runMinigame } from './minigames.js?v=130';
+import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk, setReservedNames } from './peds.js?v=130';
+import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=130';
+import { findRoute } from './nav.js?v=130';
+import { COURSES, CAREERS, QUIZ } from './careers.js?v=130';
+import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=130';
+import { attachWheel } from './wheel.js?v=130';
+import { Animals } from './animals.js?v=130';
+import { Talk } from './talk.js?v=130';
+import { incomingText, classify, textOptions, textReply } from './texts.js?v=130';
+import { svg, drawIcon } from './icons.js?v=130';
+import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=130';
+import { FURN, CATALOG } from './furniture.js?v=130';
+import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=130';
 
 const $ = id => document.getElementById(id);
 let inside = null, editMode = false, held = null, pendingCar = false, homeMusic = false, phoneBadge = 0;
@@ -2576,6 +2576,16 @@ function exitInterior(silent) {
   silent ? go() : fade(go);
 }
 
+// what you're wearing counts: smart for the day, flashy for a night out, swimwear only at the beach; dirty clothes put people off
+function styleBonus(where = 'day') {
+  const c = charCfg, smart = { suit: 5, polo: 3, leather: 3, trench: 4, dress: 5, jacket: 2, long: 1 }, street = { hoodie: 1, tracksuit: 1, puffer: 2, jersey: 1, tshirt: 0 };
+  let b = (smart[c.top] || street[c.top] || 0) + ({ chain: 2, pearls: 2, tie: 2, scarf: 1 }[c.neck] || 0) + ({ loafers: 2, heels: 2, hightops: 1, boots: 1 }[c.shoes] || 0);
+  if (['shirtless', 'swimtop', 'tank'].includes(c.top) || c.pants === 'swim') b += where === 'beach' ? 4 : -6;
+  if (where === 'night' && ['leather', 'dress', 'suit', 'crop'].includes(c.top)) b += 3;
+  if (c.top === 'armor' || c.pants === 'armored' || c.mask !== 'none') b -= 6;
+  if ((stats.hygiene ?? 100) < 30) b -= 6;
+  return b;
+}
 // ---------------- the wardrobe: save what you're wearing as an outfit and swap in one tap (work, night out, gym, beach...)
 const OUTFIT_KEYS = ['top', 'topColor', 'pants', 'pantsColor', 'shoes', 'shoeColor', 'hat', 'hatColor', 'neck', 'gloves', 'gloveColor', 'back', 'backColor', 'accent', 'eyewear', 'mask'];
 const OUTFIT_SLOTS = [['work', 'Work', 'case'], ['night', 'Night out', 'music'], ['gym', 'Gym', 'dumbbell'], ['beach', 'Beach', 'sun'], ['chill', 'Chill', 'sofa'], ['smart', 'Smart', 'star']];
@@ -2970,7 +2980,9 @@ async function talkCareer(placeId) {
     if (k !== 'bye') {
       if (cur) { await talk.say(`You'll have to quit your job as ${careerTitle()} first.`); const q = await talk.choose([I('check', 'Quit and take this one'), I('x', 'Never mind')]); if (q) { endTalk(); return; } }
       if (k === 'cop' && (stats.jailRecord || 0) > dayN - 30) await talk.say('Background check failed. Come back with a clean record.');
-      else { stats.career = { id: k, lvl: 0, perf: 50, shifts: 0, lastDay: 0 }; await talk.say(`Welcome aboard, ${CAREERS[k].ladder[0][0]}! One shift a day, 7am to 7pm. Do well and you'll move up.`); feed({ mood: 12 }); }
+      else { const sb = styleBonus('day'), dressed = sb >= 4, scruffy = sb <= -3; // turning up dressed for it matters
+        if (scruffy && Math.random() < 0.5) { await talk.say(pick(['...You came to an interview dressed like THAT? Come back when you\'ve made an effort.', 'Sorry. We have a dress code. Try again in something smart.'])); endTalk(); return; }
+        stats.career = { id: k, lvl: 0, perf: dressed ? 62 : scruffy ? 40 : 50, shifts: 0, lastDay: 0 }; await talk.say(`${dressed ? 'Sharp outfit. I like someone who makes an effort. ' : scruffy ? 'Hm. Smarten up for your shifts, yeah? ' : ''}Welcome aboard, ${CAREERS[k].ladder[0][0]}! One shift a day, 7am to 7pm. Do well and you'll move up.`); feed({ mood: 12 }); }
     }
   }
   endTalk(); saveGame();
@@ -4289,7 +4301,8 @@ function socialInit(p, bg) {
   if (p.soc) return p.soc;
   const keys = Object.keys(TOPICS).sort(() => Math.random() - 0.5), fem = lookIsFem(p.look);
   const r = personOf(p) || { rap: Math.floor(rand(0, 8)), love: keys.slice(0, 2), hate: keys[2], known: [], taken: fem && Math.random() < 0.3, saidTaken: false, respected: false, job: pick(JOBS_SAID), att: 'normal', fem };
-  p.interest ??= r.int ?? Math.floor(rand(0, 12)) + (bg === 'beach' ? 8 : 0) + (night > 0.5 ? 6 : 0);
+  p.interest ??= r.int ?? Math.floor(rand(0, 12)) + (bg === 'beach' ? 8 : 0) + (night > 0.5 ? 6 : 0) + styleBonus(bg === 'beach' ? 'beach' : night > 0.5 ? 'night' : 'day');
+  if (p.interest > 14 && !p.styleSeen && styleBonus('day') >= 4) { p.styleSeen = true; setTimeout(() => ambient('talk', (p.name || '').split(' ')[0] || 'Them', pick(['"Love the outfit."', '"Okay, someone dressed up today."', '"Nice. Very nice."'])), 800); }
   r.used = {}; r.turns = 0; r.patience = Math.floor(rand(5, 9)) + (r.met ? 2 : 0); r.met = true;
   return p.soc = r;
 }
@@ -6383,7 +6396,7 @@ function saveGame() {
   store.set('bc_save', save); store.set('bc_arsenal', arsenal); store.set('bc_cars', garage);
 }
 // auto-update: bookmarks and home-screen apps can hold on to an old copy. Check version.json (never cached) and reload once if newer.
-const BUILD = 129;
+const BUILD = 130;
 function checkUpdate() {
   fetch('version.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(j => {
     if (!(j.v > BUILD)) return;
