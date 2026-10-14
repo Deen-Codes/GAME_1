@@ -11,14 +11,14 @@ export class Input {
       if (e.target.tagName === 'INPUT') return;
       if (!this.keys.has(e.code)) {
         // keyboard: E use · F get in/out · Space jump (drift in a car) · click/J attack · R gun/reload · T phone · Q next weapon · 1-9 weapons · M map · Esc pause
-        const car = this.mode === 'car', m = { KeyE: 'a', Enter: 'a', KeyF: car ? 'b' : 'a', Space: car ? null : 'b', KeyJ: 'x', KeyR: 'y', KeyM: 'map', Escape: 'pause', KeyP: 'pause', KeyT: 'phone', KeyQ: 'wheel' };
+        const car = this.mode === 'car', m = { KeyE: 'a', Enter: 'a', KeyF: car ? 'b' : 'a', Space: car ? null : 'b', KeyJ: 'x', KeyR: 'y', KeyM: 'map', Escape: 'pause', KeyP: 'pause', KeyT: 'phone', KeyQ: 'wheel', Tab: 'wpnwheel', KeyG: 'wpnwheel' };
         if (m[e.code]) this.pressed[m[e.code]] = true;
         if (/^Digit[1-9]$/.test(e.code)) this.pressed.slot = +e.code.slice(5);
       }
       this.keys.add(e.code);
-      if (['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.code)) e.preventDefault();
+      if (['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Tab'].includes(e.code)) e.preventDefault();
     });
-    addEventListener('keyup', e => this.keys.delete(e.code));
+    addEventListener('keyup', e => { this.keys.delete(e.code); if (e.code === 'Tab') this.pressed.wpnwheelUp = true; });
     addEventListener('blur', () => this.clear());
   }
   get stick() {

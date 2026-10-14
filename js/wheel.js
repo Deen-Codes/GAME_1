@@ -77,6 +77,9 @@ export function attachWheel(btn, { items, onSelect, onTap, centre, onOpen, onClo
   }
   let tapId = null;
   W._down = e => { tapId = e.pointerId; const z = zone(e.clientX, e.clientY); if (z >= 0) { hover = z; paint(); } };
-  W._move = e => { if (e.pointerId !== tapId) return; const z = zone(e.clientX, e.clientY); if (z >= 0 && z !== hover) { hover = z; paint(); } };
-  W._up = e => { if (e.pointerId !== tapId) return; tapId = null; const z = zone(e.clientX, e.clientY); if (z === -2) close(); else pickAt(z); };
+  W._move = e => { if (e.pointerId !== tapId && !(W.keyOpen && tapId === null)) return; const z = zone(e.clientX, e.clientY); if (z >= 0 && z !== hover) { hover = z; paint(); } }; /* opened from the keyboard: the mouse just hovers */
+  W.toggle = () => { if (isOpen) { W.keyOpen = false; close(); return; } if (active) active.close(); W.keyOpen = true; opener = null; show(); };
+  W.pickHover = () => { W.keyOpen = false; if (isOpen) pickAt(hover); };
+  W._up = e => { if (e.pointerId !== tapId) return; tapId = null; W.keyOpen = false; const z = zone(e.clientX, e.clientY); if (z === -2) close(); else pickAt(z); };
+  return W;
 }

@@ -1,30 +1,30 @@
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=206';
-import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun, partEffects, partPerk } from './gun.js?v=206';
-import { buildCar, computeCarStats, carStatBars, carClass, carPartEffects, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=206';
-import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, STAIRS, unblockPillars, canyonAt, canyonNear, PEAK, SKYWAYS, SKY_Y, skyAt, skyY, rampSeg, windowShader, makeOceanMaterial, WATER_U, WIND_U, METRO, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, collidersNear, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=206';
-import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=206';
-import { buildPanel, renderStats } from './ui.js?v=206';
-import { Input } from './input.js?v=206';
-import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime, animalCall } from './audio.js?v=206';
-import { runMinigame } from './minigames.js?v=206';
-import { CUT, initCutGames } from './cutgames.js?v=206';
-import { initOnline, updateOnline, goOnline, goOffline, NET, onNet, sendMagicLink, verifyCode, signOut, signedIn, cloudLoad, cloudSave, cloudList, cloudDelete, isAdmin, checkAdmin, reviewLoad, reviewSet } from './online.js?v=206';
-import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk, setReservedNames, seededLook } from './peds.js?v=206';
-import { citizens, whereNow } from './citizens.js?v=206';
-import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=206';
-import { findRoute } from './nav.js?v=206';
-import { COURSES, CAREERS, QUIZ } from './careers.js?v=206';
-import { EVENTS, EVENT_BY_ID, ARRIVE, PHONE_TEXT, PERSON_TEXT } from './events.js?v=206';
-import { attachWheel } from './wheel.js?v=206';
-import { GROUND_U } from './groundtex.js?v=206';
-import { Animals, makeAnimalMesh } from './animals.js?v=206';
-import { Talk } from './talk.js?v=206';
-import { incomingText, classify, textOptions, textReply } from './texts.js?v=206';
-import { svg, drawIcon, ICONS as ICON_SET } from './icons.js?v=206';
-import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=206';
-import { FURN, CATALOG } from './furniture.js?v=206';
-import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=206';
+import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=207';
+import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun, partEffects, partPerk } from './gun.js?v=207';
+import { buildCar, computeCarStats, carStatBars, carClass, carPartEffects, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=207';
+import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, STAIRS, unblockPillars, canyonAt, canyonNear, PEAK, SKYWAYS, SKY_Y, skyAt, skyY, rampSeg, windowShader, makeOceanMaterial, WATER_U, WIND_U, METRO, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, collidersNear, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=207';
+import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=207';
+import { buildPanel, renderStats } from './ui.js?v=207';
+import { Input } from './input.js?v=207';
+import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime, animalCall } from './audio.js?v=207';
+import { runMinigame } from './minigames.js?v=207';
+import { CUT, initCutGames } from './cutgames.js?v=207';
+import { initOnline, updateOnline, goOnline, goOffline, NET, onNet, sendMagicLink, verifyCode, signOut, signedIn, cloudLoad, cloudSave, cloudList, cloudDelete, isAdmin, checkAdmin, reviewLoad, reviewSet } from './online.js?v=207';
+import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk, setReservedNames, seededLook } from './peds.js?v=207';
+import { citizens, whereNow } from './citizens.js?v=207';
+import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=207';
+import { findRoute } from './nav.js?v=207';
+import { COURSES, CAREERS, QUIZ } from './careers.js?v=207';
+import { EVENTS, EVENT_BY_ID, ARRIVE, PHONE_TEXT, PERSON_TEXT } from './events.js?v=207';
+import { attachWheel } from './wheel.js?v=207';
+import { GROUND_U } from './groundtex.js?v=207';
+import { Animals, makeAnimalMesh } from './animals.js?v=207';
+import { Talk } from './talk.js?v=207';
+import { incomingText, classify, textOptions, textReply } from './texts.js?v=207';
+import { svg, drawIcon, ICONS as ICON_SET } from './icons.js?v=207';
+import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=207';
+import { FURN, CATALOG } from './furniture.js?v=207';
+import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=207';
 
 const $ = id => document.getElementById(id);
 let inside = null, editMode = false, held = null, pendingCar = false, homeMusic = false, phoneBadge = 0;
@@ -422,7 +422,7 @@ function updateChatter(dt) {
     if (up && s === 1 && !WANT.pull) subs.say(dispatchWho(), pick([`All units, reports of a disturbance. Suspect is ${suspectDesc()}.`, `Units in the area, suspect described as ${suspectDesc()}. Approach with caution.`]), { radio: true, pri: 3, expr: 'neutral' });
     else if (up && s === 2) { subs.say(dispatchWho(), `Suspect is ${ride ? 'fleeing in a ' : 'on foot, '}${suspectDesc()}. All units respond.`, { radio: true, pri: 3 }); if (chatCd('meflee', 20)) setTimeout(() => youSay(pick(['Not today.', 'Gotta go, gotta go!', 'Nope. Nope nope nope.', 'Come on, come on...']), 'shock', { pri: 2 }), 2600); }
     else if (up && s >= 3) subs.say(dispatchWho(), pick([`Shots fired! Suspect ${suspectDesc()}. Requesting backup.`, `Suspect is armed and dangerous. All available units.`, `Suspect still at large. Helicopter is en route.`]), { radio: true, pri: 4, expr: 'angry' });
-    else if (!up && s === 0 && chat.resolved) { const why = chat.resolved; chat.resolved = null; if (why === 'stop') subs.say(dispatchWho(), pick(['Traffic stop complete. Unit back on patrol.', 'Citation issued. Clear.']), { radio: true, pri: 1 }); }
+    else if (!up && s === 0 && chat.resolved) { const why = chat.resolved; chat.resolved = null; if (why === 'stop' || why === 'paid') subs.say(dispatchWho(), pick(['Traffic stop complete. Unit back on patrol.', 'Citation issued. Clear.', 'Fine paid. Unit clear.']), { radio: true, pri: 1 }); }
     else if (!up && s === 0 && (stats.jail || inside)) { chat.resolved = null; }
     else if (!up && s === 0) { subs.say(dispatchWho(), pick(['All units, we lost the suspect. Resume patrol.', 'Suspect lost. Stand down.']), { radio: true, pri: 2 }); if (chatCd('lost', 30)) setTimeout(() => youSay(pick(['Think I lost them.', 'Phew. That was close.', 'Too easy.']), 'happy', { pri: 2 }), 3000); }
   }
@@ -1459,7 +1459,7 @@ function updateHealth(dt) {
 function baseY(x, z, py) { if (inside) return 0; if (SANDBOX && Math.abs(x - 600) < 340 && Math.abs(z) < 340) return 0.1; /* the white test floor is one flat level */ if (x < -290) { const cr = canyonAt(x, z); if (cr) return cr.y; } { const k = skyAt(x, z); if (k && (k.ramp || (py ?? 0) > k.y - 1.6)) return k.y; } if (onPier(x, z)) return 0.28; { const r = roadAt(x, z); if (r) return r.city ? 0.04 : roadY(x, z); } if (cityAt(x, z, -6)) return 0.17; return groundH(x, z); }
 function swimmable(x, z) { return x > WORLD.x0 + 22 && x < WORLD.x1 - 8 && z < WORLD.z1 - 2 && groundH(x, z) - dip(x, z) < WATER_Y; }
 function inWater(x, z) { return !inside && !onPier(x, z) && groundH(x, z) - dip(x, z) < WATER_Y - 0.9; }
-function nearLadder() { if (inside || ride) return null; for (const L of LADDERS) { if (Math.abs(L.x - P.x) > 20 || Math.abs(L.z - P.z) > 20) continue; const bot = Math.hypot(L.x - P.x, L.z - P.z) < 1.3 && P.y < 1.5, top = Math.hypot(L.x - L.nx * 1.2 - P.x, L.z - L.nz * 1.2 - P.z) < 1.4 && Math.abs(P.y - L.top) < 0.6; if (bot || top) return { L, top }; } return null; }
+function nearLadder() { if (inside || ride || SANDBOX) return null; /* (the city's ladders are hidden in the white test room) */ for (const L of LADDERS) { if (Math.abs(L.x - P.x) > 20 || Math.abs(L.z - P.z) > 20) continue; const bot = Math.hypot(L.x - P.x, L.z - P.z) < 1.3 && P.y < 1.5, top = Math.hypot(L.x - L.nx * 1.2 - P.x, L.z - L.nz * 1.2 - P.z) < 1.4 && Math.abs(P.y - L.top) < 0.6; if (bot || top) return { L, top }; } return null; }
 function updateLadder(dt, st0) {
   const st = input.stick; // raw stick: up always climbs, whichever way the camera faces
   const L = P.ladder; P.x = L.x + L.nx * 0.35; P.z = L.z + L.nz * 0.35; P.face = Math.atan2(-L.nx, -L.nz);
@@ -1754,7 +1754,9 @@ const POSE_J = () => [hero.legL.pivot, hero.legL.knee, hero.legR.pivot, hero.leg
 function poseSnap() { heroRoot.updateMatrixWorld(true); const q = new THREE.Quaternion(); hero.root.getWorldQuaternion(q); return { p: heroRoot.position.clone(), q, j: POSE_J().map(o => [o.rotation.x, o.rotation.y, o.rotation.z]) }; }
 function poseBlend(A, B, e) { heroRoot.position.lerpVectors(A.p, B.p, e); heroRoot.quaternion.identity(); hero.root.rotation.order = 'XYZ'; hero.root.quaternion.slerpQuaternions(A.q, B.q, e); POSE_J().forEach((o, i) => o.rotation.set(lerp(A.j[i][0], B.j[i][0], e), lerp(A.j[i][1], B.j[i][1], e), lerp(A.j[i][2], B.j[i][2], e))); }
 // a car with a roof and proper front doors: you open, climb in and shut the door by hand
-const closedCar = v => { const b = v.b; return !!(b.doors && !b.seat && !b.climb && !b.two && !b.boat); };
+// where your feet go on a tractor's step plates or a lorry's cab steps (just outside them, body leaning in)
+function climbFoot(v, side) { const b = v.b, cl = b.climb; b.group.updateMatrixWorld(true); const q = b.group.localToWorld(new THREE.Vector3(side * ((cl?.footX ?? b.width / (b.s || 1) / 2) + 0.06), 0, b.doorZ ?? 0)); return { x: q.x, z: q.z }; }
+const closedCar = v => { const b = v.b; return !!(b.doors && !b.climb && !b.two && !b.boat && !b.open); }; /* (open-top cars get in the same way: handle, sill, swing in) */
 // a point in the door's own frame: ln out from its outside face, la past its back edge (follows the door as it swings)
 function doorPt(v, side, ln, la, ly = 0) { const pv = v.b.doors[side], dl = v.b.doors.len || 1; pv.updateMatrixWorld(true); const q = pv.localToWorld(_dV.set(side * ln, ly, -dl - la)); return { x: q.x, y: q.y, z: q.z }; }
 const handleW = (v, side) => { const h = v.b.doors[side].userData.handle; h.updateMatrixWorld(true); return h.getWorldPosition(new THREE.Vector3()); };
@@ -1948,7 +1950,7 @@ function updateCarAnim(dt) {
       if (A.dc && A.t < A.d1 + A.d0 + A.dc) { // up the steps / ladder to the cab, one step at a time, hands on the rails
         const kc = (A.t - A.d1 - A.d0) / A.dc, n = cl.steps.length, st = Math.min(n, Math.floor(kc * (n + 1))), sub = kc * (n + 1) - st;
         const h0 = st === 0 ? y : (v.s.y || 0) + (cl.steps[st - 1] ?? cl.floor) * ks, h1 = (v.s.y || 0) + (cl.steps[st] ?? cl.floor) * ks;
-        y = h0 + (Math.min(h1, floorY) - h0) * ease(Math.min(1, sub * 1.4)); const s2 = carLocal(v, seat.x, seat.z), d2 = carLocal(v, A.door.x, A.door.z); const w = carWorld(v, d2.x + (s2.x - d2.x) * 0.25 * kc, d2.z);
+        y = h0 + (Math.min(h1, floorY) - h0) * ease(Math.min(1, sub * 1.4)); const s2 = carLocal(v, seat.x, seat.z), d2 = carLocal(v, A.door.x, A.door.z), ft = climbFoot(v, A.side), ed = carWorld(v, d2.x + (s2.x - d2.x) * 0.25, d2.z), kk = kc * (n + 1); const w = kk < 1 ? { x: lerp(A.door.x, ft.x, ease(kk)), z: lerp(A.door.z, ft.z, ease(kk)) } : st >= n ? { x: lerp(ft.x, ed.x, ease(sub)), z: lerp(ft.z, ed.z, ease(sub)) } : ft; /* feet go onto the actual steps */
         P.x = w.x; P.z = w.z; P.face += wrapA(Math.atan2(seat.x - P.x, seat.z - P.z) - P.face) * Math.min(1, dt * 14); arms = cl.grips ? 'grip' : 'climb'; A.climbY = y; speed = 0.5;
         heroRoot.position.set(P.x, y, P.z); }
       const k = Math.min(1, (A.t - A.d1 - A.d0 - (A.dc || 0)) / A.d2), e2 = ease(k); if (A.dc && A.t < A.d1 + A.d0 + A.dc) { /* still climbing */ } else { arms = 'down';
@@ -1987,7 +1989,7 @@ function updateCarAnim(dt) {
       else if (A.down && A.t < A.d0 + A.dur + A.down) { const kd = (A.t - A.d0 - A.dur) / A.down; A.sit = 0; A.duck = 0;
         if (cl.jump) { const out = { x: A.door.x + (A.door.x - edge.x) * 0.6, z: A.door.z + (A.door.z - edge.z) * 0.6 }; P.x = lerp(edge.x, out.x, kd); P.z = lerp(edge.z, out.z, kd); y = lerp(floorY, gy, kd) + Math.sin(kd * Math.PI) * 0.35; arms = 'jump'; A.landX = out.x; A.landZ = out.z; if (kd > 0.92 && !A.thud) { A.thud = 1; sfx.thud?.(); } } // jump down off the tractor
         else { const n = cl.steps.length, st = Math.min(n, Math.floor(kd * (n + 1))), sub = kd * (n + 1) - st, lv = [cl.floor, ...[...cl.steps].reverse(), 0], h0 = (v.s.y || 0) + lv[st] * ks, h1 = (v.s.y || 0) + lv[Math.min(lv.length - 1, st + 1)] * ks; // back down the steps
-          y = st >= n ? lerp(h0, gy, ease(sub)) : h0 + (h1 - h0) * ease(Math.min(1, sub * 1.4)); P.x = lerp(edge.x, A.door.x, kd); P.z = lerp(edge.z, A.door.z, kd); P.face += wrapA(Math.atan2(edge.x - A.door.x, edge.z - A.door.z) - P.face) * Math.min(1, dt * 10); arms = cl.grips ? 'grip' : 'climb'; speed = 0.5; } } /* back down facing the cab, hands on the handholds */
+          y = st >= n ? lerp(h0, gy, ease(sub)) : h0 + (h1 - h0) * ease(Math.min(1, sub * 1.4)); { const ft = climbFoot(v, A.side), kk = kd * (n + 1); const w = kk < 1 ? { x: lerp(edge.x, ft.x, ease(kk)), z: lerp(edge.z, ft.z, ease(kk)) } : st >= n ? { x: lerp(ft.x, A.door.x, ease(sub)), z: lerp(ft.z, A.door.z, ease(sub)) } : ft; P.x = w.x; P.z = w.z; } P.face += wrapA(Math.atan2(edge.x - A.door.x, edge.z - A.door.z) - P.face) * Math.min(1, dt * 10); arms = cl.grips ? 'grip' : 'climb'; speed = 0.5; } } /* back down facing the cab, hands on the handholds */
       else if (A.slamD && A.t < A.d0 + A.dur + (A.down || 0) + A.slamD) { const ks = (A.t - A.d0 - A.dur - (A.down || 0)) / A.slamD; A.sit = 0; A.duck = 0; v.b.group.rotation.z = 0; /* step back past the door's edge, turn and push it shut */
         /* stand off the door's outside face with a hand on it near the edge, and keep the hand on it as it swings shut */
         const pv = v.b.doors?.[A.side], dl = v.b.doors?.len || 1; if (pv) { pv.updateMatrixWorld(true); const q = pv.localToWorld(_dV.set(A.side * 0.46, 0, -dl * 0.72)); A.sp = { x: q.x, z: q.z }; const h = pv.localToWorld(_dV.set(0, 0, -dl * 0.72)); A.dp = { x: h.x, z: h.z }; } else A.sp ||= { x: A.door.x, z: A.door.z };
@@ -2016,6 +2018,7 @@ function updateCarAnim(dt) {
     hero.legL.knee.rotation.x = lerp(hero.legL.knee.rotation.x, 1.35, sk); hero.legR.knee.rotation.x = lerp(hero.legR.knee.rotation.x, 1.35, sk);
     hero.torso.rotation.x = (A.duck || 0); hero.head.rotation.x = -(A.duck || 0) * 0.5; }
   else hero.torso.rotation.x = 0;
+  if (A.type !== 'bail') { /* feet never below the floor, whatever the pose is doing */ heroRoot.updateMatrixWorld(true); _hb.setFromObject(hero.legL.pivot); const m1 = _hb.min.y; _hb.setFromObject(hero.legR.pivot); const fl = baseY(P.x, P.z, A.v?.s?.y ?? P.y), pen = fl + 0.005 - Math.min(m1, _hb.min.y); if (pen > 0) { heroRoot.position.y += pen; P.y += pen; } }
   if (A.type === 'bail' || arms === 'wheel') return; // hands only go to the wheel once you're sat down
   const sw = Math.sin(P.phase) * 0.55 * speed;
   if (arms === 'walk') { hero.armR.pivot.rotation.set(-sw, 0, 0.08); hero.armL.pivot.rotation.set(sw, 0, -0.08); }
@@ -2218,6 +2221,32 @@ function repairCar(v, svc) {
   });
 }
 const carPos = { x: 0, z: 0 };
+// someone (a fare, a friend, an officer) walking round to a door, opening it, sitting in and shutting it: and the reverse
+function npcWalkTo(o, tx, tz, dt, sp = 2.3) { const dx = tx - o.x, dz = tz - o.z, d = Math.hypot(dx, dz); if (d > 0.05) { const st = Math.min(d, sp * dt); o.x += dx / d * st; o.z += dz / d * st; o.face += wrapA(Math.atan2(dx, dz) - o.face) * Math.min(1, dt * 10); o.phase = (o.phase || 0) + dt * 9; }
+  const l = o.f.limbs, sw = Math.sin(o.phase || 0) * (d > 0.05 ? 0.55 : 0); l[0].rotation.set(-sw, 0, 0); l[1].rotation.set(sw, 0, 0); l[2].rotation.set(sw * 0.8, 0, 0); l[3].rotation.set(-sw * 0.8, 0, 0);
+  o.f.root.visible = true; o.f.root.scale.setScalar(1); o.f.root.position.set(o.x, baseY(o.x, o.z), o.z); o.f.root.rotation.set(0, o.face, 0); return d; }
+function npcBoardTick(o, v, seatI, dt) {
+  const side = seatSide(v, seatI) ?? -DRIVER, door = closedCar(v) && seatI < 2 ? doorSpot(v, side, seatI) : doorSpot(v, side, seatI), seat = seatWorld(v, seatI), hasDoor = v.b.doors && seatI < 2 && !v.b.two;
+  o.st ??= 'walk'; o.t = (o.t || 0) + dt;
+  if (o.st === 'walk') { if (!o.route || o.routeFor !== v) { o.routeFor = v; o.route = pathAround(v, { x: o.x, z: o.z }, door); } const T = o.route[0] || door, d = npcWalkTo(o, T.x, T.z, dt); if (d < 0.12) { if (o.route.length > 1) o.route.shift(); else { o.st = 'open'; o.t = 0; if (hasDoor) { setDoor(v, side, true); sfx.click(); } } } return false; }
+  const l = o.f.limbs, hip = l[0].position.y;
+  if (o.st === 'open') { npcWalkTo(o, door.x, door.z, dt); o.face += wrapA(Math.atan2(seat.x - o.x, seat.z - o.z) - o.face) * Math.min(1, dt * 10); o.f.root.rotation.y = o.face; l[3].rotation.set(-1.1, 0, 0.2); if (o.t > (hasDoor ? 0.45 : 0.1)) { o.st = 'in'; o.t = 0; o.from = { x: o.x, z: o.z }; } return false; }
+  if (o.st === 'in') { const k = Math.min(1, o.t / 0.8), e = k * k * (3 - 2 * k), g = baseY(o.x, o.z); o.x = lerp(o.from.x, seat.x, e); o.z = lerp(o.from.z, seat.z, e); o.face += wrapA(v.s.h - o.face) * Math.min(1, dt * 8);
+    o.f.root.position.set(o.x, lerp(g, seat.y - hip, e), o.z); o.f.root.rotation.set(0, o.face, 0); l[0].rotation.set(-1.45 * e, 0, 0.05); l[1].rotation.set(-1.45 * e, 0, -0.05); l[2].rotation.set(-0.45 * e, 0, -0.1); l[3].rotation.set(-0.45 * e, 0, 0.1);
+    if (k >= 1) { o.st = 'close'; o.t = 0; if (hasDoor) setDoor(v, side, false, true); } return false; }
+  return o.t > 0.3; /* door shut behind them: they're in */
+}
+function npcAlightTick(o, v, seatI, dt, away = null) {
+  const side = seatSide(v, seatI) ?? -DRIVER, door = doorSpot(v, side, seatI), seat = seatWorld(v, seatI), hasDoor = v.b.doors && seatI < 2 && !v.b.two, l = o.f.limbs, hip = l[0].position.y;
+  o.st ??= 'open'; o.t = (o.t || 0) + dt;
+  if (o.st === 'open') { seatPassenger(o.f, v, 1); if (o.t < dt * 1.5 && hasDoor) { setDoor(v, side, true); sfx.click(); } if (o.t > (hasDoor ? 0.4 : 0.1)) { o.st = 'out'; o.t = 0; } return false; }
+  if (o.st === 'out') { const k = Math.min(1, o.t / 0.8), e = k * k * (3 - 2 * k), g = baseY(door.x, door.z); o.x = lerp(seat.x, door.x, e); o.z = lerp(seat.z, door.z, e); o.face = Math.atan2(door.x - seat.x, door.z - seat.z);
+    o.f.root.visible = true; o.f.root.position.set(o.x, lerp(seat.y - hip, g, e), o.z); o.f.root.rotation.set(0, o.face, 0); l[0].rotation.set(-1.45 * (1 - e), 0, 0.05); l[1].rotation.set(-1.45 * (1 - e), 0, -0.05); l[2].rotation.set(-0.45 * (1 - e), 0, 0); l[3].rotation.set(-0.45 * (1 - e), 0, 0);
+    if (k >= 1) { o.st = 'shut'; o.t = 0; if (hasDoor) setDoor(v, side, false, true); } return false; }
+  if (o.st === 'shut') { o.f.root.rotation.y = o.face; if (o.t > 0.35) { o.st = 'away'; o.t = 0; const a = o.face; o.to = away || { x: o.x + Math.sin(a) * 5, z: o.z + Math.cos(a) * 5 }; o.route = pathAround(v, { x: o.x, z: o.z }, o.to); } return false; }
+  if (o.st === 'away') { const T = o.route[0] || o.to, d = npcWalkTo(o, T.x, T.z, dt); if (d < 0.15 && o.route.length > 1) o.route.shift(); return o.t > 3.5; }
+  return true;
+}
 // whoever's riding with you sits in the passenger seat of an open-top car (date, buddy): idling, glancing over at you now and then
 function seatPassenger(o, v, seed = 0) {
   const b = v.b, S = 1, hip = o.limbs[0].position.y, si = (() => { let i = 1; while (i < seatsOf(v).length && seatTaken(v, i)) i++; return Math.min(i, seatsOf(v).length - 1); })(); { const w = seatWorld(v, si); _seatV.set(w.x, w.y, w.z); }
@@ -2240,6 +2269,8 @@ function phoneTick(dt) { const U = phoneUse; if (!U) return null;
   if (U.dir) { U.k = clamp(U.k + U.dir * dt / 0.85, 0, 1); if (U.dir > 0 && U.k >= 1) { U.dir = 0; const cb = U.cb; U.cb = null; cb?.(); } else if (U.dir < 0 && U.k <= 0) { phoneUse = null; if (phoneMesh) phoneMesh.visible = false; return null; } }
   else { U.held += dt; if (U.held > 0.6 && state === 'play' && !talk.active && !eventOpen) U.dir = -1; } /* call over: put it away */
   if (!ride) { phoneUse = null; if (phoneMesh) phoneMesh.visible = false; return null; } return U.k; }
+function engineVoice(v) { const b = v.cfg?.body, t = v.b.two; if (t) return t === 'scooter' ? 'scooter' : 'moto'; if (v.b.boat) return 'boat'; if (v.b.tractor || b === 'tractor') return 'tractor';
+  return { sports: 'sports', hyper: 'sports', gt: 'sports', hothatch: 'compact', coupe: 'sports', muscle: 'muscle', lowrider: 'muscle', classic: 'muscle', boxtruck: 'truck', bintruck: 'truck', van: 'van', minivan: 'van', limo: 'luxury', compact: 'compact', hatch: 'compact', jeep: 'offroad', pickup: 'offroad', suv: 'offroad', buggy: 'offroad' }[b] || 'sedan'; }
 function seatedPose(v, dt = 0) {
   const b = v.b, c = v.s, S = 1, hl = 0.86 * (charCfg.height || 1) * (charCfg.legs || 1);
   { const w = seatWorld(v, rideSeat); _seatV.set(w.x, heroSitY(v, w.y), w.z); }
@@ -2257,7 +2288,8 @@ function seatedPose(v, dt = 0) {
     armTo(hero, hero.armL, T); if (pk > 0.5 && hero.armL.elbow) hero.armL.elbow.rotation.x = Math.min(hero.armL.elbow.rotation.x, -1.2 * ((pk - 0.5) / 0.5)); }
   if (rideSeat === 0 && b.steerW) { /* both hands on the rim at ten to two, turning with the wheel */
     const R = b.steerW.geometry.parameters.radius; b.steerW.updateMatrixWorld(true);
-    armTo(hero, hero.armR, b.steerW.localToWorld(_wR.set(-R * 0.82, R * 0.5, 0)).clone()); if (pk == null) armTo(hero, hero.armL, b.steerW.localToWorld(_wR.set(R * 0.82, R * 0.5, 0)).clone());
+    const rot = b.steerW.rotation.z, back = clamp(rot, -0.6, 0.6) - rot, cs = Math.cos(back), sn = Math.sin(back), rim = (x, y) => b.steerW.localToWorld(_wR.set(x * cs - y * sn, x * sn + y * cs, 0)).clone(); /* hands turn with the wheel a little, then slide round it rather than twisting off */
+    armTo(hero, hero.armR, rim(-R * 0.82, R * 0.5)); if (pk == null) armTo(hero, hero.armL, rim(R * 0.82, R * 0.5));
   } else if (rideSeat === 0) { const st = clamp(c.steer || 0, -1, 1) * 0.25; hero.armR.pivot.rotation.set(-1.15, 0, 0.12 + st); hero.armL.pivot.rotation.set(-1.15, 0, -0.12 + st); }
   else { hero.armR.pivot.rotation.set(-0.55, 0, 0.1); hero.armL.pivot.rotation.set(-0.55, 0, -0.1); if (hero.armR.elbow) hero.armR.elbow.rotation.set(-0.5, 0, 0); if (hero.armL.elbow) hero.armL.elbow.rotation.set(-0.5, 0, 0); } /* a passenger: hands in the lap */
 }
@@ -2472,13 +2504,13 @@ function updateVehicles(dt) {
     else if (v === ride && !carAnim) seatedPose(v, dt); /* you can see whoever's in a car through its windows */
     if (v.npcDriver) seatNpcDriver(v);
     carSmoke(v, dt);
-    for (const w of b.wheels) { w.spin.rotation.x += c.v * dt / b.wr; if (w.front) w.pivot.rotation.y = c.steer * 0.45; } if (b.fork) b.fork.rotation.y = c.steer * 0.45; /* the bars turn with the front wheel */
+    for (const w of b.wheels) { { const dθ = c.v * dt / b.wr, cap = b.two ? 0.2 : 0.45; w.spin.rotation.x += Math.max(-cap, Math.min(cap, dθ)); } /* never so fast it strobes backwards */ if (w.front) w.pivot.rotation.y = c.steer * 0.45; } if (b.fork) b.fork.rotation.y = c.steer * 0.45; /* the bars turn with the front wheel */
   }
   const lv = ride || myCar, on = night > 0.25;
   for (const v of vehicles) { if (v.b.blink) setBlink(v.b.blink, v.wrecked ? 0 : v === ride ? gpsTurn(v) : 0); v.b.headM.emissiveIntensity = on && (v !== ride || lightsOn()) ? 2.2 : 0.4; v.b.tailM.emissiveIntensity = v.s.braking ? 3 : on && (v !== ride || lightsOn()) ? 1.2 : 0.4; if (v.b.revM) v.b.revM.emissiveIntensity = v.s.v < -0.4 ? 2.4 : 0; if (v.b.glow) v.b.glow.material.opacity = 0.45 + night * 0.45; }
   for (const v of vehicles) { if (v.b.two) continue; const want = on && !v.wrecked && ((v === ride && lightsOn()) || (!!v.ai && v !== ride)); if (want && !v.beams) { v.beams = headBeams(v.b.width, v.b.length); v.b.group.add(v.beams); } if (v.beams) { v.beams.visible = want; if (v.headBroken) { v.beams.children[0].visible = !v.headBroken['-1']; v.beams.children[1].visible = !v.headBroken['1']; } } } // two cones of light, one per lamp
   if (lv) { const s = lv.s, fx = Math.sin(s.h), fz = Math.cos(s.h); headSpot.intensity = 0; /* the two cones are the headlights now; the old single spotlight pool is gone */ headSpot.position.set(s.x + fx * lv.b.length * 0.5, 1.0, s.z + fz * lv.b.length * 0.5); headTarget.position.set(s.x + fx * 18, 0, s.z + fz * 18); }
-  engineSound(!!ride, ride ? Math.max(Math.abs(ride.s.v), (ride.launch || 0) * 30) : 0);
+  engineSound(!!ride && ride.b.two !== 'bike', ride ? Math.max(Math.abs(ride.s.v), (ride.launch || 0) * 30) : 0, ride ? engineVoice(ride) : 'sedan', ride ? ({ sport: 1.1, race: 1.22, turbo: 1.15 }[ride.cfg?.engine] || 1) : 1); /* a bicycle is silent; everything else sounds like what it is */
 }
 
 // which way the GPS route turns next (only once you're close to the junction): -1 / 0 / +1 in car-local x
@@ -4410,7 +4442,7 @@ async function trafficStop(v) {
   if (why === 'lights') { stats.lights = 'auto'; toast('You switched your headlights back on.', 2); }
   stats.stopCd = gameHours() + 2; chat.resolved = 'stop'; clearWanted(); v.ai = 'leave';
 }
-function clearWanted(msg) { if (!msg) chat.resolved ||= 'settled'; WANT.patrolT = 0; WANT.pull = null; ditchJumpsuit(); WANT.v = 0; WANT.stars = 0; WANT.loseT = 0; WANT.coolT = 0; P.arrestT = 0; for (const c of cops) { if (c.car && copCars.includes(c.car) && c.state !== 'down' && Math.hypot(c.x - c.car.s.x, c.z - c.car.s.z) < 80) { c.cop = 'return'; c.angry = false; } else { c.cop = 'leave'; peds.flee(c, P.x, P.z); } } // officers walk back to their own car and drive off in it
+function clearWanted(msg) { chat.resolved ||= msg ? 'paid' : 'settled'; /* settled with the police (paid, talked out of it): not 'got away' */ WANT.patrolT = 0; WANT.pull = null; ditchJumpsuit(); WANT.v = 0; WANT.stars = 0; WANT.loseT = 0; WANT.coolT = 0; P.arrestT = 0; for (const c of cops) { if (c.car && copCars.includes(c.car) && c.state !== 'down' && Math.hypot(c.x - c.car.s.x, c.z - c.car.s.z) < 80) { c.cop = 'return'; c.angry = false; } else { c.cop = 'leave'; peds.flee(c, P.x, P.z); } } // officers walk back to their own car and drive off in it
   for (const v of copCars) { if (cops.some(c => c.car === v && c.cop === 'return')) { v.ai = 'park'; v.waitT = 0; v.crewBack = true; } else v.ai = 'leave'; } if (msg) toast(msg, 2.5); }
 function ensureSiren(v) { if (v.siren || v.b.two) return; const lightM = [new THREE.MeshBasicMaterial({ color: '#ff2a3a' }), new THREE.MeshBasicMaterial({ color: '#2a6aff' })]; v.siren = lightM.map((m, i) => { const b = new THREE.Mesh(new THREE.BoxGeometry(0.45, 0.16, 0.3), m); b.position.set(i ? 0.32 : -0.32, v.b.height / (v.b.s || 1) + 0.12, -0.1); v.b.group.add(b); b.visible = false; return b; }); }
 function makeCopCar(x, z, h) {
@@ -6335,7 +6367,7 @@ async function talkCustomer(c) {
 // ================================================================ JOBS
 const jobMarker = new THREE.Mesh(new THREE.CylinderGeometry(4, 4, 6, 28, 1, true), new THREE.MeshBasicMaterial({ color: '#ffd23f', transparent: true, opacity: 0.3, side: THREE.DoubleSide, depthWrite: false }));
 jobMarker.visible = false; G.scene.add(jobMarker);
-let fareFig = null;
+let fareFig = null, fareF = null;
 function randomRoadSpot(minD, maxD) {
   for (let i = 0; i < 40; i++) {
     const c = cityNear(P.x, P.z, 400) || CITIES[0], ix = c.kx[0] + Math.floor(Math.random() * (c.kx[1] - c.kx[0] + 1)), iz = c.kz[0] + Math.floor(Math.random() * (c.kz[1] - c.kz[0])) ;
@@ -6358,7 +6390,7 @@ function startJob(p) {
   } else { job = { type: 'courier', stage: 'deliver', fares: 0, earned: 0, depot: p }; nextParcel(); }
   toast(job.type === 'bins' ? 'Bin round started: 8 bins. Pull up next to each one.' : job.type === 'taxi' ? 'Shift started. Follow the GPS to your first fare.' : 'Parcel loaded. Deliver it before time runs out!', 3);
 }
-function nextFare() { const s = randomRoadSpot(80, 260); job.stage = 'pickup'; job.target = s; job.t = 999; setWaypoint(s.x, s.z, 'Fare pickup'); if (fareFig) dyn.remove(fareFig); const raw = npcCfg('guest', Math.floor(Math.random() * 1e5)), lk = bakeCfg(raw); job.fareCfg = raw; fareFig = figure(lk).root; fareFig.position.set(s.x + 3.5, 0.17, s.z); dyn.add(fareFig); }
+function nextFare() { const s = randomRoadSpot(80, 260); job.stage = 'pickup'; job.target = s; job.t = 999; setWaypoint(s.x, s.z, 'Fare pickup'); if (fareFig) dyn.remove(fareFig); const raw = npcCfg('guest', Math.floor(Math.random() * 1e5)), lk = bakeCfg(raw); job.fareCfg = raw; fareF = figure(lk); fareFig = fareF.root; fareFig.position.set(s.x + 3.5, 0.17, s.z); dyn.add(fareFig); }
 function binMesh() { const g = new THREE.Group(); const mk = (w, h, d, c, y) => { const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), new THREE.MeshStandardMaterial({ color: c, roughness: 0.8 })); m.position.y = y; m.castShadow = true; g.add(m); return m; }; mk(0.7, 1.0, 0.75, '#2f6f3a', 0.55); mk(0.76, 0.08, 0.82, '#255a2f', 1.09); mk(0.1, 0.1, 0.1, '#16161b', 0.1).position.set(0.25, 0.1, -0.3); return g; }
 function nextBin() { const f = focusPos(); let best = null, bd = 1e9; for (const b of job.bins) { const d = Math.hypot(b.x - f.x, b.z - f.z); if (d < bd) { bd = d; best = b; } } if (best) { job.target = best; setWaypoint(best.x, best.z, 'Next bin'); } else { job.stage = 'return'; job.target = { x: job.depot.x, z: job.depot.z + 6 }; setWaypoint(job.target.x, job.target.z, 'Back to the depot'); } }
 function nextParcel() { const s = randomRoadSpot(200, 650); job.stage = 'deliver'; job.target = s; job.t = s.d / 8 + 25; job.pay = Math.round(60 + s.d * 0.3); setWaypoint(s.x, s.z, 'Parcel drop-off'); }
@@ -6380,11 +6412,19 @@ function updateJob(dt) {
     return;
   }
   jobMarker.visible = true; jobMarker.position.set(job.target.x, 3, job.target.z); jobMarker.material.opacity = 0.2 + Math.sin(time * 5) * 0.08;
-  if (job.stage === 'drop' || job.type === 'courier') { job.t -= dt; if (job.t <= 0) { sfx.fail(); if (job.type === 'courier') return endJob('Too late. The client cancelled.'); toast('Your fare jumped out. Too slow!'); nextFare(); return; } }
+  if (job.type === 'taxi' && job.board) { /* the fare walks round, gets in and shuts the door before you set off */
+    if (!ride || ride !== job.v) { job.board = null; return; }
+    if (npcBoardTick(job.board, ride, 1, dt)) { job.board = null; fareGo(); } return; }
+  if (job.type === 'taxi' && job.alight) { /* paid up: they climb out, shut the door and walk off */
+    const A = job.alight, done = !ride ? true : npcAlightTick(A, ride, 1, dt); if (done) { if (A.f.root.parent) dyn.remove(A.f.root); job.alight = null; if (job) nextFare(); } return; }
+  if (job.type === 'taxi' && job.stage === 'paid') return;
+  if (job.type === 'taxi' && job.stage === 'drop' && fareF && ride) seatPassenger(fareF, ride, 1); /* sat in the back of YOUR cab the whole ride */
+  if (job.stage === 'drop' || job.type === 'courier') { job.t -= dt; if (job.t <= 0) { sfx.fail(); if (job.type === 'courier') return endJob('Too late. The client cancelled.'); toast('Your fare jumped out. Too slow!'); if (fareF && ride) { job.alight = { f: fareF, x: ride.s.x, z: ride.s.z, face: 0 }; job.fare = null; return; } nextFare(); return; } }
   const stopped = !ride || Math.abs(ride.s.v) < 3;
   if (d < (ride ? 7 : 3) && stopped) {
-    if (job.type === 'taxi' && job.stage === 'pickup') { if (fareFig) { dyn.remove(fareFig); fareFig = null; } const s = randomRoadSpot(200, 600); job.stage = 'drop'; job.target = s; job.t = s.d / 11 + 22; job.pay = Math.round(45 + s.d * 0.28); setWaypoint(s.x, s.z, 'Fare drop-off'); sfx.coin(); job.fare = { ...pick(FARES), cfg: job.fareCfg, mood: 55, chats: 0, rate: 0 }; fareHello(job.fare); }
-    else if (job.type === 'taxi') { const F = job.fare || { mood: 55 }, bonus = Math.round(job.t * 2), tip = Math.max(0, Math.round((F.mood - 45) * 1.6)), pay = job.pay + bonus + tip; job.earned += pay; job.fares++; addMoney(pay); gainXP('driving', 25); gainXP('charm', 4 + Math.max(0, Math.round((F.mood - 50) / 5))); fareBye(F, pay, bonus, tip); job.fare = null; nextFare(); }
+    if (job.type === 'taxi' && job.stage === 'pickup') { if (fareF && ride) { if (Math.abs(ride.s.v) < 0.8 && !job.board) job.board = { f: fareF, x: fareFig.position.x, z: fareFig.position.z, face: fareFig.rotation.y, phase: 0 }; return; } fareGo(); }
+    else if (false) { const s = randomRoadSpot(200, 600); job.stage = 'drop'; job.target = s; job.t = s.d / 11 + 22; job.pay = Math.round(45 + s.d * 0.28); setWaypoint(s.x, s.z, 'Fare drop-off'); sfx.coin(); job.fare = { ...pick(FARES), cfg: job.fareCfg, mood: 55, chats: 0, rate: 0 }; fareHello(job.fare); }
+    else if (job.type === 'taxi') { if (ride && Math.abs(ride.s.v) > 0.8) return; const F = job.fare || { mood: 55 }, bonus = Math.round(job.t * 2), tip = Math.max(0, Math.round((F.mood - 45) * 1.6)), pay = job.pay + bonus + tip; job.earned += pay; job.fares++; addMoney(pay); gainXP('driving', 25); gainXP('charm', 4 + Math.max(0, Math.round((F.mood - 50) / 5))); fareBye(F, pay, bonus, tip); job.fare = null; job.stage = 'paid'; clearWaypoint(); jobMarker.visible = false; if (fareF && ride) { job.alight = { f: fareF, x: ride.s.x, z: ride.s.z, face: ride.s.h }; } else nextFare(); }
     else { const bonus = Math.round(job.t * 2); const pay = job.pay + bonus; job.earned += pay; job.fares++; addMoney(pay); gainXP('stamina', 25); gainXP('charm', 4); toast(`Delivered! +${fmt(pay)} (incl. ${fmt(bonus)} speed tip)`, 2.6); nextParcel(); }
   }
 }
@@ -6411,9 +6451,10 @@ const FARE_REACT = { // how each kind of passenger takes each kind of answer
   music: { chat: [2, 'Yeah, yeah. Turn it up though?'], quiet: [-6, 'Boring...'], music: [14, 'THIS IS MY SONG!'], fast: [6, 'Wooo! Faster!'] },
   fast: { chat: [-4, 'Less chat, more driving.'], quiet: [6, 'Good. Focus.'], music: [-4, 'Turn that off.'], fast: [14, 'Now THAT is service.'] },
 };
+function fareGo() { const s = randomRoadSpot(200, 600); job.stage = 'drop'; job.target = s; job.t = s.d / 11 + 22; job.pay = Math.round(45 + s.d * 0.28); setWaypoint(s.x, s.z, 'Fare drop-off'); sfx.coin(); job.fare = { ...pick(FARES), cfg: job.fareCfg, mood: 55, chats: 0, rate: 0 }; fareHello(job.fare); }
 function fareCar() { return ride ? { color: ride.cfg?.bodyColor || '#ffd23f', trim: ride.cfg?.accentColor } : { color: '#ffd23f' }; }
 async function fareHello(F) {
-  eventOpen = true; beginTalk(F.cfg || npcCfg('guest', 7), F.name, 'Your fare', 170 + Math.random() * 100, null, null, null, false, false, false, fareCar());
+  eventOpen = true; talk.forcePassenger = null; beginTalk(F.cfg || npcCfg('guest', 7), F.name, 'Your fare', 170 + Math.random() * 100, null, null, null, false, !!ride, false, ride ? false : fareCar());
   for (const l of F.hi) await talk.say(l);
   const k = await talk.choose([I('chat', 'Buckle up, let\'s go'), I('music', 'Any music requests?'), I('run', 'Hold on, I\'m quick')]);
   const kind = ['chat', 'music', 'fast'][k], r = FARE_REACT[F.likes][kind]; F.mood = clamp(F.mood + r[0] * 0.6, 0, 100);
@@ -6424,7 +6465,7 @@ async function fareChat() {
   const F = job?.fare; if (!F || state !== 'play' || talk.active) return; if (ride) ride.s.v *= 0.98;
   if (F.chats >= 3) { toast(`${F.name}: "${F.likes === 'quiet' ? 'Could we just... not?' : 'Ha, you\'re funny. Eyes on the road!'}"`, 2); return; }
   F.chats++; const T = FARE_TOPICS[(F.chats + F.name.length) % FARE_TOPICS.length];
-  eventOpen = true; beginTalk(F.cfg || npcCfg('guest', 7), F.name, `Your fare · ${F.mood > 65 ? 'happy' : F.mood < 40 ? 'not impressed' : 'okay'}`, 170, null, null, null, false, false, false, fareCar());
+  eventOpen = true; beginTalk(F.cfg || npcCfg('guest', 7), F.name, `Your fare · ${F.mood > 65 ? 'happy' : F.mood < 40 ? 'not impressed' : 'okay'}`, 170, null, null, null, false, !!ride, false, ride ? false : fareCar());
   await talk.say(T.you, 'you'); const k = await talk.choose(T.opts.map(o => I('chat', o[0]))); const kind = T.opts[k][1], r = FARE_REACT[F.likes][kind];
   await talk.say(T.opts[k][0], 'you'); await talk.say(r[1]); F.mood = clamp(F.mood + r[0], 0, 100); if (kind === 'music') radioOn(true);
   endTalk(); eventOpen = false;
@@ -6435,8 +6476,8 @@ function fareBye(F, pay, bonus, tip) {
 function fareBtnTick() { // the Passenger button sits top right while someone's in the back; in any cab you can start taking fares
   let b = $('fareBtn'); const inTaxi = ride && !ride.b.two && (ride.taxi || ride.cfg?.roof === 'taxi'), show = state === 'play' && (job?.type === 'taxi' || (inTaxi && !job));
   if (!show) { if (b) b.classList.add('hidden'); return; }
-  if (!b) { b = document.createElement('button'); b.id = 'fareBtn'; document.body.appendChild(b); b.onclick = () => { if (job?.fare && job.stage === 'drop') fareChat(); else if (job?.type === 'taxi') return; else if (ride && !job) { job = { type: 'taxi', v: ride, stage: 'pickup', fares: 0, earned: 0 }; nextFare(); toast('Taking fares. Follow the GPS to your first passenger.', 2.6); } }; }
-  b.classList.remove('hidden'); const html = job?.type === 'taxi' ? (job.stage === 'drop' && job.fare ? `<span class="fb-top">${svg('taxi', 'sm')} ${job.fare.name}</span><small>${job.fare.mood > 65 ? 'Happy' : job.fare.mood < 40 ? 'Grumpy' : 'Passenger'} · tap to chat</small><span class="fb-row"><span class="t">${Math.ceil(job.t)}s</span><span class="m">${fmt(job.pay)}</span></span>` : `<span class="fb-top">${svg('taxi', 'sm')} Pick up fare</span><span class="fb-row"><span class="m">${fmt(job.earned)} earned</span></span>`) : `${svg('taxi', 'sm')} Take fares`; /* the whole cab job lives in this one card */ if (b.dataset.h !== html) { b.innerHTML = html; b.dataset.h = html; }
+  if (!b) { b = document.createElement('button'); b.id = 'fareBtn'; document.body.appendChild(b); b.onclick = () => { if (job?.fare && job.stage === 'drop') fareChat(); else if (job?.type === 'taxi') { if (job.stage === 'pickup' && !job.board) endJob('You stopped taking fares.'); return; } else if (ride && !job) { job = { type: 'taxi', v: ride, stage: 'pickup', fares: 0, earned: 0 }; nextFare(); toast('Taking fares. Follow the GPS to your first passenger.', 2.6); } }; }
+  b.classList.remove('hidden'); const html = job?.type === 'taxi' ? (job.stage === 'drop' && job.fare ? `<span class="fb-top">${svg('taxi', 'sm')} ${job.fare.name}</span><small>${job.fare.mood > 65 ? 'Happy' : job.fare.mood < 40 ? 'Grumpy' : 'Passenger'} · tap to chat</small><span class="fb-row"><span class="t">${Math.ceil(job.t)}s</span><span class="m">${fmt(job.pay)}</span></span>` : `<span class="fb-top">${svg('taxi', 'sm')} ${job.board ? 'Fare getting in…' : job.alight ? 'Fare getting out…' : 'Pick up fare'}</span><span class="fb-row"><span class="m">${fmt(job.earned)} earned</span></span>${job.board || job.alight ? '' : '<small>Tap to stop taking fares</small>'}`) : `${svg('taxi', 'sm')} Take fares`; /* the whole cab job lives in this one card */ if (b.dataset.h !== html) { b.innerHTML = html; b.dataset.h = html; }
 }
 // ================================================================ WAYPOINT & GPS
 const beam = new THREE.Mesh(new THREE.CylinderGeometry(1.2, 1.2, 80, 16, 1, true), new THREE.MeshBasicMaterial({ color: '#ffd23f', transparent: true, opacity: 0.35, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide }));
@@ -6946,7 +6987,7 @@ const btnCache = {}, keyLbl = {};
 const KEYCAP = id => id === 'btnA' ? 'E' : id === 'btnB' ? (ride ? 'F' : 'Space') : id === 'btnX' ? (ride && !/Shoot/.test(keyLbl.btnX || '') ? 'Space' : 'Click') : 'R';
 let keyHintK = '';
 function renderKeyHints() { if (!document.body.classList.contains('desktop')) return; let el = $('keyHints'); if (!el) { el = document.createElement('div'); el.id = 'keyHints'; document.body.appendChild(el); }
-  const rows = ['btnA', 'btnB', 'btnX', 'btnY'].filter(id => keyLbl[id] && (id === 'btnY' || !$(id).classList.contains('hidden'))).map(id => [KEYCAP(id), keyLbl[id]]).concat(keyLbl.btnA === 'Phone' ? [] : [['T', 'Phone']], [['Q', 'Next weapon'], ['M', 'Map']]);
+  const rows = ['btnA', 'btnB', 'btnX', 'btnY'].filter(id => keyLbl[id] && (id === 'btnY' || !$(id).classList.contains('hidden'))).map(id => [KEYCAP(id), keyLbl[id]]).concat(keyLbl.btnA === 'Phone' ? [] : [['T', 'Phone']], [['Q', 'Next weapon'], ['Tab', 'Weapon wheel'], ['M', 'Map']]);
   const k = JSON.stringify(rows); if (k === keyHintK) return; keyHintK = k; el.innerHTML = rows.map(([c, l]) => `<div><kbd>${c}</kbd><span>${l}</span></div>`).join(''); }
 function setDesktop(on) { document.body.classList.toggle('desktop', on); keyHintK = ''; if (on) renderKeyHints(); else $('keyHints')?.remove(); }
 setDesktop(!isTouchDevice());
@@ -7019,7 +7060,7 @@ function updateHUD(dt) {
 
 // ---------------- weapon & radio wheels
 $('pad').appendChild($('wpnBtn')); // the weapon sits in with the action buttons, beside the top one
-attachWheel($('wpnBtn'), {
+const wpnWheelW = attachWheel($('wpnBtn'), {
   items: () => SLOTS.map(s => {
     const own = arsenal.owned.includes(s.id), a = arsenal.ammo[s.id];
     const sub = !own ? `${s.price ? fmt(s.price) + ' at Bay Arms' : 'Buy at Bay Arms'}` : s.kind === 'melee' ? (s.id === 'fist' ? 'Holstered' : 'Melee') : s.kind === 'grenade' ? `${a.res} left` : `${a.mag} | ${a.res}${GUN_SKILL_SLOTS.includes(s.id) ? ` · skill ${lvl('gun_' + s.id)}` : ''}`;
@@ -7559,7 +7600,7 @@ function saveGame() {
   store.set('bc_save', save); store.set('bc_arsenal', arsenal); store.set('bc_cars', garage); store.set('bc_savedAt', Date.now());
 }
 // auto-update: bookmarks and home-screen apps can hold on to an old copy. Check version.json (never cached) and reload once if newer.
-const BUILD = 206;
+const BUILD = 207;
 function updatingCover() { const d = document.createElement('div'); d.id = 'updCover'; d.innerHTML = '<div class="bt-logo">BAY<span>CITY</span></div><p><i></i>Updating Bay City...</p>'; document.body.appendChild(d); requestAnimationFrame(() => d.classList.add('on')); }
 function checkUpdate() {
   fetch('version.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(j => {
@@ -8009,6 +8050,8 @@ function step(dt) { lastDt = dt;
   input.mode = ride ? 'car' : 'foot'; input.consume('slot');
   for (let i = 1; i <= 9; i++) if (input.keys.has('Digit' + i)) { input.keys.delete('Digit' + i); if (SLOTS[i - 1] && arsenal.owned.includes(SLOTS[i - 1].id)) selectWeapon(SLOTS[i - 1].id); }
   if (input.consume('phone')) openPhone();
+  if (input.consume('wpnwheel')) wpnWheelW?.toggle?.(); /* Tab / G: the weapon wheel on a keyboard (hover with the mouse, click or let go of Tab to pick) */
+  if (input.consume('wpnwheelUp')) { if (wpnWheelW?.keyOpen) wpnWheelW.pickHover(); }
   if (input.consume('wheel')) { const own = SLOTS.filter(q => arsenal.owned.includes(q.id)), i = own.findIndex(q => q.id === arsenal.cur); if (own.length) { selectWeapon(own[(i + 1) % own.length].id); sfx.equip?.(); } } // Q: next weapon
   if (input.keys.has('KeyH')) { input.keys.delete('KeyH'); holsterToggle(); }
   if (input.keys.has('KeyP')) { input.keys.delete('KeyP'); openPhone(); }

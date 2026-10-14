@@ -1,7 +1,7 @@
 // Minigames as playable cutscenes in the real 3D world: you watch your own character do it, on a little set
 // built where you're standing (or in the sea, at the hoop, behind the counter...). A light HUD sits on top.
 import * as THREE from '../lib/three.module.min.js';
-import { sfx, audio } from './audio.js?v=206';
+import { sfx, audio } from './audio.js?v=207';
 
 let C = null; // context from main.js: scene, camera, hero, helpers
 export function initCutGames(ctx) { C = ctx; }

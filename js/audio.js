@@ -58,11 +58,31 @@ export const sfx = {
 
 // ---------------- engine hum
 let eng = null;
-export function engine(on, speed) {
+// every kind of vehicle has its own voice: base pitch, how fast it revs, the waveforms and how bright it sounds
+export const ENGINE_VOICE = {
+  sedan: { base: 38, k: 3, sub: 0.5, a: 'sawtooth', b: 'square', cut: 420, gain: 0.022 },
+  compact: { base: 46, k: 3.6, sub: 0.5, a: 'sawtooth', b: 'triangle', cut: 520, gain: 0.018 },
+  sports: { base: 58, k: 5.2, sub: 0.5, a: 'sawtooth', b: 'sawtooth', cut: 900, gain: 0.024 },
+  muscle: { base: 30, k: 2.6, sub: 0.5, a: 'square', b: 'sawtooth', cut: 360, gain: 0.03, wobble: 9 },
+  truck: { base: 24, k: 1.6, sub: 0.5, a: 'square', b: 'square', cut: 260, gain: 0.03, wobble: 5 },
+  van: { base: 34, k: 2.4, sub: 0.5, a: 'sawtooth', b: 'square', cut: 360, gain: 0.022 },
+  luxury: { base: 34, k: 2.6, sub: 0.5, a: 'triangle', b: 'sawtooth', cut: 300, gain: 0.016 },
+  offroad: { base: 32, k: 2.6, sub: 0.5, a: 'square', b: 'sawtooth', cut: 380, gain: 0.026, wobble: 6 },
+  moto: { base: 62, k: 6.5, sub: 0.5, a: 'sawtooth', b: 'square', cut: 1100, gain: 0.02, wobble: 14 },
+  scooter: { base: 300, k: 26, sub: 1.5, a: 'sine', b: 'sine', cut: 2400, gain: 0.006 },
+  boat: { base: 52, k: 4, sub: 0.5, a: 'sawtooth', b: 'square', cut: 700, gain: 0.022, wobble: 11 },
+  tractor: { base: 22, k: 1.2, sub: 0.5, a: 'square', b: 'square', cut: 240, gain: 0.03, wobble: 4 },
+};
+let engV = null;
+export function engine(on, speed, voice = 'sedan', tune = 1) {
   if (!A) return;
-  if (!eng) { const o = A.createOscillator(), o2 = A.createOscillator(), f = A.createBiquadFilter(), g = A.createGain(); o.type = 'sawtooth'; o2.type = 'square'; f.type = 'lowpass'; f.frequency.value = 420; o.connect(f); o2.connect(f); f.connect(g); g.connect(out()); g.gain.value = 0; o.start(); o2.start(); eng = { o, o2, g }; }
-  eng.o.frequency.value = 38 + speed * 3; eng.o2.frequency.value = 19 + speed * 1.5;
-  eng.g.gain.value = on ? 0.022 : 0;
+  if (!eng) { const o = A.createOscillator(), o2 = A.createOscillator(), f = A.createBiquadFilter(), g = A.createGain(); o.type = 'sawtooth'; o2.type = 'square'; f.type = 'lowpass'; f.frequency.value = 420; o.connect(f); o2.connect(f); f.connect(g); g.connect(out()); g.gain.value = 0; o.start(); o2.start(); eng = { o, o2, f, g }; }
+  const V = ENGINE_VOICE[voice] || ENGINE_VOICE.sedan;
+  if (engV !== V) { engV = V; eng.o.type = V.a; eng.o2.type = V.b; eng.f.frequency.value = V.cut; }
+  const lope = V.wobble ? 1 + Math.sin(A.currentTime * V.wobble) * 0.04 * Math.max(0, 1 - speed / 12) : 1; /* a big engine lopes at idle */
+  eng.o.frequency.value = (V.base + speed * V.k) * tune * lope; eng.o2.frequency.value = (V.base + speed * V.k) * V.sub * tune * lope;
+  eng.f.frequency.value = V.cut * (1 + Math.min(1.5, speed / 25)) * Math.min(1.6, tune);
+  eng.g.gain.value = on ? V.gain : 0;
 }
 
 // ---------------- ambience: city hum, waves, birds by day, crickets at night

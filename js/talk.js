@@ -1,8 +1,8 @@
 // Conversations staged like a Pokémon battle: they stand on a platform facing you,
 // you see the back of your own head in the foreground, subtitles type out, you pick replies.
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, setFace } from './character.js?v=206';
-import { sfx, audio } from './audio.js?v=206';
+import { buildCharacter, poseCharacter, disposeObject, setFace } from './character.js?v=207';
+import { sfx, audio } from './audio.js?v=207';
 
 const $ = id => document.getElementById(id);
 const BG = {
@@ -316,13 +316,14 @@ export class Talk {
         n.armR.pivot.rotation.set(-1.2, 0, 0.28); n.armL.pivot.rotation.set(-1.2, 0, -0.28); if (n.armR.elbow) { n.armR.elbow.rotation.set(-0.35, 0, 0); n.armL.elbow.rotation.set(-0.35, 0, 0); }
         n.head.rotation.x = 0.18 + Math.sin(this.t * 1.1) * 0.04; n.head.rotation.y = Math.sin(this.t * 0.7) * 0.25;
         if (this.wheel) this.wheel.rotation.z = Math.sin(this.t * 0.9) * 0.15;
-      } else { // standing, hand on chin
-        n.root.rotation.y = Math.sin(this.t * 0.5) * 0.15;
+      } else { // standing, hand on chin: a close-up like a call, no pedestal, room above for the bubbles
+        n.root.rotation.y = Math.sin(this.t * 0.5) * 0.15; n.root.position.set(0, 0, 0); if (this.pNpc) this.pNpc.g.visible = false; if (this.pYou) this.pYou.g.visible = false;
+        { n.root.updateMatrixWorld(true); const hp = new THREE.Vector3(); n.head.getWorldPosition(hp); const k = hp.y / 1.55; this.cam.position.set(hp.x + 0.2 * k, hp.y + 0.1 * k, hp.z + 2.05 * k); this.cam.lookAt(hp.x, hp.y - 0.22 * k, hp.z); } /* the phone-call distance, nudged up to fit the bubbles */
         n.head.rotation.x = 0.15 + Math.sin(this.t * 1.1) * 0.04; n.head.rotation.y = -0.2; n.armL.pivot.rotation.set(-0.15, 0, -0.1);
-        if (!n._chin) { n.armR.pivot.rotation.set(-1.6, 0, 0.3); if (n.armR.elbow) n.armR.elbow.rotation.set(-1.9, 0, 0); this.handToHead(n, n.armR, -0.15, -1.15, 1.05); n._chin = [n.armR.pivot.rotation.clone(), n.armR.elbow?.rotation.clone()]; } /* fingers under the chin */
+        if (!n._chin) { n.armR.pivot.rotation.set(-0.45, 0, -0.3); if (n.armR.elbow) n.armR.elbow.rotation.set(-2.45, 0, 0); this.handToHead(n, n.armR, -0.05, -0.92, 1.05); n._chinErr = this._lastErr; n._chin = [n.armR.pivot.rotation.clone(), n.armR.elbow?.rotation.clone()]; } /* fingers under the chin */
         n.armR.pivot.rotation.copy(n._chin[0]); if (n.armR.elbow && n._chin[1]) n.armR.elbow.rotation.copy(n._chin[1]);
       }
-      if (this.bubbles) { const E = this.headBox(n), top = n.head.localToWorld(new THREE.Vector3(E.ctr.x, E.ctr.y + E.hh, E.ctr.z)); this.bubbles.position.copy(top); this.bubbles.children.forEach((b, i) => { b.position.set([0.16, 0.34, 0.6][i], [0.1, 0.32, 0.66][i] + Math.sin(this.t * 2 + i) * 0.03, 0.05); }); } /* the bubbles rise straight out of the top of the head */
+      if (this.bubbles) { const E = this.headBox(n), top = n.head.localToWorld(new THREE.Vector3(E.ctr.x, E.ctr.y + E.hh, E.ctr.z)); this.bubbles.position.copy(top); this.bubbles.children.forEach((b, i) => { b.position.set(E.hw * 0.8 + [0.02, 0.1, 0.22][i], [-0.02, 0.06, 0.16][i] + Math.sin(this.t * 2 + i) * 0.015, 0.05); b.scale.setScalar([0.45, 0.5, 0.6][i]); }); } /* the bubbles rise straight out of the top of the head */
     }
     if (this.seat && this.seatG && !this.think && y) { // you're sat in the driver's seat; whoever it is talks to you through the window
       const ry = y.root.rotation.y - Math.PI / 2;
@@ -355,14 +356,24 @@ export class Talk {
   // on your bike / scooter / motorbike / boat, phone at your ear, one hand on the bars or wheel
   // bring the phone hand right up to the ear: a few nudges of shoulder and elbow until the hand sits beside the head
   earIK(c, arm, sx) { this.handToHead(c, arm, sx * 0.95, -0.3, 0.02, true); }
+  // how deep a point sits inside the chest (0 if outside), with a little room for the arm's thickness
+  inTorso(c, p) { const T = c.torso; if (!T) return 0;
+    if (!c._tb) { const bb = new THREE.Box3(); for (const m of T.children) if (m.isMesh) { m.geometry.computeBoundingBox(); const g = m.geometry.boundingBox.clone().translate(m.position); bb.union(g); } c._tb = bb.expandByScalar(0.025); }
+    const q = T.worldToLocal(p.clone()), B = c._tb; if (!B.containsPoint(q)) return 0; return Math.min(q.x - B.min.x, B.max.x - q.x, q.y - B.min.y, B.max.y - q.y, q.z - B.min.z, B.max.z - q.z); }
   headBox(c) { c.root.updateWorldMatrix(true, true); if (!c._ear) { const bb = new THREE.Box3().setFromObject(c.head), ctr = c.head.worldToLocal(bb.getCenter(new THREE.Vector3())); c._ear = { ctr, hw: (bb.max.x - bb.min.x) / 2, hh: (bb.max.y - bb.min.y) / 2 }; } return c._ear; }
   // put a hand at a spot on the head (x, y in head half-widths, z in metres): the ear for a phone, the chin when thinking
   handToHead(c, arm, ox, oy, oz, abs = false) {
     if (!c || !arm?.hand || !c.head) return; const E = this.headBox(c);
     const T = c.head.localToWorld(new THREE.Vector3(E.ctr.x + ox * E.hw, E.ctr.y + oy * E.hh, E.ctr.z + (abs ? oz : oz * E.hw))), h = new THREE.Vector3();
-    const f = () => { c.root.updateWorldMatrix(true, true); arm.hand.getWorldPosition(h); return h.distanceTo(T); };
+    const hc = c.head.localToWorld(E.ctr.clone()), Rh = Math.max(E.hw, E.hh) * 1.2, el = new THREE.Vector3(), mid = new THREE.Vector3(), sh = new THREE.Vector3(), up = new THREE.Vector3();
+    const f = () => { c.root.updateWorldMatrix(true, true); arm.hand.getWorldPosition(h); let cost = h.distanceTo(T); /* keep the elbow and forearm OUT of the face: out to the side, like a real arm */
+      if (arm.elbow) { arm.elbow.getWorldPosition(el); mid.copy(el).add(h).multiplyScalar(0.5); if (abs) cost += 3 * Math.max(0, Rh * 1.25 - el.distanceTo(hc)) + 3 * Math.max(0, Rh - mid.distanceTo(hc));
+        arm.pivot.getWorldPosition(sh); up.copy(sh).add(el).multiplyScalar(0.5); for (const q of [el, mid, up]) cost += 2 * this.inTorso(c, q); } return cost; }; /* ...and never through the chest */
+    const key = '_ik' + (arm === c.armL ? 'L' : 'R') + ox.toFixed(2) + oy.toFixed(2), prev = c[key]; let st = 0.3, its = 60;
+    if (prev) { arm.pivot.rotation.copy(prev[0]); if (arm.elbow) arm.elbow.rotation.copy(prev[1]); st = 0.04; its = 12; } /* last frame's answer: just touch it up */
+    else if (abs && arm.elbow) { const sx = Math.sign(ox) || 1; arm.pivot.rotation.set(-0.7, 0, sx * 1.15); arm.elbow.rotation.set(-2.3, 0, 0); } /* start from a side-on, elbow-out pose */
     const P = [[arm.pivot.rotation, 'x'], [arm.pivot.rotation, 'z'], [arm.pivot.rotation, 'y']]; if (arm.elbow) P.push([arm.elbow.rotation, 'x']);
-    let best = f(), st = 0.3; for (let i = 0; i < 30 && st > 0.01; i++) { let imp = false; for (const [o, k] of P) for (const d of [st, -st]) { o[k] += d; const v = f(); if (v < best - 1e-4) { best = v; imp = true; break; } o[k] -= d; } if (!imp) st *= 0.5; }
+    let best = f(); for (let i = 0; i < its && st > 0.008; i++) { let imp = false; for (const [o, k] of P) for (const d of [st, -st]) { o[k] += d; const v = f(); if (v < best - 1e-4) { best = v; imp = true; break; } o[k] -= d; } if (!imp) st *= 0.5; } c[key] = [arm.pivot.rotation.clone(), arm.elbow ? arm.elbow.rotation.clone() : null]; c.root.updateWorldMatrix(true, true); arm.hand.getWorldPosition(h); this._lastErr = h.distanceTo(T);
   }
   twoPose(n, y) {
     const R = this.twoRide, kind = R.boat ? 'boat' : R.two, hl = y.legLen || 0.86, talking = this.talking === 'you';
