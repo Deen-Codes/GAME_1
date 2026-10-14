@@ -564,7 +564,7 @@ body.phone-out #mmWrap { opacity: 0; transition: opacity .1s; }
 .hud-l .needs { transition: opacity .2s ease; }
 #hud.slot .hud-l .needs { display: flex; opacity: 0; }
 .hud-l #radioBtn, .hud-l .wanted { transition: transform .32s cubic-bezier(.2,.9,.3,1.05), width .35s cubic-bezier(.2,.9,.3,1.2), background .3s; }
-#hud.slot .hud-l #radioBtn, #hud.slot .hud-l .wanted { transform: translateY(calc(var(--slotH, 64px) - 40px)); }
+#hud.slot .hud-l #radioBtn, #hud.slot .hud-l .wanted { transform: translateY(calc(var(--slotH, 64px) - 32px)); }
 .toast { position: fixed; top: calc(var(--sat) + 10px); left: 50%; transform: translateX(-50%); width: max-content; max-width: calc(100vw - 40px); z-index: 30; display: block; text-align: center; border-radius: 999px; }
 .toast:not(.on) { display: none; }
 .note { display: none !important; }
@@ -605,3 +605,30 @@ body.phone-out #mmWrap { opacity: 0; transition: opacity .1s; }
 #subs.plain.levelup .subIco { color: #16161b; box-shadow: 0 0 0 2px #fff; }
 #subs.levelup.show { animation: lvlPop .7s cubic-bezier(.2,1.6,.4,1); }
 @keyframes lvlPop { 0% { transform: scale(.6); } 60% { transform: scale(1.08); } 100% { transform: scale(1); } }
+
+/* the deal ring */
+#ringUI { position: fixed; inset: 0; z-index: 60; display: grid; place-items: center; background: rgba(8,6,16,.62); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); animation: rIn .22s ease; padding: 16px; }
+#ringUI.out { opacity: 0; transition: opacity .2s; }
+@keyframes rIn { from { opacity: 0; } }
+#ringUI .rcard { width: min(360px, 100%); background: linear-gradient(180deg, #221c38, #15111f); border: 1px solid rgba(255,255,255,.1); border-radius: 26px; padding: 16px 16px 18px; color: #fff; box-shadow: 0 20px 60px rgba(0,0,0,.5); display: grid; gap: 10px; animation: rPop .32s cubic-bezier(.2,1.4,.4,1); }
+@keyframes rPop { from { transform: scale(.85); } }
+#ringUI .rtop { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+#ringUI .rtop b { font-size: 13px; letter-spacing: .1em; text-transform: uppercase; color: #ffd23f; }
+#ringUI .rtop span { font-weight: 800; font-size: 15px; text-align: right; }
+#ringUI .rwrap { position: relative; width: 100%; aspect-ratio: 1; max-width: 260px; margin: 0 auto; }
+#ringUI canvas { width: 100%; height: 100%; display: block; }
+#ringUI .rmid { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; gap: 2px; }
+#ringUI .rnum { font-size: 30px; font-weight: 900; font-variant-numeric: tabular-nums; }
+#ringUI .rsub { font-size: 12px; font-weight: 800; color: rgba(255,255,255,.7); letter-spacing: .04em; }
+#ringUI.win .rnum { color: #6dff8a; animation: rWin .5s cubic-bezier(.2,1.6,.4,1); }
+#ringUI.lose .rnum { color: #ff5c6a; animation: rLose .4s; }
+@keyframes rWin { 40% { transform: scale(1.25); } }
+@keyframes rLose { 20%, 60% { transform: translateX(-6px); } 40%, 80% { transform: translateX(6px); } }
+#ringUI .rtip { margin: 0; font-size: 12.5px; color: rgba(255,255,255,.72); text-align: center; }
+#ringUI .rtip .g { color: #6dff8a; font-weight: 800; }
+#ringUI .rbtns { display: grid; grid-template-columns: 1fr 1.3fr; gap: 10px; }
+#ringUI .rbtns button { border: 0; border-radius: 16px; padding: 12px 10px; font: inherit; font-weight: 900; color: #fff; display: flex; align-items: center; justify-content: center; gap: 6px; flex-direction: column; touch-action: none; user-select: none; -webkit-user-select: none; }
+#ringUI .rsafe { background: rgba(255,255,255,.1); }
+#ringUI .rsafe small { font-weight: 700; opacity: .7; }
+#ringUI .rhold { background: linear-gradient(180deg, #4cd964, #26a644); font-size: 18px; flex-direction: row !important; box-shadow: 0 6px 0 #17702c; transition: transform .08s, box-shadow .08s; }
+#ringUI .rhold.on { transform: translateY(5px); box-shadow: 0 1px 0 #17702c; }

@@ -1,26 +1,26 @@
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=120';
-import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=120';
-import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=120';
-import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=120';
-import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=120';
-import { buildPanel, renderStats } from './ui.js?v=120';
-import { Input } from './input.js?v=120';
-import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime } from './audio.js?v=120';
-import { runMinigame } from './minigames.js?v=120';
-import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk, setReservedNames } from './peds.js?v=120';
-import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=120';
-import { findRoute } from './nav.js?v=120';
-import { COURSES, CAREERS, QUIZ } from './careers.js?v=120';
-import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=120';
-import { attachWheel } from './wheel.js?v=120';
-import { Animals } from './animals.js?v=120';
-import { Talk } from './talk.js?v=120';
-import { incomingText, classify, textOptions, textReply } from './texts.js?v=120';
-import { svg, drawIcon } from './icons.js?v=120';
-import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=120';
-import { FURN, CATALOG } from './furniture.js?v=120';
-import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=120';
+import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=121';
+import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=121';
+import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=121';
+import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=121';
+import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=121';
+import { buildPanel, renderStats } from './ui.js?v=121';
+import { Input } from './input.js?v=121';
+import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime } from './audio.js?v=121';
+import { runMinigame } from './minigames.js?v=121';
+import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk, setReservedNames } from './peds.js?v=121';
+import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=121';
+import { findRoute } from './nav.js?v=121';
+import { COURSES, CAREERS, QUIZ } from './careers.js?v=121';
+import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=121';
+import { attachWheel } from './wheel.js?v=121';
+import { Animals } from './animals.js?v=121';
+import { Talk } from './talk.js?v=121';
+import { incomingText, classify, textOptions, textReply } from './texts.js?v=121';
+import { svg, drawIcon } from './icons.js?v=121';
+import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=121';
+import { FURN, CATALOG } from './furniture.js?v=121';
+import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=121';
 
 const $ = id => document.getElementById(id);
 let inside = null, editMode = false, held = null, pendingCar = false, homeMusic = false, phoneBadge = 0;
@@ -5126,6 +5126,51 @@ function sheet(title, render, bind) {
     $('dealClose').onclick = () => close(sheet.value || 0); sheet.value = 0;
   });
 }
+// ================================================================ the deal ring (Scarface style): hold, the ring fills, let go in the sweet spot
+// buy: sweet spot = cheaper; miss = you pay full and they short you. sell: sweet spot = they pay more; miss = they lowball you.
+// "Play it safe" skips the ring at the normal price. The better they know you, the wider and slower the sweet spot.
+function dealRing({ mode, label, base, relId, face }) {
+  return new Promise(res => {
+    const r0 = rel(relId), width = clamp(0.085 + r0 * 0.0014 + (lvl('dealing') - 1) * 0.006, 0.085, 0.26), dur = 1.55 + r0 * 0.012 + (lvl('charm') - 1) * 0.04;
+    const z0 = rand(0.42, 0.86 - width), z1 = z0 + width;
+    const ov = document.createElement('div'); ov.id = 'ringUI';
+    ov.innerHTML = `<div class="rcard"><div class="rtop"><b>${mode === 'buy' ? 'Buying' : 'Selling'}</b><span>${label}</span></div>
+      <div class="rwrap"><canvas width="440" height="440"></canvas><div class="rmid"><b class="rnum">${fmt(base)}</b><small class="rsub">Hold to push</small></div></div>
+      <p class="rtip">Hold, and let go inside the <span class="g">green</span>. Go past it and they rip you off.</p>
+      <div class="rbtns"><button class="rsafe">Play it safe <small>${fmt(base)}</small></button><button class="rhold">${svg('deal', 'sm')} Hold</button></div></div>`;
+    document.body.appendChild(ov);
+    const cv = ov.querySelector('canvas'), x = cv.getContext('2d'), num = ov.querySelector('.rnum'), sub = ov.querySelector('.rsub'), hold = ov.querySelector('.rhold');
+    let f = 0, holding = false, done = false, last = 0, raf = 0;
+    const A0 = -Math.PI / 2, ang = v => A0 + v * Math.PI * 2;
+    const draw = () => {
+      x.clearRect(0, 0, 440, 440); x.lineCap = 'round';
+      x.lineWidth = 34; x.strokeStyle = 'rgba(255,255,255,.09)'; x.beginPath(); x.arc(220, 220, 180, 0, 7); x.stroke();
+      x.strokeStyle = 'rgba(255,59,74,.35)'; x.beginPath(); x.arc(220, 220, 180, ang(z1), ang(1)); x.stroke(); // past it: ripped off
+      const g = x.createLinearGradient(0, 0, 440, 440); g.addColorStop(0, '#4cd964'); g.addColorStop(1, '#b4ff6a');
+      x.strokeStyle = g; x.lineWidth = 40; x.beginPath(); x.arc(220, 220, 180, ang(z0), ang(z1)); x.stroke();
+      x.strokeStyle = '#ffd23f'; x.lineWidth = 40; const mid = (z0 + z1) / 2; x.beginPath(); x.arc(220, 220, 180, ang(mid - 0.008), ang(mid + 0.008)); x.stroke(); // dead centre = best price
+      if (f > 0) { const inZ = f >= z0 && f <= z1; x.strokeStyle = inZ ? '#ffffff' : f > z1 ? '#ff3b4a' : '#38e8ff'; x.lineWidth = 18; x.beginPath(); x.arc(220, 220, 180, A0, ang(f)); x.stroke();
+        const a = ang(f); x.fillStyle = '#fff'; x.beginPath(); x.arc(220 + Math.cos(a) * 180, 220 + Math.sin(a) * 180, 16, 0, 7); x.fill(); }
+    };
+    const price = v => { const inZ = v >= z0 && v <= z1, acc = inZ ? 1 - Math.abs(v - (z0 + z1) / 2) / (width / 2) : 0; return { inZ, acc, k: mode === 'buy' ? 1 - (0.12 + 0.23 * acc) * (inZ ? 1 : 0) : 1 + (0.12 + 0.23 * acc) * (inZ ? 1 : 0) }; };
+    const tick = ts => { if (done) return; const dt = last ? Math.min(0.05, (ts - last) / 1000) : 0; last = ts;
+      if (holding) { f += dt / dur; if (f >= 1) { f = 1; finish(); return; }
+        const q = price(f); num.textContent = fmt(Math.round(base * q.k)); sub.textContent = q.inZ ? (q.acc > 0.75 ? 'Perfect...' : 'Sweet spot') : f > z1 ? 'Too greedy!' : 'Pushing...';
+        if (q.inZ && !tick.buzz) { tick.buzz = true; navigator.vibrate?.(12); const A = audio(); if (A) sfx.note(880, A.currentTime, 0.06, 'triangle', 0.05, 3000); } if (!q.inZ) tick.buzz = false; }
+      draw(); raf = requestAnimationFrame(tick); };
+    const close = out => { done = true; cancelAnimationFrame(raf); setTimeout(() => ov.classList.add('out'), out.kind === 'safe' ? 0 : 900); setTimeout(() => { ov.remove(); res(out); }, out.kind === 'safe' ? 180 : 1150); };
+    const finish = () => { if (done) return; holding = false; const q = price(f), A = audio();
+      if (q.inZ) { const save = Math.round(Math.abs(1 - q.k) * 100); num.textContent = fmt(Math.round(base * q.k)); sub.textContent = q.acc > 0.75 ? `PERFECT · ${save}% ${mode === 'buy' ? 'off' : 'extra'}` : `Sweet spot · ${save}% ${mode === 'buy' ? 'off' : 'extra'}`; ov.classList.add('win');
+        navigator.vibrate?.([20, 30, 40]); if (A) [660, 880, 1320].forEach((h, i) => sfx.note(h, A.currentTime + i * 0.07, 0.12, 'triangle', 0.06, 3200)); bumpRel(relId, q.acc > 0.75 ? 2 : 1, false); gainXP('dealing', 12 + Math.round(q.acc * 20)); close({ kind: 'sweet', k: q.k, acc: q.acc }); }
+      else { const short = rand(0.62, 0.82); ov.classList.add('lose'); sub.textContent = f > z1 ? 'Too greedy. They\'re ripping you off.' : 'Weak. They saw you coming.'; navigator.vibrate?.(120); if (A) { sfx.note(220, A.currentTime, 0.25, 'sawtooth', 0.05, 900); sfx.note(160, A.currentTime + 0.18, 0.3, 'sawtooth', 0.05, 700); }
+        num.textContent = mode === 'buy' ? `Only ${Math.round(short * 100)}%` : fmt(Math.round(base * short)); bumpRel(relId, -1, false); gainXP('dealing', 4); close({ kind: 'miss', short }); } };
+    hold.addEventListener('pointerdown', e => { e.preventDefault(); if (done || f > 0) return; holding = true; hold.classList.add('on'); });
+    const up = () => { if (holding) { hold.classList.remove('on'); finish(); } };
+    hold.addEventListener('pointerup', up); hold.addEventListener('pointerleave', up); hold.addEventListener('pointercancel', up);
+    ov.querySelector('.rsafe').onclick = () => { if (f > 0 || done) return; close({ kind: 'safe', k: 1 }); };
+    draw(); raf = requestAnimationFrame(tick);
+  });
+}
 function openTrade(p) {
   const prices = dealerPricesFor(p);
   let sel = GOODS[0].id, qty = 1, volume = 0;
@@ -5144,8 +5189,15 @@ function openTrade(p) {
     const pr = prices[sel], have = stash[sel] || 0, room = stashCap() - stashCount(), maxBuy = Math.max(0, Math.min(room, Math.floor(money / pr.buy)));
     root.querySelectorAll('.trow').forEach(b => b.onclick = () => { sel = b.dataset.g; qty = 1; sfx.click(); draw(); });
     root.querySelectorAll('[data-q]').forEach(b => b.onclick = () => { const v = b.dataset.q; qty = v === '+' ? qty + 1 : v === '-' ? qty - 1 : Math.max(maxBuy, have); sfx.click(); draw(); });
-    root.querySelector('.tbuy').onclick = () => { if (qty > maxBuy) return; const v = pr.buy * qty; spend(v); stash[sel] = have + qty; volume += v; sheet.value = volume; gainXP('dealing', Math.round(v / 60)); qty = 1; saveGame(); draw(); };
-    root.querySelector('.tsell').onclick = () => { const n = Math.min(qty, have); if (!n) return; const v = pr.sell * n; stash[sel] = have - n; addMoney(v); volume += v; sheet.value = volume; gainXP('dealing', Math.round(v / 40)); qty = 1; draw(); };
+    root.querySelector('.tbuy').onclick = async () => { if (qty > maxBuy) return; const g = GOODS.find(q => q.id === sel), base = pr.buy * qty, n0 = qty;
+      const r = await dealRing({ mode: 'buy', label: `${n0} × ${g.name}`, base, relId: p.id });
+      const v = Math.round(base * (r.k || 1)), got = r.kind === 'miss' ? Math.max(1, Math.floor(n0 * r.short)) : n0; if (v > money) return;
+      spend(v); stash[sel] = (stash[sel] || 0) + got; volume += v; sheet.value = volume; gainXP('dealing', Math.round(v / 60)); qty = 1; saveGame(); draw();
+      toast(r.kind === 'sweet' ? `Bought ${got} ${g.name} for ${fmt(v)}. Saved ${fmt(base - v)}.` : r.kind === 'miss' ? `${p.npcName || 'They'} shorted you: ${got} of ${n0} ${g.name} for ${fmt(v)}.` : `Bought ${got} ${g.name} for ${fmt(v)}.`, 2.6); };
+    root.querySelector('.tsell').onclick = async () => { const n = Math.min(qty, have); if (!n) return; const g = GOODS.find(q => q.id === sel), base = pr.sell * n;
+      const r = await dealRing({ mode: 'sell', label: `${n} × ${g.name}`, base, relId: p.id });
+      const v = Math.round(base * (r.kind === 'miss' ? r.short : r.k || 1)); stash[sel] = Math.max(0, (stash[sel] || 0) - n); addMoney(v); volume += v; sheet.value = volume; gainXP('dealing', Math.round(v / 40)); qty = 1; saveGame(); draw();
+      toast(r.kind === 'sweet' ? `Sold ${n} ${g.name} for ${fmt(v)}. ${fmt(v - base)} extra.` : r.kind === 'miss' ? `${p.npcName || 'They'} lowballed you: ${fmt(v)} for ${n} ${g.name}.` : `Sold ${n} ${g.name} for ${fmt(v)}.`, 2.6); };
   });
 }
 function openGunStore(p) {
@@ -5290,7 +5342,14 @@ async function talkCustomer(c) {
   beginTalk(c.npc.cfg, c.name, `Wants ${c.qty} ${g.name}`, 220, 'street');
   await talk.say(pick([`You got my ${g.name}?`, "Finally. You got it?", "Yo, over here. You holding?"]));
   const have = stash[g.id] || 0;
-  const c2 = await talk.choose([{ label: I('deal', `Hand over ${c.qty} <small>for ${fmt(c.pay)}</small>`), disabled: have < c.qty }, I('x', have < c.qty ? `I don't have it yet (${have}/${c.qty})` : 'Not yet'), I('phone', 'Lose my number')]);
+  let c2 = await talk.choose([{ label: I('deal', `Hand over ${c.qty} <small>for ${fmt(c.pay)}</small>`), disabled: have < c.qty }, I('x', have < c.qty ? `I don't have it yet (${have}/${c.qty})` : 'Not yet'), I('phone', 'Lose my number'), { label: I('cash', 'Push for more <small>(hold the ring)</small>'), disabled: have < c.qty }]);
+  if (c2 === 3) { // squeeze them: hit the sweet spot and they pay extra, get greedy and they haggle you down
+    await talk.say(pick(['Prices went up. Supply\'s tight.', 'Quality like this costs more now.', 'You want it or not? It\'s more today.']), 'you');
+    const r = await dealRing({ mode: 'sell', label: `${c.qty} × ${g.name}`, base: c.pay, relId: 'street' });
+    if (r.kind === 'sweet') { c.pay = Math.round(c.pay * r.k); await talk.say(pick(['Man... fine. You\'re lucky it\'s good.', 'Ugh. Alright, alright.', 'Daylight robbery. Here.'])); }
+    else if (r.kind === 'miss') { c.pay = Math.round(c.pay * r.short); bumpRel('street', -2, false); await talk.say(pick(['Nah. I\'m giving you this much, take it or leave it.', 'You must think I\'m stupid. This is what I\'ve got.'])); }
+    c2 = 0;
+  }
   if (c2 === 2) {
     await talk.say("Wait, you're cutting me off? For real?");
     if (await talk.choose([I('check', 'Yeah. Lose my number'), I('x', 'Nah, forget I said that')]) === 1) { await talk.say('Phew. Don\'t scare me like that.'); endTalk(); return; }
@@ -6243,7 +6302,7 @@ function saveGame() {
   store.set('bc_save', save); store.set('bc_arsenal', arsenal); store.set('bc_cars', garage);
 }
 // auto-update: bookmarks and home-screen apps can hold on to an old copy. Check version.json (never cached) and reload once if newer.
-const BUILD = 120;
+const BUILD = 121;
 function checkUpdate() {
   fetch('version.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(j => {
     if (!(j.v > BUILD)) return;
@@ -6555,4 +6614,4 @@ function frame(now) {
 }
 startGame();
 requestAnimationFrame(frame);
-window.__game = { get animals() { return animals; }, crime, WANT, copCars, cops, pitFight, busted, fam, famNewDay, makeOfficial, talkFamily, get dayN() { return dayN; }, set dayN(v) { dayN = v; }, scene: G.scene, cam: G.cam, snap: () => updateCamera(0, true), get state() { return state; }, P, input, get ride() { return ride; }, get myCar() { return myCar; }, get traffic() { return traffic; }, peds, setTime: h => { clockH = h; }, openCustom, enterVehicle, exitCar, get money() { return money; }, set money(v) { money = v; }, openPlace, PLACES, PROPERTIES, runMinigame, get action() { return action; }, arsenal, selectWeapon, openPhone, setWaypoint, get route() { return route; }, talkToPed, talk, doAction, stats, get inside() { return inside; }, enterInterior, exitInterior, get customers() { return customers; }, newCustomer, startEdit, endEdit, get job() { return job; }, gainXP, storage, doSpot, useFurn, phoneGo, talkVenue, talkJob, openPlace, talkCustomer, startJob, openCarShop, damageCar, repairCar, addFire, get fires() { return fires; }, get ems() { return ems; }, get vehicles() { return vehicles; }, makeVehicle, makeCop, prisonFight, life, startDealMeet, get lifeAct() { return lifeAct; }, get train() { return train; }, get trainRide() { return trainRide; }, boardTrain, eventReset: () => { eventOpen = false; }, bodyCheck, attendClass, talkAdmissions, edu, startDance, get dance() { return dance; }, radioSet: i => { radioSet(i); radioOn(true); }, get zoom() { return zoom; }, set zoom(z) { zoom = z; }, DEFAULT_CAR, setState: x => setState(x), get jail() { return stats.jail; }, witness, personOf, dealHeat, trafficStop, carNear, carTop, startDate, startWooT: (k, b) => startWoo(k, b), get woo() { return woo; }, endDate, dateCall, addDateContact, get phoneThread() { return phoneThread; }, set phoneThread(v) { phoneThread = v; }, talkDate, get date() { return date; }, get carAnim() { return carAnim; }, lifeApi, startShower, bizNewDay, subs, forceWanted, get buddy() { return buddy; }, startBuddy, textMe, toast, levelUp, closePhone, bringCar, useFurn, damageCar, debtorScene, get debtor() { return debtor; }, camBlocked, get camYaw() { return camYaw; }, ev: { evChase, evMug, evRobbery, evGang, evBusk, evCrash, evFire, evMarket, evParade, evProtest, streetEvents } };
+window.__game = { get animals() { return animals; }, crime, WANT, copCars, cops, pitFight, busted, fam, famNewDay, makeOfficial, talkFamily, get dayN() { return dayN; }, set dayN(v) { dayN = v; }, scene: G.scene, cam: G.cam, snap: () => updateCamera(0, true), get state() { return state; }, P, input, get ride() { return ride; }, get myCar() { return myCar; }, get traffic() { return traffic; }, peds, setTime: h => { clockH = h; }, openCustom, enterVehicle, exitCar, get money() { return money; }, set money(v) { money = v; }, openPlace, PLACES, PROPERTIES, runMinigame, get action() { return action; }, arsenal, selectWeapon, openPhone, setWaypoint, get route() { return route; }, talkToPed, talk, doAction, stats, get inside() { return inside; }, enterInterior, exitInterior, get customers() { return customers; }, newCustomer, startEdit, endEdit, get job() { return job; }, gainXP, storage, doSpot, useFurn, phoneGo, talkVenue, talkJob, openPlace, talkCustomer, startJob, openCarShop, damageCar, repairCar, addFire, get fires() { return fires; }, get ems() { return ems; }, get vehicles() { return vehicles; }, makeVehicle, makeCop, prisonFight, life, startDealMeet, get lifeAct() { return lifeAct; }, get train() { return train; }, get trainRide() { return trainRide; }, boardTrain, eventReset: () => { eventOpen = false; }, bodyCheck, attendClass, talkAdmissions, edu, startDance, get dance() { return dance; }, radioSet: i => { radioSet(i); radioOn(true); }, get zoom() { return zoom; }, set zoom(z) { zoom = z; }, DEFAULT_CAR, setState: x => setState(x), get jail() { return stats.jail; }, witness, personOf, dealHeat, trafficStop, carNear, carTop, startDate, openTradeT: p => openTrade(p), get stashT() { return stash; }, startWooT: (k, b) => startWoo(k, b), get woo() { return woo; }, endDate, dateCall, addDateContact, get phoneThread() { return phoneThread; }, set phoneThread(v) { phoneThread = v; }, talkDate, get date() { return date; }, get carAnim() { return carAnim; }, lifeApi, startShower, bizNewDay, subs, forceWanted, get buddy() { return buddy; }, startBuddy, textMe, toast, levelUp, closePhone, bringCar, useFurn, damageCar, debtorScene, get debtor() { return debtor; }, camBlocked, get camYaw() { return camYaw; }, ev: { evChase, evMug, evRobbery, evGang, evBusk, evCrash, evFire, evMarket, evParade, evProtest, streetEvents } };
