@@ -1,0 +1,10 @@
+worker/
+wrangler.jsonc
+.assetsignore
+.git
+.github
+.wrangler
+node_modules
+.dev.vars
+shots/
+*.md

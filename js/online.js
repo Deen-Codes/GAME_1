@@ -1,40 +1,40 @@
-// Online play: see other testers walking and driving around Bay City in real time.
-// Transport is Supabase Realtime (free tier) once js/config.js has the project URL + anon key;
-// a same-device BroadcastChannel transport ("?local" in the URL) lets two tabs see each other for testing.
+// Online play: see other players walking and driving around Bay City in real time.
+// The server is a Cloudflare Worker at baycity.app: sign in with an emailed code / magic link, then a WebSocket to the shared world.
+// A same-device BroadcastChannel transport ("?local" in the URL) lets two tabs see each other for testing.
 import * as THREE from '../lib/three.module.min.js';
-import { SUPA } from './config.js?v=171';
 
-let C = null, T = null, sb = null, session = null, sendT = 0, seq = 0;
+const API = (() => { const q = new URLSearchParams(location.search).get('api'); if (q && /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(q)) return q; // (?api=http://localhost:8787 for local testing)
+  return /(^|\.)baycity\.app$|\.workers\.dev$/.test(location.hostname) || (location.port === '8787') ? '' : 'https://baycity.app'; })();
+let C = null, T = null, sendT = 0, seq = 0, want = false, retryT = null;
 const peers = new Map(), listeners = new Set();
-const myId = (() => { try { let v = sessionStorage.getItem('bc_net_id'); if (!v) { v = Math.random().toString(36).slice(2, 10); sessionStorage.setItem('bc_net_id', v); } return v; } catch (e) { return Math.random().toString(36).slice(2, 10); } })();
-export const NET = { status: 'off', error: '', email: '', get count() { return peers.size; }, get list() { return [...peers.values()].map(p => ({ id: p.id, name: p.name || 'Player', d: p.d ?? null, x: p.wx, z: p.wz, hidden: !!p.hidden })); }, configured: () => !!(SUPA.url && SUPA.key), local: () => /[?&]local\b/.test(location.search) };
+const ls = { get: k => { try { return localStorage.getItem(k); } catch (e) { return null; } }, set: (k, v) => { try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch (e) {} } };
+let myId = Math.random().toString(36).slice(2, 10);
+export const NET = { status: 'off', error: '', email: ls.get('bc_email') || '', get count() { return peers.size; }, get list() { return [...peers.values()].map(p => ({ id: p.id, name: p.name || 'Player', d: p.d ?? null, x: p.wx, z: p.wz, hidden: !!p.hidden })); }, configured: () => true, local: () => /[?&]local\b/.test(location.search) };
 const emit = () => { for (const f of listeners) try { f(NET); } catch (e) {} };
 export const onNet = f => { listeners.add(f); return () => listeners.delete(f); };
+const api = async (path, body, sid) => { const r = await fetch(API + path, { method: body ? 'POST' : 'GET', headers: { 'content-type': 'application/json', ...(sid ? { authorization: 'Bearer ' + sid } : {}) }, body: body ? JSON.stringify(body) : undefined }); const j = await r.json().catch(() => ({})); if (!r.ok) throw new Error(j.error || `Server error (${r.status})`); return j; };
 
-export function initOnline(ctx) { C = ctx; if (NET.configured()) loadSupa().then(() => { if (session && localStorage.getItem('bc_online') === '1') goOnline(); }).catch(() => {}); }
-
-// ---------------------------------------------------------------- Supabase: login by magic link, realtime channel
-async function loadSupa() {
-  if (sb) return sb;
-  const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/+esm');
-  sb = createClient(SUPA.url, SUPA.key, { auth: { persistSession: true, detectSessionInUrl: true, flowType: 'implicit' } });
-  const { data } = await sb.auth.getSession(); session = data.session; NET.email = session?.user?.email || '';
-  sb.auth.onAuthStateChange((_e, s) => { session = s; NET.email = s?.user?.email || ''; emit(); });
-  emit(); return sb;
+export function initOnline(ctx) {
+  C = ctx;
+  // arrived from the email's magic link: swap the token for a session, tidy the address bar, and go online
+  const tok = new URLSearchParams(location.search).get('login');
+  if (tok) { history.replaceState(null, '', location.pathname + location.search.replace(/([?&])login=[^&]*&?/, '$1').replace(/[?&]$/, '')); api('/api/verify', { token: tok }).then(j => { signedInAs(j); C.toast?.(`Signed in as ${j.email}`, 3); goOnline(); }).catch(e => { NET.error = e.message; emit(); C.toast?.(e.message, 3.5); }); }
+  else if (signedIn() && ls.get('bc_online') === '1') goOnline();
 }
-export async function sendMagicLink(email) {
-  try { await loadSupa(); const { error } = await sb.auth.signInWithOtp({ email, options: { emailRedirectTo: location.origin + location.pathname } }); if (error) throw error; return { ok: true }; }
-  catch (e) { return { ok: false, error: e.message || String(e) }; }
-}
-export async function signOut() { goOffline(); if (sb) await sb.auth.signOut(); session = null; NET.email = ''; emit(); }
-export const signedIn = () => !!session;
+function signedInAs(j) { ls.set('bc_sid', j.sid); ls.set('bc_email', j.email); NET.email = j.email; NET.error = ''; emit(); }
+export async function sendMagicLink(email) { try { const j = await api('/api/login', { email }); return { ok: true, dev: j.dev }; } catch (e) { return { ok: false, error: e.message }; } }
+export async function verifyCode(email, code) { try { const j = await api('/api/verify', { email, code }); signedInAs(j); return { ok: true }; } catch (e) { return { ok: false, error: e.message }; } }
+export async function signOut() { goOffline(); const sid = ls.get('bc_sid'); if (sid) api('/api/logout', {}, sid).catch(() => {}); ls.set('bc_sid', null); ls.set('bc_email', null); NET.email = ''; emit(); }
+export const signedIn = () => !!ls.get('bc_sid');
 
-function supaTransport() {
-  const ch = sb.channel('bay-city', { config: { broadcast: { self: false }, presence: { key: myId } } });
-  const T2 = { onMsg: null, send(type, data) { ch.send({ type: 'broadcast', event: type, payload: data }); }, close() { sb.removeChannel(ch); } };
-  ch.on('broadcast', { event: '*' }, m => T2.onMsg?.(m.event, m.payload));
-  ch.on('presence', { event: 'leave' }, ({ key }) => dropPeer(key));
-  ch.subscribe(st => { if (st === 'SUBSCRIBED') { ch.track({ id: myId, name: C.myName() }); NET.status = 'online'; emit(); } else if (st === 'CHANNEL_ERROR' || st === 'TIMED_OUT') { NET.status = 'error'; NET.error = 'Could not reach the server'; emit(); } });
+function wsTransport() {
+  const url = (API ? API.replace(/^http/, 'ws') : location.origin.replace(/^http/, 'ws')) + '/api/ws?sid=' + ls.get('bc_sid');
+  const ws = new WebSocket(url), T2 = { onMsg: null, send(type, data) { if (ws.readyState === 1) ws.send(JSON.stringify({ type, data })); }, close() { T2.closed = true; ws.close(); } };
+  ws.onmessage = e => { let m; try { m = JSON.parse(e.data); } catch (err) { return; } if (m.type === 'hello') { myId = m.data.id; NET.status = 'online'; NET.error = ''; emit(); return; } T2.onMsg?.(m.type, m.data); };
+  ws.onclose = e => { if (T2.closed) return; for (const id of [...peers.keys()]) dropPeer(id); T = null; NET.status = want ? 'connecting' : 'off'; emit();
+    if (e.code === 1008 || e.code === 4001) { NET.error = 'Sign in again'; want = false; emit(); return; }
+    if (want) { clearTimeout(retryT); retryT = setTimeout(goOnline, 3000); } }; // dropped (tunnel, sleep): keep trying
+  ws.onerror = () => { NET.error = navigator.onLine === false ? 'No internet' : 'Couldn\'t reach the server'; emit(); };
   return T2;
 }
 function localTransport() {
@@ -45,12 +45,14 @@ function localTransport() {
 }
 
 export async function goOnline() {
-  if (T) return; NET.error = '';
+  if (T) return; NET.error = ''; want = true;
   if (NET.local()) T = localTransport();
-  else { if (!NET.configured()) { NET.error = 'Online isn\'t set up yet'; emit(); return; } await loadSupa(); if (!session) { NET.error = 'Sign in first'; emit(); return; } NET.status = 'connecting'; emit(); T = supaTransport(); }
-  T.onMsg = onMsg; try { localStorage.setItem('bc_online', '1'); } catch (e) {} sendT = 0; seq = 0; emit();
+  else { if (!signedIn()) { NET.error = 'Sign in first'; want = false; emit(); return; } NET.status = 'connecting'; emit();
+    try { await api('/api/me', null, ls.get('bc_sid')); } catch (e) { if (/signed in/i.test(e.message)) { ls.set('bc_sid', null); NET.email = ''; NET.error = 'Your sign-in ran out. Sign in again.'; } else { NET.error = navigator.onLine === false ? 'No internet' : 'Couldn\'t reach the server'; clearTimeout(retryT); retryT = setTimeout(() => want && goOnline(), 5000); } NET.status = 'off'; emit(); return; }
+    if (T || !want) return; T = wsTransport(); }
+  T.onMsg = onMsg; ls.set('bc_online', '1'); sendT = 0; seq = 0; emit();
 }
-export function goOffline() { if (!T) return; try { T.send('bye', { id: myId }); } catch (e) {} T.close(); T = null; NET.status = 'off'; for (const id of [...peers.keys()]) dropPeer(id); try { localStorage.setItem('bc_online', '0'); } catch (e) {} emit(); }
+export function goOffline() { want = false; clearTimeout(retryT); if (!T) { NET.status = 'off'; emit(); return; } try { T.send('bye', { id: myId }); } catch (e) {} T.close(); T = null; NET.status = 'off'; for (const id of [...peers.keys()]) dropPeer(id); ls.set('bc_online', '0'); emit(); }
 addEventListener('pagehide', () => { try { T?.send('bye', { id: myId }); } catch (e) {} });
 
 // ---------------------------------------------------------------- peers

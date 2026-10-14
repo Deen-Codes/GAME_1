@@ -1,0 +1,10 @@
+{
+  // Bay City on Cloudflare: the game files are served as static assets; /api/* goes to the Worker (logins + online world)
+  "name": "baycity",
+  "main": "worker/index.js",
+  "compatibility_date": "2025-09-01",
+  "assets": { "directory": ".", "binding": "ASSETS" },
+  "durable_objects": { "bindings": [{ "name": "HUB", "class_name": "Hub" }] },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["Hub"] }],
+  "vars": { "MAIL_FROM": "Bay City <login@baycity.app>" }
+}

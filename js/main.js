@@ -1,30 +1,30 @@
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=171';
-import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun, partEffects, partPerk } from './gun.js?v=171';
-import { buildCar, computeCarStats, carStatBars, carClass, carPartEffects, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=171';
-import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, STAIRS, unblockPillars, canyonAt, canyonNear, PEAK, SKYWAYS, SKY_Y, skyAt, skyY, rampSeg, windowShader, makeOceanMaterial, WATER_U, WIND_U, METRO, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=171';
-import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=171';
-import { buildPanel, renderStats } from './ui.js?v=171';
-import { Input } from './input.js?v=171';
-import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime, animalCall } from './audio.js?v=171';
-import { runMinigame } from './minigames.js?v=171';
-import { CUT, initCutGames } from './cutgames.js?v=171';
-import { initOnline, updateOnline, goOnline, goOffline, NET, onNet, sendMagicLink, signOut, signedIn } from './online.js?v=171';
-import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk, setReservedNames, seededLook } from './peds.js?v=171';
-import { citizens, whereNow } from './citizens.js?v=171';
-import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=171';
-import { findRoute } from './nav.js?v=171';
-import { COURSES, CAREERS, QUIZ } from './careers.js?v=171';
-import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=171';
-import { attachWheel } from './wheel.js?v=171';
-import { GROUND_U } from './groundtex.js?v=171';
-import { Animals, makeAnimalMesh } from './animals.js?v=171';
-import { Talk } from './talk.js?v=171';
-import { incomingText, classify, textOptions, textReply } from './texts.js?v=171';
-import { svg, drawIcon, ICONS as ICON_SET } from './icons.js?v=171';
-import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=171';
-import { FURN, CATALOG } from './furniture.js?v=171';
-import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=171';
+import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=172';
+import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun, partEffects, partPerk } from './gun.js?v=172';
+import { buildCar, computeCarStats, carStatBars, carClass, carPartEffects, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=172';
+import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, STAIRS, unblockPillars, canyonAt, canyonNear, PEAK, SKYWAYS, SKY_Y, skyAt, skyY, rampSeg, windowShader, makeOceanMaterial, WATER_U, WIND_U, METRO, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=172';
+import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=172';
+import { buildPanel, renderStats } from './ui.js?v=172';
+import { Input } from './input.js?v=172';
+import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime, animalCall } from './audio.js?v=172';
+import { runMinigame } from './minigames.js?v=172';
+import { CUT, initCutGames } from './cutgames.js?v=172';
+import { initOnline, updateOnline, goOnline, goOffline, NET, onNet, sendMagicLink, verifyCode, signOut, signedIn } from './online.js?v=172';
+import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk, setReservedNames, seededLook } from './peds.js?v=172';
+import { citizens, whereNow } from './citizens.js?v=172';
+import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=172';
+import { findRoute } from './nav.js?v=172';
+import { COURSES, CAREERS, QUIZ } from './careers.js?v=172';
+import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=172';
+import { attachWheel } from './wheel.js?v=172';
+import { GROUND_U } from './groundtex.js?v=172';
+import { Animals, makeAnimalMesh } from './animals.js?v=172';
+import { Talk } from './talk.js?v=172';
+import { incomingText, classify, textOptions, textReply } from './texts.js?v=172';
+import { svg, drawIcon, ICONS as ICON_SET } from './icons.js?v=172';
+import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=172';
+import { FURN, CATALOG } from './furniture.js?v=172';
+import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=172';
 
 const $ = id => document.getElementById(id);
 let inside = null, editMode = false, held = null, pendingCar = false, homeMusic = false, phoneBadge = 0;
@@ -6597,7 +6597,28 @@ function renderAzBay(el, back) {
   });
 }
 // ================================================================ PHONE
-let phoneApp = 'home';
+let phoneApp = 'home', netLogin = null;
+// after we email a sign-in code: a button straight into the right mail app (Gmail, Outlook, Yahoo, iCloud, Proton...), plus the phone's own Mail app
+function mailApps(email) {
+  const dom = (email.split('@')[1] || '').toLowerCase(), ios = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1), android = /Android/.test(navigator.userAgent), mobile = ios || android;
+  const and = pkg => `intent://#Intent;action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;package=${pkg};end`;
+  const P = [
+    [/^(gmail|googlemail)\./, 'Gmail', 'googlegmail://', 'com.google.android.gm', 'https://mail.google.com/'],
+    [/^(outlook|hotmail|live|msn|windowslive)\./, 'Outlook', 'ms-outlook://', 'com.microsoft.office.outlook', 'https://outlook.live.com/mail/'],
+    [/^(yahoo|ymail|rocketmail)\./, 'Yahoo Mail', 'ymail://', 'com.yahoo.mobile.client.android.mail', 'https://mail.yahoo.com/'],
+    [/^(icloud|me|mac)\.com$/, 'iCloud Mail', 'message://', null, 'https://www.icloud.com/mail'],
+    [/^(proton|protonmail|pm)\./, 'Proton Mail', 'protonmail://', 'ch.protonmail.android', 'https://mail.proton.me/'],
+    [/^aol\./, 'AOL Mail', null, 'com.aol.mobile.aolapp', 'https://mail.aol.com/'],
+    [/^(gmx|mail)\./, 'GMX Mail', null, 'de.gmx.mobile.android.mail', 'https://www.gmx.com/'],
+    [/^zoho\./, 'Zoho Mail', 'zohomail://', 'com.zoho.mail', 'https://mail.zoho.com/'],
+  ].find(q => q[0].test(dom));
+  const out = [];
+  if (P) { const [, label, iosUrl, pkg, web] = P; if (ios && iosUrl) out.push({ label: `Open ${label}`, href: iosUrl }); else if (android && pkg) out.push({ label: `Open ${label}`, href: and(pkg) }); else out.push({ label: `Open ${label}`, href: web, web: true }); }
+  if (ios && !(P && P[2] === 'message://')) out.push({ label: 'Open Mail app', href: 'message://' });
+  if (android) out.push({ label: 'Open email app', href: 'intent://#Intent;action=android.intent.action.MAIN;category=android.intent.category.APP_EMAIL;end' });
+  if (!mobile && !P) out.push({ label: 'Check your email', href: 'mailto:', web: true });
+  return out;
+}
 // ---- the home screen: pages you swipe through, a dock, hold to wiggle, drag to rearrange, "−" to delete, App Store to get more
 const APP_DESC = { maps: 'Map of the city, set a route', msgs: 'Texts and missions', contacts: 'People you know', me: 'Your stats and skills', places: 'Every place in town', work: 'Jobs and shifts', wallet: 'Money and stash', garage: 'Your cars', homes: 'Buy and rent places', style: 'Outfits', radio: 'Bay City radio stations', azbay: 'Shop online, delivered', log: 'Every choice you made', online: 'Play with other people', settings: 'Settings', store: 'Get more apps', weather: 'Today\'s weather, live', news: 'What\'s happening in Bay City' };
 const CORE_APPS = ['maps', 'msgs', 'contacts', 'settings', 'store', 'me'];
@@ -6974,10 +6995,13 @@ function renderPhone() {
   } else if (phoneApp === 'online') {
     const nm = myNetName(), st = NET.status, on = st === 'online' || st === 'connecting', local = NET.local();
     let acct = '';
-    if (!local) acct = !NET.configured() ? `<p class="ph-hint">Online play is being set up. It switches on as soon as the server is connected.</p>`
-      : signedIn() ? `<div class="ph-row"><span>${svg('user', 'sm')} Signed in as <b>${NET.email}</b></span><button class="ph-mini" data-out>Sign out</button></div>`
-      : `<p class="ph-hint">Sign in with your email. We send you a link: tap it and you're in. No passwords.</p><div class="ph-row"><input id="netEmail" type="email" placeholder="you@email.com" autocomplete="email" style="flex:1;min-width:0;padding:8px 10px;border-radius:10px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.08);color:#fff"><button class="ph-mini" data-link>Send link</button></div>`;
-    el.innerHTML = `${back}<h4>Online</h4><p class="ph-hint">Play in the same Bay City as other testers. You'll see each other walking and driving around.</p>
+    if (!local) acct = signedIn() ? `<div class="ph-row"><span>${svg('user', 'sm')} Signed in as <b>${NET.email}</b></span><button class="ph-mini" data-out>Sign out</button></div>`
+      : netLogin?.sent ? `<div class="ph-sec">Check your email</div><p class="ph-hint">We sent a 6-digit code to <b>${netLogin.email}</b>. Type it here, or tap the link in the email on this phone.${netLogin.dev ? ` <br><small>(test server: code ${netLogin.dev.code})</small>` : ''}</p>
+          <div class="ph-row"><input id="netCode" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="123456" style="flex:1;min-width:0;padding:10px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.1);color:#fff;font-size:20px;letter-spacing:6px;font-weight:900"><button class="ph-mini" data-code>Sign in</button></div>
+          <div class="ph-mailapps">${mailApps(netLogin.email).map((m, i) => `<a class="ph-btn ${i ? 'alt' : ''}" href="${m.href}" ${m.web ? 'target="_blank" rel="noopener"' : ''}>${svg('mail', 'sm')} ${m.label}</a>`).join('')}</div>
+          <button class="ph-mini" data-redo style="margin-top:8px">Use a different email</button>`
+      : `<p class="ph-hint">Sign in with your email to play online. We'll send you a code and a link. No passwords.</p><div class="ph-row"><input id="netEmail" type="email" placeholder="you@email.com" autocomplete="email" value="${(netLogin?.email || '').replace(/"/g, '')}" style="flex:1;min-width:0;padding:8px 10px;border-radius:10px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.08);color:#fff"><button class="ph-mini" data-link>Send code</button></div>`;
+    el.innerHTML = `${back}<h4>Online</h4><p class="ph-hint">Play in the same Bay City as everyone else. You'll see each other walking and driving around.</p>
       <div class="ph-row"><span>${svg('user', 'sm')} Your name</span><input id="netName" value="${nm.replace(/"/g, '')}" maxlength="16" style="width:120px;padding:6px 8px;border-radius:10px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.08);color:#fff;text-align:right"></div>
       ${acct}
       <div class="ph-row"><span><i class="dot" style="display:inline-block;width:9px;height:9px;border-radius:50%;background:${st === 'online' ? '#4cd964' : st === 'connecting' ? '#ffb020' : '#666'}"></i> ${st === 'online' ? `Online · ${NET.count} other${NET.count === 1 ? '' : 's'} here` : st === 'connecting' ? 'Connecting...' : 'Offline'}${local ? ' (local test)' : ''}</span><button class="ph-mini" data-net ${!local && (!NET.configured() || !signedIn()) ? 'disabled' : ''}>${on ? 'Go offline' : 'Go online'}</button></div>
@@ -6986,7 +7010,10 @@ function renderPhone() {
     el.querySelector('#netName').onchange = e => { try { localStorage.setItem('bc_name', e.target.value.trim().slice(0, 16) || 'Player'); } catch (err) {} };
     el.querySelector('[data-net]')?.addEventListener('click', () => { if (on) goOffline(); else goOnline(); renderPhone(); });
     el.querySelector('[data-out]')?.addEventListener('click', async () => { await signOut(); renderPhone(); });
-    el.querySelector('[data-link]')?.addEventListener('click', async e => { const em = el.querySelector('#netEmail').value.trim(); if (!/^\S+@\S+\.\S+$/.test(em)) { toast('Type your email first'); return; } e.target.disabled = true; e.target.textContent = 'Sending...'; const r = await sendMagicLink(em); toast(r.ok ? `Link sent to ${em}. Open it on this phone.` : `Couldn't send: ${r.error}`, 4); renderPhone(); });
+    el.querySelector('[data-link]')?.addEventListener('click', async e => { const em = el.querySelector('#netEmail').value.trim().toLowerCase(); if (!/^\S+@\S+\.\S+$/.test(em)) { toast('Type your email first'); return; } e.target.disabled = true; e.target.textContent = 'Sending...'; const r = await sendMagicLink(em); if (r.ok) netLogin = { email: em, sent: true, dev: r.dev }; else { netLogin = { email: em }; toast(r.error, 4); } renderPhone(); });
+    el.querySelector('[data-redo]')?.addEventListener('click', () => { netLogin = { email: netLogin.email }; renderPhone(); });
+    const codeIn = el.querySelector('#netCode'), tryCode = async () => { const c = codeIn.value.replace(/\D/g, ''); if (c.length !== 6) { toast('The code is 6 numbers'); return; } const r = await verifyCode(netLogin.email, c); if (r.ok) { netLogin = null; toast(`Signed in as ${NET.email}`, 2.4); goOnline(); } else toast(r.error, 3); renderPhone(); };
+    if (codeIn) { codeIn.oninput = () => { if (codeIn.value.replace(/\D/g, '').length === 6) tryCode(); }; el.querySelector('[data-code]').onclick = tryCode; }
   } else if (phoneApp === 'store') { renderStore(el, back);
   } else if (phoneApp === 'weather') { renderWeather(el, back);
   } else if (phoneApp === 'news') { renderNews(el, back);
@@ -7021,7 +7048,7 @@ function saveGame() {
   store.set('bc_save', save); store.set('bc_arsenal', arsenal); store.set('bc_cars', garage);
 }
 // auto-update: bookmarks and home-screen apps can hold on to an old copy. Check version.json (never cached) and reload once if newer.
-const BUILD = 171;
+const BUILD = 172;
 function checkUpdate() {
   fetch('version.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(j => {
     if (!(j.v > BUILD)) return;

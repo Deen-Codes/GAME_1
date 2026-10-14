@@ -817,3 +817,8 @@ body.wheel-compact #pad .face, body.wheel-compact #wpnBtn { opacity: 0; transiti
 .ph-cat.on { color: #fff; background: rgba(255,255,255,.22); border-color: rgba(255,255,255,.4); }
 .ph-cat.on .ic { opacity: 1; }
 .ph-row > span { min-width: 0; }
+
+/* Online sign-in: buttons into the player's mail app */
+.ph-mailapps { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+.ph-mailapps .ph-btn { display: flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; color: #fff; }
+.ph-mailapps .ph-btn.alt { background: rgba(255,255,255,.1); }
