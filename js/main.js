@@ -1,26 +1,26 @@
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=118';
-import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=118';
-import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=118';
-import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=118';
-import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=118';
-import { buildPanel, renderStats } from './ui.js?v=118';
-import { Input } from './input.js?v=118';
-import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime } from './audio.js?v=118';
-import { runMinigame } from './minigames.js?v=118';
-import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk } from './peds.js?v=118';
-import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=118';
-import { findRoute } from './nav.js?v=118';
-import { COURSES, CAREERS, QUIZ } from './careers.js?v=118';
-import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=118';
-import { attachWheel } from './wheel.js?v=118';
-import { Animals } from './animals.js?v=118';
-import { Talk } from './talk.js?v=118';
-import { incomingText, classify, textOptions, textReply } from './texts.js?v=118';
-import { svg, drawIcon } from './icons.js?v=118';
-import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=118';
-import { FURN, CATALOG } from './furniture.js?v=118';
-import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=118';
+import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=119';
+import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=119';
+import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=119';
+import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=119';
+import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=119';
+import { buildPanel, renderStats } from './ui.js?v=119';
+import { Input } from './input.js?v=119';
+import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime } from './audio.js?v=119';
+import { runMinigame } from './minigames.js?v=119';
+import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk } from './peds.js?v=119';
+import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=119';
+import { findRoute } from './nav.js?v=119';
+import { COURSES, CAREERS, QUIZ } from './careers.js?v=119';
+import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=119';
+import { attachWheel } from './wheel.js?v=119';
+import { Animals } from './animals.js?v=119';
+import { Talk } from './talk.js?v=119';
+import { incomingText, classify, textOptions, textReply } from './texts.js?v=119';
+import { svg, drawIcon } from './icons.js?v=119';
+import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=119';
+import { FURN, CATALOG } from './furniture.js?v=119';
+import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=119';
 
 const $ = id => document.getElementById(id);
 let inside = null, editMode = false, held = null, pendingCar = false, homeMusic = false, phoneBadge = 0;
@@ -2339,7 +2339,7 @@ PLACES.forEach((p, i) => {
   const outdoorNpc = !!NPC_ROLE[p.kind];
   p.pitch = 180 + ((i * 97) % 260);
   if (outdoorNpc) { p.cfg = npcCfg(NPC_ROLE[p.kind], i); p.npcName = p.npc || nameFor(p.id); npcs.push({ place: p, x: p.x, z: p.z, fig: null, face: 0, t: Math.random() * 5, cfg: p.cfg }); }
-  makeMarker(p.x, p.z, p.interior ? p.icon : p.icon, PLACE_COLORS[p.kind], { place: p, car: !!p.car, npc: outdoorNpc });
+  makeMarker(p.x, p.z, p.icon, PLACE_COLORS[p.kind] || '#ffd23f', { place: p, car: !!p.car, npc: outdoorNpc });
 });
 for (const p of PROPERTIES) p.marker = makeMarker(p.x, p.z, 'house', PLACE_COLORS.property, { place: { ...p, kind: 'property' } });
 // ================================================================ BUSINESSES you can buy: daily takings pile up in the till, go there to collect
@@ -5837,6 +5837,9 @@ function updateHUD(dt) {
   const a = am(), id = arsenal.cur, wk = id + '|' + a.mag + '|' + a.res + '|' + (P.reload > 0);
   if (hudCache.wpn !== wk) { hudCache.wpn = wk; $('wpnBtn').innerHTML = iconSVG(id) + (ws.kind === 'melee' ? '' : ws.kind === 'grenade' ? `<b>${a.res}</b>` : P.reload > 0 ? '<b class="rl">RELOAD</b>' : `<b>${a.mag}</b><span>${a.res}</span>`); }
   $('wpnBtn').classList.toggle('hidden', !!inside);
+  if ((hudCache.wpT = (hudCache.wpT || 0) + 1) % 15 === 0) { // keep the weapon pill just above whichever action button is on top (they move between foot and car layouts)
+    const pad = $('pad'), wb = $('wpnBtn'); let top = 1e9; for (const b of pad.querySelectorAll('.face .fbtn')) { if (b.offsetParent === null || b.classList.contains('hidden')) continue; const r = b.getBoundingClientRect(); if (r.height && r.top < top) top = r.top; }
+    if (top < 1e9) { const pr = pad.getBoundingClientRect(), y = Math.round(top - pr.top - wb.offsetHeight - 10); if (hudCache.wpY !== y) { hudCache.wpY = y; wb.style.top = y + 'px'; } } }
   $('editBtn').classList.add('hidden'); // edit home lives on the top action button now
   $('radioBtn').classList.toggle('hidden', !ride);
   $('carLabel').classList.toggle('on', !!ride && time < carLabelT);
@@ -6227,7 +6230,7 @@ function saveGame() {
   store.set('bc_save', save); store.set('bc_arsenal', arsenal); store.set('bc_cars', garage);
 }
 // auto-update: bookmarks and home-screen apps can hold on to an old copy. Check version.json (never cached) and reload once if newer.
-const BUILD = 118;
+const BUILD = 119;
 function checkUpdate() {
   fetch('version.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(j => {
     if (!(j.v > BUILD)) return;
