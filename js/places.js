@@ -1,5 +1,5 @@
 // Everything you can walk or drive up to: shops, barbers, property, dealers, minigames, chop shop, race.
-import { blockSide, attachDoor, addStructure } from './world.js?v=165';
+import { blockSide, attachDoor, addStructure } from './world.js?v=166';
 
 const S = (city, i, j, side) => blockSide(city, i, j, side);
 
@@ -62,6 +62,11 @@ export const PLACES = [
   { id: 'gas4', kind: 'service', svc: 'gas', name: 'Bay Gas Northport', icon: 'bolt', desc: 'Fill up and get your car patched up.', ...S('nport', -2, 2, 's'), car: true },
   { id: 'g_club', kind: 'venue', interior: 'club', name: 'Neon Room Club', icon: 'music', ...S('main', -2, -1, 's') },
 
+  // ---- boat hire: a speedboat for $60, on the water at the end of the jetty
+  { id: 'h_marina', kind: 'boats', name: 'Marina Boat Hire', icon: 'wave', desc: 'Hire a speedboat. $60.', x: -239.5, z: 478 },
+  { id: 'h_east', kind: 'boats', name: 'East Shore Boat Hire', icon: 'wave', desc: 'Hire a speedboat. $60.', x: 776, z: 120 },
+  { id: 'h_isle', kind: 'boats', name: 'Long Beach Boat Hire', icon: 'wave', desc: 'Hire a speedboat. $60.', x: 916, z: -150 },
+  { id: 'h_river', kind: 'boats', name: 'Riverside Boat Hire', icon: 'wave', desc: 'Hire a speedboat. $60.', x: 534, z: -380 },
   // ---- outdoor activities & jobs
   { id: 'g_taco', kind: 'game', game: 'taco', name: 'Taco Truck (job)', icon: 'taco', desc: 'Work a shift on the taco truck. Fill orders fast for cash.', x: 70, z: 364 },
   { id: 'g_gallery', kind: 'game', game: 'gallery', name: 'Pier Shooting Gallery', icon: 'target', desc: 'Hit the targets, miss the civilians.', x: 94, z: 486 },

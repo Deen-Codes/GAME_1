@@ -1,6 +1,6 @@
 // Open-world map: layout, deterministic generation, colliders, chunk meshing and minimap.
 import * as THREE from '../lib/three.module.min.js';
-import { groundMaterial, GT } from './groundtex.js?v=165';
+import { groundMaterial, GT } from './groundtex.js?v=166';
 
 export const WORLD = { x0: -560, x1: 1290, z0: -800, z1: 520 };
 export const CHUNK = 64;
@@ -54,6 +54,7 @@ export const WATER_Y = -0.8;
 // and Long Beach, a long rectangular island ringed with sand
 export const coastX = z => 792 + 5 * Math.sin(z / 37) + 3 * Math.sin(z / 13);
 export const ISLE = { x0: 900, x1: 1212, z0: -492, z1: 348 };
+export const PORT = { x0: 975, x1: 1145, z0: -745, z1: -565 }; // Bay Port: a square concrete freight island north of Long Beach, quay walls straight into deep water
 export const RIVER = { hw: 14, pts: [[840, -212], [760, -214], [680, -210], [600, -212], [548, -218], [520, -236], [507, -270], [503, -320], [509, -390], [501, -460], [508, -540], [500, -620], [507, -700], [502, -780], [504, -860]] };
 export function riverD(x, z) {
   if (x < 470 || z > -170) return 1e9; let best = 1e9; const P2 = RIVER.pts;
@@ -64,7 +65,7 @@ export const isleD = (x, z) => { const dx = Math.max(ISLE.x0 - x, x - ISLE.x1), 
 // how high the land may be here because of the east bay and the river (Infinity = no limit)
 function eastCap(x, z) {
   let cap = Infinity;
-  if (x > 700) { const s = coastX(z) - 22, main = x >= s ? Math.max(-5, -(x - s) * 0.08) : Infinity, di = isleD(x, z), isle = di < -22 ? 0 : Math.max(-5, -(di + 22) * 0.08); cap = Math.max(main, isle); }
+  if (x > 700) { const s = coastX(z) - 22, main = x >= s ? Math.max(-5, -(x - s) * 0.08) : Infinity, di = isleD(x, z), isle = di < -22 ? 0 : Math.max(-5, -(di + 22) * 0.08); cap = Math.max(main, isle, inR(PORT, x, z) ? 0.02 : -5); }
   if (x > 460 && z < -150) { const d = riverD(x, z); if (d < RIVER.hw + 8) cap = Math.min(cap, Math.max(-4, -(RIVER.hw + 8 - d) * 0.35)); }
   return cap;
 }
@@ -170,6 +171,7 @@ export const SKYWAYS = [
   // bridges: the same raised road, higher, on big piers standing in the water
   { id: 'C', name: 'Long Beach Bridge', axis: 'x', line: 0, a0: 750, a1: 954, ramp: 54, y: 9, bridge: true },
   { id: 'D', name: 'River Bridge', axis: 'z', line: 600, a0: -282, a1: -150, ramp: 44, y: 7.5, bridge: true },
+  { id: 'F', name: 'Port Bridge', axis: 'z', line: 1056, a0: -578, a1: -438, ramp: 38, y: 7, bridge: true, noTraffic: true },
   { id: 'E', name: 'Northport Bay Bridge', axis: 'x', line: -432, a0: 750, a1: 954, ramp: 54, y: 9, bridge: true },
 ];
 for (const S of SKYWAYS) S.y ??= SKY_Y;
@@ -189,7 +191,7 @@ export function skyY(x, z, py = 0) { const k = skyAt(x, z); if (!k) return null;
 export function rampSeg(axis, line, n1, n2) { const m = (n1 + n2) / 2; for (const S of SKYWAYS) if (S.axis === axis && Math.abs(S.line - line) < 1 && ((m > S.a0 - 6 && m < S.a0 + S.ramp + 6) || (m < S.a1 + 6 && m > S.a1 - S.ramp - 6))) return true; return false; }
 export function groundH(x, z) {
   const s = shoreLine(x) - 22;
-  if (z >= s) return Math.max(-5, -(z - s) * 0.08);
+  if (z >= s) { const h = Math.max(-5, -(z - s) * 0.08); return x > 700 ? Math.min(h, eastCap(x, z)) : h; } // (the beach stops at Eastport's corner)
   if (x >= -300) { const h = rolling(x, z) + dip(x, z); return x > 440 ? Math.min(h, eastCap(x, z)) : h; }
   let h = rawHills(x, z);
   for (const p of PADS) {
@@ -224,6 +226,8 @@ ROADS.push({ x0: 288, x1: 760, z0: 336 - HR, z1: 336 + HR, axis: 'x', hwy: true 
 ROADS.push({ x0: -340, x1: -288, z0: 336 - HR, z1: 336 + HR, axis: 'x', hwy: true });
 ROADS.push({ x0: 600 - HR, x1: 600 + HR, z0: 144, z1: 336, axis: 'z', hwy: true }); // eastport to coast
 ROADS.push({ x0: -HR, x1: HR, z0: -620, z1: -568, axis: 'z', hwy: true });         // airport access
+ROADS.push({ x0: 1056 - HR, x1: 1056 + HR, z0: -700, z1: -578, axis: 'z', port: true }); // Bay Port: the spine road off the bridge
+ROADS.push({ x0: 985, x1: 1135, z0: -700 - HR, z1: -700 + HR, axis: 'x', port: true });  // and the quay road along the berth
 ROADS.push({ x0: -540, x1: -288 - HR - 0.2, z0: -3.5, z1: 3.5, axis: 'x', dirt: true }); // forest trail (stops at the city road so the surfaces don't z-fight)
 export function roadY(x, z) { return Math.max(groundH(x, z), -6) + 0.1; }
 export function roadAt(x, z) { for (const r of ROADS) if (inR(r, x, z)) return r; return null; }
@@ -231,6 +235,7 @@ function nearRoad(x, z, m) { for (const r of ROADS) if (inR(r, x, z, m)) return 
 export function cityAt(x, z, m = 0) { for (const c of CITIES) if (inR(c, x, z, m)) return c; return null; }
 
 export function zoneName(x, z) {
+  if (inR(PORT, x, z, 2)) return 'Bay Port';
   if (x > 760) { const di = isleD(x, z); if (di < 0) return cityAt(x, z, 6) ? 'Long Beach' : 'Long Beach Sands'; if (x > coastX(z) - 8) return 'East Bay'; if (x > coastX(z) - 44 && z < 330) return 'East Shore'; }
   if (riverD(x, z) < RIVER.hw + 6) return 'Bay River';
   if (z > sandLine(x) - 4) return 'Bay Beach';
@@ -254,6 +259,7 @@ export function groundColor(x, z, out = tmpC) {
   const sl = sandLine(x);
   if (z > sl) { const sh = shoreLine(x); return out.copy(col(C.sand)).lerp(col(C.wetsand), Math.min(1, Math.max(0, (z - (sh - 30)) / 20))); }
   const n = noise(x, z) * 0.06;
+  if (inR(PORT, x, z)) return out.copy(col('#9a968f')).multiplyScalar(1 + n); // concrete
   if (x > 740) { const di = isleD(x, z), ce = coastX(z); if ((di > -54 && di < 30) || (x > ce - 40 && x < ce + 40)) { const wet = di > -54 && di < 30 ? (di + 28) / 18 : (x - (ce - 14)) / 14; return out.copy(col(C.sand)).lerp(col(C.wetsand), Math.min(1, Math.max(0, wet))); } }
   if (riverD(x, z) < RIVER.hw + 9) return out.copy(col(C.dirt)).lerp(col(C.grass), 0.35);
   if (x < -312) out.copy(col(C.forest));
@@ -271,7 +277,8 @@ export function groundColor(x, z, out = tmpC) {
 
 // which detail texture the ground uses here (matches groundColor)
 export function groundType(x, z) {
-  if (z > sandLine(x) - 6) return GT.sand;
+  if (z > sandLine(x) - 6 && x < coastX(z) - 10) return GT.sand;
+  if (inR(PORT, x, z)) return GT.pave;
   if (x > 740) { const di = isleD(x, z), ce = coastX(z); if ((di > -54 && di < 30) || (x > ce - 40 && x < ce + 40)) return GT.sand; }
   if (x < -312) return GT.forest;
   if (inR(AIRPORT, x, z)) return GT.grass;
@@ -741,6 +748,18 @@ function genWorld() {
   for (const lx of [-220, 40, 300, 520]) { addObj({ t: 'lifeguard', x: lx, z: shoreLine(lx) - 30 }); addCollider({ x0: lx - 1.6, x1: lx + 1.6, z0: shoreLine(lx) - 31.6, z1: shoreLine(lx) - 28.4, h: 4 }); }
   addObj({ t: 'pier', x: (PIER.x0 + PIER.x1) / 2, z: (PIER.z0 + PIER.z1) / 2 });
   DOCKS.forEach((D, i) => addObj({ t: 'dock', i, x: (D.x0 + D.x1) / 2, z: (D.z0 + D.z1) / 2 }));
+  // Bay Port: container stacks, gantry cranes on the berth, warehouses, fuel tanks and a cargo ship tied up
+  { const R2 = mkRng(0.777), cols = ['#c8392b', '#2f6fd8', '#e8a020', '#2f8a4a', '#8a3a8a', '#d8d8d8', '#1f8a9a', '#b35a2a'];
+    for (let row = 0; row < 6; row++) for (let i = 0; i < 4; i++) { if (R2() < 0.15) continue; const x = 1074 + 6 + i * 14, z = -682 + row * 9; if (x + 6 > PORT.x1 - 3) continue; const n = 1 + Math.floor(R2() * 3);
+      for (let k = 0; k < n; k++) addObj({ t: 'container', x, z, y: k * 2.6, col: cols[Math.floor(R2() * cols.length)] }); addCollider({ x0: x - 6.1, x1: x + 6.1, z0: z - 1.25, z1: z + 1.25, h: n * 2.6 }); }
+    for (const cx of [1005, 1090, 1125]) { addObj({ t: 'crane', x: cx, z: -729 }); for (const sz of [-15, 15]) for (const sx of [-5, 5]) addCollider({ x: cx + sx, z: -729 + sz, r: 0.7 }); }
+    for (const [wx, wz] of [[1012, -682], [1012, -640], [1012, -598]]) building(wx, wz, 40, 24, 9, ['#8a96a6', '#a8a39a', '#7d8a7a'][Math.floor(R2() * 3)], { roof: 'pitch', roofH: 3, roofCol: '#5a6470', plain: true });
+    for (const [tx, tz] of [[1100, -615], [1124, -615], [1112, -592]]) { addObj({ t: 'otank', x: tx, z: tz, r: 5, h: 9 }); addCollider({ x: tx, z: tz, r: 5.2, h: 9 }); }
+    addObj({ t: 'ship', x: 1060, z: -764 }); addCollider({ x0: 1012, x1: 1110, z0: -772, z1: -756, h: 12 });
+    for (let x = PORT.x0 + 8; x < PORT.x1 - 4; x += 24) if (Math.abs(x - 1056) > 8) { LAMPS.push({ x, z: -692.6 }); addObj({ t: 'lamp', x, z: -692.6 }); addCollider({ x, z: -692.6, r: 0.16 }); }
+    for (let z = PORT.z1 - 20; z > -690; z -= 24) { LAMPS.push({ x: 1063.2, z }); addObj({ t: 'lamp', x: 1063.2, z }); addCollider({ x: 1063.2, z, r: 0.16 }); }
+    const kerb = (x0, x1, z0, z1) => { addObj({ t: 'quaywall', x: (x0 + x1) / 2, z: (z0 + z1) / 2, w: x1 - x0, d: z1 - z0 }); addCollider({ x0, x1, z0, z1, h: 1 }); }; // a kerb along the quay edge with bollards (a gap for the bridge)
+    kerb(PORT.x0, PORT.x1, PORT.z0, PORT.z0 + 0.8); kerb(PORT.x0, 1049, PORT.z1 - 0.8, PORT.z1); kerb(1063, PORT.x1, PORT.z1 - 0.8, PORT.z1); kerb(PORT.x0, PORT.x0 + 0.8, PORT.z0, PORT.z1); kerb(PORT.x1 - 0.8, PORT.x1, PORT.z0, PORT.z1); }
   // Hidden Hills mansions
   for (const p of PADS) {
     const big = p.r > 20;
@@ -1282,6 +1301,13 @@ function drawObj(o, B) {
     case 'skypillar': { const S = SKYWAYS.find(q => q.id === o.S), Y = S.y, ax = S.axis === 'x';
       for (const sw of [-1, 1]) { const lx = ax ? o.x : o.x + sw * 7.3, lz = ax ? o.z + sw * 7.3 : o.z; B.box(lx, 0.15, lz, 1.0, Y - 0.6, 1.0, '#aaa59d'); B.box(lx, 0.15, lz, 1.4, 0.3, 1.4, '#8f8b84'); B.box(lx, 0.6, lz, 1.04, 0.22, 1.04, '#f2d14a'); } // legs on the pavement, with a yellow band
       B.box(o.x, Y - 1.45, o.z, ax ? 1.2 : 15.6, 0.9, ax ? 15.6 : 1.2, '#9e9a92'); break; } // crossbeam over the whole road
+    case 'otank': { B.cyl(o.x, 0, o.z, o.r, o.h, '#dcdcd8', 16, 'solid', '#c4c4c0'); B.cyl(o.x, o.h * 0.45, o.z, o.r + 0.05, 0.6, '#c9302c', 16); B.box(o.x + o.r - 0.1, 0, o.z, 0.3, o.h + 0.6, 0.3, '#6a6d74'); break; } // fuel tank with a red band and a ladder
+    case 'quaywall': { B.box(o.x, 0, o.z, o.w, 0.6, o.d, '#c9c4ba'); const along = o.w > o.d, L = along ? o.w : o.d; for (let i = -L / 2 + 4; i < L / 2; i += 12) B.cyl(o.x + (along ? i : 0), 0.6, o.z + (along ? 0 : i), 0.25, 0.4, '#2a2a2e', 6); break; } // edge kerb with bollards
+    case 'ship': { const x = o.x, z = o.z; // a cargo ship: dark hull, red waterline, white bridge at the stern, containers stacked on deck
+      B.box(x, -2.5, z, 96, 6.5, 16, '#1f2a3a'); B.box(x, -0.95, z, 96.2, 0.6, 16.2, '#a8242a'); B.box(x + 50, -2, z, 5, 5.9, 9, '#1f2a3a');
+      B.box(x - 40, 4, z, 12, 9, 14, '#f2efe6'); B.box(x - 40, 13, z, 14, 1, 15, '#e0dcd2'); B.box(x - 44, 13.5, z, 2, 6, 2, '#c9302c');
+      const R3 = mkRng(0.31); for (let i = -2; i <= 3; i++) for (const zz of [-4.5, -1.5, 1.5, 4.5]) { const n = 1 + Math.floor(R3() * 3); for (let k = 0; k < n; k++) B.box(x + i * 12.5, 4 + k * 2.6, z + zz, 12, 2.55, 2.4, ['#c8392b', '#2f6fd8', '#e8a020', '#2f8a4a', '#d8d8d8', '#1f8a9a'][Math.floor(R3() * 6)]); }
+      break; }
     case 'bpier': { const S = SKYWAYS.find(q => q.id === o.S), Y = S.y, ax = S.axis === 'x', bot = -7;
       B.box(o.x, bot, o.z, ax ? 3.2 : 9.5, Y - 1.3 - bot, ax ? 9.5 : 3.2, '#b3aea4'); // a big concrete pier stood in the water
       B.box(o.x, -1.1, o.z, ax ? 4.4 : 10.6, 0.7, ax ? 10.6 : 4.4, '#8f8b84'); // footing at the waterline
@@ -1519,7 +1545,7 @@ export function drawMap(size = 512) {
   return { canvas: cv, tx, tz, sx, sz };
 }
 export const LABELS = [
-  ['DOWNTOWN', 0, 0], ['BAY BEACH', 100, 395], ['HIDDEN HILLS', -420, -60], ['BAYWOOD PEAK', -502, -232], ['EASTPORT', 600, 0], ['NORTHFIELD', 0, -520], ['NORTHPORT', 648, -432], ['LONG BEACH', 1056, 0], ['BAY RIVER', 505, -620], ['EAST BAY', 850, 200], ['AIRPORT', 20, -690], ['FARMLAND', 370, 160],
+  ['DOWNTOWN', 0, 0], ['BAY BEACH', 100, 395], ['HIDDEN HILLS', -420, -60], ['BAYWOOD PEAK', -502, -232], ['EASTPORT', 600, 0], ['NORTHFIELD', 0, -520], ['NORTHPORT', 648, -432], ['LONG BEACH', 1056, 0], ['BAY RIVER', 505, -620], ['EAST BAY', 850, 200], ['BAY PORT', 1056, -650], ['AIRPORT', 20, -690], ['FARMLAND', 370, 160],
 ];
 export const SPAWN = { x: 8.2, z: 30, carX: 3, carZ: 40, carH: Math.PI };
 

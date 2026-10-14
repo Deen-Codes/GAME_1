@@ -1,7 +1,7 @@
 // Modular car builder. Car faces +Z, sits on y=0, origin at the centre of the wheelbase.
 import * as THREE from '../lib/three.module.min.js';
-import { BASIC } from './character.js?v=165';
-import { patternTexture } from './gun.js?v=165';
+import { BASIC } from './character.js?v=166';
+import { patternTexture } from './gun.js?v=166';
 
 export const BODIES = {
   hatch:  { label: 'Hatchback', L: 3.8, W: 1.75, bh: 0.55, cl: 2.0, ch: 0.62, co: -0.4,  wr: 0.34, mass: 1.0 },
@@ -28,6 +28,7 @@ export const BODIES = {
   tractor: { label: 'Tractor', L: 3.8, W: 2.1, bh: 0.9, cl: 1.2, ch: 1.1, co: -0.6, wr: 0.75, mass: 1.6, tractor: true },
   moto:   { label: 'Motorbike', L: 2.1, W: 0.7, bh: 0.5, cl: 0, ch: 0, co: 0, wr: 0.33, mass: 0.45, two: 'moto' },
   bike:   { label: 'Bicycle',   L: 1.75, W: 0.55, bh: 0.4, cl: 0, ch: 0, co: 0, wr: 0.34, mass: 0.3, two: 'bike' },
+  speedboat: { label: 'Speedboat', L: 6.4, W: 2.4, bh: 0.9, cl: 0, ch: 0, co: 0, wr: 0.3, mass: 0.9, boat: true },
   scooter: { label: 'E-scooter', L: 1.2, W: 0.5, bh: 0.2, cl: 0, ch: 0, co: 0, wr: 0.12, mass: 0.3, two: 'scooter' },
 };
 const o = (label, m = {}) => ({ label, m });
@@ -161,6 +162,7 @@ export function computeCarStats(cfg) {
   const b = BODIES[c.body] || BODIES.coupe;
   const e = CAR_PARTS.engine[c.engine]?.m || CAR_PARTS.engine.stock.m;
   const s = { top: e.top, acc: e.acc / b.mass, grip: 1, off: c.body === 'buggy' ? 1.4 : 1, brake: 1, tough: ['van', 'pickup', 'boxtruck', 'jeep', 'limo'].includes(c.body) ? 1.25 : 1, nitro: 0, bp: 0, runflat: 0, ram: 0 };
+  if (b.boat) return { top: 29, acc: 10, grip: 0.42, off: 1, turn: 1.7, brake: 0.6, tough: 1, nitro: 0, boat: true }; // ~65 mph, slides through turns
   if (b.tractor) return { top: 13, acc: 5, grip: 1.4, off: 1.6, turn: 2.2, brake: 1, tough: 1.5, nitro: 0 };
   if (b.two === 'bike') return { top: 11, acc: 6, grip: 1.3, off: 1.1, turn: 3.2, two: 'bike', brake: 1, tough: 0.6, nitro: 0 };
   if (b.two === 'scooter') return { top: 8.5, acc: 5, grip: 1.2, off: 0.6, turn: 3.4, two: 'scooter', brake: 1, tough: 0.6, nitro: 0 };
@@ -209,6 +211,34 @@ function taper(w, h, l, topL, topW, shift) {
 // two-wheelers: bicycle, e-scooter, motorbike. Same interface as cars (wheels spin, lights work)
 
 // farm tractor: big rear wheels, small fronts, cab with a roll cage, exhaust stack
+// a speedboat: deep-V hull with a pointed bow, white deck, wraparound windscreen, two seats and a big outboard on the back
+function buildBoat(c, B) {
+  const grp = new THREE.Group(), M = (col, o = {}) => new THREE.MeshStandardMaterial({ color: col, roughness: 0.4, flatShading: true, ...o });
+  const hull = M(c.bodyColor || '#ffffff', { metalness: 0.2 }), stripe = M(c.accentColor || '#2f80ed'), deck = M('#f4f1ea'), dark = M('#1a1a1c', { roughness: 0.8 }), seat = M('#c9302c');
+  const glass = new THREE.MeshStandardMaterial({ color: '#3c4b5c', roughness: 0.05, metalness: 0.5, transparent: true, opacity: 0.75 });
+  const headM = new THREE.MeshStandardMaterial({ color: '#ffffff', emissive: '#fff2b0', emissiveIntensity: 0.6 });
+  const tailM = new THREE.MeshStandardMaterial({ color: '#7a0a10', emissive: '#ff1a2a', emissiveIntensity: 0.5 });
+  const revM = new THREE.MeshStandardMaterial({ color: '#d8dce0', emissive: '#ffffff', emissiveIntensity: 0 });
+  const L = B.L, W = B.W, hl = L / 2;
+  // hull: a box for the stern half, a wedge that tapers to a point for the bow
+  const g = new THREE.BufferGeometry(), v = [], q = (a, b2, c2, d) => v.push(...a, ...b2, ...c2, ...a, ...c2, ...d);
+  const s0 = -hl, s1 = 0.4, bow = hl, y0 = -0.35, y1 = 0.55, kw = 0.25; // keel narrow at the bottom: a deep V
+  const P = { tlS: [-W / 2, y1, s0], trS: [W / 2, y1, s0], blS: [-kw, y0, s0], brS: [kw, y0, s0], tlM: [-W / 2, y1, s1], trM: [W / 2, y1, s1], blM: [-kw, y0, s1], brM: [kw, y0, s1], tB: [0, y1 + 0.1, bow], bB: [0, y0 + 0.35, bow - 0.2] };
+  q(P.tlS, P.blS, P.blM, P.tlM); q(P.brS, P.trS, P.trM, P.brM); q(P.blS, P.brS, P.brM, P.blM); q(P.trS, P.tlS, P.blS, P.brS); // stern sides, bottom, transom
+  v.push(...P.tlM, ...P.blM, ...P.bB, ...P.tlM, ...P.bB, ...P.tB, ...P.brM, ...P.trM, ...P.tB, ...P.brM, ...P.tB, ...P.bB, ...P.blM, ...P.brM, ...P.bB); // bow faces
+  g.setAttribute('position', new THREE.Float32BufferAttribute(v, 3)); g.computeVertexNormals();
+  const hm = new THREE.Mesh(g, new THREE.MeshStandardMaterial({ color: c.bodyColor || '#ffffff', roughness: 0.35, metalness: 0.2, flatShading: true, side: THREE.DoubleSide })); hm.castShadow = true; grp.add(hm);
+  const bx = (w, h, d, m, x, y, z, ry = 0) => { const o = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), m); o.position.set(x, y, z); o.rotation.y = ry; o.castShadow = true; grp.add(o); return o; };
+  bx(W * 0.98, 0.12, L * 0.55, stripe, 0, 0.32, -0.9); // go-faster stripe along the sides
+  bx(W - 0.2, 0.06, L * 0.56, deck, 0, 0.56, -1.0);   // cockpit floor / deck
+  for (const sx of [-0.45, 0.45]) { bx(0.7, 0.35, 0.7, seat, sx, 0.75, -0.6); bx(0.7, 0.6, 0.15, seat, sx, 1.0, -0.95); } // two bucket seats
+  bx(W - 0.3, 0.08, 1.6, deck, 0, 0.62, 1.3); // foredeck
+  const ws = bx(W - 0.35, 0.55, 0.06, glass, 0, 0.95, 0.35); ws.rotation.x = -0.5; // windscreen
+  bx(0.5, 0.35, 0.3, dark, 0.45, 0.85, 0.1); // dash + wheel
+  bx(0.5, 1.0, 0.55, dark, 0, 0.55, -hl - 0.2); bx(0.62, 0.45, 0.75, M('#e8e8ea'), 0, 1.2, -hl - 0.2); // outboard motor
+  for (const sx of [-1, 1]) { const h = bx(0.18, 0.1, 0.06, headM, sx * 0.35, 0.68, hl - 0.6); h.rotation.y = sx * 0.4; bx(0.14, 0.1, 0.05, tailM, sx * (W / 2 - 0.15), 0.5, -hl - 0.01); }
+  return { group: grp, wheels: [], headM, tailM, revM, glow: null, length: L, width: W, height: 1.3, wr: 0.3, boat: true };
+}
 function buildTractor(c, B) {
   const grp = new THREE.Group(), M = (col, o = {}) => new THREE.MeshStandardMaterial({ color: col, roughness: 0.55, flatShading: true, ...o });
   const body = M(c.bodyColor || '#2f8a3a'), dark = M('#1a1a1c', { roughness: 0.9 }), rim = M(c.accentColor || '#ffd23f'), steel = M('#9aa0aa', { metalness: 0.6, roughness: 0.4 });
@@ -296,6 +326,7 @@ export function buildCar(cfg) {
   const B = BODIES[c.body] || BODIES.coupe;
   if (B.two) return buildTwo(c, B);
   if (B.tractor) return buildTractor(c, B);
+  if (B.boat) return buildBoat(c, B);
   const grp = new THREE.Group();
   let doors = null;
   const fin = c.finish;
