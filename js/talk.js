@@ -1,8 +1,8 @@
 // Conversations staged like a Pokémon battle: they stand on a platform facing you,
 // you see the back of your own head in the foreground, subtitles type out, you pick replies.
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, setFace } from './character.js?v=196';
-import { sfx, audio } from './audio.js?v=196';
+import { buildCharacter, poseCharacter, disposeObject, setFace } from './character.js?v=197';
+import { sfx, audio } from './audio.js?v=197';
 
 const $ = id => document.getElementById(id);
 const BG = {
@@ -358,9 +358,12 @@ export class Talk {
     // right hand actually on the grip: point the arm at the end of the handlebar (or the rim of the boat's wheel)
     const grip = R.boat ? new THREE.Vector3(R.grip.x, R.grip.y, R.grip.z) : new THREE.Vector3(-R.barW / 2 + 0.05, R.barY, R.barZ);
     if (y.armR.elbow) y.armR.elbow.rotation.set(0, 0, 0); y.armR.pivot.rotation.set(0, 0, 0);
-    y.root.updateMatrixWorld(true); const sh = new THREE.Vector3(); y.armR.pivot.getWorldPosition(sh); const d = grip.clone().sub(sh), len = d.length(), reach = 0.66;
+    y.root.updateMatrixWorld(true); const sh = new THREE.Vector3(); y.armR.pivot.getWorldPosition(sh); const d = grip.clone().sub(sh), len = d.length(), reach = 0.63;
     y.armR.pivot.rotation.set(-Math.atan2(d.z, -d.y), 0, Math.asin(Math.max(-1, Math.min(1, d.x / len))));
-    if (len > reach * 1.02) { const lean = (len - reach) / len; y.root.position.addScaledVector(d, lean * 0.6); } // lean in so the hand meets the bar
+    if (len > reach * 0.98) { const lean = (len - reach * 0.95) / len; y.root.position.addScaledVector(d, lean); } // lean in so the hand meets the bar
+    { const h = new THREE.Vector3(), aim = grip.clone(); // a few correction passes so the hand lands right on the grip
+      for (let i = 0; i < 4; i++) { y.root.updateMatrixWorld(true); y.armR.hand.getWorldPosition(h); aim.add(grip.clone().sub(h)); y.armR.pivot.getWorldPosition(sh); const d2 = aim.clone().sub(sh), l2 = d2.length(); y.armR.pivot.rotation.set(-Math.atan2(d2.z, -d2.y), 0, Math.asin(Math.max(-1, Math.min(1, d2.x / l2)))); }
+      y.root.updateMatrixWorld(true); y.armR.hand.getWorldPosition(h); this.gripErr = h.distanceTo(grip); }
     y.armL.pivot.rotation.set(-0.85, -0.15, 0.42); if (y.armL.elbow) y.armL.elbow.rotation.set(-2.6, 0, 0); // phone at the ear
     y.head.rotation.set(talking ? Math.sin(this.t * 11) * 0.06 : 0, 0.45, 0.1);
     y.root.updateMatrixWorld(true); const hp = new THREE.Vector3(); y.head.getWorldPosition(hp);
