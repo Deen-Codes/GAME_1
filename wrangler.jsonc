@@ -6,5 +6,6 @@
   "assets": { "directory": ".", "binding": "ASSETS" },
   "durable_objects": { "bindings": [{ "name": "HUB", "class_name": "Hub" }] },
   "migrations": [{ "tag": "v1", "new_sqlite_classes": ["Hub"] }],
-  "vars": { "MAIL_FROM": "Bay City <login@baycity.app>" }
+  "send_email": [{ "name": "EMAIL" }],
+  "vars": { "MAIL_ADDR": "login@baycity.app" }
 }

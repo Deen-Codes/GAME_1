@@ -63,11 +63,19 @@ export class Hub extends DurableObject {
     this.sql.exec('INSERT OR REPLACE INTO codes (email, code, token, exp, sent, tries) VALUES (?, ?, ?, ?, ?, 0)', email, code, token, now + 15 * MIN, now);
     this.sql.exec('INSERT INTO sends (ip, t) VALUES (?, ?)', ip, now);
     const origin = req.headers.get('Origin'), base = okOrigin(origin) ? origin : 'https://baycity.app', link = `${base}/?login=${token}`;
-    if (!this.env.RESEND_KEY) { if (this.env.DEV === '1') return json({ ok: true, dev: { code, link } }); return json({ error: 'Email isn\'t set up on the server yet' }, 503); }
-    const r = await fetch('https://api.resend.com/emails', { method: 'POST', headers: { authorization: `Bearer ${this.env.RESEND_KEY}`, 'content-type': 'application/json' },
-      body: JSON.stringify({ from: this.env.MAIL_FROM || 'Bay City <login@baycity.app>', to: [email], subject: `Your Bay City code: ${code}`, html: mailHtml(code, link), text: `Your Bay City sign-in code is ${code}\n\nOr tap this link on your phone: ${link}\n\nIt works for 15 minutes. If you didn't ask for this, ignore it.` }) });
-    if (!r.ok) return json({ error: 'Couldn\'t send the email. Try again in a minute.' }, 502);
-    return json({ ok: true });
+    const msg = { to: email, from: { email: this.env.MAIL_ADDR || 'login@baycity.app', name: 'Bay City' }, subject: `Your Bay City code: ${code}`, html: mailHtml(code, link), text: `Your Bay City sign-in code is ${code}\n\nOr tap this link on your phone: ${link}\n\nIt works for 15 minutes. If you didn't ask for this, ignore it.` };
+    if (this.env.EMAIL) { // Cloudflare's own email sending (Workers Paid)
+      try { await this.env.EMAIL.send(msg); return json({ ok: true }); }
+      catch (e) { console.log('email failed', e.code, e.message); if (!this.env.RESEND_KEY) return json({ error: e.code === 'E_RECIPIENT_SUPPRESSED' ? 'That address can\'t receive our emails' : 'Couldn\'t send the email. Try again in a minute.' }, 502); }
+    }
+    if (this.env.RESEND_KEY) { // fallback: Resend
+      const r = await fetch('https://api.resend.com/emails', { method: 'POST', headers: { authorization: `Bearer ${this.env.RESEND_KEY}`, 'content-type': 'application/json' },
+        body: JSON.stringify({ from: `Bay City <${msg.from.email}>`, to: [email], subject: msg.subject, html: msg.html, text: msg.text }) });
+      if (!r.ok) return json({ error: 'Couldn\'t send the email. Try again in a minute.' }, 502);
+      return json({ ok: true });
+    }
+    if (this.env.DEV === '1') return json({ ok: true, dev: { code, link } });
+    return json({ error: 'Email isn\'t set up on the server yet' }, 503);
   }
 
   // ---- step 2: the link's token, or the email + 6-digit code, becomes a 60-day session
