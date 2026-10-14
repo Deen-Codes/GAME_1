@@ -88,6 +88,7 @@ export const ICONS = {
   plus: ['M12 5v14M5 12h14'],
   minus: ['M5 12h14'],
   tag: ['M3 12V3h9l9 9-9 9z', C(7.5, 7.5, 1.5)],
+  siren: ['M6 19h12', 'M8 19v-6a4 4 0 0 1 8 0v6', 'M12 3v2', 'M4.5 7.5l1.5 1', 'M19.5 7.5l-1.5 1', 'M12 12v3'],
   bus: ['M5 3h14a1 1 0 0 1 1 1v13H4V4a1 1 0 0 1 1-1z', 'M4 11h16M8 21v-4M16 21v-4', C(8, 14, 0.8), C(16, 14, 0.8)],
 };
 export function svg(name, cls = '') {

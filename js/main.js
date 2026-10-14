@@ -1,30 +1,30 @@
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=186';
-import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun, partEffects, partPerk } from './gun.js?v=186';
-import { buildCar, computeCarStats, carStatBars, carClass, carPartEffects, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=186';
-import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, STAIRS, unblockPillars, canyonAt, canyonNear, PEAK, SKYWAYS, SKY_Y, skyAt, skyY, rampSeg, windowShader, makeOceanMaterial, WATER_U, WIND_U, METRO, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, collidersNear, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=186';
-import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=186';
-import { buildPanel, renderStats } from './ui.js?v=186';
-import { Input } from './input.js?v=186';
-import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime, animalCall } from './audio.js?v=186';
-import { runMinigame } from './minigames.js?v=186';
-import { CUT, initCutGames } from './cutgames.js?v=186';
-import { initOnline, updateOnline, goOnline, goOffline, NET, onNet, sendMagicLink, verifyCode, signOut, signedIn, cloudLoad, cloudSave, cloudList, cloudDelete, isAdmin, checkAdmin, reviewLoad, reviewSet } from './online.js?v=186';
-import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk, setReservedNames, seededLook } from './peds.js?v=186';
-import { citizens, whereNow } from './citizens.js?v=186';
-import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=186';
-import { findRoute } from './nav.js?v=186';
-import { COURSES, CAREERS, QUIZ } from './careers.js?v=186';
-import { EVENTS, EVENT_BY_ID, ARRIVE, PHONE_TEXT, PERSON_TEXT } from './events.js?v=186';
-import { attachWheel } from './wheel.js?v=186';
-import { GROUND_U } from './groundtex.js?v=186';
-import { Animals, makeAnimalMesh } from './animals.js?v=186';
-import { Talk } from './talk.js?v=186';
-import { incomingText, classify, textOptions, textReply } from './texts.js?v=186';
-import { svg, drawIcon, ICONS as ICON_SET } from './icons.js?v=186';
-import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=186';
-import { FURN, CATALOG } from './furniture.js?v=186';
-import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=186';
+import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=187';
+import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun, partEffects, partPerk } from './gun.js?v=187';
+import { buildCar, computeCarStats, carStatBars, carClass, carPartEffects, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=187';
+import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, STAIRS, unblockPillars, canyonAt, canyonNear, PEAK, SKYWAYS, SKY_Y, skyAt, skyY, rampSeg, windowShader, makeOceanMaterial, WATER_U, WIND_U, METRO, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, collidersNear, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=187';
+import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=187';
+import { buildPanel, renderStats } from './ui.js?v=187';
+import { Input } from './input.js?v=187';
+import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime, animalCall } from './audio.js?v=187';
+import { runMinigame } from './minigames.js?v=187';
+import { CUT, initCutGames } from './cutgames.js?v=187';
+import { initOnline, updateOnline, goOnline, goOffline, NET, onNet, sendMagicLink, verifyCode, signOut, signedIn, cloudLoad, cloudSave, cloudList, cloudDelete, isAdmin, checkAdmin, reviewLoad, reviewSet } from './online.js?v=187';
+import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk, setReservedNames, seededLook } from './peds.js?v=187';
+import { citizens, whereNow } from './citizens.js?v=187';
+import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=187';
+import { findRoute } from './nav.js?v=187';
+import { COURSES, CAREERS, QUIZ } from './careers.js?v=187';
+import { EVENTS, EVENT_BY_ID, ARRIVE, PHONE_TEXT, PERSON_TEXT } from './events.js?v=187';
+import { attachWheel } from './wheel.js?v=187';
+import { GROUND_U } from './groundtex.js?v=187';
+import { Animals, makeAnimalMesh } from './animals.js?v=187';
+import { Talk } from './talk.js?v=187';
+import { incomingText, classify, textOptions, textReply } from './texts.js?v=187';
+import { svg, drawIcon, ICONS as ICON_SET } from './icons.js?v=187';
+import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=187';
+import { FURN, CATALOG } from './furniture.js?v=187';
+import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=187';
 
 const $ = id => document.getElementById(id);
 let inside = null, editMode = false, held = null, pendingCar = false, homeMusic = false, phoneBadge = 0;
@@ -1721,14 +1721,16 @@ function updateDoors(dt) {
 }
 function seatSpot(v, side) { const s = v.s, h = s.h; return { x: s.x + Math.cos(h) * 0.35 * side + Math.sin(h) * 0.2, z: s.z - Math.sin(h) * 0.35 * side + Math.cos(h) * 0.2 }; }
 function sitIn(v) {
-  { const ci = copCars.indexOf(v); if (ci >= 0) { copCars.splice(ci, 1); v.ai = null; v.quarry = null; v.jackedCop = true; if (v.siren) v.siren.forEach(s => s.visible = false); crime(0.6); } } // you took their car: it isn't hunting you any more, it's yours
+  { const ci = copCars.indexOf(v); if (ci >= 0) { copCars.splice(ci, 1); const crewIn = !v.deployed && v.ai !== 'park'; v.ai = null; v.quarry = null; v.jackedCop = true; v.sirenOn = false; if (v.siren) v.siren.forEach(s => s.visible = false); crime(0.6);
+    if (crewIn) { const h = v.s.h, c = makeCop(v.s.x - Math.cos(h) * (v.b.width / 2 + 1.2), v.s.z + Math.sin(h) * (v.b.width / 2 + 1.2)); c.state = 'down'; c.t = 1.4; toast('You threw the officer out of his own car!', 2.4); WANT.v = Math.max(WANT.v, STAR_AT[2]); WANT.stars = Math.max(WANT.stars, 2); } } }
+  if (v.police || v.cfg?.roof === 'police') { v.police = true; ensureSiren(v); } // you took their car: it isn't hunting you any more, it's yours
   ride = v; heroRoot.visible = !!v.b.two; muzzleFlash.visible = false; audio();
   // every car remembers its own station: yours keeps what you left on, other people's are on whatever their owner liked
   if (v === myCar && v.radio == null) v.radio = stats.carRadio ?? 0;
   if (v.radio == null) v.radio = v.b.two ? STATIONS.length - 1 : Math.floor(Math.random() * STATIONS.length);
   if (v.radio !== radioIndex()) radioSet(v.radio);
   radioOn(!v.b.two);
-  carLabelT = time + 2.6; $('carLabel').textContent = v.personal ? (carCfg.name || 'Your car') : v.taxi ? 'Bay Cab' : `${BODIES[v.cfg.body]?.label || 'Car'} · stolen`; // shown under the stick you drive with
+  carLabelT = time + 2.6; $('carLabel').textContent = v.personal ? (carCfg.name || 'Your car') : v.police ? 'Police car · stolen' : v.taxi ? 'Bay Cab' : `${BODIES[v.cfg.body]?.label || 'Car'} · stolen`; // shown under the stick you drive with
 }
 function enterVehicle(v, anim = true) {
   if (!anim || P.dead || carAnim) { if (!carAnim) sitIn(v); return; }
@@ -2103,11 +2105,13 @@ function updateVehicles(dt) {
       if (input.keys.has('KeyL') && !v.lightK) toggleLights();
       v.lightK = input.keys.has('KeyL');
       // stick driving buttons: A = whatever's in front of you (or your phone), B = get out, X = shoot / nitro / lights
-      const nosBtn = stickMode && ws.kind !== 'gun' && !!s.nitro && !dead && !b.two;
+      const copBtn = v.police && !b.two && ws.kind !== 'gun' && !dead; // police car: X is the siren
+      if (copBtn && input.consume('x')) { v.sirenOn = !v.sirenOn; toast(v.sirenOn ? 'Siren on. Traffic gets out of your way.' : 'Siren off', 1.4); if (!v.sirenOn && v.siren) v.siren.forEach(m => m.visible = false); }
+      const nosBtn = stickMode && ws.kind !== 'gun' && !!s.nitro && !dead && !b.two && !copBtn;
       if (stickMode) {
         if (input.consume('a')) v.req = 'a'; // handled at the end of this car's update so nothing below runs without a driver
         if (input.consume('b')) v.req = 'b';
-        if (ws.kind !== 'gun' && !nosBtn && !b.two && !b.boat && !dead) hb = input.held('x'); // X: handbrake, for drifting (headlights are automatic)
+        if (ws.kind !== 'gun' && !nosBtn && !copBtn && !b.two && !b.boat && !dead) hb = input.held('x'); // X: handbrake, for drifting (headlights are automatic)
       }
       // full stick driving: push where you want to go and the car drives there; pull back against it to brake, then reverse
       let thr = 1, stickDrive = false;
@@ -4030,7 +4034,8 @@ function eyes() { // [x, z, heading, range] for every officer and police car aro
   return out;
 }
 function inCone(e, x, z) { const dx = x - e[0], dz = z - e[1], d = Math.hypot(dx, dz); if (d > e[3]) return false; if (d < NEAR) return true; return Math.abs(wrapA(Math.atan2(dx, dz) - e[2])) < CONE; }
-function copSees(x, z) { for (const e of eyes()) if (inCone(e, x, z) && losClear(e[0], e[1], x, z)) return true; return false; }
+function copSees(x, z) { if (ride?.police && !(ride.sirenOn) && Math.hypot(x - P.x, z - P.z) < 1) { let near = false; for (const e of eyes()) if (Math.hypot(e[0] - x, e[1] - z) < 14) near = true; if (!near) return false; } // in a police car they take you for one of their own unless they're right on you
+  for (const e of eyes()) if (inCone(e, x, z) && losClear(e[0], e[1], x, z)) return true; return false; }
 const cops = [], copCars = [];
 const COP_CFG = { ...DEFAULT_CHAR, top: 'long', topColor: '#1d2b52', accent: '#ffd23f', pants: 'jeans', pantsColor: '#16161b', shoes: 'boots', shoeColor: '#16161b', hat: 'cap', hatColor: '#1d2b52', mask: 'none', back: 'none', eyewear: 'none', facialHair: 'none', hair: 'short' };
 let copLook = null;
@@ -4133,16 +4138,19 @@ async function trafficStop(v) {
   if (why === 'lights') { stats.lights = 'auto'; toast('You switched your headlights back on.', 2); }
   stats.stopCd = gameHours() + 2; chat.resolved = 'stop'; clearWanted(); v.ai = 'leave';
 }
-function clearWanted(msg) { if (!msg) chat.resolved ||= 'settled'; WANT.patrolT = 0; WANT.pull = null; ditchJumpsuit(); WANT.v = 0; WANT.stars = 0; WANT.loseT = 0; WANT.coolT = 0; P.arrestT = 0; for (const v of copCars) v.ai = 'leave'; for (const c of cops) { c.cop = 'leave'; peds.flee(c, P.x, P.z); } if (msg) toast(msg, 2.5); }
+function clearWanted(msg) { if (!msg) chat.resolved ||= 'settled'; WANT.patrolT = 0; WANT.pull = null; ditchJumpsuit(); WANT.v = 0; WANT.stars = 0; WANT.loseT = 0; WANT.coolT = 0; P.arrestT = 0; for (const c of cops) { if (c.car && copCars.includes(c.car) && c.state !== 'down' && Math.hypot(c.x - c.car.s.x, c.z - c.car.s.z) < 80) { c.cop = 'return'; c.angry = false; } else { c.cop = 'leave'; peds.flee(c, P.x, P.z); } } // officers walk back to their own car and drive off in it
+  for (const v of copCars) { if (cops.some(c => c.car === v && c.cop === 'return')) { v.ai = 'park'; v.waitT = 0; v.crewBack = true; } else v.ai = 'leave'; } if (msg) toast(msg, 2.5); }
+function ensureSiren(v) { if (v.siren || v.b.two) return; const lightM = [new THREE.MeshBasicMaterial({ color: '#ff2a3a' }), new THREE.MeshBasicMaterial({ color: '#2a6aff' })]; v.siren = lightM.map((m, i) => { const b = new THREE.Mesh(new THREE.BoxGeometry(0.45, 0.16, 0.3), m); b.position.set(i ? 0.32 : -0.32, v.b.height + 0.12, -0.1); v.b.group.add(b); b.visible = false; return b; }); }
 function makeCopCar(x, z, h) {
   const v = makeVehicle({ ...DEFAULT_CAR, ...CAR_PRESETS.Police }, x, z, h, false); v.ai = 'chase'; v.police = true;
   const lightM = [new THREE.MeshBasicMaterial({ color: '#ff2a3a' }), new THREE.MeshBasicMaterial({ color: '#2a6aff' })];
   v.siren = lightM.map((m, i) => { const b = new THREE.Mesh(new THREE.BoxGeometry(0.45, 0.16, 0.3), m); b.position.set(i ? 0.32 : -0.32, v.b.height + 0.12, -0.1); v.b.group.add(b); return b; });
   copCars.push(v); return v;
 }
-function makeCop(x, z) {
+function makeCop(x, z, car) {
   copLook ||= bakeCfg(COP_CFG);
   const p = peds.makePed(copLook); Object.assign(p, { kind: 'cop', x, z, hx: x, hz: z, state: 'chase', tx: P.x, tz: P.z, cop: 'chase', shootT: rand(0.5, 1.5), name: 'Officer ' + pick(['Diaz', 'Miller', 'Chen', 'Brooks', 'Kowalski', 'Reyes', 'Hart']) });
+  if (car) { p.car = car; (car.crew ||= []).push(p); }
   peds.list.push(p); cops.push(p); return p;
 }
 function spawnCopCar() {
@@ -4211,7 +4219,7 @@ function aiDrive(v, c, s, dt) {
   if (v.ai === 'chase' && !v.deployed && WANT.pull && ride && pd < 16 && Math.abs(ride.s.v) < 1.5 && Math.abs(c.v) < 3 && state === 'play') { v.deployed = true; trafficStop(v); return; }
   if (v.ai === 'chase' && !v.deployed && pd < 14 && (!ride || Math.abs(ride.s.v) < 2) && Math.abs(c.v) < 3) {
     v.deployed = true; const n = WANT.stars >= 3 ? 2 : 1;
-    for (let i = 0; i < n; i++) makeCop(c.x + Math.cos(c.h) * (i ? -2 : 2), c.z - Math.sin(c.h) * (i ? -2 : 2));
+    for (let i = 0; i < n; i++) makeCop(c.x + Math.cos(c.h) * (i ? -2 : 2), c.z - Math.sin(c.h) * (i ? -2 : 2), v);
   }
 }
 function copShot(c, tx, tz) {
@@ -4312,9 +4320,17 @@ function updatePolice(dt) {
   }
   if (WANT.stars) for (let i = traffic.length - 1; i >= 0; i--) { const t = traffic[i]; if (t.police && Math.hypot(t.rx - f.x, t.rz - f.z) < 40 && losClear(t.rx, t.rz, f.x, f.z)) { traffic.splice(i, 1); dyn.remove(t.mesh); makeCopCar(t.rx, t.rz, t.rh); } }
   for (const v of copCars) if (v.siren) { const on = Math.floor(time * 6) % 2; v.siren[0].visible = !!on; v.siren[1].visible = !on; }
+  if (ride?.police && ride.sirenOn && ride.siren) { const on = Math.floor(time * 6) % 2; ride.siren[0].visible = !!on; ride.siren[1].visible = !on; ride.wailT = (ride.wailT || 0) - dt; if (ride.wailT <= 0) { ride.wailT = 0.55; const A = audio(); if (A) { sfx.note(760, A.currentTime, 0.25, 'sawtooth', 0.014, 1600); sfx.note(980, A.currentTime + 0.27, 0.25, 'sawtooth', 0.014, 1600); } } for (const t of traffic) if (Math.hypot(t.rx - ride.s.x, t.rz - ride.s.z) < 30) t.honk = 0; }
   // cleanup
   for (let i = copCars.length - 1; i >= 0; i--) { const v = copCars[i]; if (Math.hypot(v.s.x - f.x, v.s.z - f.z) > (v.ai === 'leave' ? 70 : v.ai === 'patrol' ? 200 : 160)) { removeVehicle(v); copCars.splice(i, 1); } }
   for (let i = cops.length - 1; i >= 0; i--) { const c = cops[i]; if (!peds.list.includes(c)) { cops.splice(i, 1); continue; } if (c.cop === 'leave' && Math.hypot(c.x - f.x, c.z - f.z) > 50) { peds.list.splice(peds.list.indexOf(c), 1); dyn.remove(c.root); cops.splice(i, 1); } }
+  // officers heading back to their car: walk to the driver's door, get in, and once they're all in it drives off
+  for (let i = cops.length - 1; i >= 0; i--) { const c = cops[i]; if (c.cop !== 'return') continue; const v = c.car;
+    if (!v || !copCars.includes(v) || c.state === 'down') { c.cop = 'leave'; continue; }
+    const h = v.s.h, dx = v.s.x - Math.cos(h) * (v.b.width / 2 + 0.6), dz = v.s.z + Math.sin(h) * (v.b.width / 2 + 0.6);
+    c.state = 'chase'; c.tx = dx; c.tz = dz; c.spd = 2.6;
+    if (Math.hypot(c.x - dx, c.z - dz) < 1.2) { peds.list.splice(peds.list.indexOf(c), 1); dyn.remove(c.root); cops.splice(i, 1); v.crew = (v.crew || []).filter(q => q !== c); } }
+  for (const v of copCars) if (v.crewBack && v.ai === 'park') { v.waitT += dt; if (!cops.some(c => c.car === v && c.cop === 'return') || v.waitT > 30) { v.ai = 'leave'; v.crewBack = false; } }
   // officers on foot
   let close = false;
   for (const c of cops) {
@@ -6057,7 +6073,7 @@ function startJob(p) {
   } else { job = { type: 'courier', stage: 'deliver', fares: 0, earned: 0, depot: p }; nextParcel(); }
   toast(job.type === 'bins' ? 'Bin round started: 8 bins. Pull up next to each one.' : job.type === 'taxi' ? 'Shift started. Follow the GPS to your first fare.' : 'Parcel loaded. Deliver it before time runs out!', 3);
 }
-function nextFare() { const s = randomRoadSpot(80, 260); job.stage = 'pickup'; job.target = s; job.t = 999; setWaypoint(s.x, s.z, 'Fare pickup'); if (fareFig) dyn.remove(fareFig); const lk = bakeCfg(npcCfg('guest', Math.floor(Math.random() * 1e5))); fareFig = figure(lk).root; fareFig.position.set(s.x + 3.5, 0.17, s.z); dyn.add(fareFig); }
+function nextFare() { const s = randomRoadSpot(80, 260); job.stage = 'pickup'; job.target = s; job.t = 999; setWaypoint(s.x, s.z, 'Fare pickup'); if (fareFig) dyn.remove(fareFig); const raw = npcCfg('guest', Math.floor(Math.random() * 1e5)), lk = bakeCfg(raw); job.fareCfg = raw; fareFig = figure(lk).root; fareFig.position.set(s.x + 3.5, 0.17, s.z); dyn.add(fareFig); }
 function binMesh() { const g = new THREE.Group(); const mk = (w, h, d, c, y) => { const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), new THREE.MeshStandardMaterial({ color: c, roughness: 0.8 })); m.position.y = y; m.castShadow = true; g.add(m); return m; }; mk(0.7, 1.0, 0.75, '#2f6f3a', 0.55); mk(0.76, 0.08, 0.82, '#255a2f', 1.09); mk(0.1, 0.1, 0.1, '#16161b', 0.1).position.set(0.25, 0.1, -0.3); return g; }
 function nextBin() { const f = focusPos(); let best = null, bd = 1e9; for (const b of job.bins) { const d = Math.hypot(b.x - f.x, b.z - f.z); if (d < bd) { bd = d; best = b; } } if (best) { job.target = best; setWaypoint(best.x, best.z, 'Next bin'); } else { job.stage = 'return'; job.target = { x: job.depot.x, z: job.depot.z + 6 }; setWaypoint(job.target.x, job.target.z, 'Back to the depot'); } }
 function nextParcel() { const s = randomRoadSpot(200, 650); job.stage = 'deliver'; job.target = s; job.t = s.d / 8 + 25; job.pay = Math.round(60 + s.d * 0.3); setWaypoint(s.x, s.z, 'Parcel drop-off'); }
@@ -6081,11 +6097,61 @@ function updateJob(dt) {
   if (job.stage === 'drop' || job.type === 'courier') { job.t -= dt; if (job.t <= 0) { sfx.fail(); if (job.type === 'courier') return endJob('Too late. The client cancelled.'); toast('Your fare jumped out. Too slow!'); nextFare(); return; } }
   const stopped = !ride || Math.abs(ride.s.v) < 3;
   if (d < (ride ? 7 : 3) && stopped) {
-    if (job.type === 'taxi' && job.stage === 'pickup') { if (fareFig) { dyn.remove(fareFig); fareFig = null; } const s = randomRoadSpot(200, 600); job.stage = 'drop'; job.target = s; job.t = s.d / 11 + 22; job.pay = Math.round(45 + s.d * 0.28); setWaypoint(s.x, s.z, 'Fare drop-off'); sfx.coin(); toast(pick(['"Take me downtown, and step on it!"', '"Airport? No, kidding. Just this address."', '"Quick as you can, please!"']), 2.5); }
-    else { const bonus = Math.round(job.t * 2); const pay = job.pay + bonus; job.earned += pay; job.fares++; addMoney(pay); gainXP(job.type === 'taxi' ? 'driving' : 'stamina', 25); gainXP('charm', 4); toast(`Delivered! +${fmt(pay)} (incl. ${fmt(bonus)} speed tip)`, 2.6); job.type === 'taxi' ? nextFare() : nextParcel(); }
+    if (job.type === 'taxi' && job.stage === 'pickup') { if (fareFig) { dyn.remove(fareFig); fareFig = null; } const s = randomRoadSpot(200, 600); job.stage = 'drop'; job.target = s; job.t = s.d / 11 + 22; job.pay = Math.round(45 + s.d * 0.28); setWaypoint(s.x, s.z, 'Fare drop-off'); sfx.coin(); job.fare = { ...pick(FARES), cfg: job.fareCfg, mood: 55, chats: 0, rate: 0 }; fareHello(job.fare); }
+    else if (job.type === 'taxi') { const F = job.fare || { mood: 55 }, bonus = Math.round(job.t * 2), tip = Math.max(0, Math.round((F.mood - 45) * 1.6)), pay = job.pay + bonus + tip; job.earned += pay; job.fares++; addMoney(pay); gainXP('driving', 25); gainXP('charm', 4 + Math.max(0, Math.round((F.mood - 50) / 5))); fareBye(F, pay, bonus, tip); job.fare = null; nextFare(); }
+    else { const bonus = Math.round(job.t * 2); const pay = job.pay + bonus; job.earned += pay; job.fares++; addMoney(pay); gainXP('stamina', 25); gainXP('charm', 4); toast(`Delivered! +${fmt(pay)} (incl. ${fmt(bonus)} speed tip)`, 2.6); nextParcel(); }
   }
 }
 
+// ---------------- taxi passengers: they get in and talk, you chat on the way (top-right button), and how they feel decides the tip
+const FARES = [
+  { name: 'Margaret', likes: 'quiet', hi: ['Hello, dear. The library, please. No rush, I\'m not one for speed.'], bye: ['Lovely and smooth. Thank you, dear.', 'Bit fast for my liking.'] },
+  { name: 'Dev', likes: 'chat', hi: ['Yes! Finally a cab. Job interview across town. I\'m SO nervous.', 'Talk to me about anything. Please. Distract me.'], bye: ['Thanks for the pep talk. Wish me luck!', 'Right. Here goes nothing.'] },
+  { name: 'Kayla', likes: 'music', hi: ['Hiii. Can you put something good on? I\'m off out tonight!'], bye: ['That was a VIBE. Five stars!', 'Okay that playlist was a crime.'] },
+  { name: 'Mr Sterling', likes: 'fast', hi: ['Bay Corp Tower. I have a board meeting in twelve minutes.', 'Every second counts.'], bye: ['Acceptable. Keep the change.', 'Late. Disappointing.'] },
+  { name: 'Tommo', likes: 'chat', hi: ['Alright pal! Long night. Don\'t worry, I won\'t be sick in your cab.', 'Probably.'], bye: ['You\'re a legend, you. A legend!', 'Cheers... *hic*'] },
+  { name: 'Priya', likes: 'quiet', hi: ['Hi. Just the address on the app, thanks.', '*She puts her earphones in.*'], bye: ['Thanks.', 'Thanks. You talk a lot, don\'t you?'] },
+  { name: 'Gus', likes: 'chat', hi: ['Evenin\'! Forty years I drove one of these. Now look at me, in the back.', 'You keep your eyes on the road, I\'ll tell you a story or two.'], bye: ['You\'re a natural, kid. Keep at it.', 'Bit heavy on the brakes there.'] },
+];
+const FARE_TOPICS = [
+  { you: 'So, busy day?', opts: [['Tell me about it', 'chat'], ['Just drive', 'quiet'], ['*Turn the radio up*', 'music']] },
+  { you: 'Where you off to, then?', opts: [['Sounds fun', 'chat'], ['Nice. *Back to driving*', 'quiet'], ['*Put a tune on for the trip*', 'music']] },
+  { you: 'Want me to take the quick way?', opts: [['Hold on tight!', 'fast'], ['Nice and steady', 'quiet'], ['Scenic route, my treat', 'chat']] },
+  { you: 'Seen anything good in Bay City lately?', opts: [['Tell them about the Neon Room', 'chat'], ['Recommend the Sun Valley strip', 'chat'], ['Shrug', 'quiet']] },
+];
+const FARE_REACT = { // how each kind of passenger takes each kind of answer
+  quiet: { chat: [-8, 'Mm. Yes. Lovely.'], quiet: [10, 'Thank you. Peace and quiet.'], music: [-4, 'Bit loud, dear.'], fast: [-10, 'Slow DOWN, please!'] },
+  chat: { chat: [12, 'Ha! That\'s exactly what I needed. Go on!'], quiet: [-6, '...Oh. Okay. Quiet ride then.'], music: [4, 'Ooh, good song.'], fast: [2, 'Whoa! Okay!'] },
+  music: { chat: [2, 'Yeah, yeah. Turn it up though?'], quiet: [-6, 'Boring...'], music: [14, 'THIS IS MY SONG!'], fast: [6, 'Wooo! Faster!'] },
+  fast: { chat: [-4, 'Less chat, more driving.'], quiet: [6, 'Good. Focus.'], music: [-4, 'Turn that off.'], fast: [14, 'Now THAT is service.'] },
+};
+function fareCar() { return ride ? { color: ride.cfg?.bodyColor || '#ffd23f', trim: ride.cfg?.accentColor } : { color: '#ffd23f' }; }
+async function fareHello(F) {
+  eventOpen = true; beginTalk(F.cfg || npcCfg('guest', 7), F.name, 'Your fare', 170 + Math.random() * 100, null, null, null, false, false, false, fareCar());
+  for (const l of F.hi) await talk.say(l);
+  const k = await talk.choose([I('chat', 'Buckle up, let\'s go'), I('music', 'Any music requests?'), I('run', 'Hold on, I\'m quick')]);
+  const kind = ['chat', 'music', 'fast'][k], r = FARE_REACT[F.likes][kind]; F.mood = clamp(F.mood + r[0] * 0.6, 0, 100);
+  await talk.say(['Buckle up, let\'s go.', 'Any music requests?', 'Hold on, I\'m quick.'][k], 'you'); await talk.say(r[1]);
+  endTalk(); eventOpen = false; toast('Tap Passenger (top right) to chat on the way', 2.6);
+}
+async function fareChat() {
+  const F = job?.fare; if (!F || state !== 'play' || talk.active) return; if (ride) ride.s.v *= 0.98;
+  if (F.chats >= 3) { toast(`${F.name}: "${F.likes === 'quiet' ? 'Could we just... not?' : 'Ha, you\'re funny. Eyes on the road!'}"`, 2); return; }
+  F.chats++; const T = FARE_TOPICS[(F.chats + F.name.length) % FARE_TOPICS.length];
+  eventOpen = true; beginTalk(F.cfg || npcCfg('guest', 7), F.name, `Your fare · ${F.mood > 65 ? 'happy' : F.mood < 40 ? 'not impressed' : 'okay'}`, 170, null, null, null, false, false, false, fareCar());
+  await talk.say(T.you, 'you'); const k = await talk.choose(T.opts.map(o => I('chat', o[0]))); const kind = T.opts[k][1], r = FARE_REACT[F.likes][kind];
+  await talk.say(T.opts[k][0], 'you'); await talk.say(r[1]); F.mood = clamp(F.mood + r[0], 0, 100); if (kind === 'music') radioOn(true);
+  endTalk(); eventOpen = false;
+}
+function fareBye(F, pay, bonus, tip) {
+  toast(`${F.name}: "${F.mood >= 50 ? F.bye[0] : F.bye[1]}"  +${fmt(pay)}${tip ? ` (${fmt(tip)} tip)` : ''}${bonus ? ` · ${fmt(bonus)} speed bonus` : ''}`, 3.4);
+}
+function fareBtnTick() { // the Passenger button sits top right while someone's in the back; in any cab you can start taking fares
+  let b = $('fareBtn'); const inTaxi = ride && !ride.b.two && (ride.taxi || ride.cfg?.roof === 'taxi'), show = state === 'play' && ((job?.type === 'taxi' && job.fare && job.stage === 'drop') || (inTaxi && !job));
+  if (!show) { if (b) b.classList.add('hidden'); return; }
+  if (!b) { b = document.createElement('button'); b.id = 'fareBtn'; document.body.appendChild(b); b.onclick = () => { if (job?.fare) fareChat(); else if (ride && !job) { job = { type: 'taxi', v: ride, stage: 'pickup', fares: 0, earned: 0 }; nextFare(); toast('Taking fares. Follow the GPS to your first passenger.', 2.6); } }; }
+  b.classList.remove('hidden'); const html = job?.fare ? `${svg('chat', 'sm')} ${job.fare.name}<small>${job.fare.mood > 65 ? 'Happy' : job.fare.mood < 40 ? 'Grumpy' : 'Passenger'}</small>` : `${svg('taxi', 'sm')} Take fares`; if (b.dataset.h !== html) { b.innerHTML = html; b.dataset.h = html; }
+}
 // ================================================================ WAYPOINT & GPS
 const beam = new THREE.Mesh(new THREE.CylinderGeometry(1.2, 1.2, 80, 16, 1, true), new THREE.MeshBasicMaterial({ color: '#ffd23f', transparent: true, opacity: 0.35, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide }));
 beam.visible = false; G.scene.add(beam);
@@ -6642,7 +6708,7 @@ function updateHUD(dt) {
   setText('raceTxt', jt); $('raceTxt').classList.toggle('hidden', !jt);
   if (editMode) { setBtn('btnA', held ? 'check' : 'hand', held ? 'Place' : 'Pick up'); setBtn('btnB', 'check', 'Done'); setBtn('btnX', held ? 'rotate' : 'none', held ? 'Rotate' : ''); setBtn('btnY', held ? 'box' : 'none', held ? 'Store' : ''); } // rotate/store only while you're holding something
   else if (ride && (settings.steer || 'screen') === 'screen') { setBtn('btnA', action ? action.icon : 'phone', action ? action.label : 'Phone'); setBtn('btnB', 'exit', 'Get out');
-    if (ws.kind === 'gun') setBtn('btnX', 'fire', 'Shoot'); else if (ride.st?.nitro && !ride.b.two) setBtn('btnX', 'nitro', `Nitro ${Math.round((ride.nos ?? 1) * 100)}%`); else if (ride.b.two || ride.b.boat) setBtn('btnX', 'none', ''); else setBtn('btnX', 'drift', 'Drift'); }
+    if (ws.kind === 'gun') setBtn('btnX', 'fire', 'Shoot'); else if (ride.police && !ride.b.two) setBtn('btnX', 'siren', ride.sirenOn ? 'Siren on' : 'Siren'); else if (ride.st?.nitro && !ride.b.two) setBtn('btnX', 'nitro', `Nitro ${Math.round((ride.nos ?? 1) * 100)}%`); else if (ride.b.two || ride.b.boat) setBtn('btnX', 'none', ''); else setBtn('btnX', 'drift', 'Drift'); }
   else if (ride) { setBtn('btnA', 'gas', 'Drive'); setBtn('btnX', 'brake', ride.s.v > 0.5 ? 'Brake' : 'Reverse'); setBtn('btnB', ws.kind === 'gun' ? 'fire' : 'none', ws.kind === 'gun' ? 'Shoot' : ''); setBtn('btnY', action ? action.icon : 'exit', action ? action.label : 'Get out'); }
   else {
     setBtn('btnA', action ? action.icon : P.dead ? 'none' : 'phone', action ? action.label : P.dead ? '' : 'Phone'); // nothing to do here: the button is your phone
@@ -7206,7 +7272,7 @@ function saveGame() {
   store.set('bc_save', save); store.set('bc_arsenal', arsenal); store.set('bc_cars', garage); store.set('bc_savedAt', Date.now());
 }
 // auto-update: bookmarks and home-screen apps can hold on to an old copy. Check version.json (never cached) and reload once if newer.
-const BUILD = 186;
+const BUILD = 187;
 function updatingCover() { const d = document.createElement('div'); d.id = 'updCover'; d.innerHTML = '<div class="bt-logo">BAY<span>CITY</span></div><p><i></i>Updating Bay City...</p>'; document.body.appendChild(d); requestAnimationFrame(() => d.classList.add('on')); }
 function checkUpdate() {
   fetch('version.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(j => {
@@ -7644,7 +7710,7 @@ function step(dt) { lastDt = dt;
   } else { updateHomeLife(dt); updateNpcList(inside.npcs, dt); inside.h.seeThrough?.(P.x, P.z, P.y); if (inside.id === 'prison') { peds.update(dt, P.x, P.z, null, false); updateAngry(dt); updateBrawl(dt); if (inside.h.upper?.length) { const o = P.y < 2 ? 0.16 : 1; if (inside.fadeO !== o) { inside.fadeO = o; inside.h.fadeUpper(o); } } } }
   updateChatter(dt); subs.update(dt); updateStory(dt); updatePromises(); updateDelivery(dt);
   if (!SANDBOX) updateAmbientBoats(dt); cloudTick(dt); lifeTick(dt); updateDate(dt); updateBuddy(dt); famTexts(dt); updateFx(dt); updatePolice(dt); updatePrison(dt); updateFarm(dt); updateTrain(dt); updateMetro(dt); if (!inside) updateEmergency(dt);
-  updateBullets(dt); updateProjectiles(dt); updateParticles(dt); updateCash(dt); updateMarkers(); updateRace(dt); updateRoute(dt); updateCustomers(dt); updateReacts(dt); updateDoors(dt); updateJob(dt);
+  updateBullets(dt); updateProjectiles(dt); updateParticles(dt); updateCash(dt); updateMarkers(); updateRace(dt); updateRoute(dt); updateCustomers(dt); updateReacts(dt); updateDoors(dt); updateJob(dt); fareBtnTick();
   if (input.consume('map') || input.consume('pause')) openPhone('maps');
   input.mode = ride ? 'car' : 'foot'; input.consume('slot');
   for (let i = 1; i <= 9; i++) if (input.keys.has('Digit' + i)) { input.keys.delete('Digit' + i); if (SLOTS[i - 1] && arsenal.owned.includes(SLOTS[i - 1].id)) selectWeapon(SLOTS[i - 1].id); }
@@ -7664,7 +7730,7 @@ const CUSTOM_STATES = ['char', 'gun', 'car', 'clothes', 'barber', 'carshop'];
 function setState(s) { if (s === 'talk') subs.stop(); if (s !== 'play') setTimeout(stackTabs, 60); /* a conversation replaces what's on screen; other screens just pause the queue */
   state = s;
   show('custom', CUSTOM_STATES.includes(s));
-  show('hud', s === 'play' || s === 'ui' || s === 'phone'); show('pad', s === 'play'); $('sbBtn')?.classList.toggle('hidden', s !== 'play');
+  show('hud', s === 'play' || s === 'ui' || s === 'phone'); show('pad', s === 'play'); $('sbBtn')?.classList.toggle('hidden', s !== 'play'); if (s !== 'play') $('fareBtn')?.classList.add('hidden');
   if (CUSTOM_STATES.includes(s)) { previewMode = s; previewLayout(); }
   if (s !== 'play') engineSound(false, 0);
   if (s === 'play') gameLayout();
