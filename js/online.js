@@ -2,7 +2,7 @@
 // Transport is Supabase Realtime (free tier) once js/config.js has the project URL + anon key;
 // a same-device BroadcastChannel transport ("?local" in the URL) lets two tabs see each other for testing.
 import * as THREE from '../lib/three.module.min.js';
-import { SUPA } from './config.js?v=158';
+import { SUPA } from './config.js?v=159';
 
 let C = null, T = null, sb = null, session = null, sendT = 0, seq = 0;
 const peers = new Map(), listeners = new Set();

@@ -782,3 +782,11 @@ body.righty #zoneTxt { right: calc(8px + var(--sar)); }
 .wx-h { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 12px; }
 .ph-row.news span { white-space: normal; }
 .ph-row.news { align-items: flex-start; text-align: left; } .ph-row.news span, .ph-row.news small { text-align: left; }
+
+/* compact weapon wheel: takes over the bottom-right buttons instead of filling the screen */
+#wheel.compact { display: block; background: radial-gradient(circle at var(--cx) var(--cy), rgba(10,8,24,.55) 0, rgba(10,8,24,.25) 150px, rgba(10,8,24,0) 240px); }
+#wheel.compact .wheel-ring { position: absolute; left: calc(var(--cx) - 160px); top: calc(var(--cy) - 160px); transform-origin: 50% 50%; }
+#wheel.compact .wheel-item small { font-size: 13px; }
+#wheel.compact .wheel-center b { font-size: 16px; }
+#wheel.compact .wheel-center span { font-size: 13px; }
+body.wheel-compact #pad .face, body.wheel-compact #wpnBtn { opacity: 0; transition: opacity .12s; }

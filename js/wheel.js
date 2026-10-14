@@ -13,12 +13,13 @@ const arc = (r0, r1, a0, a1) => {
   return `M${p(r1, a0)} A${r1} ${r1} 0 ${large} 1 ${p(r1, a1)} L${p(r0, a1)} A${r0} ${r0} 0 ${large} 0 ${p(r0, a0)}Z`;
 };
 let active = null; // the wheel that's open right now
-export function attachWheel(btn, { items, onSelect, onTap, centre, onOpen, onClose }) {
+export function attachWheel(btn, { items, onSelect, onTap, centre, onOpen, onClose, anchor }) {
+  let K = 1; // ring scale: the compact wheel sits over the buttons it replaces
   let opener = null, ox = 0, oy = 0, moved = false, list = [], hover = -1, isOpen = false;
   const W = { close };
   const zone = (x, y) => { // -1 centre, -2 outside, else segment index
     const r = el.querySelector('.wheel-ring').getBoundingClientRect(), dx = x - (r.left + r.width / 2), dy = y - (r.top + r.height / 2), d = Math.hypot(dx, dy);
-    if (d < 58) return -1; if (d > 175) return -2;
+    if (d < 58 * K) return -1; if (d > 175 * K) return -2;
     const n = list.length; let a = Math.atan2(dx, -dy); if (a < 0) a += Math.PI * 2; return Math.round(a / (Math.PI * 2) * n) % n;
   };
   function show() {
@@ -33,9 +34,16 @@ export function attachWheel(btn, { items, onSelect, onTap, centre, onOpen, onClo
       d.innerHTML = `${it.icon}<small>${it.short || ''}</small>`; box.appendChild(d);
     });
     const c = el.querySelector('.wheel-center'); c.dataset.label = centre ? centre() : 'Close';
+    const ring = el.querySelector('.wheel-ring'), A = anchor?.();
+    if (A && A.offsetParent !== null) { // compact: a small wheel right where your thumb already is, instead of the big one in the middle
+      const r = A.getBoundingClientRect(); K = 0.72; const R = 160 * K + 6;
+      const cx = Math.max(R, Math.min(innerWidth - R, r.left + r.width / 2)), cy = Math.max(R, Math.min(innerHeight - R - 4, r.top + r.height / 2));
+      el.classList.add('compact'); el.style.setProperty('--cx', cx + 'px'); el.style.setProperty('--cy', cy + 'px'); document.body.classList.add('wheel-compact');
+    } else { K = 1; el.classList.remove('compact'); document.body.classList.remove('wheel-compact'); }
+    ring.style.transform = K === 1 ? '' : `scale(${K})`;
     paint(); el.classList.remove('hidden'); el.classList.add('live'); onOpen?.(); navigator.vibrate?.(8);
   }
-  function close() { if (!isOpen) return; isOpen = false; active = null; el.classList.add('hidden'); el.classList.remove('live'); onClose?.(); }
+  function close() { if (!isOpen) return; isOpen = false; active = null; el.classList.add('hidden'); document.body.classList.remove('wheel-compact'); el.classList.remove('live'); onClose?.(); }
   const pickAt = i => { close(); if (i >= 0) { if (!list[i].disabled || true) onSelect(list[i], i); } else if (i === -1 && centre) onTap?.(); navigator.vibrate?.(6); };
   function paint() {
     el.querySelectorAll('#wheelSvg path').forEach(p => { const i = +p.dataset.i; p.setAttribute('class', (i === hover ? 'on ' : '') + (list[i].disabled ? 'off' : '')); });
