@@ -1,26 +1,26 @@
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=109';
-import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=109';
-import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=109';
-import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=109';
-import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=109';
-import { buildPanel, renderStats } from './ui.js?v=109';
-import { Input } from './input.js?v=109';
-import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime } from './audio.js?v=109';
-import { runMinigame } from './minigames.js?v=109';
-import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk } from './peds.js?v=109';
-import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=109';
-import { findRoute } from './nav.js?v=109';
-import { COURSES, CAREERS, QUIZ } from './careers.js?v=109';
-import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=109';
-import { attachWheel } from './wheel.js?v=109';
-import { Animals } from './animals.js?v=109';
-import { Talk } from './talk.js?v=109';
-import { incomingText, classify, textOptions, textReply } from './texts.js?v=109';
-import { svg, drawIcon } from './icons.js?v=109';
-import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=109';
-import { FURN, CATALOG } from './furniture.js?v=109';
-import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=109';
+import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=110';
+import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun } from './gun.js?v=110';
+import { buildCar, computeCarStats, carStatBars, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=110';
+import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, windowShader, makeOceanMaterial, WATER_U, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=110';
+import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=110';
+import { buildPanel, renderStats } from './ui.js?v=110';
+import { Input } from './input.js?v=110';
+import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime } from './audio.js?v=110';
+import { runMinigame } from './minigames.js?v=110';
+import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk } from './peds.js?v=110';
+import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=110';
+import { findRoute } from './nav.js?v=110';
+import { COURSES, CAREERS, QUIZ } from './careers.js?v=110';
+import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=110';
+import { attachWheel } from './wheel.js?v=110';
+import { Animals } from './animals.js?v=110';
+import { Talk } from './talk.js?v=110';
+import { incomingText, classify, textOptions, textReply } from './texts.js?v=110';
+import { svg, drawIcon } from './icons.js?v=110';
+import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=110';
+import { FURN, CATALOG } from './furniture.js?v=110';
+import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=110';
 
 const $ = id => document.getElementById(id);
 let inside = null, editMode = false, held = null, pendingCar = false, homeMusic = false, phoneBadge = 0;
@@ -999,15 +999,24 @@ function rebuildMyCar(at) {
   headSpot.color.set(carCfg.headlights || '#ffffff');
 }
 function vehY(x, z, py = 0) { if (py > -2.5 && onBridge(x, z)) return 0.12; const r = roadAt(x, z); return r ? (r.city ? 0.04 : roadY(x, z)) : Math.max(groundH(x, z), cityAt(x, z, -6) ? 0.17 : cityAt(x, z, 4) ? 0 : -6); } // on the pavement you're up on the kerb
+// headlight beams: a soft cone of light out of each lamp, lying on the road
+let BEAM = null;
+function headBeams(W, L) {
+  if (!BEAM) { const cv = document.createElement('canvas'); cv.width = 128; cv.height = 256; const x = cv.getContext('2d');
+    x.filter = 'blur(7px)'; const gr = x.createLinearGradient(0, 256, 0, 0); gr.addColorStop(0, 'rgba(255,244,214,0.95)'); gr.addColorStop(0.45, 'rgba(255,244,214,0.45)'); gr.addColorStop(1, 'rgba(255,244,214,0)'); x.fillStyle = gr;
+    x.beginPath(); x.moveTo(56, 250); x.lineTo(72, 250); x.lineTo(124, 8); x.lineTo(4, 8); x.closePath(); x.fill();
+    const tx = new THREE.CanvasTexture(cv); tx.colorSpace = THREE.SRGBColorSpace; const geo = new THREE.PlaneGeometry(2.6, 9); geo.translate(0, 4.5, 0); geo.rotateX(Math.PI / 2);
+    BEAM = { geo, mat: new THREE.MeshBasicMaterial({ map: tx, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide, opacity: 0.6 }) }; }
+  const g = new THREE.Group(); for (const s of [-1, 1]) { const b = new THREE.Mesh(BEAM.geo, BEAM.mat); b.position.set(s * W * 0.3, 0.06, L / 2 - 0.05); b.rotation.y = s * 0.07; g.add(b); } return g;
+}
 // traffic switches its lights on after dark: headlamps, tail lights and a pool of light on the road ahead
 let TL = null;
 function trafficLamps(t, on) {
   t.lit = on;
-  if (!TL) { const cv = document.createElement('canvas'); cv.width = 64; cv.height = 128; const x = cv.getContext('2d'), g = x.createRadialGradient(32, 10, 2, 32, 40, 80); g.addColorStop(0, 'rgba(255,240,200,0.9)'); g.addColorStop(1, 'rgba(255,240,200,0)'); x.fillStyle = g; x.fillRect(0, 0, 64, 128);
-    TL = { head: new THREE.MeshBasicMaterial({ color: '#fff6d8' }), tail: new THREE.MeshBasicMaterial({ color: '#ff2a2a' }), pool: new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(cv), transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, opacity: 0.55 }), box: new THREE.BoxGeometry(0.34, 0.12, 0.06), plane: new THREE.PlaneGeometry(3.4, 9) }; }
+  if (!TL) TL = { head: new THREE.MeshBasicMaterial({ color: '#fff6d8' }), tail: new THREE.MeshBasicMaterial({ color: '#ff2a2a' }), box: new THREE.BoxGeometry(0.34, 0.12, 0.06) };
   if (on && !t.lamps) { const g = new THREE.Group(), L = t.lib.len || 4.4, W = t.lib.wid || 1.9;
     for (const s of [-1, 1]) { const h = new THREE.Mesh(TL.box, TL.head); h.position.set(s * W * 0.33, 0.62, L / 2 + 0.02); g.add(h); const b = new THREE.Mesh(TL.box, TL.tail); b.position.set(s * W * 0.33, 0.66, -L / 2 - 0.02); g.add(b); }
-    const pool = new THREE.Mesh(TL.plane, TL.pool); pool.rotation.x = -Math.PI / 2; pool.position.set(0, 0.03, L / 2 + 4.4); g.add(pool);
+    g.add(headBeams(W, L));
     t.mesh.add(g); t.lamps = g; }
   if (t.lamps) t.lamps.visible = on;
 }
@@ -2005,7 +2014,8 @@ function updateVehicles(dt) {
   }
   const lv = ride || myCar, on = night > 0.25;
   for (const v of vehicles) { if (v.b.blink) setBlink(v.b.blink, v.wrecked ? 0 : v === ride ? gpsTurn(v) : 0); v.b.headM.emissiveIntensity = on && (v !== ride || lightsOn()) ? 2.2 : 0.4; v.b.tailM.emissiveIntensity = v.s.braking ? 3 : on && (v !== ride || lightsOn()) ? 1.2 : 0.4; if (v.b.revM) v.b.revM.emissiveIntensity = v.s.v < -0.4 ? 2.4 : 0; if (v.b.glow) v.b.glow.material.opacity = 0.35 + night * 0.4; }
-  if (lv) { const s = lv.s, fx = Math.sin(s.h), fz = Math.cos(s.h); headSpot.intensity = on && ride && lightsOn() ? 60 : 0; headSpot.position.set(s.x + fx * lv.b.length * 0.5, 1.0, s.z + fz * lv.b.length * 0.5); headTarget.position.set(s.x + fx * 18, 0, s.z + fz * 18); }
+  for (const v of vehicles) { if (v.b.two) continue; const want = on && !v.wrecked && ((v === ride && lightsOn()) || (!!v.ai && v !== ride)); if (want && !v.beams) { v.beams = headBeams(v.b.width, v.b.length); v.b.group.add(v.beams); } if (v.beams) v.beams.visible = want; } // two cones of light, one per lamp
+  if (lv) { const s = lv.s, fx = Math.sin(s.h), fz = Math.cos(s.h); headSpot.intensity = on && ride && lightsOn() ? 30 : 0; headSpot.position.set(s.x + fx * lv.b.length * 0.5, 1.0, s.z + fz * lv.b.length * 0.5); headTarget.position.set(s.x + fx * 18, 0, s.z + fz * 18); }
   engineSound(!!ride, ride ? Math.max(Math.abs(ride.s.v), (ride.launch || 0) * 30) : 0);
 }
 
@@ -6092,7 +6102,7 @@ function saveGame() {
   store.set('bc_save', save); store.set('bc_arsenal', arsenal); store.set('bc_cars', garage);
 }
 // auto-update: bookmarks and home-screen apps can hold on to an old copy. Check version.json (never cached) and reload once if newer.
-const BUILD = 109;
+const BUILD = 110;
 function checkUpdate() {
   fetch('version.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(j => {
     if (!(j.v > BUILD)) return;
