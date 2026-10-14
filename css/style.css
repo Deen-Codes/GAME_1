@@ -730,3 +730,10 @@ body.armory .drag-hint { bottom: calc(60dvh + 6px); }
 .fbtn span.xs { white-space: normal; overflow-wrap: anywhere; }
 .fbtn span.sm { font-size: 8.5px; letter-spacing: .01em; }
 .fbtn span.xs { font-size: 7.6px; letter-spacing: 0; }
+/* on foot outside, the weapon button sits in the thumb arc (where Kick used to be): tap to holster/draw, hold for the weapon wheel, ammo shown under the icon */
+#pad.wpnslot #wpnBtn { right: calc(30px + var(--sar)); left: auto; top: auto !important; bottom: calc(140px + var(--sab)); width: 58px; height: 58px; padding: 0; border-radius: 50%; gap: 0 2px;
+  flex-wrap: wrap; justify-content: center; align-content: center; background: rgba(255,255,255,.08); border: 1.5px solid rgba(255,255,255,.32); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); }
+#pad.wpnslot.righty #wpnBtn { right: auto; left: calc(30px + var(--sal)); }
+#pad.wpnslot #wpnBtn .wicon, #pad.wpnslot #wpnBtn > svg { width: 26px; height: 22px; flex-basis: 100%; }
+#pad.wpnslot #wpnBtn b { font-size: 10px; line-height: 1; } #pad.wpnslot #wpnBtn span { font-size: 9px; line-height: 1; }
+#pad.wpnslot #wpnBtn b.rl { font-size: 7.5px; }

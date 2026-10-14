@@ -1,29 +1,29 @@
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=155';
-import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun, partEffects, partPerk } from './gun.js?v=155';
-import { buildCar, computeCarStats, carStatBars, carClass, carPartEffects, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=155';
-import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, STAIRS, unblockPillars, canyonAt, canyonNear, PEAK, SKYWAYS, SKY_Y, skyAt, skyY, rampSeg, windowShader, makeOceanMaterial, WATER_U, WIND_U, METRO, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=155';
-import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=155';
-import { buildPanel, renderStats } from './ui.js?v=155';
-import { Input } from './input.js?v=155';
-import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime, animalCall } from './audio.js?v=155';
-import { runMinigame } from './minigames.js?v=155';
-import { CUT, initCutGames } from './cutgames.js?v=155';
-import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk, setReservedNames, seededLook } from './peds.js?v=155';
-import { citizens, whereNow } from './citizens.js?v=155';
-import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=155';
-import { findRoute } from './nav.js?v=155';
-import { COURSES, CAREERS, QUIZ } from './careers.js?v=155';
-import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=155';
-import { attachWheel } from './wheel.js?v=155';
-import { GROUND_U } from './groundtex.js?v=155';
-import { Animals, makeAnimalMesh } from './animals.js?v=155';
-import { Talk } from './talk.js?v=155';
-import { incomingText, classify, textOptions, textReply } from './texts.js?v=155';
-import { svg, drawIcon } from './icons.js?v=155';
-import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=155';
-import { FURN, CATALOG } from './furniture.js?v=155';
-import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=155';
+import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=156';
+import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun, partEffects, partPerk } from './gun.js?v=156';
+import { buildCar, computeCarStats, carStatBars, carClass, carPartEffects, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=156';
+import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, STAIRS, unblockPillars, canyonAt, canyonNear, PEAK, SKYWAYS, SKY_Y, skyAt, skyY, rampSeg, windowShader, makeOceanMaterial, WATER_U, WIND_U, METRO, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=156';
+import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=156';
+import { buildPanel, renderStats } from './ui.js?v=156';
+import { Input } from './input.js?v=156';
+import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime, animalCall } from './audio.js?v=156';
+import { runMinigame } from './minigames.js?v=156';
+import { CUT, initCutGames } from './cutgames.js?v=156';
+import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk, setReservedNames, seededLook } from './peds.js?v=156';
+import { citizens, whereNow } from './citizens.js?v=156';
+import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=156';
+import { findRoute } from './nav.js?v=156';
+import { COURSES, CAREERS, QUIZ } from './careers.js?v=156';
+import { EVENTS, EVENT_BY_ID, ARRIVE } from './events.js?v=156';
+import { attachWheel } from './wheel.js?v=156';
+import { GROUND_U } from './groundtex.js?v=156';
+import { Animals, makeAnimalMesh } from './animals.js?v=156';
+import { Talk } from './talk.js?v=156';
+import { incomingText, classify, textOptions, textReply } from './texts.js?v=156';
+import { svg, drawIcon } from './icons.js?v=156';
+import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=156';
+import { FURN, CATALOG } from './furniture.js?v=156';
+import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=156';
 
 const $ = id => document.getElementById(id);
 let inside = null, editMode = false, held = null, pendingCar = false, homeMusic = false, phoneBadge = 0;
@@ -972,6 +972,7 @@ function selectWeapon(id) {
   if (id !== 'fist') arsenal.last = id;
   arsenal.cur = id; equipWeapon(); sfx.equip(); saveGame();
 }
+const sideGun = () => { const g = arsenal.owned.includes(arsenal.last) && ['gun', 'rpg'].includes(SLOT[arsenal.last]?.kind) ? arsenal.last : arsenal.owned.find(id => SLOT[id].kind === 'gun'); return g || null; };
 function holsterToggle() { selectWeapon(arsenal.cur === 'fist' ? (arsenal.owned.includes(arsenal.last) ? arsenal.last : 'fist') : 'fist'); }
 function finishReload() { const a = am(), take = Math.min(ws.mag - a.mag, a.res); a.mag += take; a.res -= take; }
 function startReload() { const a = am(); if (P.reload <= 0 && a.res > 0 && a.mag < ws.mag) P.reload = ws.reload; }
@@ -1601,14 +1602,13 @@ function updateFoot(dt) {
       }
       if (a.mag <= 0 && a.res > 0 && P.reload <= 0 && !P.burst) startReload();
     } else if (kind === 'melee') {
-      input.consume('y');
-      // combos: keep tapping for jab, jab, hook, uppercut (bat: swing, backhand, overhead). Y = kick
-      const kick = input.consume('y') && arsenal.cur === 'fist';
+      // combos: keep tapping for jab, jab, hook, uppercut (bat: swing, backhand, overhead). Y = draw your gun
+      if (input.consume('y')) { const g = sideGun(); if (g) { selectWeapon(g); sfx.equip?.(); } else toast('No gun yet. Bay Arms sells them.'); }
+      const kick = false;
       if ((input.consume('x') || kick) && P.fireCd <= 0 && !P.dead) {
-        P.combo = time - (P.lastHit || -9) < 0.75 ? ((P.combo || 0) + 1) % (arsenal.cur === 'bat' ? 3 : 4) : 0;
-        if (kick) P.combo = 'kick';
+        { const prev = P.combo === 'kick' ? 4 : (P.combo || 0); P.combo = time - (P.lastHit || -9) < 0.75 ? (prev + 1) % (arsenal.cur === 'bat' ? 3 : 5) : 0; if (arsenal.cur === 'fist' && P.combo === 4) P.combo = 'kick'; } // keep tapping: jab, jab, hook, uppercut, KICK
         { let best = null, bd = 3.4; for (const q of peds.list) { if (q.state === 'down') continue; const dx = q.x - P.x, dz = q.z - P.z, d = Math.hypot(dx, dz); if (d < bd && (q.angry || d < 2.2 || Math.abs(wrapA(Math.atan2(dx, dz) - P.face)) < 2)) { bd = d; best = q; } } if (best) P.face = Math.atan2(best.x - P.x, best.z - P.z); } // lock on to the nearest fighter
-        P.lastHit = time; P.swingDur = kick ? 0.42 : P.combo === 3 ? 0.36 : 0.24; P.swing = P.swingDur; P.swingHit = false; P.fireCd = kick ? 0.45 : arsenal.cur === 'bat' ? 0.38 : 0.2; sfx.whoosh();
+        P.lastHit = time; P.swingDur = P.combo === 'kick' ? 0.42 : P.combo === 3 ? 0.36 : 0.24; P.swing = P.swingDur; P.swingHit = false; P.fireCd = P.combo === 'kick' ? 0.45 : arsenal.cur === 'bat' ? 0.38 : 0.2; sfx.whoosh();
       }
       if (P.swing > 0 && P.swing < P.swingDur * 0.55 && !P.swingHit) { P.swingHit = true; meleeHit(P.combo); }
     } else if (kind === 'grenade') {
@@ -6403,7 +6403,7 @@ function updateHUD(dt) {
   const a = am(), id = arsenal.cur, wk = id + '|' + a.mag + '|' + a.res + '|' + (P.reload > 0);
   if (hudCache.wpn !== wk) { hudCache.wpn = wk; $('wpnBtn').innerHTML = iconSVG(id) + (ws.kind === 'melee' ? '' : ws.kind === 'grenade' ? `<b>${a.res}</b>` : P.reload > 0 ? '<b class="rl">RELOAD</b>' : `<b>${a.mag}</b><span>${a.res}</span>`); }
   $('wpnBtn').classList.toggle('hidden', !!inside);
-  if ((hudCache.wpT = (hudCache.wpT || 0) + 1) % 15 === 0) { // keep the weapon pill just above whichever action button is on top (they move between foot and car layouts)
+  if (!$('pad').classList.contains('wpnslot') && (hudCache.wpT = (hudCache.wpT || 0) + 1) % 15 === 0) { // keep the weapon pill just above whichever action button is on top (they move between foot and car layouts)
     const pad = $('pad'), wb = $('wpnBtn'); let top = 1e9; for (const b of pad.querySelectorAll('.face .fbtn')) { if (b.offsetParent === null || b.classList.contains('hidden')) continue; const r = b.getBoundingClientRect(); if (r.height && r.top < top) top = r.top; }
     if (top < 1e9) { const pr = pad.getBoundingClientRect(), y = Math.round(top - pr.top - wb.offsetHeight - 10); if (hudCache.wpY !== y) { hudCache.wpY = y; wb.style.top = y + 'px'; } } }
   $('editBtn').classList.add('hidden'); // edit home lives on the top action button now
@@ -6423,12 +6423,14 @@ function updateHUD(dt) {
     const k = inside && inside.id !== 'prison' ? 'none' : ws.kind, inn = inside && inside.id !== 'prison';
     setBtn('btnX', k === 'melee' ? 'fist' : k === 'grenade' ? 'throw' : k === 'none' ? 'none' : 'fire', k === 'melee' ? (id === 'bat' ? 'Swing' : 'Punch') : k === 'grenade' ? 'Throw' : k === 'none' ? '' : 'Fire');
     if (inside?.prop && inn) setBtn('btnY', 'edit', 'Edit home'); else
-    setBtn('btnY', (k === 'gun' || k === 'rpg') ? 'rotate' : id === 'fist' && !inn ? 'bolt' : 'none', (k === 'gun' || k === 'rpg') ? 'Reload' : id === 'fist' && !inn ? 'Kick' : '');
+    { const g = k === 'melee' && !inn ? sideGun() : null, ga = g ? arsenal.ammo[g] : null; // the gun button: shows the ammo of the gun in your hand (or the one it'll draw)
+      if (k === 'gun' || k === 'rpg') setBtn('btnY', 'rotate', P.reload > 0 ? 'Reloading' : `${a.mag} | ${a.res}`); else if (g) setBtn('btnY', 'gun', `${ga.mag} | ${ga.res}`); else setBtn('btnY', 'none', ''); }
   }
+  { const slot = !ride && !inside && !editMode; $('pad').classList.toggle('wpnslot', slot); $('btnY').classList.toggle('hidden', slot); }
   $('btnA').classList.toggle('ready', !!action || editMode);
   $('btnA').classList.toggle('idle', !ride && !action && !editMode);
   $('btnX').classList.toggle('idle', !ride && !editMode && (inside || false));
-  $('btnY').classList.toggle('idle', !ride && !editMode && !(!inside && (ws.kind === 'gun' || ws.kind === 'rpg')) && !(inside?.prop && inside.id !== 'prison'));
+  $('btnY').classList.toggle('idle', !ride && !editMode && !(!inside && (ws.kind === 'gun' || ws.kind === 'rpg' || (ws.kind === 'melee' && sideGun()))) && !(inside?.prop && inside.id !== 'prison'));
   $('pad').classList.toggle('driving', !!ride && (settings.steer || 'screen') !== 'screen');
   if (toastT > 0) { toastT -= dt; if (toastT <= 0) $('toast').classList.remove('on'); }
   if (noteT > 0) { noteT -= dt; if (noteT <= 0) { $('note').classList.add('hidden'); slotSync(); } }
@@ -6800,7 +6802,7 @@ function saveGame() {
   store.set('bc_save', save); store.set('bc_arsenal', arsenal); store.set('bc_cars', garage);
 }
 // auto-update: bookmarks and home-screen apps can hold on to an old copy. Check version.json (never cached) and reload once if newer.
-const BUILD = 155;
+const BUILD = 156;
 function checkUpdate() {
   fetch('version.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(j => {
     if (!(j.v > BUILD)) return;
