@@ -1,8 +1,8 @@
 // Conversations staged like a Pokémon battle: they stand on a platform facing you,
 // you see the back of your own head in the foreground, subtitles type out, you pick replies.
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject } from './character.js?v=183';
-import { sfx, audio } from './audio.js?v=183';
+import { buildCharacter, poseCharacter, disposeObject } from './character.js?v=184';
+import { sfx, audio } from './audio.js?v=184';
 
 const $ = id => document.getElementById(id);
 const BG = {
@@ -273,8 +273,9 @@ export class Talk {
       const ry = y.root.rotation.y - Math.PI / 2;
       this.seatG.position.copy(y.root.position); this.seatG.rotation.y = ry;
       y.root.rotation.y = ry; this.sitIn(y, this.seatG);
-      y.armL.pivot.rotation.set(-1.25, 0, -0.32); if (this.talking !== 'you') y.armR.pivot.rotation.set(-1.25, 0, 0.32);
-      y.head.rotation.y = 1.35 + (this.talking === 'you' ? Math.sin(this.t * 3.1) * 0.1 : 0);
+      y.armL.pivot.rotation.set(-1.25, 0, -0.32);
+      if (this.phone) { y.armR.pivot.rotation.set(-0.85, 0.15, -0.42); if (y.armR.elbow) y.armR.elbow.rotation.set(-2.6, 0, 0); y.head.rotation.set(0, 0.6 + (this.talking === 'you' ? Math.sin(this.t * 3.1) * 0.08 : 0), -0.12); } // on the phone at the wheel: one hand on it, phone at your ear
+      else { if (this.talking !== 'you') y.armR.pivot.rotation.set(-1.25, 0, 0.32); y.head.rotation.y = 1.35 + (this.talking === 'you' ? Math.sin(this.t * 3.1) * 0.1 : 0); }
     }
     if (this.car && n && y) this.carPose(n, y);
     else if (this.actK && n && y) this.standAct(n, y);

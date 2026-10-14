@@ -34,6 +34,7 @@ export class Hub extends DurableObject {
       CREATE TABLE IF NOT EXISTS users (email TEXT PRIMARY KEY, created INTEGER, seen INTEGER);
       CREATE TABLE IF NOT EXISTS sends (ip TEXT, t INTEGER);
       CREATE TABLE IF NOT EXISTS saves (email TEXT PRIMARY KEY, data TEXT, t INTEGER, summary TEXT);
+      CREATE TABLE IF NOT EXISTS review (id TEXT PRIMARY KEY, tick INTEGER, note TEXT, t INTEGER);
       CREATE TABLE IF NOT EXISTS slots (email TEXT, slot INTEGER, data TEXT, t INTEGER, summary TEXT, PRIMARY KEY (email, slot));`);
   }
   one(q, ...a) { return this.sql.exec(q, ...a).toArray()[0] || null; }
@@ -48,9 +49,20 @@ export class Hub extends DurableObject {
       if (p === '/api/me') { const s = this.session((req.headers.get('authorization') || '').replace(/^Bearer /, '')); return s ? json({ email: s.email, admin: (await this.maxSlots(s.email)) > 3 }) : json({ error: 'Not signed in' }, 401); }
       if (p === '/api/logout' && req.method === 'POST') { const sid = (req.headers.get('authorization') || '').replace(/^Bearer /, ''); this.sql.exec('DELETE FROM sessions WHERE sid = ?', sid); return json({ ok: true }); }
       if (p === '/api/save' || p === '/api/saves') return await this.saveApi(req, now, url);
+      if (p === '/api/review') return await this.review(req, now); // the admin's life-event checklist (anyone can read it, only the admin can change it)
       if (p === '/api/status') return json({ ok: true, online: this.ctx.getWebSockets().length });
       return json({ error: 'Not found' }, 404);
     } catch (e) { return json({ error: 'Server error' }, 500); }
+  }
+
+  async review(req, now) {
+    if (req.method === 'GET') { const rows = this.sql.exec('SELECT id, tick, note, t FROM review').toArray(); const out = { ticks: {}, notes: {} }; for (const r of rows) { if (r.tick) out.ticks[r.id] = r.t; if (r.note) out.notes[r.id] = r.note; } return json(out); }
+    const s = this.session((req.headers.get('authorization') || '').replace(/^Bearer /, '')); if (!s || (await this.maxSlots(s.email)) <= 3) return json({ error: 'Admins only' }, 403);
+    let j; try { j = await req.json(); } catch (e) { return json({ error: 'Bad request' }, 400); }
+    const id = String(j.id || '').slice(0, 60); if (!/^[a-z0-9_:-]+$/i.test(id)) return json({ error: 'Bad id' }, 400);
+    const cur = this.one('SELECT tick, note FROM review WHERE id = ?', id) || { tick: 0, note: '' };
+    const tick = j.tick === undefined ? cur.tick : (j.tick ? 1 : 0), note = j.note === undefined ? cur.note : String(j.note).slice(0, 2000);
+    this.sql.exec('INSERT OR REPLACE INTO review (id, tick, note, t) VALUES (?, ?, ?, ?)', id, tick, note, now); return json({ ok: true });
   }
 
   // ---- cloud saves: a few save slots per account, so you carry on from any phone or computer (testers get lots, for trying new lives)
