@@ -1,6 +1,6 @@
 // Open-world map: layout, deterministic generation, colliders, chunk meshing and minimap.
 import * as THREE from '../lib/three.module.min.js';
-import { groundMaterial, GT } from './groundtex.js?v=141';
+import { groundMaterial, GT } from './groundtex.js?v=142';
 
 export const WORLD = { x0: -560, x1: 800, z0: -800, z1: 520 };
 export const CHUNK = 64;
@@ -736,9 +736,11 @@ export function windowShader(sh) {
     vec2 cuv = vMapUv * vec2(4.0, 8.0);
     vec2 cell = floor(cuv), f = fract(cuv);
     vec2 w = (f - 3.0 / 16.0) / (10.0 / 16.0);
-    if (w.x > 0.0 && w.x < 1.0 && w.y > 0.0 && w.y < 1.0) {
-      vec3 dp1 = dFdx(vWP), dp2 = dFdy(vWP); vec2 du1 = dFdx(vMapUv), du2 = dFdy(vMapUv);
-      vec3 N = normalize(cross(dp1, dp2));
+    vec3 dp1 = dFdx(vWP), dp2 = dFdy(vWP); vec2 du1 = dFdx(vMapUv), du2 = dFdy(vMapUv);
+    vec3 Nf = normalize(cross(dp1, dp2)); float facing = abs(dot(Nf, normalize(cameraPosition - vWP)));
+    // walls seen nearly edge-on would shimmer with tiny windows: draw them as plain wall instead
+    if (facing > 0.16 && w.x > 0.0 && w.x < 1.0 && w.y > 0.0 && w.y < 1.0) {
+      vec3 N = Nf;
       if (dot(N, cameraPosition - vWP) < 0.0) N = -N;
       vec3 T = cross(dp2, N) * du1.x + cross(N, dp1) * du2.x;
       T = normalize(T - N * dot(N, T));
@@ -803,7 +805,7 @@ export function windowShader(sh) {
       // the wall between windows: brick courses on warm walls, curtain-wall spandrels on glass towers, render panels with
       // rain streaks on the rest; a ledge under every row of windows. Fades out with distance so nothing shimmers.
       vec3 vc = vColor.rgb; vec2 m = vMapUv * vec2(12.0, 24.0);
-      float k = 1.0 - smoothstep(35.0, 110.0, length(vWP - cameraPosition)), aa = max(fwidth(m.x), fwidth(m.y));
+      float k = (1.0 - smoothstep(35.0, 110.0, length(vWP - cameraPosition))) * smoothstep(0.12, 0.35, facing), aa = max(fwidth(m.x), fwidth(m.y));
       float sh = 1.0;
       bool glassB = vc.b > vc.r * 1.12 && vc.b > 0.4;
       bool brick = !glassB && vc.r > vc.g * 1.18 && vc.r > vc.b * 1.35;
