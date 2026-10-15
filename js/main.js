@@ -1,30 +1,30 @@
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=207';
-import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun, partEffects, partPerk } from './gun.js?v=207';
-import { buildCar, computeCarStats, carStatBars, carClass, carPartEffects, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=207';
-import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, STAIRS, unblockPillars, canyonAt, canyonNear, PEAK, SKYWAYS, SKY_Y, skyAt, skyY, rampSeg, windowShader, makeOceanMaterial, WATER_U, WIND_U, METRO, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, collidersNear, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=207';
-import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=207';
-import { buildPanel, renderStats } from './ui.js?v=207';
-import { Input } from './input.js?v=207';
-import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime, animalCall } from './audio.js?v=207';
-import { runMinigame } from './minigames.js?v=207';
-import { CUT, initCutGames } from './cutgames.js?v=207';
-import { initOnline, updateOnline, goOnline, goOffline, NET, onNet, sendMagicLink, verifyCode, signOut, signedIn, cloudLoad, cloudSave, cloudList, cloudDelete, isAdmin, checkAdmin, reviewLoad, reviewSet } from './online.js?v=207';
-import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk, setReservedNames, seededLook } from './peds.js?v=207';
-import { citizens, whereNow } from './citizens.js?v=207';
-import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=207';
-import { findRoute } from './nav.js?v=207';
-import { COURSES, CAREERS, QUIZ } from './careers.js?v=207';
-import { EVENTS, EVENT_BY_ID, ARRIVE, PHONE_TEXT, PERSON_TEXT } from './events.js?v=207';
-import { attachWheel } from './wheel.js?v=207';
-import { GROUND_U } from './groundtex.js?v=207';
-import { Animals, makeAnimalMesh } from './animals.js?v=207';
-import { Talk } from './talk.js?v=207';
-import { incomingText, classify, textOptions, textReply } from './texts.js?v=207';
-import { svg, drawIcon, ICONS as ICON_SET } from './icons.js?v=207';
-import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=207';
-import { FURN, CATALOG } from './furniture.js?v=207';
-import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=207';
+import { buildCharacter, poseCharacter, disposeObject, DEFAULT_CHAR, CHAR_SCHEMA, TATTOO_DESIGNS, TATTOO_SPOTS, tattooCanvas, setFace } from './character.js?v=208';
+import { computeStats, statBars, DEFAULT_GUN, RECEIVERS, PARTS, buildGun, partEffects, partPerk } from './gun.js?v=208';
+import { buildCar, computeCarStats, carStatBars, carClass, carPartEffects, DEFAULT_CAR, CAR_SCHEMA, CAR_PRESETS, CAR_PARTS, BODIES, CAR_PRICES, randomCar, trafficCar } from './car.js?v=208';
+import { WORLD, CHUNK, CITIES, MATS, WATER_Y, SPAWN, LABELS, SIGN, buildChunk, LADDERS, roofAt, wallTop, STAIRS, unblockPillars, canyonAt, canyonNear, PEAK, SKYWAYS, SKY_Y, skyAt, skyY, rampSeg, windowShader, makeOceanMaterial, WATER_U, WIND_U, METRO, parkedIn, resolve, walkable, onPier, roadAt, onBridge, objsNear, LANDMARK_BLOCKS, cityAt, zoneName, groundH, solidPoint, drawMap, sandLine, shoreLine, removeCollider, addCollider, collidersNear, FIELDS, blockSide, RAIL, onRail, roadY, dip } from './world.js?v=208';
+import { PLACES, PROPERTIES, GOODS, dealerPrices, OUTFITS, STYLE_NAMES, BARBER_PRICES, RACE, CHOP_VALUE } from './places.js?v=208';
+import { buildPanel, renderStats } from './ui.js?v=208';
+import { Input } from './input.js?v=208';
+import { audio, sfx, engine as engineSound, ambience, radioOn, radioTick, radioSet, radioIndex, STATIONS, setMuted, onSong, nowPlaying, danceStart, danceStop, audioTime, animalCall } from './audio.js?v=208';
+import { runMinigame } from './minigames.js?v=208';
+import { CUT, initCutGames } from './cutgames.js?v=208';
+import { initOnline, updateOnline, goOnline, goOffline, NET, onNet, sendMagicLink, verifyCode, signOut, signedIn, cloudLoad, cloudSave, cloudList, cloudDelete, isAdmin, checkAdmin, reviewLoad, reviewSet } from './online.js?v=208';
+import { Peds, bakeCfg, figure, setWalk, setTownSource, setPlayerInk, setReservedNames, seededLook } from './peds.js?v=208';
+import { citizens, whereNow } from './citizens.js?v=208';
+import { SLOTS, SLOT, newArsenal, slotStats, maxReserve, ammoBox, smithSchema, SMITH_PRICES, buildWeaponModel, iconSVG, DEFAULT_CFGS } from './weapons.js?v=208';
+import { findRoute } from './nav.js?v=208';
+import { COURSES, CAREERS, QUIZ } from './careers.js?v=208';
+import { EVENTS, EVENT_BY_ID, ARRIVE, PHONE_TEXT, PERSON_TEXT } from './events.js?v=208';
+import { attachWheel } from './wheel.js?v=208';
+import { GROUND_U } from './groundtex.js?v=208';
+import { Animals, makeAnimalMesh } from './animals.js?v=208';
+import { Talk, exprOf } from './talk.js?v=208';
+import { incomingText, classify, textOptions, textReply } from './texts.js?v=208';
+import { svg, drawIcon, ICONS as ICON_SET } from './icons.js?v=208';
+import { SKILLS, GUN_SKILL_SLOTS, newStats, fixStats, addXP, xpFor, skillName, MAX_LVL, relName, relPriceMod, FOODS, MENUS } from './stats.js?v=208';
+import { FURN, CATALOG } from './furniture.js?v=208';
+import { INTERIORS, ORIGIN, buildInterior, STARTER_FURNITURE, HOME_DEFAULTS } from './interiors.js?v=208';
 
 const $ = id => document.getElementById(id);
 let inside = null, editMode = false, held = null, pendingCar = false, homeMusic = false, phoneBadge = 0;
@@ -347,7 +347,7 @@ const subs = (() => {
   function say(who, text, o = {}) {
     if (who === 'me') who = { key: 'me', name: 'You', cfg: charCfg, pitch: 210, me: true };
     if (!who?.cfg) return;
-    enqueue({ who, text, expr: o.expr || 'neutral', radio: !!o.radio, pri: o.pri || 0, tag: o.tag, silent: !!o.silent, now: !!o.now });
+    enqueue({ who, text, expr: o.expr || exprOf(text), radio: !!o.radio, pri: o.pri || 0, tag: o.tag, silent: !!o.silent, now: !!o.now });
   }
   function note(icon, title, text, o = {}) { enqueue({ plain: true, icon, title, text, cls: o.cls || '', color: o.color, pri: o.pri || 1, dur: o.dur, now: !!o.now }); }
   const readTime = s => Math.max(1.9, s.split(/\s+/).length * 0.3 + 1.1);
@@ -371,10 +371,10 @@ const subs = (() => {
     el.classList.remove('hidden'); void el.offsetWidth; el.classList.add('show');
     $('hud').style.setProperty('--slotH', el.offsetHeight + 'px'); if (!line.plain && !line.silent) txtEl.textContent = ''; slotSync();
   }
-  function stop() { if (cur?.fig) cur.fig.root.visible = false; cur = null; outT = 0; el.classList.remove('show'); el.classList.add('hidden'); queue.length = 0; slotSync(); }
+  function stop() { if (cur?.who?.me && hero) { try { setFace(hero, 'neutral', 0); } catch (e) {} } if (cur?.fig) cur.fig.root.visible = false; cur = null; outT = 0; el.classList.remove('show'); el.classList.add('hidden'); queue.length = 0; slotSync(); }
   function draw(talkingT) {
     const f = cur.fig; if (!f) return; const talking = talkingT > 0, mouth = talking ? Math.abs(Math.sin(t * 15)) * (0.5 + 0.5 * Math.abs(Math.sin(t * 4.3))) : 0;
-    setFace(f, cur.expr, mouth);
+    setFace(f, cur.expr, mouth); if (cur.who?.me && hero) { try { setFace(hero, cur.expr, mouth); heroFaceT = 0.4; } catch (e) {} } /* your own face in the world says it too */
     f.head.rotation.x = talking ? Math.sin(t * 9) * 0.05 : Math.sin(t * 1.4) * 0.02; f.head.rotation.y = Math.sin(t * 1.7) * 0.12 + (cur.expr === 'flirty' ? 0.15 : 0); f.head.rotation.z = cur.expr === 'flirty' ? 0.1 : cur.expr === 'sad' ? -0.06 : 0;
     const hp = f.hp; cam.position.set(hp.x + 0.1, hp.y + 0.06, hp.z + 1.9); cam.lookAt(hp.x, hp.y + 0.02, hp.z); R.render(scene, cam);
   }
@@ -962,7 +962,7 @@ function updateNeeds(dtHours, dt) {
 
 // ================================================================ player & weapons
 const P = { hp: 100, dead: false, deadT: 0, hurtT: 99, hitCd: 0, kx: 0, kz: 0, x: SPAWN.x, z: SPAWN.z, y: 0, vy: 0, face: Math.PI, phase: 0, recoil: 0, fireCd: 0, burst: 0, burstT: 0, reload: 0, flash: 0, swing: 0, swingHit: false, runDist: 0 };
-let hero = null, heroRoot = null, heroW = null, ws = null, muzzleFlash = null;
+let heroFaceT = 0, hero = null, heroRoot = null, heroW = null, ws = null, muzzleFlash = null;
 const am = () => arsenal.ammo[arsenal.cur];
 function buildHero() {
   if (heroRoot) { dyn.remove(heroRoot); disposeObject(heroRoot); }
@@ -1808,7 +1808,7 @@ function enterVehicle(v, anim = true) {
   // with a date along: walk her to the passenger door and open it for her first, then go round to your side
   if (date && !date.inCar && !date.left && !v.b.two && seatsFor(v) >= 2 && Math.hypot(date.x - P.x, date.z - P.z) < 12) {
     date.holding = false; date.escortCar = v;
-    const h = v.s.h, sd = -DRIVER, o = v.b.width / 2 + 1.05, S = { x: v.s.x + Math.cos(h) * o * sd - Math.sin(h) * 0.95, z: v.s.z - Math.sin(h) * o * sd - Math.cos(h) * 0.95 };
+    const h = v.s.h, sd = -DRIVER, o = v.b.width / 2 + 1.05, S = v.b.doors?.[sd] ? doorPt(v, sd, 0.3, 0.12) : { x: v.s.x + Math.cos(h) * o * sd - Math.sin(h) * 0.95, z: v.s.z - Math.sin(h) * o * sd - Math.cos(h) * 0.95 }; /* her door's handle */
     const path = pathAround(v, { x: P.x, z: P.z }, S); /* round the car, never through it */
     carAnim = { type: 'escort', v, t: 0, stage: 0, from: { x: P.x, z: P.z }, stand: S, path };
     return;
@@ -1882,19 +1882,26 @@ function updateCarAnim(dt) {
     }
   }
   let arms = 'walk';
-  if (A.type === 'escort') {
-    const v = A.v, D = date;
+  if (A.type === 'escort') { /* with a date: walk her to her door, open it, hold it while she gets in, shut it for her, then round to your side */
+    const v = A.v, D = date, sd = -DRIVER, dr = v.b.doors?.[sd];
     if (A.stage === 0) { // walk to her door
       const T = A.path[0], dx = T.x - P.x, dz = T.z - P.z, d = Math.hypot(dx, dz);
       if (d > 0.15) { const sp = Math.min(d / dt, 4.8); P.x += dx / d * sp * dt; P.z += dz / d * sp * dt; P.face = Math.atan2(dx, dz); speed = 1; }
       else if (A.path.length > 1) A.path.shift();
-      else { A.stage = 1; A.t = 0; setDoor(v, -DRIVER, true); sfx.click(); }
-      if (A.t > 6) { A.stage = 1; A.t = 0; setDoor(v, -DRIVER, true); }
-    } else if (A.stage === 1) { // hold the door open while she gets in
-      const ds = doorSpot(v, -DRIVER); P.face += wrapA(Math.atan2(ds.x - P.x, ds.z - P.z) - P.face) * Math.min(1, dt * 10); arms = 'hold';
-      if (!D || D.inCar || A.t > 7) { A.stage = 2; A.t = 0; setDoor(v, -DRIVER, false); if (D && D.inCar) { toast(`${D.name}: "${pick(['Aww, such a gentleman.', 'Look at you, opening doors.', 'Thank you, babe.'])}"`, 2.2); D.interest += 3; } }
-    } else if (A.t > 0.45) { // shut it, then round to the driver's side
-      { const pl = planIn(v); carAnim = { type: inType(v, pl.seatI), v, ...pl, t: 0, from: { x: P.x, z: P.z }, d2: 0.5 }; } return;
+      else { A.stage = dr ? 1 : 2; A.t = 0; }
+      if (A.t > 6) { A.stage = dr ? 1 : 2; A.t = 0; }
+    } else if (A.stage === 1) { // hand on the handle, pull it open, stepping back with it
+      const h = handleW(v, sd); P.face += wrapA(Math.atan2(h.x - P.x, h.z - P.z) - P.face) * Math.min(1, dt * 12); arms = 'ik'; A.ik = h;
+      if (A.t > 0.15 && !A.opened) { A.opened = 1; setDoor(v, sd, true); sfx.click(); }
+      if (A.opened) { const q = doorPt(v, sd, 0.32, 0.1); P.x = damp(P.x, q.x, 10, dt); P.z = damp(P.z, q.z, 10, dt); }
+      if (A.t > 0.7) { A.stage = 2; A.t = 0; }
+    } else if (A.stage === 2) { // stand by the end of the door holding it while she climbs in
+      if (dr) { const q = doorPt(v, sd, 0.32, 0.1), h = handleW(v, sd); P.x = damp(P.x, q.x, 10, dt); P.z = damp(P.z, q.z, 10, dt); const s2 = seatWorld(v, 1); P.face += wrapA(Math.atan2(s2.x - P.x, s2.z - P.z) - P.face) * Math.min(1, dt * 8); arms = 'ik'; A.ik = h; }
+      else { const s2 = seatWorld(v, 1); P.face += wrapA(Math.atan2(s2.x - P.x, s2.z - P.z) - P.face) * Math.min(1, dt * 8); }
+      if (!D || D.inCar || A.t > 12) { A.stage = 3; A.t = 0; if (D && D.inCar) { toast(`${D.name}: "${pick(['Aww, such a gentleman.', 'Look at you, opening doors.', 'Thank you, babe.'])}"`, 2.2); D.interest += 3; } }
+    } else if (A.stage === 3) { // swing it shut with your hand on it
+      if (dr) { const h = handleW(v, sd); arms = 'ik'; A.ik = h; P.face += wrapA(Math.atan2(h.x - P.x, h.z - P.z) - P.face) * Math.min(1, dt * 10); if (A.t > 0.2 && !A.shut) { A.shut = 1; setDoor(v, sd, false); } }
+      if (A.t > (dr ? 0.75 : 0.1)) { const pl = planIn(v); carAnim = { type: inType(v, pl.seatI), v, ...pl, t: 0, from: { x: P.x, z: P.z }, d2: 0.5 }; return; }
     }
   }
   else if (A.type === 'mount' || A.type === 'dismount') { /* blend between standing beside it and the real riding pose, swinging the far leg over */
@@ -1921,16 +1928,16 @@ function updateCarAnim(dt) {
         if (t < 0.25) { const h = handleW(v, sd); faceTo(h.x, h.z); arms = 'ik'; A.ik = h; } /* hand to the handle */
         else if (t < 0.75) { if (!A.opened) { A.opened = 1; setDoor(v, sd, true); sfx.click(); } const st = doorPt(v, sd, 0.3, 0.12), h = handleW(v, sd); P.x = damp(P.x, st.x, 14, dt); P.z = damp(P.z, st.z, 14, dt); faceTo(h.x, h.z); arms = 'ik'; A.ik = h; speed = 0.3; } /* pull it open, stepping back with it */
         else if (t < 1.25) { if (!A.st3) { A.st3 = { x: P.x, z: P.z }; A.w1 = doorPt(v, sd, -0.3, 0.22); } walkTo({ t: (t - 0.75) / 0.5, d1: 1, from: A.st3, pts: [A.w1, S0] }); speed = 0.8; } /* round the back edge of the door and into the gap */
-        else if (t < 1.7) { sitStage((t - 1.25) / 0.45, S0, E, gy, sitY, 0, 1, 0, 0.6, outA); A.sit = sitFor(y + hl - gy, hl); } /* back onto the sill, feet staying on the floor */
-        else if (t < 2.15) sitStage((t - 1.7) / 0.45, E, seat, sitY, sitY, sitFor(sitY + hl - gy, hl), 1, 0.6, 0, v.s.h); /* swing the legs in */
+        else if (t < 1.7) { sitStage((t - 1.25) / 0.45, S0, E, gy, sitY, 0, 1, 0, 0.85, outA); A.sit = sitFor(y + hl - gy, hl); } /* back onto the sill, feet staying on the floor */
+        else if (t < 2.15) { const k3 = (t - 1.7) / 0.45; sitStage(k3, E, seat, sitY, sitY, sitFor(sitY + hl - gy, hl), 1, 0.4, 0, v.s.h); A.duck = 0.4 * Math.max(0, 1 - ease(k3) * 1.15); } /* (the roof rule ducks him further only if the roof is low) */ /* swing in, head ducked low until it's clear of the roof */
         else if (t < 2.7) { P.x = seat.x; P.z = seat.z; y = sitY; A.sit = 1; A.duck = 0; P.face = v.s.h; arms = 'ik'; A.ik = grabW(v, sd); if (t > 2.32 && !A.shutIn) { A.shutIn = 1; setDoor(v, sd, false, true); } } /* reach out, pull it shut */
         else { carAnim = null; sitIn(v, A.seatI ?? 0); return; }
       }
     } else {
       const t = A.t, D = carWorld(v, sd * (W2 + 0.45), sL.z);
       if (t < 0.45) { if (!A.opened) { A.opened = 1; setDoor(v, sd, true); sfx.click(); } P.x = seat.x; P.z = seat.z; y = sitY; A.sit = 1; P.face = v.s.h; arms = 'ik'; A.ik = grabW(v, sd); } /* push the door open from inside */
-      else if (t < 0.9) sitStage((t - 0.45) / 0.45, seat, E, sitY, sitY, 1, sitFor(sitY + hl - gy, hl), 0, 0.6, outA); /* swing round onto the sill, feet out onto the floor */
-      else if (t < 1.3) { sitStage((t - 0.9) / 0.4, E, D, sitY, gy, 1, 0, 0.6, 0, outA); A.sit = sitFor(y + hl - gy, hl); } /* stand up in the doorway, feet planted */
+      else if (t < 0.9) { const k3 = (t - 0.45) / 0.45; sitStage(k3, seat, E, sitY, sitY, 1, sitFor(sitY + hl - gy, hl), 0, 0.4, outA); A.duck = 0.4 * Math.min(1, ease(k3) * 1.3); } /* swing round onto the sill, head ducked under the roof */
+      else if (t < 1.3) { sitStage((t - 0.9) / 0.4, E, D, sitY, gy, 1, 0, 0.85, 0, outA); A.sit = sitFor(y + hl - gy, hl); } /* stand up in the doorway, feet planted */
       else if (t < 1.8) { A.sit = 0; A.duck = 0; if (!A.w) A.w = { from: { x: P.x, z: P.z }, pts: [doorPt(v, sd, -0.3, 0.25), doorPt(v, sd, 0.32, 0.16)] }; walkTo({ t: (t - 1.3) / 0.5, d1: 1, ...A.w }); speed = 0.8; } /* step out behind the door, round its edge */
       else if (t < 2.4) { const st = doorPt(v, sd, 0.32, 0.16), h = handleW(v, sd); P.x = damp(P.x, st.x, 16, dt); P.z = damp(P.z, st.z, 16, dt); faceTo(h.x, h.z, 18); arms = 'ik'; A.ik = h; speed = 0.2; if (t > 1.95 && !A.slammed) { A.slammed = 1; setDoor(v, sd, false, true); } } /* one hand on it, swing it shut */
       else { if (!A.wk) { const f = { x: P.x, z: P.z }; A.wk = { from: f, pts: pathAround(v, f, A.to), t0: t, d: Math.max(0.35, Math.hypot(A.to.x - f.x, A.to.z - f.z) / 4.5) }; }
@@ -1939,11 +1946,12 @@ function updateCarAnim(dt) {
     heroRoot.visible = !P.dead;
   }
   else if (A.type === 'in') {
-    const v = A.v; if (!A.d2fix) { A.d2fix = 1; if (!v.b.seat && !v.b.climb && !v.b.two && v.b.doors) A.d2 = 0.9; } A.d0 ??= v.b.doors && !(v.door && v.door.side === A.side && v.door.target) ? 0.32 : 0;
+    const v = A.v; if (!A.d2fix) { A.d2fix = 1; if (!v.b.seat && !v.b.climb && !v.b.two && v.b.doors) A.d2 = 0.9; } A.d0 ??= v.b.doors && !(v.door && v.door.side === A.side && v.door.target) ? 0.5 : 0;
     if (A.t < A.d1) { walkTo(A); speed = 1; }
     else if (A.t < A.d1 + A.d0) { // reach for the handle and pull the door open
-      const seat = seatWorld(v, A.seatI ?? 0); P.face += wrapA(Math.atan2(seat.x - P.x, seat.z - P.z) - P.face) * Math.min(1, dt * 14); arms = 'reach';
-      if (!A.opened) { A.opened = 1; setDoor(v, A.side, true); sfx.click(); }
+      const seat = seatWorld(v, A.seatI ?? 0); P.face += wrapA(Math.atan2(seat.x - P.x, seat.z - P.z) - P.face) * Math.min(1, dt * 14);
+      if (v.b.doors?.[A.side]?.userData.handle) { arms = 'ik'; A.ik = handleW(v, A.side); } else arms = 'reach'; /* hand on the real handle, pulling it open with the door */
+      if (!A.opened && A.t > A.d1 + 0.12) { A.opened = 1; setDoor(v, A.side, true); sfx.click(); }
     }
     else {
       const seat = seatWorld(v, A.seatI ?? 0), cl = v.b.climb, ks = (v.b.s || 1), floorY = cl ? (v.s.y || 0) + cl.floor * ks : y;
@@ -1966,10 +1974,14 @@ function updateCarAnim(dt) {
       P.x = lerp(from2.x, seat.x, e2); P.z = lerp(from2.z, seat.z, e2);
       P.face += wrapA(v.s.h - P.face) * Math.min(1, dt * 12);
       y = lerp(A.climbY ?? y, seat.y - hl + 0.03, e2) + Math.sin(k * Math.PI) * 0.06; /* lower down onto the seat */
-      A.sit = e2; A.duck = Math.sin(Math.min(1, k * 1.3) * Math.PI * 0.5) * (v.b.seat ? 0.15 : 0.8) * (1 - Math.max(0, k - 0.8) * 2);
+      A.sit = e2; A.duck = Math.sin(Math.min(1, k * 1.3) * Math.PI * 0.5) * (v.b.seat ? 0.15 : 0.35) * (1 - Math.max(0, k - 0.8) * 2); /* (the roof rule adds more only where the roof is low) */
       }
       v.b.group.rotation.z = Math.sin(k * Math.PI) * 0.03 * A.side; // car dips as you climb in
-      if (k >= 1) { carAnim = null; v.b.group.rotation.z = 0; setDoor(v, A.side, false); sitIn(v, A.seatI ?? 0); return; } } // a car with a roof: you're inside now, out of sight
+      if (k >= 1 && A.opened && v.b.doors?.[A.side] && !v.b.two) { /* sat down: reach out, take the door and pull it shut, THEN hands to the wheel */
+        A.shT = (A.shT ?? 0) + dt; P.x = seat.x; P.z = seat.z; P.face = v.s.h; A.sit = 1; A.duck = 0; arms = 'ik'; A.ik = grabW(v, A.side);
+        if (A.shT > 0.35 && !A.shutIn) { A.shutIn = 1; setDoor(v, A.side, false, true); }
+        if (A.shT > 0.8) { carAnim = null; v.b.group.rotation.z = 0; sitIn(v, A.seatI ?? 0); return; } }
+      else if (k >= 1) { carAnim = null; v.b.group.rotation.z = 0; setDoor(v, A.side, false); sitIn(v, A.seatI ?? 0); return; } } // a car with a roof: you're inside now, out of sight
     }
   } else if (A.type === 'out') {
     const v = A.v; A.d0 ??= v.b.doors ? 0.28 : 0; const hl = 0.86 * (charCfg.height || 1) * (charCfg.legs || 1), gy = y;
@@ -1984,7 +1996,7 @@ function updateCarAnim(dt) {
         heroRoot.visible = !P.dead; v.b.group.rotation.z = Math.sin(k1 * Math.PI) * 0.03 * A.side; }
       else if (k1 < 1) { const e2 = ease(k1); heroRoot.visible = !P.dead; arms = 'down'; // slide across and out of the door, ducking, standing up as you clear it
         P.x = lerp(A.from.x, edge.x, e2); P.z = lerp(A.from.z, edge.z, e2); P.face += wrapA(Math.atan2(A.door.x - A.from.x, A.door.z - A.from.z) - P.face) * Math.min(1, dt * 8);
-        y = lerp(A.from.y - hl + 0.03, floorY, e2); A.sit = 1 - e2; A.duck = (1 - k1) * (v.b.seat ? 0.15 : 0.8);
+        y = lerp(A.from.y - hl + 0.03, floorY, e2); A.sit = 1 - e2; A.duck = (1 - k1) * (v.b.seat ? 0.15 : 0.35);
         v.b.group.rotation.z = Math.sin(k1 * Math.PI) * 0.03 * A.side; }
       else if (A.down && A.t < A.d0 + A.dur + A.down) { const kd = (A.t - A.d0 - A.dur) / A.down; A.sit = 0; A.duck = 0;
         if (cl.jump) { const out = { x: A.door.x + (A.door.x - edge.x) * 0.6, z: A.door.z + (A.door.z - edge.z) * 0.6 }; P.x = lerp(edge.x, out.x, kd); P.z = lerp(edge.z, out.z, kd); y = lerp(floorY, gy, kd) + Math.sin(kd * Math.PI) * 0.35; arms = 'jump'; A.landX = out.x; A.landZ = out.z; if (kd > 0.92 && !A.thud) { A.thud = 1; sfx.thud?.(); } } // jump down off the tractor
@@ -2019,13 +2031,14 @@ function updateCarAnim(dt) {
     hero.torso.rotation.x = (A.duck || 0); hero.head.rotation.x = -(A.duck || 0) * 0.5; }
   else hero.torso.rotation.x = 0;
   if (A.type !== 'bail') { /* feet never below the floor, whatever the pose is doing */ heroRoot.updateMatrixWorld(true); _hb.setFromObject(hero.legL.pivot); const m1 = _hb.min.y; _hb.setFromObject(hero.legR.pivot); const fl = baseY(P.x, P.z, A.v?.s?.y ?? P.y), pen = fl + 0.005 - Math.min(m1, _hb.min.y); if (pen > 0) { heroRoot.position.y += pen; P.y += pen; } }
+  headUnderRoof(A.v); /* hard rule, every frame of every get-in / get-out: the head never comes through the roof */
   if (A.type === 'bail' || arms === 'wheel') return; // hands only go to the wheel once you're sat down
   const sw = Math.sin(P.phase) * 0.55 * speed;
   if (arms === 'walk') { hero.armR.pivot.rotation.set(-sw, 0, 0.08); hero.armL.pivot.rotation.set(sw, 0, -0.08); }
   else if (arms === 'hold') { hero.armR.pivot.rotation.set(-1.1, 0.2, 0.5); hero.armL.pivot.rotation.set(0.1, 0, -0.08); }
   else if (arms === 'grip' && A.v?.b.climb?.grips) { /* hands on the real handholds: over the mudguard / up the door frame */
     const v = A.v, b = v.b, G = b.climb.grips.map(g => { b.group.updateMatrixWorld(true); return b.group.localToWorld(new THREE.Vector3(A.side * g[0], g[1], g[2])); });
-    heroRoot.updateMatrixWorld(true); hero.armR.pivot.getWorldPosition(_a1); hero.armL.pivot.getWorldPosition(_a2); const sw = _a1.distanceTo(G[0]) + _a2.distanceTo(G[1]) > _a1.distanceTo(G[1]) + _a2.distanceTo(G[0]);
+    heroRoot.updateMatrixWorld(true); hero.armR.pivot.getWorldPosition(_a1); hero.armL.pivot.getWorldPosition(_a2); const sw = A.gripSw ??= _a1.distanceTo(G[0]) + _a2.distanceTo(G[1]) > _a1.distanceTo(G[1]) + _a2.distanceTo(G[0]); /* decided once: hands don't swap rails every frame */
     armTo(hero, hero.armR, sw ? G[1] : G[0]); armTo(hero, hero.armL, sw ? G[0] : G[1]); }
   else if (arms === 'ik' && A.ik) { /* the hand nearest goes to the handle / door, the other hangs */
     heroRoot.updateMatrixWorld(true); hero.armR.pivot.getWorldPosition(_a1); hero.armL.pivot.getWorldPosition(_a2); const useR = _a1.distanceTo(A.ik) < _a2.distanceTo(A.ik), arm = useR ? hero.armR : hero.armL, rest = useR ? hero.armL : hero.armR;
@@ -2225,25 +2238,48 @@ const carPos = { x: 0, z: 0 };
 function npcWalkTo(o, tx, tz, dt, sp = 2.3) { const dx = tx - o.x, dz = tz - o.z, d = Math.hypot(dx, dz); if (d > 0.05) { const st = Math.min(d, sp * dt); o.x += dx / d * st; o.z += dz / d * st; o.face += wrapA(Math.atan2(dx, dz) - o.face) * Math.min(1, dt * 10); o.phase = (o.phase || 0) + dt * 9; }
   const l = o.f.limbs, sw = Math.sin(o.phase || 0) * (d > 0.05 ? 0.55 : 0); l[0].rotation.set(-sw, 0, 0); l[1].rotation.set(sw, 0, 0); l[2].rotation.set(sw * 0.8, 0, 0); l[3].rotation.set(-sw * 0.8, 0, 0);
   o.f.root.visible = true; o.f.root.scale.setScalar(1); o.f.root.position.set(o.x, baseY(o.x, o.z), o.z); o.f.root.rotation.set(0, o.face, 0); return d; }
+function seatAt(f, v, seatI) { const w = seatWorld(v, seatI), l = f.limbs, hip = l[0].position.y; f.root.visible = true; f.root.scale.setScalar(1); f.root.position.set(w.x, w.y - hip, w.z); f.root.rotation.set(0, v.s.h, 0); l[0].rotation.set(-1.45, 0, 0.05); l[1].rotation.set(-1.45, 0, -0.05); l[2].rotation.set(-1.0, 0, -0.1); l[3].rotation.set(-1.0, 0, 0.1); }
+// officers: out of their car door and round it, and back in the same way (scripted while they do it, then the normal police AI takes over)
+const copAnims = [];
+function copOut(v, seatI, opts = {}) { const p = makeCop(v.s.x, v.s.z, v); peds.list.splice(peds.list.indexOf(p), 1); cops.splice(cops.indexOf(p), 1); copAnims.push({ mode: 'out', o: { f: p, x: v.s.x, z: v.s.z, face: v.s.h, phase: 0 }, v, seatI, ...opts }); return p; }
+function copIn(p, v, seatI, after) { let i = peds.list.indexOf(p); if (i >= 0) peds.list.splice(i, 1); i = cops.indexOf(p); if (i >= 0) cops.splice(i, 1); copAnims.push({ mode: 'in', o: { f: p, x: p.x, z: p.z, face: p.face || 0, phase: 0 }, v, seatI, after }); }
+function updateCopAnims(dt) {
+  for (let i = copAnims.length - 1; i >= 0; i--) { const A = copAnims[i], o = A.o, p = o.f;
+    if (!vehicles.includes(A.v)) { copAnims.splice(i, 1); p.root.parent?.remove(p.root); continue; }
+    if (A.mode === 'out') { npcAlightTick(o, A.v, A.seatI, dt, A.win ? A.win() : null); if (o.st === 'away') { if (A.win) { A.mode = 'win'; o.route = null; } else { p.x = o.x; p.z = o.z; p.face = o.face; p.state = 'chase'; peds.list.push(p); cops.push(p); copAnims.splice(i, 1); A.after?.(p); } } }
+    else if (A.mode === 'win') { const W = A.win(); if (!o.route) o.route = ride ? pathAround(ride, { x: o.x, z: o.z }, W) : [W]; const T = o.route[0] || W, d = npcWalkTo(o, T.x, T.z, dt, 2); if (d < 0.1 && o.route.length > 1) o.route.shift();
+      if (o.route.length <= 1 && d < 0.15) { if (ride) { o.face += wrapA(Math.atan2(ride.s.x - o.x, ride.s.z - o.z) - o.face) * Math.min(1, dt * 8); p.root.rotation.y = o.face; } if (!A.atWin) { A.atWin = true; A.onWin?.(A); } } }
+    else if (A.mode === 'in') { if (npcBoardTick(o, A.v, A.seatI, dt)) { p.root.parent?.remove(p.root); copAnims.splice(i, 1); A.v.crew = (A.v.crew || []).filter(q => q !== p); A.after?.(); } }
+  }
+}
 function npcBoardTick(o, v, seatI, dt) {
-  const side = seatSide(v, seatI) ?? -DRIVER, door = closedCar(v) && seatI < 2 ? doorSpot(v, side, seatI) : doorSpot(v, side, seatI), seat = seatWorld(v, seatI), hasDoor = v.b.doors && seatI < 2 && !v.b.two;
+  const side = seatSide(v, seatI) ?? -DRIVER, seat = seatWorld(v, seatI), hasDoor = v.b.doors && seatI < 2 && !v.b.two, l = o.f.limbs, hip = l[0].position.y;
+  const W2 = v.b.width / 2, sL = carLocal(v, seat.x, seat.z), E = carWorld(v, side * (W2 + 0.12), sL.z), S0 = carWorld(v, side * (W2 + 0.45), sL.z);
+  const H = o.held ? carWorld(v, side * (W2 + 0.6), sL.z - 0.8) : hasDoor && closedCar(v) ? doorPt(v, side, 0.3, 0.12) : doorSpot(v, side, seatI); /* by the back edge of the door, out of its swing (or, with someone holding it open for them, just behind the opening) */
   o.st ??= 'walk'; o.t = (o.t || 0) + dt;
-  if (o.st === 'walk') { if (!o.route || o.routeFor !== v) { o.routeFor = v; o.route = pathAround(v, { x: o.x, z: o.z }, door); } const T = o.route[0] || door, d = npcWalkTo(o, T.x, T.z, dt); if (d < 0.12) { if (o.route.length > 1) o.route.shift(); else { o.st = 'open'; o.t = 0; if (hasDoor) { setDoor(v, side, true); sfx.click(); } } } return false; }
-  const l = o.f.limbs, hip = l[0].position.y;
-  if (o.st === 'open') { npcWalkTo(o, door.x, door.z, dt); o.face += wrapA(Math.atan2(seat.x - o.x, seat.z - o.z) - o.face) * Math.min(1, dt * 10); o.f.root.rotation.y = o.face; l[3].rotation.set(-1.1, 0, 0.2); if (o.t > (hasDoor ? 0.45 : 0.1)) { o.st = 'in'; o.t = 0; o.from = { x: o.x, z: o.z }; } return false; }
-  if (o.st === 'in') { const k = Math.min(1, o.t / 0.8), e = k * k * (3 - 2 * k), g = baseY(o.x, o.z); o.x = lerp(o.from.x, seat.x, e); o.z = lerp(o.from.z, seat.z, e); o.face += wrapA(v.s.h - o.face) * Math.min(1, dt * 8);
-    o.f.root.position.set(o.x, lerp(g, seat.y - hip, e), o.z); o.f.root.rotation.set(0, o.face, 0); l[0].rotation.set(-1.45 * e, 0, 0.05); l[1].rotation.set(-1.45 * e, 0, -0.05); l[2].rotation.set(-0.45 * e, 0, -0.1); l[3].rotation.set(-0.45 * e, 0, 0.1);
-    if (k >= 1) { o.st = 'close'; o.t = 0; if (hasDoor) setDoor(v, side, false, true); } return false; }
-  return o.t > 0.3; /* door shut behind them: they're in */
+  const sitPose = e => { l[0].rotation.set(-1.45 * e, 0, 0.05); l[1].rotation.set(-1.45 * e, 0, -0.05); l[2].rotation.set(-0.45 * e, 0, -0.1); l[3].rotation.set(-0.45 * e, 0, 0.1); };
+  if (o.st === 'walk') { if (!o.route || o.routeFor !== v) { o.routeFor = v; o.route = pathAround(v, { x: o.x, z: o.z }, H); } const T = o.route[0] || H, d = npcWalkTo(o, T.x, T.z, dt); if (d < 0.12) { if (o.route.length > 1) o.route.shift(); else { o.st = hasDoor && !o.held ? 'open' : 'round'; o.t = 0; o.pts = [S0]; if (hasDoor && !o.held) { setDoor(v, side, true); sfx.click(); } } } return false; }
+  if (o.st === 'open') { const P2 = doorPt(v, side, 0.3, 0.12); npcWalkTo(o, P2.x, P2.z, dt, 3); const h = handleW(v, side); o.face += wrapA(Math.atan2(h.x - o.x, h.z - o.z) - o.face) * Math.min(1, dt * 10); o.f.root.rotation.y = o.face; l[3].rotation.set(-1.2, 0, 0.15); if (o.t > 0.55) { o.st = 'round'; o.t = 0; o.pts = hasDoor ? [doorPt(v, side, -0.3, 0.22), S0] : [S0]; } return false; } /* pulls it open, stepping back with it */
+  if (o.st === 'round') { const T = o.pts[0], d = npcWalkTo(o, T.x, T.z, dt, 1.6); if (d < 0.08) { o.pts.shift(); if (!o.pts.length) { o.st = 'sill'; o.t = 0; } } return false; } /* round the edge of the door, never through it */
+  if (o.st === 'sill' || o.st === 'swing') { const sill = o.st === 'sill', k = Math.min(1, o.t / (sill ? 0.5 : 0.5)), e = k * k * (3 - 2 * k), g = baseY(o.x, o.z), outA = Math.atan2(E.x - seat.x, E.z - seat.z);
+    if (sill) { o.x = lerp(S0.x, E.x, e); o.z = lerp(S0.z, E.z, e); o.face += wrapA(outA - o.face) * Math.min(1, dt * 12); o.f.root.position.set(o.x, lerp(g, seat.y - hip, e), o.z); sitPose(e); l[0].rotation.x = l[1].rotation.x = 0; legsToGround(o.f, g, 1); } /* back down onto the sill, feet still on the ground */
+    else { o.x = lerp(E.x, seat.x, e); o.z = lerp(E.z, seat.z, e); o.face += wrapA(v.s.h - o.face) * Math.min(1, dt * 8); o.f.root.position.set(o.x, seat.y - hip, o.z); sitPose(1); legsToGround(o.f, g, e); } /* then lift the legs and swing them in */
+    o.f.root.rotation.set(0, o.face, 0); npcUnderRoof(o.f, v); if (k >= 1) { o.st = sill ? 'swing' : 'close'; o.t = 0; if (!sill && hasDoor && !o.held) setDoor(v, side, false, true); } return false; }
+  seatAt(o.f, v, seatI); npcUnderRoof(o.f, v); return o.t > (o.held ? 0.05 : 0.3); /* door pulled shut (or left for whoever's holding it): they're in */
 }
 function npcAlightTick(o, v, seatI, dt, away = null) {
-  const side = seatSide(v, seatI) ?? -DRIVER, door = doorSpot(v, side, seatI), seat = seatWorld(v, seatI), hasDoor = v.b.doors && seatI < 2 && !v.b.two, l = o.f.limbs, hip = l[0].position.y;
+  const side = seatSide(v, seatI) ?? -DRIVER, seat = seatWorld(v, seatI), hasDoor = v.b.doors && seatI < 2 && !v.b.two, l = o.f.limbs, hip = l[0].position.y;
+  const W2 = v.b.width / 2, sL = carLocal(v, seat.x, seat.z), E = carWorld(v, side * (W2 + 0.12), sL.z), D = carWorld(v, side * (W2 + 0.45), sL.z), outA = Math.atan2(E.x - seat.x, E.z - seat.z);
+  const sitPose = e => { l[0].rotation.set(-1.45 * e, 0, 0.05); l[1].rotation.set(-1.45 * e, 0, -0.05); l[2].rotation.set(-0.45 * e, 0, 0); l[3].rotation.set(-0.45 * e, 0, 0); };
   o.st ??= 'open'; o.t = (o.t || 0) + dt;
-  if (o.st === 'open') { seatPassenger(o.f, v, 1); if (o.t < dt * 1.5 && hasDoor) { setDoor(v, side, true); sfx.click(); } if (o.t > (hasDoor ? 0.4 : 0.1)) { o.st = 'out'; o.t = 0; } return false; }
-  if (o.st === 'out') { const k = Math.min(1, o.t / 0.8), e = k * k * (3 - 2 * k), g = baseY(door.x, door.z); o.x = lerp(seat.x, door.x, e); o.z = lerp(seat.z, door.z, e); o.face = Math.atan2(door.x - seat.x, door.z - seat.z);
-    o.f.root.visible = true; o.f.root.position.set(o.x, lerp(seat.y - hip, g, e), o.z); o.f.root.rotation.set(0, o.face, 0); l[0].rotation.set(-1.45 * (1 - e), 0, 0.05); l[1].rotation.set(-1.45 * (1 - e), 0, -0.05); l[2].rotation.set(-0.45 * (1 - e), 0, 0); l[3].rotation.set(-0.45 * (1 - e), 0, 0);
-    if (k >= 1) { o.st = 'shut'; o.t = 0; if (hasDoor) setDoor(v, side, false, true); } return false; }
-  if (o.st === 'shut') { o.f.root.rotation.y = o.face; if (o.t > 0.35) { o.st = 'away'; o.t = 0; const a = o.face; o.to = away || { x: o.x + Math.sin(a) * 5, z: o.z + Math.cos(a) * 5 }; o.route = pathAround(v, { x: o.x, z: o.z }, o.to); } return false; }
+  if (o.st === 'open') { seatAt(o.f, v, seatI); npcUnderRoof(o.f, v); if (o.t < dt * 1.5 && hasDoor) { setDoor(v, side, true); sfx.click(); } if (o.t > (hasDoor ? 0.45 : 0.1)) { o.st = 'sill'; o.t = 0; } return false; }
+  if (o.st === 'sill' || o.st === 'stand') { const sill = o.st === 'sill', k = Math.min(1, o.t / 0.5), e = k * k * (3 - 2 * k), g = baseY(D.x, D.z);
+    if (sill) { o.x = lerp(seat.x, E.x, e); o.z = lerp(seat.z, E.z, e); o.face = lerp(v.s.h, v.s.h + wrapA(outA - v.s.h), e); o.f.root.position.set(o.x, seat.y - hip, o.z); sitPose(1); legsToGround(o.f, g, 1 - e); } /* swing round, feet out and down to the ground */
+    else { o.x = lerp(E.x, D.x, e); o.z = lerp(E.z, D.z, e); o.face = outA; o.f.root.position.set(o.x, lerp(seat.y - hip, g, e), o.z); sitPose(1 - e); legsToGround(o.f, g, 1); } /* stand up out of the doorway */
+    o.f.root.visible = true; o.f.root.rotation.set(0, o.face, 0); npcUnderRoof(o.f, v); if (k >= 1) { o.st = sill ? 'stand' : 'step'; o.t = 0; o.pts = hasDoor ? [doorPt(v, side, -0.3, 0.25), doorPt(v, side, 0.32, 0.16)] : []; } return false; }
+  if (o.st === 'step') { const T = o.pts[0]; if (!T) { o.st = 'shut'; o.t = 0; return false; } const d = npcWalkTo(o, T.x, T.z, dt, 1.6); if (d < 0.08) { o.pts.shift(); if (!o.pts.length) { o.st = 'shut'; o.t = 0; } } return false; } /* out behind the door, round its edge */
+  if (o.st === 'shut') { if (hasDoor) { const h = handleW(v, side); o.face += wrapA(Math.atan2(h.x - o.x, h.z - o.z) - o.face) * Math.min(1, dt * 12); const P2 = doorPt(v, side, 0.32, 0.16); npcWalkTo(o, P2.x, P2.z, dt, 3); o.f.root.rotation.y = o.face; l[3].rotation.set(-1.3, 0, 0.1); if (o.t > 0.15 && !o.slammed) { o.slammed = 1; setDoor(v, side, false, true); } }
+    if (o.t > 0.6) { o.st = 'away'; o.t = 0; const a = Math.atan2(o.x - v.s.x, o.z - v.s.z); o.to = away || { x: o.x + Math.sin(a) * 6, z: o.z + Math.cos(a) * 6 }; o.route = pathAround(v, { x: o.x, z: o.z }, o.to); } return false; }
   if (o.st === 'away') { const T = o.route[0] || o.to, d = npcWalkTo(o, T.x, T.z, dt); if (d < 0.15 && o.route.length > 1) o.route.shift(); return o.t > 3.5; }
   return true;
 }
@@ -2253,6 +2289,7 @@ function seatPassenger(o, v, seed = 0) {
   o.root.visible = true; o.root.scale.setScalar(S); o.root.position.set(_seatV.x, _seatV.y - hip * S, _seatV.z); o.root.rotation.set(0, v.s.h, 0);
   o.limbs[0].rotation.set(-1.45, 0, 0.05); o.limbs[1].rotation.set(-1.45, 0, -0.05); o.limbs[2].rotation.set(-0.45, 0, -0.1); o.limbs[3].rotation.set(-0.45, 0, 0.1);
   if (o.inner) o.inner.rotation.y = Math.sin(time * 0.35 + seed) > 0.55 ? 0.45 : Math.sin(time * 0.6 + seed) * 0.08; // a look over at the driver
+  npcUnderRoof(o, v); /* tall passengers duck their heads under the roof */
 }
 function unseatPassenger(o) { if (o.root.scale.x !== 1) { o.root.scale.setScalar(1); if (o.inner) o.inner.rotation.y = 0; } }
 // a driver sat in a vehicle (summoned in the sandbox; later, a friend online): seen in open-top cars, there in the scenes
@@ -2295,6 +2332,25 @@ function seatedPose(v, dt = 0) {
 }
 // how high you can sit in a car with a roof without your head (or hair, or hat) going through it
 const _hb = new THREE.Box3();
+// the inside of the roof over a point, or null where there's no roof overhead (outside the car, or an open-top)
+function roofOver(v, x, z) { const b = v?.b; if (!b || b.two || b.boat || b.topless || b.open || b.seat || !b.height) return null; const L = carLocal(v, x, z);
+  if (Math.abs(L.x) > b.width / 2 + 0.04 || Math.abs(L.z - (b.co ?? 0)) > (b.cl ?? 1.6) / 2 + 0.15) return null; return b.group.position.y + b.height - 0.07 * (b.s || 1); }
+const _nb = new THREE.Box3();
+// someone else (date, friend, fare, officer) under the roof: lean the upper body forward from the hips until the head clears it, then sink if it still doesn't
+function npcUnderRoof(f, v) { const I = f.inner, body = I?.children[0]; if (!body) return; I.rotation.x = 0; I.position.z = 0; I.position.y = 0;
+  f.root.updateMatrixWorld(true); _nb.setFromObject(body); const roof = roofOver(v, (_nb.min.x + _nb.max.x) / 2, (_nb.min.z + _nb.max.z) / 2); if (roof == null) return; let over = _nb.max.y - roof + 0.02; if (over <= 0) return;
+  const hp = f.limbs[0].position.y; let a = 0;
+  while (over > 0 && a < 0.6) { a += 0.08; I.rotation.x = a; I.position.y = hp - hp * Math.cos(a); I.position.z = -hp * Math.sin(a); f.root.updateMatrixWorld(true); _nb.setFromObject(body); over = _nb.max.y - roof + 0.02; }
+  if (over > 0) f.root.position.y -= over; }
+// straight legs (people have no knees here): angle them down so the feet stay on the ground while the hips are up on the sill
+function legsToGround(f, g, k = 1) { const hp = f.limbs[0].position.y, hh = f.root.position.y + hp - g, th = Math.acos(Math.max(-1, Math.min(1, hh / hp))), a = -(th + (1.45 - th) * (1 - k)); f.limbs[0].rotation.set(a, 0, 0.05); f.limbs[1].rotation.set(a, 0, -0.05); }
+// if the head is under the car's roof and poking through it: duck the body forward until it fits, and only then sink lower
+function headUnderRoof(v) { const b = v?.b; if (!b || b.two || b.boat || b.topless || b.open || b.seat || !b.height || !hero.head) return;
+  heroRoot.updateMatrixWorld(true); _hb.setFromObject(hero.head); const roof = roofOver(v, (_hb.min.x + _hb.max.x) / 2, (_hb.min.z + _hb.max.z) / 2); if (roof == null) return; /* not under the roof (stood outside, or on the sill with the head out of the door) */
+  let over = _hb.max.y - roof; if (over <= 0) return;
+  for (let i = 0; i < 8 && over > 0; i++) { hero.torso.rotation.x = Math.min(1.25, hero.torso.rotation.x + 0.12); hero.head.rotation.x = Math.max(-0.5, hero.head.rotation.x - 0.03); heroRoot.updateMatrixWorld(true); _hb.setFromObject(hero.head); over = _hb.max.y - roof; }
+  if (over > 0) { heroRoot.position.y -= over; heroRoot.updateMatrixWorld(true); }
+}
 function heroSitY(v, y) { const b = v.b; if (b.two || b.seat || b.boat || !b.height) return y;
   if (hero._up == null) { const r = hero.root, ry = r.rotation.y; r.rotation.y = 0; r.updateMatrixWorld(true); _hb.setFromObject(hero.head); hero.legL.pivot.getWorldPosition(_a1); hero._up = _hb.max.y - _a1.y; r.rotation.y = ry; }
   const roof = b.group.position.y + b.height - 0.05 * (b.s || 1); return Math.min(y, roof - hero._up - 0.04);
@@ -2455,8 +2511,9 @@ function updateVehicles(dt) {
         // speed limit (easy to cruise at); only the last quarter goes faster than that.
         let topT = top;
         if (stickDrive) { const lim = speedLimit(c.x, c.z) / 2.237; topT = lim ? (thr < 0.78 ? 3 + (Math.min(lim, top) - 3) * (thr / 0.78) : Math.min(lim, top) + (top - Math.min(lim, top)) * ((thr - 0.78) / 0.22)) : Math.max(3, top * thr); } if (c.v < -0.3) c.v = Math.min(0, c.v + 16 * dt); else if (c.v < topT) c.v = Math.min(topT, c.v + s.acc * dt * (1 - Math.max(0, c.v) / (s.top * 1.15))); else c.v = damp(c.v, topT, stickDrive ? 2.5 : 1.2, dt); }
-      else if (brk) { if (c.v > 0.3) { c.v = Math.max(0, c.v - 18 * (s.brake || 1) * dt); c.braking = true; } else c.v = Math.max(b.two ? -1.3 : -s.top * 0.32, c.v - s.acc * 0.6 * dt); } /* on two wheels you back up at walking pace, pushing with a foot */
+      else if (brk) { if (c.v > 0.3) { c.v = Math.max(0, c.v - 18 * (s.brake || 1) * dt); c.braking = true; if (!v.skidS && Math.abs(c.v) > (b.two ? 3 : 7)) { v.skidS = true; const dirt = !roadAt(c.x, c.z); if (b.two) sfx.brakeSqueal(0.03, dirt); else if (!b.boat) { if (dirt) sfx.brakeSqueal(0.05, true); else sfx.screech(engineVoice(v) === 'truck' ? 0.05 : 0.04); } } } /* every vehicle skids or squeals when you stand on the brakes */ else c.v = Math.max(b.two ? -1.3 : -s.top * 0.32, c.v - s.acc * 0.6 * dt); } /* on two wheels you back up at walking pace, pushing with a foot */
       else c.v = damp(c.v, 0, (settings.steer || 'screen') === 'screen' ? 1.6 : 0.8, dt); // let go of the stick and the car slows down properly
+      if (!brk) v.skidS = false;
       if (c.v > top + 0.5) c.v = damp(c.v, top, 1.5, dt);
       let want = -st.x;
       if (kb) want = ((input.keys.has('KeyA') || input.keys.has('ArrowLeft')) ? 1 : 0) - ((input.keys.has('KeyD') || input.keys.has('ArrowRight')) ? 1 : 0);
@@ -4018,7 +4075,7 @@ function setTalkRel(id) { const el = $('talkRel'); if (!id) { el.classList.add('
 // ================================================================ CONVERSATIONS
 function zoneBg(x, z) { if (inside) return 'interior'; if (onPier(x, z)) return 'pier'; const n = zoneName(x, z); return n === 'Bay Beach' ? 'beach' : n === 'Hidden Hills' || n === 'Countryside' || n === 'Farmland' ? 'hills' : n.includes('Airport') ? 'airport' : n === 'Eastport' || n === 'Northfield' ? 'suburb' : 'city'; }
 function beginTalk(cfg, name, tag, pitch, relId, pet = null, pose = null, think = false, seat = false, phone = false, car = false, bed = null) { talk.nextPassenger = null; if (seat && ride && !ride.b.two) { try { talk.nextCar = buildCar(ride.cfg); } catch (e) { talk.nextCar = null; } }
-  if ((seat || phone) && ride) talk.nextPassenger = talk.forcePassenger || (date?.inCar ? date.cfg : buddy?.inCar ? (buddy.p.look?.cfg || null) : null);
+  if ((seat || phone) && ride && !talk.nextDate) talk.nextPassenger = talk.forcePassenger || (date?.inCar ? date.cfg : buddy?.inCar ? (buddy.p.look?.cfg || null) : null);
   if ((phone || seat) && ride && (ride.b.two || ride.b.boat)) { try { talk.nextTwo = buildCar(ride.cfg); talk.nextCar = null; } catch (e) { talk.nextTwo = null; } } /* on a bike, scooter or boat: you are on it in the scene */ talk.layout(W, H); talk.begin({ npcCfg: cfg, youCfg: charCfg, name, tag, pitch, bg: zoneBg(P.x, P.z), night, pet, pose, think, seat, phone, car, bed, wall: inside ? INTERIORS[inside.id].wall : null, floor: inside ? INTERIORS[inside.id].floor : null, room: inside ? inside.id : null }); if (relId) relNames[relId] = name; setTalkRel(relId); setState('talk'); }
 function endTalk() { talkNeeds(false); talk.end(); setState('play'); }
 const I = (n, t) => `${svg(n, 'sm')} ${t}`;
@@ -4414,7 +4471,7 @@ function trafficCheck(dt) {
   forceWanted(1); WANT.flash = 1.2; sfx.siren?.();
   toast(why === 'lights' ? 'Police lights behind you. Your headlights are off. Pull over and stop.' : 'Police lights behind you. Pull over and stop.', 3.5);
 }
-async function trafficStop(v) {
+async function trafficStop(v, CA = null) {
   const why = WANT.pull, warned = stats.ticketWarn || 0, hot = stashCount() > 0;
   WANT.pull = null; ride.s.v = 0;
   beginTalk(copLook?.cfg || COP_CFG, 'Officer ' + pick(['Diaz', 'Walsh', 'Kowalski', 'Price', 'Reyes', 'Hart']), 'Traffic stop', 130, null, null, null, false, true);
@@ -4440,7 +4497,7 @@ async function trafficStop(v) {
   } else { spend(Math.min(money, fine)); await talk.say('Here\'s your ticket. Drive safe.'); }
   endTalk();
   if (why === 'lights') { stats.lights = 'auto'; toast('You switched your headlights back on.', 2); }
-  stats.stopCd = gameHours() + 2; chat.resolved = 'stop'; clearWanted(); v.ai = 'leave';
+  stats.stopCd = gameHours() + 2; chat.resolved = 'stop'; clearWanted(); if (CA) { CA.mode = 'in'; CA.o.st = null; CA.o.t = 0; CA.o.route = null; CA.after = () => { v.ai = 'leave'; }; } else v.ai = 'leave'; /* back to his car, in, and off */
 }
 function clearWanted(msg) { chat.resolved ||= msg ? 'paid' : 'settled'; /* settled with the police (paid, talked out of it): not 'got away' */ WANT.patrolT = 0; WANT.pull = null; ditchJumpsuit(); WANT.v = 0; WANT.stars = 0; WANT.loseT = 0; WANT.coolT = 0; P.arrestT = 0; for (const c of cops) { if (c.car && copCars.includes(c.car) && c.state !== 'down' && Math.hypot(c.x - c.car.s.x, c.z - c.car.s.z) < 80) { c.cop = 'return'; c.angry = false; } else { c.cop = 'leave'; peds.flee(c, P.x, P.z); } } // officers walk back to their own car and drive off in it
   for (const v of copCars) { if (cops.some(c => c.car === v && c.cop === 'return')) { v.ai = 'park'; v.waitT = 0; v.crewBack = true; } else v.ai = 'leave'; } if (msg) toast(msg, 2.5); }
@@ -4522,10 +4579,12 @@ function aiDrive(v, c, s, dt) {
   if (Math.abs(c.v) < 1.2 && !onFootClose) { v.stuckT = (v.stuckT || 0) + dt; if (v.stuckT > 1.4) { v.stuckT = 0; v.unstuck = 1.1; } } else v.stuckT = 0;
   // officers jump out when you're on foot nearby (or you've stopped the car)
   if (v.ai === 'chase' && !v.police) return;
-  if (v.ai === 'chase' && !v.deployed && WANT.pull && ride && pd < 16 && Math.abs(ride.s.v) < 1.5 && Math.abs(c.v) < 3 && state === 'play') { v.deployed = true; trafficStop(v); return; }
+  if (v.ai === 'chase' && !v.deployed && WANT.pull && ride && pd < 16 && Math.abs(ride.s.v) < 1.5 && Math.abs(c.v) < 3 && state === 'play') { v.deployed = true; v.ai = 'park'; /* pulls in behind you; the officer walks up to your window */
+    const R0 = ride; copOut(v, 0, { win: () => { const w = ride ? (ride.b.two ? doorSpot(ride, DRIVER) : carWorld(ride, DRIVER * (ride.b.width / 2 + 0.55), carLocal(ride, seatWorld(ride, 0).x, seatWorld(ride, 0).z).z + 0.25)) : { x: P.x + 1, z: P.z }; return w; },
+      onWin: A => { if (ride !== R0 || Math.abs(R0.s.v) > 2 || state !== 'play') { A.mode = 'in'; A.o.st = null; A.o.t = 0; A.o.route = null; return; } trafficStop(v, A); } }); return; }
   if (v.ai === 'chase' && !v.deployed && pd < 14 && (!ride || Math.abs(ride.s.v) < 2) && Math.abs(c.v) < 3) {
     v.deployed = true; const n = WANT.stars >= 3 ? 2 : 1;
-    for (let i = 0; i < n; i++) makeCop(c.x + Math.cos(c.h) * (i ? -2 : 2), c.z - Math.sin(c.h) * (i ? -2 : 2), v);
+    for (let i = 0; i < n; i++) copOut(v, i ? 1 : 0); /* out of the doors, round them, then after you */
   }
 }
 function copShot(c, tx, tz) {
@@ -4559,7 +4618,7 @@ let copStopCd = 0;
 // an officer has caught up with you on foot: what do you do?
 async function copStop(c) {
   const s = WANT.stars, warns = stats.copWarns || 0;
-  beginTalk(copLook?.cfg || COP_CFG, c.name || 'Officer', `Wanted · ${s} badge${s > 1 ? 's' : ''}`, 130, null);
+  beginTalk(copLook?.cfg || COP_CFG, c.name || 'Officer', `Wanted · ${s} badge${s > 1 ? 's' : ''}`, 130, null, null, null, false, !!ride); /* in a car: he's at your window; on a bike: stood beside you */
   await talk.say(s >= 3 ? 'Hands up! Turn around! You are under arrest!' : pick(['Hey! Stop right there. You know why I stopped you?', 'Freeze! Hands where I can see them.', 'Don\'t move. We got a call about you.']));
   const opts = [], ids = [];
   const add = (ic, t, k) => { opts.push(I(ic, t)); ids.push(k); };
@@ -4587,6 +4646,7 @@ async function copStop(c) {
   await talk.say('Hey! STOP!'); endTalk(); crime(0.6); peds.knock(c, Math.sin(P.face), Math.cos(P.face), 3); P.arrestT = 0; toast('You shoved past him. RUN!', 1.5);
 }
 function updatePolice(dt) {
+  updateCopAnims(dt);
   WANT.flash = Math.max(0, WANT.flash - dt);
   if (inside) return;
   trafficCheck(dt);
@@ -4633,10 +4693,9 @@ function updatePolice(dt) {
   // officers heading back to their car: walk to the driver's door, get in, and once they're all in it drives off
   for (let i = cops.length - 1; i >= 0; i--) { const c = cops[i]; if (c.cop !== 'return') continue; const v = c.car;
     if (!v || !copCars.includes(v) || c.state === 'down') { c.cop = 'leave'; continue; }
-    const h = v.s.h, dx = v.s.x - Math.cos(h) * (v.b.width / 2 + 0.6), dz = v.s.z + Math.sin(h) * (v.b.width / 2 + 0.6);
-    c.state = 'chase'; c.tx = dx; c.tz = dz; c.spd = 2.6;
-    if (Math.hypot(c.x - dx, c.z - dz) < 1.2) { peds.list.splice(peds.list.indexOf(c), 1); dyn.remove(c.root); cops.splice(i, 1); v.crew = (v.crew || []).filter(q => q !== c); } }
-  for (const v of copCars) if (v.crewBack && v.ai === 'park') { v.waitT += dt; if (!cops.some(c => c.car === v && c.cop === 'return') || v.waitT > 30) { v.ai = 'leave'; v.crewBack = false; } }
+    c.state = 'chase'; c.tx = v.s.x; c.tz = v.s.z; c.spd = 2.6;
+    if (Math.hypot(c.x - v.s.x, c.z - v.s.z) < 7) { const si = Math.max(0, Math.min(1, (v.crew || []).indexOf(c))); copIn(c, v, si); } } /* close enough: round to their own door and in */
+  for (const v of copCars) if (v.crewBack && v.ai === 'park') { v.waitT += dt; if ((!cops.some(c => c.car === v && c.cop === 'return') && !copAnims.some(a => a.v === v)) || v.waitT > 40) { v.ai = 'leave'; v.crewBack = false; } }
   // officers on foot
   let close = false;
   for (const c of cops) {
@@ -5430,6 +5489,10 @@ function dateTo(v, dt, sp) { const D = date, ds = doorSpot(v, -DRIVER);
   const T = D.route[0] || ds, w = dateWalk(T.x, T.z, dt, sp); if (w.d < 0.35 && D.route.length > 1) D.route.shift();
   return { d: D.route.length > 1 ? 9 : w.d, mv: w.mv, ds };
 }
+function dateBoard(v, dt, held) { const D = date; if (D.bo && D.bo.v === v && (!D.bo.st || D.bo.st === 'walk')) D.bo.held = held; if (!D.bo || D.bo.v !== v) { unseatPassenger(D.fig); D.bo = { f: D.fig, x: D.x, z: D.z, face: D.face || 0, phase: 0, held, v }; }
+  if (held && D.bo.st === 'round' && carAnim?.type === 'escort' && carAnim.stage < 2) { npcWalkTo(D.bo, D.bo.x, D.bo.z, dt); D.fig.root.rotation.y = D.bo.face; return false; } /* waits by the door till you've got it open */
+  const done = npcBoardTick(D.bo, v, 1, dt); D.x = D.bo.x; D.z = D.bo.z; D.face = D.bo.face;
+  if (done) { D.inCar = true; D.bo = null; D.carV = v; D.board = 0; seatPassenger(D.fig, v, 1); } return done; }
 function dateSitIn(v, dt, wait = 0) { const D = date; D.board = (D.board || 0) + dt; const k = clamp((D.board - wait) / 0.7, 0, 1); if (k <= 0) return false;
   const st = seatWorld(v, 1), ds = doorSpot(v, -DRIVER), e = k * k * (3 - 2 * k); D.x = ds.x + (st.x - ds.x) * e; D.z = ds.z + (st.z - ds.z) * e; D.face = v.s.h - DRIVER * Math.PI / 2 * (1 - e);
   D.fig.root.position.set(D.x, baseY(D.x, D.z) + (st.y - 0.75 - baseY(D.x, D.z)) * e * 0.6, D.z); D.fig.root.rotation.y = D.face;
@@ -5471,26 +5534,24 @@ function updateDate(dt) {
   // getting into your car: walk round to the passenger door, if there's a seat for her
   if (ride) {
     if (!D.inCar && D.fig) unseatPassenger(D.fig);
-    if (D.inCar) { D.x = ride.s.x; D.z = ride.s.z; if (!ride.b.two || ride.b.seat) seatPassenger(D.fig, ride, 1); else D.fig.root.visible = false; D.escortCar = null; carDateTick(dt); return; }
+    if (D.inCar) { D.x = ride.s.x; D.z = ride.s.z; D.carV = ride; if (!ride.b.two || ride.b.seat) seatPassenger(D.fig, ride, 1); else D.fig.root.visible = false; D.escortCar = null; carDateTick(dt); return; }
     if (D.left) { if (Math.hypot(ride.s.x - D.x, ride.s.z - D.z) < 12 && Math.abs(ride.s.v) < 2) { D.left = false; toast(`${D.name}: "Finally! You came back."`, 2.4); } else { D.fig.root.visible = true; dateLimbs(0); return; } }
     if (seatsFor(ride) < 2) { if (!D.noRoom) { D.noRoom = true; toast(`${D.name}: "Erm, there's no room for me on that."`, 2.6); } dateLimbs(0); D.fig.root.position.set(D.x, baseY(D.x, D.z), D.z); return; }
     // only counts as leaving her behind if you drive away while she's on her way to the car
     if (Math.abs(ride.s.v) > 4 && Math.hypot(ride.s.x - D.x, ride.s.z - D.z) > 14) { D.left = true; D.interest -= 12; toast(`You drove off without ${D.name}! She's waiting where you left her.`, 3); return; }
-    D.boardCar = ride; if (D.board > 0) { if (D.board < dt * 1.5) setDoor(ride, -DRIVER, true); const r = dateSitIn(ride, dt, 0.35); if (r === true) setDoor(ride, -DRIVER, false); if (r) { dateLimbs(0); return; } }
-    const w = dateTo(ride, dt, 5); if (w.d < 0.5) D.board = (D.board || 0) + dt;
-    dateLimbs(w.mv); D.fig.root.position.set(D.x, baseY(D.x, D.z), D.z); D.fig.root.rotation.y = D.face; return;
+    D.boardCar = ride; dateBoard(ride, dt, false); return; /* you're already in: she opens her own door, gets in and shuts it */
   }
   D.noRoom = false;
   if (carAnim && D.escortCar === carAnim.v && (carAnim.type === 'escort' || carAnim.type === 'in')) {
     if (D.inCar) { { const cv = ride || carAnim.v; if (!cv.b.two) seatPassenger(D.fig, cv, 1); else D.fig.root.visible = false; } return; }
-    if (carAnim.type === 'escort' && carAnim.stage >= 1) { // walk in through the open door
-      D.boardCar = carAnim.v; if (D.board > 0) { if (dateSitIn(carAnim.v, dt, 0.15)) { dateLimbs(0); return; } }
-      const w = dateTo(carAnim.v, dt, 4.5); if (w.d < 0.45) D.board = (D.board || 0) + dt;
-      dateLimbs(w.mv); D.fig.root.position.set(D.x, baseY(D.x, D.z), D.z); D.fig.root.rotation.y = D.face; return;
-    }
+    if (carAnim.type === 'escort' && carAnim.stage >= 1) { D.boardCar = carAnim.v; dateBoard(carAnim.v, dt, true); return; } // in through the door you're holding open
     if (carAnim.type === 'escort') { const w = dateWalk(P.x - Math.sin(P.face) * 1.0, P.z - Math.cos(P.face) * 1.0, dt, 5); dateLimbs(w.mv); D.fig.root.position.set(D.x, baseY(D.x, D.z), D.z); D.fig.root.rotation.y = D.face; return; }
   }
-  if (D.inCar) { const v = vehicles.find(q => Math.hypot(q.s.x - P.x, q.s.z - P.z) < 8); const ds = v ? doorSpot(v, -DRIVER) : { x: P.x + 0.9, z: P.z + 0.6 }; D.x = ds.x; D.z = ds.z; D.inCar = false; D.fig.root.visible = true; if (v) { setTimeout(() => setDoor(v, -DRIVER, true), 500); setTimeout(() => setDoor(v, -DRIVER, false), 1300); } }
+  if (D.inCar) { const v = D.carV && vehicles.includes(D.carV) ? D.carV : vehicles.find(q => Math.hypot(q.s.x - P.x, q.s.z - P.z) < 8);
+    if (v && carAnim && carAnim.v === v) { if (!v.b.two) seatPassenger(D.fig, v, 1); return; } // sat tight while you climb out
+    if (v && !v.b.two) { if (!D.ao) { unseatPassenger(D.fig); D.ao = { f: D.fig, x: D.x, z: D.z, face: v.s.h, phase: 0 }; } /* opens her door, swings her legs out, stands, steps round it and shuts it */
+      npcAlightTick(D.ao, v, 1, dt, { x: P.x, z: P.z }); D.x = D.ao.x; D.z = D.ao.z; D.face = D.ao.face; if (D.ao.st !== 'away') return; D.ao = null; D.inCar = false; D.carV = null; }
+    else { const ds = v ? doorSpot(v, -DRIVER) : { x: P.x + 0.9, z: P.z + 0.6 }; D.x = ds.x; D.z = ds.z; D.inCar = false; D.fig.root.visible = true; } }
   if (D.left) { if (Math.hypot(P.x - D.x, P.z - D.z) < 14) { D.left = false; toast(`${D.name}: "Oh, NOW you remember me?"`, 2.5); } else { dateLimbs(0); D.fig.root.position.set(D.x, baseY(D.x, D.z), D.z); return; } }
   // walking with you: a step behind, or right beside you holding hands
   const side = D.holding ? 0.92 : 0.8, back = D.holding ? 0 : 1.3;
@@ -5577,11 +5638,12 @@ async function dateCall2(id, d) {
 async function talkDate() {
   if (!date || woo || state !== 'play') return;
   const D = date, inCar = !!(ride && D.inCar), pr = D.prefs;
-  beginTalk(D.cfg, D.name, `${relName(rel(D.id))} · on a date`, 330, D.id, null, null, false, false, false, inCar ? { color: ride.cfg?.bodyColor || '#30323a', trim: ride.cfg?.accentColor } : false);
+  if (inCar && !ride.b.two && !ride.b.boat) talk.nextDate = true; /* in your actual car, her in the passenger seat */
+  beginTalk(D.cfg, D.name, `${relName(rel(D.id))} · on a date`, 330, D.id, null, null, false, inCar && !ride.b.two && !ride.b.boat, false, inCar && (ride.b.two || ride.b.boat) ? { color: ride.cfg?.bodyColor || '#30323a', trim: ride.cfg?.accentColor } : false);
   await talk.say(pick(D.interest > 80 ? ['I like being around you.', 'So... what now?', 'You\'re fun, you know that?'] : inCar ? ['Where are we going?', 'Nice car.', 'So, where are you taking me?'] : ['Where are we going?', 'This is nice.', 'So, tell me something about you.']));
   const ok = (k, need) => { const n = D.used[k] = (D.used[k] || 0) + 1; return D.interest >= need - lvl('charm') * 2 || Math.random() < 0.25 / n; };
   for (;;) {
-    const bed = inside?.prop ? inside.h.furn.find(f => FURN[f.t].act === 'sleep') : null, parked = ride && Math.abs(ride.s.v) < 1;
+    const bed = inside?.prop ? inside.h.furn.find(f => FURN[f.t].act === 'sleep') : null, parked = ride && Math.abs(ride.s.v) < 1 && !ride.b.two && !ride.b.boat;
     const atBar = inside && ['bar', 'club', 'diner'].includes(inside.id), atClub = inside?.id === 'club';
     const top = [{ label: I('heart', 'Get close'), k: 'sweet' }, { label: I('chat', 'Talk'), k: 'talk' }, { label: I('map', 'Where to?'), k: 'go' }];
     if (inCar) top.push({ label: I('radio', 'Put her music on'), k: 'music' });
@@ -5761,6 +5823,7 @@ function navDist(d) { if (d < 995) return Math.max(10, Math.round(d / 10) * 10) 
 function nearestHome() { const fh = famHome(); if (fh && propMode(fh.id) !== 'rent') return fh; let best = null, bd = 1e9; for (const p of PROPERTIES) if (owned.has(p.id) && propMode(p.id) !== 'rent') { const d = Math.hypot(p.x - P.x, p.z - P.z); if (d < bd) { bd = d; best = p; } } return best; }
 function hearts(x, z, n = 6, y = 1.8) { spawnParticles(x, y, z, ['#ff6fb5', '#ff3b8a', '#ffd1e8'], n, 1.6, 1.4, 0.22, -1.5); }
 // WooHoo: under the duvet with the bed bouncing, or in a parked car with steamy windows
+const _fogC = new THREE.Color('#e9eef1');
 function startWoo(kind, bed) {
   woo = { kind, t: 0, dur: 5.5, bed };
   if (kind === 'bed') {
@@ -5785,9 +5848,13 @@ function startWoo(kind, bed) {
     date.fig.root.visible = true; heroRoot.visible = true;
     toast('WooHoo time...', 1.5);
   } else {
-    woo.car = ride; woo.glass = [];
-    ride.b.group.traverse(m => { if (m.isMesh && m.material.transparent && m.material.opacity > 0.5) { woo.glass.push([m.material, m.material.color.getHex()]); m.material.color.set('#eef3f6'); } });
-    toast('WooHoo!', 1.5);
+    /* in YOUR car, right where it's parked: lean over and kiss, the windows steam up (each pane gets its own fogged copy, so no other car fogs),
+       then the car rocks. No glass to hide behind (open-tops)? Sims-style pixel blur over the seats instead */
+    woo.car = ride; woo.glass = []; woo.dur = 7.2;
+    ride.b.group.traverse(m => { if (m.isMesh && m.material?.transparent && !m.material.map && m.material.opacity > 0.1 && m !== ride.b.glow) { const o = m.material, c = o.clone(); m.material = c; woo.glass.push([m, o, c.color.clone(), c.opacity, c.metalness ?? 0, c.roughness ?? 0.5]); } });
+    woo.open = ride.b.topless || ride.b.open || woo.glass.length < 2;
+    if (woo.open) { const mk = () => { const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: showerTexture(), depthTest: true })); sp.scale.set(0.9, 0.8, 1); sp.visible = false; dyn.add(sp); return sp; }; woo.blur = [mk(), mk()]; }
+    toast('WooHoo...', 1.5);
   }
   sfx.whoosh?.();
 }
@@ -5894,16 +5961,27 @@ function updateWoo(dt) {
   const bounce = Math.abs(Math.sin(k * 7.5));
   if (W.kind === 'bed') { if (wooBed(W, dt)) return; }
   else {
-    W.car.b.group.position.y += bounce * 0.14; W.car.b.group.rotation.z = Math.sin(k * 7.5) * 0.04;
-    if (Math.random() < dt * 6) hearts(W.car.s.x, W.car.s.z, 2, 2.4);
+    const v = W.car, e3 = q => q * q * (3 - 2 * q), cl3 = q => Math.max(0, Math.min(1, q));
+    const lean = e3(cl3(k / 0.6)) * (1 - e3(cl3((k - 1.7) / 0.4))), fog = e3(cl3((k - 1.4) / 1.2)), rock = cl3((k - 2.4) / 0.4) * (1 - cl3((k - W.dur + 0.4) / 0.4));
+    // lean in across the console and kiss (both of you in your actual seats)
+    const dW = date?.fig; if (dW && heroRoot.visible) { const hp = heroRoot.position, dp = dW.root.position; W.base ||= { h: hp.clone(), d: dp.clone() }; hp.copy(W.base.h); dp.copy(W.base.d); hp.y += bounce * 0.1 * rock; dp.y += bounce * 0.1 * rock; /* (rides with the car's bounce) */ const mx = (hp.x + dp.x) / 2, mz = (hp.z + dp.z) / 2, gap = Math.hypot(dp.x - hp.x, dp.z - hp.z), slide = Math.max(0, gap / 2 - 0.3) * lean;
+      if (gap > 0.05) { const ux = (dp.x - hp.x) / gap, uz = (dp.z - hp.z) / gap; hp.x += ux * slide; hp.z += uz * slide; dp.x -= ux * slide; dp.z -= uz * slide;
+        const rx = Math.cos(v.s.h), rz = -Math.sin(v.s.h), sgn = Math.sign(ux * rx + uz * rz) || 1; hero.root.rotation.z = -sgn * 0.2 * lean; dW.root.rotation.z = sgn * 0.2 * lean;
+        hero.head.rotation.y = -sgn * 0.9 * lean; if (dW.inner) dW.inner.rotation.y = sgn * 0.9 * lean; hero.armR.pivot.rotation.set(-1.2 * lean, 0, -0.4 * lean * sgn); }
+      if (k > 0.6 && !W.kissed) { W.kissed = true; hearts(mx, mz, 10, 2.2); } }
+    // the windows steam right up
+    for (const [m, , c0, o0, me0, r0] of W.glass) { const M = m.material; M.color.copy(c0).lerp(_fogC, fog); M.opacity = o0 + (0.94 - o0) * fog; M.metalness = me0 * (1 - fog); M.roughness = r0 + (1 - r0) * fog; M.depthWrite = fog > 0.7; } /* misted white, not tinted glass */
+    if (W.blur) { const S = [seatWorld(v, 0), seatWorld(v, 1)]; W.blur.forEach((b, i) => { b.visible = fog > 0.5 && Math.floor(k * 10) % 7 !== 0; b.position.set(S[i].x, S[i].y + 0.55 + bounce * 0.08 * rock, S[i].z); }); if (fog > 0.5) { heroRoot.visible = false; if (dW) dW.root.visible = false; } }
+    v.b.group.position.y += bounce * 0.1 * rock; v.b.group.rotation.z = Math.sin(k * 7.5) * 0.035 * rock; v.b.group.rotation.x = Math.sin(k * 3.7) * 0.012 * rock;
+    if (rock > 0 && Math.random() < dt * 6) hearts(v.s.x, v.s.z, 2, 2.4);
   }
-  if (W.kind === 'car' || W.under) if (Math.random() < dt * 4) { const A = audio(); if (A) sfx.note(rand(160, 230), A.currentTime, 0.12, 'square', 0.015, 900); } // bed springs
+  if ((W.kind === 'car' && k > 2.4) || W.under) if (Math.random() < dt * 4) { const A = audio(); if (A) sfx.note(rand(160, 230), A.currentTime, 0.12, 'square', 0.015, 900); } // bed springs
   if (k >= W.dur) {
     woo = null;
     fade(() => {
       advanceTime(1); feed({ mood: 40, energy: -12 }); P.hp = maxHP(); gainXP('charm', 25); gainXP('stamina', 15);
       if (W.kind === 'bed') { dyn.remove(W.g); for (const q of [W.me, W.her]) { dyn.remove(q.blur); q.blur.material.dispose(); } hero.root.rotation.set(0, P.face, 0); hero.hips.position.y = hero.legLen; date.fig.root.rotation.set(0, 0, 0); date.fig.inner.position.y = 0; if (W.bedMesh) W.bedMesh.position.y = 0; const w = bedSide(W.bed); P.x = w.x; P.z = w.z; heroRoot.visible = true; const w2 = bedSide(W.bed, w); date.x = w2.x; date.z = w2.z; date.fig.root.visible = true; }
-      else { W.car.b.group.rotation.z = 0; for (const [m, c] of W.glass) m.color.setHex(c); }
+      else { W.car.b.group.rotation.set(0, W.car.b.group.rotation.y, 0); for (const [m, o, , ] of W.glass) { m.material.dispose(); m.material = o; } if (W.blur) for (const b of W.blur) { dyn.remove(b); b.material.dispose(); } heroRoot.visible = !P.dead; hero.root.rotation.z = 0; if (date?.fig) { date.fig.root.visible = true; date.fig.root.rotation.z = 0; if (date.fig.inner) date.fig.inner.rotation.y = 0; } }
       bumpRel(date.id, 25, false); date.interest += 20; stats.woohoo = (stats.woohoo || 0) + 1; maybePregnant(date.id, date.tryBaby); cheatCheck(date.id);
       const n = date.name; saveGame();
       // your girlfriend / wife stays with you afterwards; a date heads home
@@ -5938,8 +6016,17 @@ function updateBuddy(dt) {
   if (gameHours() - b.since > 4 && !WANT.stars) return endBuddy(pick(['Right, I gotta head off. Good times though!', 'I\'m beat. Catch you later, yeah?', 'Gotta go. Hit me up again!']));
   if (p.state === 'down') return;
   // riding along: they hop in with you
-  if (ride && !ride.b.two) { if (!b.inCar && Math.hypot(p.x - P.x, p.z - P.z) < 14 && seatsFor(ride) >= 2) { b.inCar = true; p.root.visible = false; } if (b.inCar) { p.x = P.x; p.z = P.z; p.state = 'idle'; p.t = 999; seatPassenger(p, ride, 2); } }
-  else if (b.inCar) { b.inCar = false; unseatPassenger(p); p.root.visible = true; const h = (ride || myCar)?.s?.h ?? P.face; p.x = P.x + Math.cos(h) * 1.6; p.z = P.z - Math.sin(h) * 1.6; p.state = 'idle'; }
+  // a mate gets in by themselves: walks round to a free door, opens it, sits in, shuts it (you don't hold it for them). Out the same way
+  if (ride && !ride.b.two && !b.inCar && (b.bo || Math.hypot(p.x - P.x, p.z - P.z) < 14) && seatsFor(ride) >= 2) {
+    const si = b.bo?.si ?? (() => { const dIn = date && (date.inCar || date.bo); for (let i = dIn ? 2 : 1; i < seatsOf(ride).length; i++) if (!seatTaken(ride, i)) return i; return -1; })();
+    if (si > 0) { if (!b.bo || b.bo.v !== ride) b.bo = { f: p, x: p.x, z: p.z, face: p.face || 0, phase: 0, v: ride, si }; p.state = 'idle'; p.t = 999; p.ev = true;
+      const done = npcBoardTick(b.bo, ride, si, dt); p.x = b.bo.x; p.z = b.bo.z; p.face = b.bo.face; if (done) { b.inCar = true; b.car = ride; b.si = si; b.bo = null; } else return; } }
+  if (ride && b.inCar && b.car === ride) { p.x = P.x; p.z = P.z; p.state = 'idle'; p.t = 999; seatAt(p, ride, b.si ?? 2); }
+  else if (b.inCar) { const v = b.car && vehicles.includes(b.car) ? b.car : null;
+    if (v && carAnim && carAnim.v === v) { seatAt(p, v, b.si ?? 2); return; }
+    if (v) { b.ao ||= { f: p, x: p.x, z: p.z, face: v.s.h, phase: 0 }; p.state = 'idle'; p.t = 999; npcAlightTick(b.ao, v, b.si ?? 2, dt, { x: P.x + 1.2, z: P.z + 1 }); p.x = b.ao.x; p.z = b.ao.z; p.face = b.ao.face; if (b.ao.st !== 'away') return; }
+    b.ao = null; b.inCar = false; b.car = null; unseatPassenger(p); p.root.visible = true; p.state = 'idle'; }
+  else if (!ride && b.bo) { b.bo = null; } /* you got back out before they'd got in */
   if (b.inCar) { buddyTalk(dt); return; }
   // backup: anyone fighting you gets a visit
   const foe = peds.list.find(q => q !== p && q.state !== 'down' && (q.angry || q.hunter) && Math.hypot(q.x - P.x, q.z - P.z) < 16);
@@ -6414,9 +6501,9 @@ function updateJob(dt) {
   jobMarker.visible = true; jobMarker.position.set(job.target.x, 3, job.target.z); jobMarker.material.opacity = 0.2 + Math.sin(time * 5) * 0.08;
   if (job.type === 'taxi' && job.board) { /* the fare walks round, gets in and shuts the door before you set off */
     if (!ride || ride !== job.v) { job.board = null; return; }
-    if (npcBoardTick(job.board, ride, 1, dt)) { job.board = null; fareGo(); } return; }
+    jobMarker.visible = false; if (npcBoardTick(job.board, ride, 1, dt)) { job.board = null; fareGo(); } return; }
   if (job.type === 'taxi' && job.alight) { /* paid up: they climb out, shut the door and walk off */
-    const A = job.alight, done = !ride ? true : npcAlightTick(A, ride, 1, dt); if (done) { if (A.f.root.parent) dyn.remove(A.f.root); job.alight = null; if (job) nextFare(); } return; }
+    jobMarker.visible = false; const A = job.alight, done = !ride ? true : npcAlightTick(A, ride, 1, dt); if (done) { if (A.f.root.parent) dyn.remove(A.f.root); job.alight = null; if (job) nextFare(); } return; }
   if (job.type === 'taxi' && job.stage === 'paid') return;
   if (job.type === 'taxi' && job.stage === 'drop' && fareF && ride) seatPassenger(fareF, ride, 1); /* sat in the back of YOUR cab the whole ride */
   if (job.stage === 'drop' || job.type === 'courier') { job.t -= dt; if (job.t <= 0) { sfx.fail(); if (job.type === 'courier') return endJob('Too late. The client cancelled.'); toast('Your fare jumped out. Too slow!'); if (fareF && ride) { job.alight = { f: fareF, x: ride.s.x, z: ride.s.z, face: 0 }; job.fare = null; return; } nextFare(); return; } }
@@ -7600,7 +7687,7 @@ function saveGame() {
   store.set('bc_save', save); store.set('bc_arsenal', arsenal); store.set('bc_cars', garage); store.set('bc_savedAt', Date.now());
 }
 // auto-update: bookmarks and home-screen apps can hold on to an old copy. Check version.json (never cached) and reload once if newer.
-const BUILD = 207;
+const BUILD = 208;
 function updatingCover() { const d = document.createElement('div'); d.id = 'updCover'; d.innerHTML = '<div class="bt-logo">BAY<span>CITY</span></div><p><i></i>Updating Bay City...</p>'; document.body.appendChild(d); requestAnimationFrame(() => d.classList.add('on')); }
 function checkUpdate() {
   fetch('version.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(j => {
@@ -7722,7 +7809,8 @@ const SB_PEOPLE = [
   ['Woman', () => lifeCfg({ role: 'guest', seed: Math.floor(Math.random() * 1e5), fem: true }), {}],
   ['Elderly lady', () => lifeCfg({ role: 'guest', seed: 6363, fem: true }), {}],
   ['Kid', () => kidCfg(fam().kids[0] || { seed: 1, born: dayN - 8 }), {}],
-  ['Partner', () => fam().partner?.cfg || lifeCfg({ role: 'guest', seed: 3131, fem: true }), {}],
+  ['Partner (on a date)', () => fam().partner?.cfg || lifeCfg({ role: 'guest', seed: 3131, fem: true }), {}],
+  ['Friend (hangs out)', () => lifeCfg({ role: 'guest', seed: 5151 }), {}],
   ['Thug (fights you)', () => lifeCfg({ role: 'dealer', seed: Math.floor(Math.random() * 1e5) }), { angry: true, angryT: 999, brawler: true, power: 7, hp: 6, state: 'chase' }],
   ['Cop', () => lifeCfg({ role: 'cop', seed: 55 }), {}],
   ['Dealer', () => lifeCfg({ role: 'dealer', seed: 3131 }), {}],
@@ -7731,8 +7819,12 @@ const SB_PEOPLE = [
 ];
 function sbSummon(i) {
   const [label, cfgF, extra] = SB_PEOPLE[i], a = P.face, d = 3 + SB.people.length % 4, x = P.x + Math.sin(a) * d + (Math.random() - 0.5) * 2, z = P.z + Math.cos(a) * d + (Math.random() - 0.5) * 2;
-  const p = eventPed(cfgF(), x, z, { name: label === 'Partner' ? (fam().partner?.name || 'Partner') : label === 'Kid' ? (fam().kids[0]?.name || 'Kid') : label, state: 'idle', lookX: P.x, lookZ: P.z, ...extra, ...(extra.state === 'chase' ? { tx: P.x, tz: P.z } : {}) });
-  p.face = Math.atan2(P.x - x, P.z - z); SB.people.push(p); sfx.click(); return p;
+  const isP = label.startsWith('Partner'), isF = label.startsWith('Friend');
+  const p = eventPed(cfgF(), x, z, { name: isP ? (fam().partner?.name || 'Partner') : isF ? 'Dan' : label === 'Kid' ? (fam().kids[0]?.name || 'Kid') : label, state: 'idle', lookX: P.x, lookZ: P.z, ...extra, ...(extra.state === 'chase' ? { tx: P.x, tz: P.z } : {}) });
+  p.face = Math.atan2(P.x - x, P.z - z);
+  if (isP) { /* loved up: she's on a date with you, holding your hand, and you open her door for her */ if (date) endDate(); p.interest = 95; startDate(p); const pid = fam().partner?.id; if (pid) date.id = pid; date.holding = true; sfx.click(); return null; }
+  if (isF) { if (buddy) endBuddy(); p.first = 'Dan'; startBuddy(p, { rap: 50, met: false, seen: dayN }); }
+  SB.people.push(p); sfx.click(); return p;
 }
 function sbRemove(p) { const i = peds.list.indexOf(p); if (i >= 0) peds.list.splice(i, 1); dyn.remove(p.root); SB.people = SB.people.filter(q => q !== p); }
 function sbClearAll() { for (const p of [...peds.list]) sbRemove(p); if (lifeAct) { if (lifeAct.dog) dyn.remove(lifeAct.dog.m.root); lifeAct = null; } clearWaypoint(); eventOpen = false; if (talk.active) endTalk(); }
@@ -8258,7 +8350,7 @@ labBadge(); if (signedIn()) checkAdmin();
 if (titleUp) showTitle();
 requestAnimationFrame(frame);
 { const B = $('boot'); if (B) { clearInterval(window.__boot); const bar = $('btBar'); if (bar) bar.style.width = '100%'; setTimeout(() => { B.classList.add('out'); setTimeout(() => B.remove(), 800); }, 450); } } // the loading sign hands over to the title fly-over
-window.__game = { get markersT() { return markers; }, get animals() { return animals; }, crime, WANT, copCars, cops, pitFight, busted, fam, famNewDay, makeOfficial, talkFamily, get dayN() { return dayN; }, set dayN(v) { dayN = v; }, scene: G.scene, cam: G.cam, snap: () => updateCamera(0, true), get state() { return state; }, P, input, get ride() { return ride; }, get myCar() { return myCar; }, get traffic() { return traffic; }, peds, setTime: h => { clockH = h; }, openCustom, enterVehicle, exitCar, get money() { return money; }, set money(v) { money = v; }, openPlace, PLACES, PROPERTIES, runMinigame, get action() { return action; }, arsenal, selectWeapon, openPhone, setWaypoint, get route() { return route; }, talkToPed, talk, doAction, stats, get inside() { return inside; }, enterInterior, exitInterior, get customers() { return customers; }, newCustomer, startEdit, endEdit, get job() { return job; }, gainXP, storage, doSpot, useFurn, phoneGo, talkVenue, talkJob, openPlace, talkCustomer, startJob, openCarShop, damageCar, repairCar, addFire, get fires() { return fires; }, get ems() { return ems; }, get vehicles() { return vehicles; }, makeVehicle, makeCop, prisonFight, life, startDealMeet, get lifeAct() { return lifeAct; }, get train() { return train; }, get trainRide() { return trainRide; }, boardTrain, eventReset: () => { eventOpen = false; }, bodyCheck, attendClass, talkAdmissions, edu, startDance, get dance() { return dance; }, radioSet: i => { radioSet(i); radioOn(true); }, get zoom() { return zoom; }, set zoom(z) { zoom = z; }, DEFAULT_CAR, setState: x => setState(x), get jail() { return stats.jail; }, witness, personOf, dealHeat, trafficStop, carNear, carTop, startDate, playCutT: (k, o) => { setState("mini"); return playCut(k, o || {}).then(r => { setState("play"); window.__cutR = r; return r; }); }, payPhoneT: () => payPhone(), get metro() { return metro; }, METRO, boardMetroT: i => { metro.si = i; metro.stop = 8; metro.s = METRO.stations[i].s; boardMetro(i); }, unblockT: (id, f) => unblockDoors(id, f), get HD() { return HOME_DEFAULTS; }, smashT: () => { const cx = Math.floor(P.x / CHUNK), cz = Math.floor(P.z / CHUNK); let b = null, bd = 1e9; for (let i = -2; i <= 2; i++) for (let j = -2; j <= 2; j++) for (const q of parkedIn(cx + i, cz + j)) { const d = Math.hypot(q.x - P.x, q.z - P.z); if (!q.taken && d < bd) { bd = d; b = q; } } if (!b) return "none"; P.x = b.x + Math.cos(b.rot) * 1.8; P.z = b.z - Math.sin(b.rot) * 1.8; breakIntoParked(b); return "ok"; }, gymT: o => mini("gym", o || {}), openArmoryT: () => openArmory(PLACES.find(q => q.kind === "guns"), null), get rinfo() { return { calls: renderer.info.render.calls, tris: renderer.info.render.triangles, geos: renderer.info.memory.geometries, tex: renderer.info.memory.textures }; }, saveGameT: () => saveGame(), maybePregnantT: (id, t) => maybePregnant(id, t), miniT: (k, o) => mini(k, o || {}), rideSeatT: () => rideSeat, tsT: k => { timeScale = k; }, npcDrvT: v => { v.npcDriver = { name: 'Test', look: bakeCfg(lifeCfg({ role: 'guest', seed: 7 })) }; }, dateStartT: () => { const p = peds.list.find(q => q.look && !q.cop && q.root); if (!p) return false; p.x = P.x + 1.5; p.z = P.z + 0.5; p.interest ??= 50; startDate(p); return true; }, dateT: () => date, doorT: (v, i = 0) => doorSpot(v, seatSide(v, i) ?? 1, i), pathT: (v, a, b) => pathAround(v, a, b), carCallT: (body, phone = true, pass = null) => { if (talk.active) talk.end(); talk.forcePassenger = pass; talk.nextCar = buildCar({ ...DEFAULT_CAR, ...(CAR_PRESETS[body] || { body }) }); beginTalk(npcCfg('sales', 99), 'Test caller', body, 160, null, null, null, false, true, phone); talk.say('Testing the car call.'); talk.forcePassenger = null; }, seatsT: v => seatsFor(v), probeT: (x, z) => ({ y: baseY(x, z), w: walkable(x, z), sky: !!skyAt(x, z), sol: !!solidPoint(x, z, 1), city: cityAt(x, z, 0)?.id || null }), labStartT: () => labStart(), labRunT: id => labRun(EVENT_BY_ID[id]), labOnT: () => labOn(), msgsT: () => messages().map(m => m.from + ": " + m.text.slice(0, 50)), deliverT: id => deliverEvent(EVENT_BY_ID[id], {}), runEventT: (id, d) => runEventTalk(EVENT_BY_ID[id], d || {}, { name: 'Tester', tag: 'Test', cfg: null }, null), get pet() { return pet; }, CIT: () => CIT(), citizenRecord: c => citizenRecord(c), get town() { return town(); }, get ownedT() { return owned; }, openGunsmithT: (s, p, n) => openGunsmith(s, p, n), ambient, get ambEl() { return ambEl; }, openTradeT: p => openTrade(p), get stashT() { return stash; }, startWooT: (k, b) => startWoo(k, b), get woo() { return woo; }, endDate, dateCall, addDateContact, get phoneThread() { return phoneThread; }, set phoneThread(v) { phoneThread = v; }, talkDate, get date() { return date; }, get carAnim() { return carAnim; }, lifeApi, startShower, bizNewDay, subs, forceWanted, get buddy() { return buddy; }, startBuddy, textMe, toast, levelUp, closePhone, bringCar, useFurn, damageCar, debtorScene, get debtor() { return debtor; }, camBlocked, get camYaw() { return camYaw; }, ev: { evChase, evMug, evRobbery, evGang, evBusk, evCrash, evFire, evMarket, evParade, evProtest, streetEvents } };
+window.__game = { get markersT() { return markers; }, get animals() { return animals; }, crime, WANT, copCars, cops, pitFight, busted, fam, famNewDay, makeOfficial, talkFamily, get dayN() { return dayN; }, set dayN(v) { dayN = v; }, scene: G.scene, cam: G.cam, snap: () => updateCamera(0, true), get state() { return state; }, P, input, get ride() { return ride; }, get myCar() { return myCar; }, get traffic() { return traffic; }, peds, setTime: h => { clockH = h; }, openCustom, enterVehicle, exitCar, get money() { return money; }, set money(v) { money = v; }, openPlace, PLACES, PROPERTIES, runMinigame, get action() { return action; }, arsenal, selectWeapon, openPhone, setWaypoint, get route() { return route; }, talkToPed, talk, doAction, stats, get inside() { return inside; }, enterInterior, exitInterior, get customers() { return customers; }, newCustomer, startEdit, endEdit, get job() { return job; }, gainXP, storage, doSpot, useFurn, phoneGo, talkVenue, talkJob, openPlace, talkCustomer, startJob, openCarShop, damageCar, repairCar, addFire, get fires() { return fires; }, get ems() { return ems; }, get vehicles() { return vehicles; }, makeVehicle, makeCop, prisonFight, life, startDealMeet, get lifeAct() { return lifeAct; }, get train() { return train; }, get trainRide() { return trainRide; }, boardTrain, eventReset: () => { eventOpen = false; }, bodyCheck, attendClass, talkAdmissions, edu, startDance, get dance() { return dance; }, radioSet: i => { radioSet(i); radioOn(true); }, get zoom() { return zoom; }, set zoom(z) { zoom = z; }, DEFAULT_CAR, setState: x => setState(x), get jail() { return stats.jail; }, witness, personOf, dealHeat, trafficStop, carNear, carTop, startDate, playCutT: (k, o) => { setState("mini"); return playCut(k, o || {}).then(r => { setState("play"); window.__cutR = r; return r; }); }, payPhoneT: () => payPhone(), get metro() { return metro; }, METRO, boardMetroT: i => { metro.si = i; metro.stop = 8; metro.s = METRO.stations[i].s; boardMetro(i); }, unblockT: (id, f) => unblockDoors(id, f), get HD() { return HOME_DEFAULTS; }, smashT: () => { const cx = Math.floor(P.x / CHUNK), cz = Math.floor(P.z / CHUNK); let b = null, bd = 1e9; for (let i = -2; i <= 2; i++) for (let j = -2; j <= 2; j++) for (const q of parkedIn(cx + i, cz + j)) { const d = Math.hypot(q.x - P.x, q.z - P.z); if (!q.taken && d < bd) { bd = d; b = q; } } if (!b) return "none"; P.x = b.x + Math.cos(b.rot) * 1.8; P.z = b.z - Math.sin(b.rot) * 1.8; breakIntoParked(b); return "ok"; }, gymT: o => mini("gym", o || {}), openArmoryT: () => openArmory(PLACES.find(q => q.kind === "guns"), null), get rinfo() { return { calls: renderer.info.render.calls, tris: renderer.info.render.triangles, geos: renderer.info.memory.geometries, tex: renderer.info.memory.textures }; }, saveGameT: () => saveGame(), maybePregnantT: (id, t) => maybePregnant(id, t), miniT: (k, o) => mini(k, o || {}), rideSeatT: () => rideSeat, tsT: k => { timeScale = k; }, copTalkT: () => { beginTalk(copLook?.cfg || COP_CFG, 'Officer Diaz', 'Traffic stop', 130, null, null, null, false, !!ride); talk.say('License and registration, please.'); }, npcDrvT: v => { v.npcDriver = { name: 'Test', look: bakeCfg(lifeCfg({ role: 'guest', seed: 7 })) }; }, dateStartT: () => { const p = peds.list.find(q => q.look && !q.cop && q.root); if (!p) return false; p.x = P.x + 1.5; p.z = P.z + 0.5; p.interest ??= 50; startDate(p); return true; }, dateT: () => date, doorT: (v, i = 0) => doorSpot(v, seatSide(v, i) ?? 1, i), pathT: (v, a, b) => pathAround(v, a, b), carCallT: (body, phone = true, pass = null) => { if (talk.active) talk.end(); talk.forcePassenger = pass; talk.nextCar = buildCar({ ...DEFAULT_CAR, ...(CAR_PRESETS[body] || { body }) }); beginTalk(npcCfg('sales', 99), 'Test caller', body, 160, null, null, null, false, true, phone); talk.say('Testing the car call.'); talk.forcePassenger = null; }, seatsT: v => seatsFor(v), probeT: (x, z) => ({ y: baseY(x, z), w: walkable(x, z), sky: !!skyAt(x, z), sol: !!solidPoint(x, z, 1), city: cityAt(x, z, 0)?.id || null }), labStartT: () => labStart(), labRunT: id => labRun(EVENT_BY_ID[id]), labOnT: () => labOn(), msgsT: () => messages().map(m => m.from + ": " + m.text.slice(0, 50)), deliverT: id => deliverEvent(EVENT_BY_ID[id], {}), runEventT: (id, d) => runEventTalk(EVENT_BY_ID[id], d || {}, { name: 'Tester', tag: 'Test', cfg: null }, null), get pet() { return pet; }, CIT: () => CIT(), citizenRecord: c => citizenRecord(c), get town() { return town(); }, get ownedT() { return owned; }, openGunsmithT: (s, p, n) => openGunsmith(s, p, n), ambient, get ambEl() { return ambEl; }, openTradeT: p => openTrade(p), get stashT() { return stash; }, startWooT: (k, b) => startWoo(k, b), get woo() { return woo; }, endDate, dateCall, addDateContact, get phoneThread() { return phoneThread; }, set phoneThread(v) { phoneThread = v; }, talkDate, get date() { return date; }, get carAnim() { return carAnim; }, lifeApi, startShower, bizNewDay, subs, forceWanted, get buddy() { return buddy; }, startBuddy, textMe, toast, levelUp, closePhone, bringCar, useFurn, damageCar, debtorScene, get debtor() { return debtor; }, camBlocked, get camYaw() { return camYaw; }, set camYaw(v) { camYaw = camYawT = v; }, sbSummonT: i => sbSummon(i), ev: { evChase, evMug, evRobbery, evGang, evBusk, evCrash, evFire, evMarket, evParade, evProtest, streetEvents } };
 
 // ================================================================ install as an app (Add to Home Screen)
 if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('sw.js').catch(() => {});

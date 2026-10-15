@@ -1,8 +1,16 @@
 // Conversations staged like a Pokémon battle: they stand on a platform facing you,
 // you see the back of your own head in the foreground, subtitles type out, you pick replies.
 import * as THREE from '../lib/three.module.min.js';
-import { buildCharacter, poseCharacter, disposeObject, setFace } from './character.js?v=207';
-import { sfx, audio } from './audio.js?v=207';
+import { buildCharacter, poseCharacter, disposeObject, setFace } from './character.js?v=208';
+// a rough read of how a line feels, for faces: angry / sad / shock / happy / flirty / neutral
+export function exprOf(t = '') { const s = t.toLowerCase();
+  if (/\b(get out|stop|idiot|how dare|shut up|back off|you owe|liar|now!|seriously\?!|hey!)/.test(s) || /!!/.test(t)) return 'angry';
+  if (/\b(sorry|miss|sad|alone|lost|died|passed|can't|cannot|hurt|cry|broke|wish)/.test(s)) return 'sad';
+  if (/\b(what\?!|oh my god|no way|wait,|whoa|what the)/.test(s) || /\?!/.test(t)) return 'shock';
+  if (/\b(babe|gorgeous|cute|kiss|date|beautiful)/.test(s)) return 'flirty';
+  if (/\b(thanks|thank you|love|great|amazing|ha|haha|nice|cheers|brilliant|yes!|good)/.test(s) || /!$/.test(t.trim())) return 'happy';
+  return 'neutral'; }
+import { sfx, audio } from './audio.js?v=208';
 
 const $ = id => document.getElementById(id);
 const BG = {
@@ -107,7 +115,7 @@ export class Talk {
   }
   begin({ npcCfg, youCfg, name, tag, pitch = 300, bg = 'city', night = 0, wall = null, floor = null, pet = null, pose = null, think = false, seat = false, phone = false, car = false, room = null, bed = null }) {
     this.realCar = seat && this.nextCar ? this.nextCar : null; this.nextCar = null; this.twoRide = this.nextTwo || null; this.nextTwo = null; // your actual car, seen through the driver's window
-    this.pose = pose; this.think = think; this.seat = seat; this.phone = phone; this.car = car; this.bed = bed; this.actK = null; this.actT = 0;
+    this.dateCar = !!this.nextDate; this.nextDate = false; this.pose = pose; this.think = think; this.seat = seat; this.phone = phone; this.car = car; this.bed = bed; this.actK = null; this.actT = 0;
     audio();
     this.clear();
     this.active = true; this.t = 0; this.intro = 0; this.t0 = performance.now(); this.blipPitch = pitch;
@@ -247,7 +255,8 @@ export class Talk {
   // a little bit of acting: kiss, hug, hold hands, a hand on the knee
   act(kind, dur = 1.8) { this.actK = kind; this.actT = 0; this.actDur = dur; return new Promise(res => setTimeout(() => { this.actK = null; res(); }, dur * 1000)); }
   end() { this.active = false; this.clear(); $('talkUI').classList.add('hidden'); this._say = null; this._choose = null; }
-  say(text, who = 'npc') {
+  say(text, who = 'npc', expr = null) {
+    { const ex = expr || exprOf(text); if (who === 'you') this.exprY = ex; else this.exprN = ex; if (!expr) { /* the listener reacts too */ const re = ex === 'angry' ? 'sad' : ex === 'happy' ? 'happy' : ex === 'shock' ? 'shock' : null; if (re) { if (who === 'you') this.exprN = re === 'sad' ? 'shock' : re; else this.exprY = re === 'sad' ? 'neutral' : re; } } }
     $('talkOpts').classList.add('hidden');
     const el = $('talkText'); el.textContent = ''; $('talkBox').classList.toggle('you', who === 'you');
     $('talkWho').textContent = who === 'you' ? 'You' : $('talkName').textContent;
@@ -355,23 +364,24 @@ export class Talk {
   }
   // on your bike / scooter / motorbike / boat, phone at your ear, one hand on the bars or wheel
   // bring the phone hand right up to the ear: a few nudges of shoulder and elbow until the hand sits beside the head
-  earIK(c, arm, sx) { this.handToHead(c, arm, sx * 0.95, -0.3, 0.02, true); }
+  earIK(c, arm, sx, fwd = false) { this.handToHead(c, arm, sx * 0.95, -0.3, 0.02, true, fwd); } /* fwd: elbow out in front (sat in a car), never pointing back */
   // how deep a point sits inside the chest (0 if outside), with a little room for the arm's thickness
   inTorso(c, p) { const T = c.torso; if (!T) return 0;
     if (!c._tb) { const bb = new THREE.Box3(); for (const m of T.children) if (m.isMesh) { m.geometry.computeBoundingBox(); const g = m.geometry.boundingBox.clone().translate(m.position); bb.union(g); } c._tb = bb.expandByScalar(0.025); }
     const q = T.worldToLocal(p.clone()), B = c._tb; if (!B.containsPoint(q)) return 0; return Math.min(q.x - B.min.x, B.max.x - q.x, q.y - B.min.y, B.max.y - q.y, q.z - B.min.z, B.max.z - q.z); }
   headBox(c) { c.root.updateWorldMatrix(true, true); if (!c._ear) { const bb = new THREE.Box3().setFromObject(c.head), ctr = c.head.worldToLocal(bb.getCenter(new THREE.Vector3())); c._ear = { ctr, hw: (bb.max.x - bb.min.x) / 2, hh: (bb.max.y - bb.min.y) / 2 }; } return c._ear; }
   // put a hand at a spot on the head (x, y in head half-widths, z in metres): the ear for a phone, the chin when thinking
-  handToHead(c, arm, ox, oy, oz, abs = false) {
+  handToHead(c, arm, ox, oy, oz, abs = false, fwd = false) {
     if (!c || !arm?.hand || !c.head) return; const E = this.headBox(c);
     const T = c.head.localToWorld(new THREE.Vector3(E.ctr.x + ox * E.hw, E.ctr.y + oy * E.hh, E.ctr.z + (abs ? oz : oz * E.hw))), h = new THREE.Vector3();
     const hc = c.head.localToWorld(E.ctr.clone()), Rh = Math.max(E.hw, E.hh) * 1.2, el = new THREE.Vector3(), mid = new THREE.Vector3(), sh = new THREE.Vector3(), up = new THREE.Vector3();
     const f = () => { c.root.updateWorldMatrix(true, true); arm.hand.getWorldPosition(h); let cost = h.distanceTo(T); /* keep the elbow and forearm OUT of the face: out to the side, like a real arm */
       if (arm.elbow) { arm.elbow.getWorldPosition(el); mid.copy(el).add(h).multiplyScalar(0.5); if (abs) cost += 3 * Math.max(0, Rh * 1.25 - el.distanceTo(hc)) + 3 * Math.max(0, Rh - mid.distanceTo(hc));
-        arm.pivot.getWorldPosition(sh); up.copy(sh).add(el).multiplyScalar(0.5); for (const q of [el, mid, up]) cost += 2 * this.inTorso(c, q); } return cost; }; /* ...and never through the chest */
-    const key = '_ik' + (arm === c.armL ? 'L' : 'R') + ox.toFixed(2) + oy.toFixed(2), prev = c[key]; let st = 0.3, its = 60;
+        arm.pivot.getWorldPosition(sh); up.copy(sh).add(el).multiplyScalar(0.5); for (const q of [el, mid, up]) cost += 2 * this.inTorso(c, q);
+        if (fwd) { const eL = c.root.worldToLocal(el.clone()), sL = c.root.worldToLocal(sh.clone()); cost += 4 * Math.max(0, sL.z + 0.12 - eL.z); } } return cost; }; /* ...and never through the chest */
+    const key = '_ik' + (arm === c.armL ? 'L' : 'R') + ox.toFixed(2) + oy.toFixed(2) + (fwd ? 'f' : ''), prev = c[key]; let st = 0.3, its = 60;
     if (prev) { arm.pivot.rotation.copy(prev[0]); if (arm.elbow) arm.elbow.rotation.copy(prev[1]); st = 0.04; its = 12; } /* last frame's answer: just touch it up */
-    else if (abs && arm.elbow) { const sx = Math.sign(ox) || 1; arm.pivot.rotation.set(-0.7, 0, sx * 1.15); arm.elbow.rotation.set(-2.3, 0, 0); } /* start from a side-on, elbow-out pose */
+    else if (abs && arm.elbow) { const sx = Math.sign(ox) || 1; if (fwd) { arm.pivot.rotation.set(-1.7, 0, sx * 0.45); arm.elbow.rotation.set(-2.2, 0, 0); } else { arm.pivot.rotation.set(-0.7, 0, sx * 1.15); arm.elbow.rotation.set(-2.3, 0, 0); } } /* start from a side-on, elbow-out pose */
     const P = [[arm.pivot.rotation, 'x'], [arm.pivot.rotation, 'z'], [arm.pivot.rotation, 'y']]; if (arm.elbow) P.push([arm.elbow.rotation, 'x']);
     let best = f(); for (let i = 0; i < its && st > 0.008; i++) { let imp = false; for (const [o, k] of P) for (const d of [st, -st]) { o[k] += d; const v = f(); if (v < best - 1e-4) { best = v; imp = true; break; } o[k] -= d; } if (!imp) st *= 0.5; } c[key] = [arm.pivot.rotation.clone(), arm.elbow ? arm.elbow.rotation.clone() : null]; c.root.updateWorldMatrix(true, true); arm.hand.getWorldPosition(h); this._lastErr = h.distanceTo(T);
   }
@@ -391,13 +401,16 @@ export class Talk {
     { const h = new THREE.Vector3(), aim = grip.clone(); // a few correction passes so the hand lands right on the grip
       for (let i = 0; i < 4; i++) { y.root.updateMatrixWorld(true); y.armR.hand.getWorldPosition(h); aim.add(grip.clone().sub(h)); y.armR.pivot.getWorldPosition(sh); const d2 = aim.clone().sub(sh), l2 = d2.length(); y.armR.pivot.rotation.set(-Math.atan2(d2.z, -d2.y), 0, Math.asin(Math.max(-1, Math.min(1, d2.x / l2)))); }
       y.root.updateMatrixWorld(true); y.armR.hand.getWorldPosition(h); this.gripErr = h.distanceTo(grip); }
-    y.armL.pivot.rotation.set(-0.85, -0.15, 0.42); if (y.armL.elbow) y.armL.elbow.rotation.set(-2.6, 0, 0); this.earIK(y, y.armL, 1); // phone at the ear
+    if (this.phone) { y.armL.pivot.rotation.set(-0.85, -0.15, 0.42); if (y.armL.elbow) y.armL.elbow.rotation.set(-2.6, 0, 0); this.earIK(y, y.armL, 1); } // phone at the ear
     y.head.rotation.set(talking ? Math.sin(this.t * 11) * 0.06 : 0, 0.45, 0.1);
     if (this.pass) { const q = this.pass, ql = q.legLen || 0.86; poseCharacter(q, { t: this.t + 2, aim: -1.45, speed: 0 }); q.root.rotation.set(0, 0, 0);
       if (R.boat) { q.root.position.set(-R.seat.x, R.seat.y - ql + 0.03, R.seat.z); q.legL.pivot.rotation.set(-1.5, 0, 0.05); q.legR.pivot.rotation.set(-1.5, 0, -0.05); q.legL.knee.rotation.x = 1.35; q.legR.knee.rotation.x = 1.35; q.armL.pivot.rotation.set(-0.5, 0, 0.1); q.armR.pivot.rotation.set(-0.5, 0, -0.1); }
       else { q.root.position.set(0, R.seatY - ql + 0.08, -0.5); q.legL.pivot.rotation.set(-1.2, 0, 0.12); q.legR.pivot.rotation.set(-1.2, 0, -0.12); q.legL.knee.rotation.x = 1.5; q.legR.knee.rotation.x = 1.5; q.armL.pivot.rotation.set(-1.0, 0, 0.35); q.armR.pivot.rotation.set(-1.0, 0, -0.35); } // on the back, holding on to you
       q.head.rotation.set(0, Math.sin(this.t * 0.35) > 0.3 ? 0.5 : Math.sin(this.t * 0.6) * 0.1, 0); }
     y.root.updateMatrixWorld(true); const hp = new THREE.Vector3(); y.head.getWorldPosition(hp);
+    if (!this.phone && n) { /* someone stood beside you (an officer at a stop): both hands stay on the bars, they're in shot */
+      n.root.visible = true; n.root.position.set(1.05, 0, 0.45); n.root.rotation.set(0, -Math.PI / 2 - 0.2, 0); y.armL.pivot.rotation.copy(y.armR.pivot.rotation); y.armL.pivot.rotation.z *= -1; y.armL.pivot.rotation.y *= -1; if (y.armL.elbow && y.armR.elbow) y.armL.elbow.rotation.copy(y.armR.elbow.rotation);
+      y.head.rotation.set(0, -0.9, 0); this.cam.position.set(hp.x + 1.2, hp.y + 0.35, hp.z + 3.4); this.cam.lookAt(hp.x + 0.55, hp.y - 0.4, hp.z + 0.3); return; }
     this.cam.position.set(hp.x + 2.0, hp.y + 0.05, hp.z + 2.2); this.cam.lookAt(hp.x, hp.y - 0.55, hp.z + 0.35);
   }
   // sat in your own car: zoomed in through the driver's window. On the phone: one hand on the wheel, phone at your ear
@@ -407,18 +420,32 @@ export class Talk {
     const legLen = drv.legLen || 0.86; drv.root.position.y = top + 0.14 - legLen + 0.03; // hips on the cushion
     drv.legL.pivot.rotation.set(-1.5, 0, 0.05); drv.legR.pivot.rotation.set(-1.5, 0, -0.05); drv.legL.knee.rotation.x = 1.35; drv.legR.knee.rotation.x = 1.35; if (drv.hips) drv.hips.rotation.x = 0;
     drv.armR.pivot.rotation.set(-1.05, 0, -0.12); if (drv.armR.elbow) drv.armR.elbow.rotation.set(-0.55, 0, 0); // one hand on the wheel
-    if (this.phone) { drv.armL.pivot.rotation.set(-0.85, -0.15, 0.42); if (drv.armL.elbow) drv.armL.elbow.rotation.set(-2.6, 0, 0); drv.head.rotation.set(talkingMe ? Math.sin(this.t * 11) * 0.06 : 0, 0.45, 0.1); this.earIK(drv, drv.armL, 1); } // phone at the ear nearest the window
+    if (this.phone) { drv.armL.pivot.rotation.set(-0.85, -0.15, 0.42); if (drv.armL.elbow) drv.armL.elbow.rotation.set(-2.6, 0, 0); drv.head.rotation.set(talkingMe ? Math.sin(this.t * 11) * 0.06 : 0, 0.45, 0.1); this.earIK(drv, drv.armL, 1, true); } // phone at the ear nearest the window
     else { drv.armL.pivot.rotation.set(-1.05, 0, 0.12); if (drv.armL.elbow) drv.armL.elbow.rotation.set(-0.55, 0, 0); drv.head.rotation.set(talkingMe ? Math.sin(this.t * 11) * 0.06 : 0, other ? side * 1.1 : 0.2, 0); }
     if (this.wheel) this.wheel.rotation.z = Math.sin(this.t * 0.8) * 0.04;
     if (this.pass) { const q = this.pass, ll = q.legLen || 0.86; poseCharacter(q, { t: this.t + 2, aim: -1.45, speed: 0 }); q.root.position.set(-sx, top + 0.14 - ll + 0.03, sz + 0.02); q.root.rotation.set(0, 0, 0);
       q.legL.pivot.rotation.set(-1.5, 0, 0.05); q.legR.pivot.rotation.set(-1.5, 0, -0.05); q.legL.knee.rotation.x = 1.35; q.legR.knee.rotation.x = 1.35; q.armL.pivot.rotation.set(-0.5, 0, 0.1); q.armR.pivot.rotation.set(-0.5, 0, -0.1);
       q.head.rotation.set(0, Math.sin(this.t * 0.35) > 0.3 ? -0.7 : Math.sin(this.t * 0.6) * 0.1, 0); } // idling, looking over at you now and then
-    if (other && !this.phone) { // they're stood at your window
+    if (this.dateCar && other && !this.phone) { // your date, sat beside you in the passenger seat of your actual car: seen through the windscreen
+      this.actT += 1 / 60; const K = this.actK, e = K ? Math.max(0, Math.min(1, this.actT / 0.4, (this.actDur - this.actT) / 0.4)) : 0, ll = other.legLen || 0.86;
+      other.root.visible = true; other.root.position.set(-sx, top + 0.14 - ll + 0.03, sz + 0.02); other.root.rotation.set(0, 0, 0); if (other.hips) other.hips.rotation.x = 0;
+      other.legL.pivot.rotation.set(-1.5, 0, 0.05); other.legR.pivot.rotation.set(-1.5, 0, -0.05); other.legL.knee.rotation.x = 1.35; other.legR.knee.rotation.x = 1.35;
+      other.armL.pivot.rotation.set(-0.55, 0, 0.1); other.armR.pivot.rotation.set(-0.55, 0, -0.1); if (other.armL.elbow) other.armL.elbow.rotation.set(-0.5, 0, 0); if (other.armR.elbow) other.armR.elbow.rotation.set(-0.5, 0, 0);
+      const nod = w => this.talking === w ? Math.sin(this.t * 3) * 0.08 : 0;
+      drv.head.rotation.set(nod('you') * 0.5, -0.55 + nod('you'), 0); other.head.rotation.set(nod('npc') * 0.5, 0.55 + nod('npc'), 0);
+      if (K === 'kiss' || K === 'hug') { const sl = Math.max(0, sx - 0.3) * e; drv.root.position.x -= sl; other.root.position.x += sl; drv.root.rotation.z = 0.26 * e; other.root.rotation.z = -0.26 * e; drv.head.rotation.y = -0.55 - 0.45 * e; other.head.rotation.y = 0.55 + 0.45 * e; } // lean across the console to each other
+      if (K === 'kiss') { drv.armR.pivot.rotation.set(-1.25, 0, 0.1 - 0.45 * e); other.armL.pivot.rotation.set(-1.0 * e - 0.55 * (1 - e), 0, 0.1 + 0.4 * e); }
+      else if (K === 'hug') { drv.armR.pivot.rotation.set(-1.5, 0, -1.1 * e); other.armL.pivot.rotation.set(-1.5, 0, 1.1 * e); }
+      else if (K === 'knee') { drv.armR.pivot.rotation.set(-0.8, 0, 0.1 - 0.7 * e); drv.root.rotation.z = 0.08 * e; }
+      else if (K === 'hand') { drv.armR.pivot.rotation.set(-0.8, 0, -0.55 * e); other.armL.pivot.rotation.set(-0.8, 0, 0.55 * e); }
+      if (!K || e <= 0) { drv.root.rotation.z = 0; other.root.rotation.z = 0; }
+      this.cam.position.set(0, top + 1.25, sz + 1.6 + W * 0.55); this.cam.lookAt(0, top + 0.8, sz);
+    } else if (other && !this.phone) { // they're stood at your window
       other.root.position.set(sx + side * (W / 2 - sx + 0.7), 0, sz + 0.35); other.root.rotation.set(0, -side * Math.PI / 2, 0); other.root.visible = true;
       this.cam.position.set(side * (W / 2 + 3.2), top + 1.0, sz + 4.2); this.cam.lookAt(sx + side * 0.75, top + 0.62, sz + 0.2);
     } else {
       if (other) other.root.visible = false; // a phone call: it's just you in the car
-      this.cam.position.set(sx + side * 2.1, top + 1.02, sz + 0.65); this.cam.lookAt(sx - side * 0.05, top + 0.84, sz + 0.2); if (this.dbgCam) { const d = this.dbgCam; this.cam.position.set(d[0], top + d[1], sz + d[2]); this.cam.lookAt(0, top + d[3], sz); } // through the window: head, shoulders and the hand on the wheel
+      this.cam.position.set(sx + side * 1.85, top + 1.08, sz + 1.55); this.cam.lookAt(sx - side * 0.1, top + 0.84, sz + 0.25); if (this.dbgCam) { const d = this.dbgCam; this.cam.position.set(d[0], top + d[1], sz + d[2]); this.cam.lookAt(0, top + d[3], sz); } // through the window: head, shoulders and the hand on the wheel
     }
   }
   carPose(n, y) {
@@ -456,5 +483,9 @@ export class Talk {
     c.legL.knee.rotation.x = Math.PI / 2 - 0.1; c.legR.knee.rotation.x = Math.PI / 2 - 0.1;
     if (c.hips) c.hips.rotation.x = 0;
   }
-  render(renderer) { renderer.render(this.scene, this.cam); this.faceFrame(); }
+  render(renderer) { this.faces(); renderer.render(this.scene, this.cam); this.faceFrame(); }
+  // mouths move with the words, faces show how they feel about what's being said (or heard)
+  faces() { const t = this.t, talkMouth = () => Math.abs(Math.sin(t * 15)) * (0.5 + 0.5 * Math.abs(Math.sin(t * 4.3)));
+    for (const [c, who] of [[this.npc, 'npc'], [this.you, 'you']]) { if (!c?.root?.visible) continue; const me = this.talking === who, ex = (who === 'npc' ? this.exprN : this.exprY) || 'neutral';
+      try { setFace(c, ex, me ? talkMouth() : 0); } catch (e) {} } }
 }

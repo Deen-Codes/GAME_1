@@ -2,7 +2,7 @@
 // stray cats, dogs out on walks with their owners, squirrels, deer in the hills by day, and raccoons,
 // possums, coyotes and owls at night. All low-poly, baked into a few meshes each so they're cheap to draw.
 import * as THREE from '../lib/three.module.min.js';
-import { CITIES, LAMPS, FIELDS, sandLine, shoreLine, walkable, groundH, cityAt, roadAt, wallTop } from './world.js?v=207';
+import { CITIES, LAMPS, FIELDS, sandLine, shoreLine, walkable, groundH, cityAt, roadAt, wallTop } from './world.js?v=208';
 // a spot on a nearby rooftop (roof edge-ish), or null
 function roofSpot(x, z, rMin = 8, rMax = 45) { for (let i = 0; i < 10; i++) { const a = Math.random() * 6.28, d = rMin + Math.random() * (rMax - rMin), px = x + Math.sin(a) * d, pz = z + Math.cos(a) * d, t = wallTop(px, pz); if (t != null && t > 3 && t < 40) return { x: px, z: pz, y: t + 0.02 }; } return null; }
 

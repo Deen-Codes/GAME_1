@@ -1,7 +1,7 @@
 // Modular car builder. Car faces +Z, sits on y=0, origin at the centre of the wheelbase.
 import * as THREE from '../lib/three.module.min.js';
-import { BASIC } from './character.js?v=207';
-import { patternTexture } from './gun.js?v=207';
+import { BASIC } from './character.js?v=208';
+import { patternTexture } from './gun.js?v=208';
 
 export const BODIES = {
   hatch:  { label: 'Hatchback', L: 3.8, W: 1.75, bh: 0.55, cl: 2.0, ch: 0.62, co: -0.4,  wr: 0.34, mass: 1.0 },
@@ -432,7 +432,7 @@ function buildCarRaw(cfg) {
           mk(top - aTop, (top + aTop) / 2, z0, z1); for (const [p0, p1] of [[z0, Math.min(z1, a0)], [Math.max(z0, a1), z1]]) if (p1 - p0 > 0.03) mk(aTop - bot, (aTop + bot) / 2, p0, p1); }
         else mk(bh, by, hz - dl + 0.005, hz - 0.005); pv.userData.mk = mk; } /* flush with the body: the door is the cabin wall */
       if (c.decal === 'twotone') { const t2 = new THREE.Mesh(new THREE.BoxGeometry(0.045, bh * 0.4, dl), accM); t2.position.set(-sx * 0.0085, -bh * 0.23, -dl / 2); pv.add(t2); }
-      const hd = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.05, 0.18), chrome); hd.position.set(sx * 0.03, bh * 0.22, -dl + 0.22); pv.add(hd); pv.userData.handle = hd;
+      const hd = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.05, 0.18), chrome); hd.position.set(sx * 0.03, B.box ? Math.min(top - 0.12, Math.min(top - 0.05, wr * 2 + 0.08) + 0.04) - by : bh * 0.22, -dl + 0.22); pv.add(hd); pv.userData.handle = hd; /* (a lorry's sits on the solid panel above the wheel-arch cut, not over the gap) */
       const cardM = M2('#2c2d33'); for (const m of [...pv.children]) if (m.isMesh && m.material === bodyM && m.geometry.parameters?.width > 0.1) { const P2 = m.geometry.parameters, cd = new THREE.Mesh(new THREE.BoxGeometry(0.012, Math.max(0.02, P2.height - 0.05), Math.max(0.02, P2.depth - 0.05)), cardM); cd.position.set(-sx * 0.122, m.position.y, m.position.z); pv.add(cd); } /* inside trim follows the door's own shape (cut round a lorry's wheel arch too) */
       if (!B.open && !B.topless) { const mir = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.09, 0.1), c.decal === 'none' ? bodyM : accM); mir.position.set(sx * 0.11, bh / 2 + 0.07, -0.16); pv.add(mir); const stalk = new THREE.Mesh(new THREE.BoxGeometry(0.07, 0.03, 0.04), dark); stalk.position.set(sx * 0.035, bh / 2 + 0.06, -0.16); pv.add(stalk); } /* wing mirror, on the door where it belongs */ /* the door's inside: trim and an armrest, not more paintwork */
       const arm = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.05, dl * 0.45), M2('#45464e')); arm.position.set(-sx * 0.12, bh * 0.1, -dl * 0.55); pv.add(arm);
